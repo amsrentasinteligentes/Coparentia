@@ -154,8 +154,25 @@ La ronda 1 completa quedó intacta en `docs/revisiones/direcciones-abc.html`.
   Spectral + IBM Plex Sans, halo cálido detrás del anillo. Ángulo: revisión nocturna a solas.
 - **Opción C — Bitácora Familiar** (Editorial cálida, banco #1): claro cálido, óxido #7A3E2E,
   Newsreader + Mulish, subrayado marcador en el titular. Ángulo: diario/acuerdo, no litigio.
-Pendiente: el usuario elige entre las 6 opciones totales (ronda 1 + ronda 2), combina, o pide
-una tercera ronda.
+**RONDA 3** (combinación explícita de B+C de ronda 2, en tonos azules): archivo actual
+`direcciones-abc.html` en raíz + copia en `docs/revisiones/direcciones-abc-ronda3.html`.
+Rondas 1 y 2 completas quedaron intactas en sus archivos respectivos.
+- **Opción A — Confianza Nocturna** (hero+cards, azul #4C82E0): halo detrás del dato + subrayado
+  marcador en el titular. Fusiona el halo de "Estudio de Caso" con el marcador de "Bitácora".
+- **Opción B — Revisión en Confianza** (anillo+grid, azul #5B93E8): peso mayor en el lado
+  "Estudio de Caso" — anillo de avance con halo, tono más financiero/serio.
+- **Opción C — Bitácora en Azul** (timeline, azul #6FA8FF): peso mayor en el lado "Bitácora
+  Familiar" — línea de tiempo editorial con halo sutil detrás del masthead.
+Tipografía compartida: Spectral (display) + IBM Plex Sans (body) en las 3.
+
+⚠️ Bug real encontrado y corregido: la URL de Google Fonts con sintaxis de rango
+(`wght@400..700`) solo es válida para fuentes VARIABLES. Spectral es estática (pesos
+discretos) — con esa sintaxis, Google Fonts descarta la familia completa en silencio (sin
+error visible) y el navegador cae al fallback-trampa (monospace). Corregido a `wght@400;700`
+(punto y coma). Revisar si se reutiliza EB Garamond (ronda 1, banco #9) más adelante — mismo
+riesgo por ser también una fuente estática.
+
+Pendiente: el usuario elige entre las 9 opciones totales (rondas 1+2+3), combina, o pide otra ronda.
 
 ## Siguiente paso
 Preguntar al usuario el campo 20 (ventaja/contactos) y continuar con B3 — completar la
