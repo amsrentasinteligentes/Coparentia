@@ -145,6 +145,18 @@ Tres fusiones distintas del banco de direcciones (54):
   EB Garamond + Inter Tight, timeline editorial con doble regla. Ángulo: seriedad jurídica.
 Ninguna se repite de un proyecto anterior (no hay proyecto anterior en este SO todavía).
 
+**RONDA 2** (el usuario pidió 3 opciones distintas, sin borrar la ronda 1): archivo actual
+`direcciones-abc.html` en raíz + copia en `docs/revisiones/direcciones-abc-ronda2.html`.
+La ronda 1 completa quedó intacta en `docs/revisiones/direcciones-abc.html`.
+- **Opción A — Cuidado Documentado** (Clínica humana, banco #5): claro, teal #0F766E,
+  Gantari + Atkinson Hyperlegible, hairline suave + sombra tintada. Ángulo: calma/protección.
+- **Opción B — Estudio de Caso** (Nocturna de estudio, banco #6): oscuro, dorado #E0B458,
+  Spectral + IBM Plex Sans, halo cálido detrás del anillo. Ángulo: revisión nocturna a solas.
+- **Opción C — Bitácora Familiar** (Editorial cálida, banco #1): claro cálido, óxido #7A3E2E,
+  Newsreader + Mulish, subrayado marcador en el titular. Ángulo: diario/acuerdo, no litigio.
+Pendiente: el usuario elige entre las 6 opciones totales (ronda 1 + ronda 2), combina, o pide
+una tercera ronda.
+
 ## Siguiente paso
 Preguntar al usuario el campo 20 (ventaja/contactos) y continuar con B3 — completar la
 Constitución del Producto (primera victoria ya definida, funciones MVP ya definidas por el
