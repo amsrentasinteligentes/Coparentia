@@ -78,16 +78,39 @@ transaccional. Simplicidad 🟢.
 2. Subida de foto de comprobante → vinculación inmediata al mes.
 3. Botón "Exportar Expediente Judicial" → PDF organizado con soportes anexos.
 
-## 20. Ventaja del usuario — PENDIENTE DE PREGUNTAR
-El PDF trae este campo sin completar ("debe ser completado por el creador"). Falta
-preguntarle al usuario si tiene acceso/contactos en el sector legal, derecho de familia,
-o experiencia personal documentando este proceso — condiciona el ángulo de autoridad
-del copy de venta y posibles alianzas de distribución (abogados, centros de conciliación).
+## 20. Ventaja del usuario
+Tiene una persona muy cercana que es abogado(a) de familia. Esto habilita:
+- Ángulo de autoridad en el copy ("validado con criterio de abogado de familia" / revisión
+  legal real del contenido de la biblioteca normativa y las reglas del sistema).
+- Canal de distribución por alianza profesional (ver propuesta de canales más abajo,
+  pendiente de aprobación del usuario).
+
+## 21. Canal de distribución (aprobado por el usuario)
+Orden de arranque:
+1. Alianza con su abogado(a) de familia cercano(a) — recomendación directa a clientes +
+   revisión/aval de la biblioteca legal de la app.
+2. Referidos de otros abogados de familia / centros de conciliación (vía el contacto anterior).
+3. Contenido orgánico TikTok/Instagram con los ganchos ya validados del PDF.
+4. Meta Ads pagos — solo cuando haya tracción orgánica; requiere presupuesto (avisar antes
+   de gastar).
 
 ## 22. Diferenciador
 "Somos la única app que genera un expediente probatorio neutral con validez documental
 de forma UNILATERAL para padres separados que buscan protegerse legalmente sin depender
 de que la otra parte quiera colaborar."
+
+## Qué NUNCA debe hacer la app (derivado del anexo jurídico, pendiente de confirmación)
+1. Nunca declararse juez, conciliador ni certificador oficial de deuda.
+2. Nunca reportar automáticamente a alguien en REDAM ni afirmar que existe mora jurídica
+   declarada — solo mostrar el estado contable de los registros.
+3. Nunca borrar mensajes, soportes o versiones anteriores sin dejar rastro.
+4. Nunca compartir los datos del usuario ni de sus hijos con terceros sin autorización expresa.
+5. Nunca presionar con culpa ni lenguaje acusatorio hacia "el otro padre" (tono neutral siempre).
+
+## Promesa central (derivada del reporte de posicionamiento)
+"Ayudamos a padres separados a convertir sus pagos y gastos de sus hijos en un expediente
+digital probatorio y organizado — sin depender de que su ex use la app, sin pelear por
+WhatsApp y sin gastar en abogados solo para aclarar cuentas."
 
 ## Reglas de negocio especiales (del anexo jurídico Colombia)
 - NO terminación automática de la cuota a los 25 años (parámetro jurisprudencial, no regla).
