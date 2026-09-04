@@ -132,6 +132,19 @@ WhatsApp y sin gastar en abogados solo para aclarar cuentas."
 - Framework, arquitectura, base de datos, auth: pendiente (04-ARQUITECTURA, 25, 26).
 - Unit economics: ya viene con margen 92% del PDF — validar contra 40-UNIT-ECONOMICS.md.
 
+## Dirección de arte — comparativa A/B/C presentada (pendiente elección del usuario)
+Archivo: `direcciones-abc.html` (raíz del proyecto) y copia archivada en `docs/revisiones/`.
+Tabla de líderes usada (nicho legal/documental + fintech de confianza): Clio, DocuSign,
+Notion (gestión legal/documentos) + Mercury/Revolut (claridad financiera, cifras tabulares).
+Tres fusiones distintas del banco de direcciones (54):
+- **Opción A — Blindaje Directo** (Brutalista suave, banco #2): claro, borde 2px + sombra
+  dura offset, azul rotulador #2743D6, Archivo Black + Work Sans. Ángulo: control/autoridad.
+- **Opción B — Cuenta Clara** (Fintech de bolsillo, banco #3): oscuro, verde saldo #46B583,
+  Geologica + Wix Madefor Text, cifras tabulares. Ángulo: claridad financiera.
+- **Opción C — Expediente Editorial** (Papel y tinta, banco #9): claro, lacre #8C2F23,
+  EB Garamond + Inter Tight, timeline editorial con doble regla. Ángulo: seriedad jurídica.
+Ninguna se repite de un proyecto anterior (no hay proyecto anterior en este SO todavía).
+
 ## Siguiente paso
 Preguntar al usuario el campo 20 (ventaja/contactos) y continuar con B3 — completar la
 Constitución del Producto (primera victoria ya definida, funciones MVP ya definidas por el
