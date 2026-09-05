@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="es" data-kit="abc-v2">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tour de la app — Coparentia (Revisión en Confianza)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;700&family=IBM+Plex+Sans:wght@400..700&display=swap" rel="stylesheet">
+
+<!-- ============================================================================
+  TOUR DE LA APP (54, sección final) — nace del direcciones-abc.html YA tematizado
+  con la Opción B ("Revisión en Confianza") elegida por el usuario. Mismo sistema
+  de tokens, fuentes, radios y dispositivo ownable (halo azul) en las 4 vistas.
+  Marcador data-kit="abc-v2" conservado (Regla Dura #0).
+============================================================================= -->
+
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    background:
+      radial-gradient(1100px 520px at 12% -6%, #f7f7f9, transparent 62%),
+      radial-gradient(900px 460px at 92% 4%, #e2e2e9, transparent 58%),
+      linear-gradient(180deg, #ededf0, #e4e4e9);
+    color: #1c1c1f;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    padding: 32px 20px 64px;
+  }
+  .cabecera { max-width: 1180px; margin: 0 auto 28px; }
+  .cabecera h1 { font-size: 26px; font-weight: 700; letter-spacing: -0.01em; }
+  .cabecera p.sub { margin-top: 6px; font-size: 14px; color: #55555c; max-width: 70ch; }
+
+  .vistas { max-width: 1180px; margin: 0 auto; display: grid; gap: 32px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+  .vista { display: flex; flex-direction: column; gap: 10px; }
+  .vista .rotulo { text-align: center; font-size: 12.5px; font-weight: 700; color: #3a3a40; }
+
+  /* ── Chasis de teléfono real (idéntico al de direcciones-abc.html) ── */
+  .telefono {
+    width: 270px; margin: 0 auto;
+    aspect-ratio: 9 / 19.5;
+    border: 9px solid #101014;
+    border-radius: 40px;
+    box-shadow: 0 20px 50px rgb(20 18 24 / 0.28);
+    overflow: hidden;
+    position: relative;
+    display: flex; flex-direction: column;
+  }
+  .statusbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 18px 4px; font-size: 12px; font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+  .statusbar .der { display: flex; align-items: center; gap: 4px; }
+  .statusbar svg { display: block; }
+  .home-indicator {
+    position: absolute; bottom: 6px; left: 50%; transform: translateX(-50%);
+    width: 100px; height: 4px; border-radius: 999px; opacity: 0.85;
+  }
+  .pantalla { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+  .chip-icono { display: inline-flex; align-items: center; justify-content: center;
+                width: 36px; height: 36px; flex-shrink: 0; }
+  .cta { display: flex; align-items: center; justify-content: center;
+         height: 44px; font-size: 14px; font-weight: 600; letter-spacing: 0.01em; }
+
+  .tabbar { display: flex; align-items: stretch; justify-content: space-around;
+            margin: 10px -16px 0; padding: 7px 6px 14px;
+            border-top: 1px solid color-mix(in oklab, var(--text-2) 18%, transparent);
+            background: color-mix(in oklab, var(--surface) 88%, transparent); }
+  .tabbar a { display: flex; flex-direction: column; align-items: center; gap: 3px;
+              font-size: 8.5px; font-weight: 600; color: var(--text-2); text-decoration: none; }
+  .tabbar .tab-chip { display: flex; align-items: center; justify-content: center;
+                       width: 32px; height: 23px; border-radius: 8px; }
+  .tabbar a.activa { color: var(--accent); }
+  .tabbar a.activa .tab-chip { background: color-mix(in oklab, var(--accent) 14%, transparent); }
+
+  /* ══════════ TOKENS — Opción B elegida: "Revisión en Confianza" ══════════ */
+  .op-b {
+    --bg: #0b1524; --surface: #13233a; --text-1: #e6edf7; --text-2: #7f93b3;
+    --accent: #5b93e8; --radius-card: 14px; --radius-btn: 10px;
+    --font-display: 'Spectral', monospace; --font-body: 'IBM Plex Sans', monospace;
+    --shadow-tinta: 6 12 24;
+  }
+  .op-b .telefono { background: var(--bg); }
+  .op-b .pantalla { font-family: var(--font-body); color: var(--text-1); padding: 0 16px; }
+  .op-b .statusbar { color: var(--text-1); }
+  .op-b .home-indicator { background: var(--text-1); }
+  .op-b h3, .op-b h2 { font-family: var(--font-display); }
+
+  /* Dispositivo ownable — halo azul (se reutiliza en cada vista donde aplica) */
+  .halo { position: relative; isolation: isolate; }
+  .halo::before {
+    content: ''; position: absolute; inset: -34px; z-index: -1;
+    background: radial-gradient(190px 190px at 50% 35%, color-mix(in oklab, var(--accent) 20%, transparent), transparent 70%);
+  }
+  .marcador {
+    background: linear-gradient(transparent 62%, color-mix(in oklab, var(--accent) 30%, transparent) 62%);
+    padding: 0 0.1em;
+  }
+
+  /* ── VISTA 1: Home (idéntica a la elegida en direcciones-abc.html) ── */
+  .encabezado-b { margin-top: 12px; text-align: center; }
+  .encabezado-b .periodo { font-size: 11px; font-weight: 600; color: var(--text-2); font-variant-numeric: tabular-nums; }
+  h3.titulo-b { font-size: 19px; font-weight: 700; letter-spacing: -0.02em; margin-top: 2px; }
+  .anillo-wrap { margin: 12px auto 0; position: relative; width: 120px; height: 120px; }
+  .anillo-wrap .centro { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .anillo-wrap .pct { font-family: var(--font-display); font-size: 27px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .anillo-wrap .pct-label { font-size: 9.5px; color: var(--text-2); font-weight: 600; }
+  .grid2x2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px; }
+  .tile { background: var(--surface); border-radius: var(--radius-card); border: 1px solid rgb(255 255 255 / 0.07); padding: 10px; }
+  .tile.destacada {
+    border: 1.5px solid transparent;
+    background: linear-gradient(var(--surface), var(--surface)) padding-box,
+                linear-gradient(135deg, color-mix(in oklab, var(--accent) 50%, transparent), transparent 60%) border-box;
+  }
+  .tile .t-label { display: flex; align-items: center; gap: 5px; font-size: 9.5px; font-weight: 600; color: var(--text-2); }
+  .tile .t-dato { margin-top: 5px; font-family: var(--font-display); font-size: 19px; font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+  .tile .t-dato small { font-size: 11px; color: var(--text-2); font-weight: 600; }
+  .op-b .cta.principal { margin-top: auto; margin-bottom: 0; border-radius: var(--radius-btn); background: var(--accent); color: var(--bg); box-shadow: 0 8px 24px color-mix(in oklab, var(--accent) 28%, transparent); }
+
+  /* ── VISTA 2: Onboarding (pregunta) ── */
+  .ob-paso { margin-top: 10px; font-size: 11px; font-weight: 600; color: var(--text-2); }
+  .ob-barra { margin-top: 6px; height: 4px; border-radius: 999px; background: color-mix(in oklab, var(--text-2) 20%, transparent); overflow: hidden; }
+  .ob-barra span { display: block; height: 100%; width: 40%; background: var(--accent); border-radius: 999px; }
+  .ob-pregunta { font-family: var(--font-display); font-size: 21px; font-weight: 700; line-height: 1.2; margin-top: 18px; }
+  .ob-opciones { margin-top: 18px; display: flex; flex-direction: column; gap: 10px; }
+  .ob-op { background: var(--surface); border: 1.5px solid color-mix(in oklab, var(--text-2) 25%, transparent); border-radius: var(--radius-card); padding: 12px 14px; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 10px; }
+  .ob-op.activa { border-color: var(--accent); background: linear-gradient(var(--surface), var(--surface)) padding-box, linear-gradient(135deg, color-mix(in oklab, var(--accent) 55%, transparent), transparent 60%) border-box; }
+  .ob-check { width: 18px; height: 18px; border-radius: 999px; border: 2px solid color-mix(in oklab, var(--text-2) 40%, transparent); flex-shrink: 0; }
+  .ob-op.activa .ob-check { border-color: var(--accent); background: var(--accent); }
+
+  /* ── VISTA 3: Paywall ── */
+  .pw-badge { margin-top: 14px; text-align: center; }
+  .pw-badge span { display: inline-flex; align-items: center; gap: 6px; font-size: 10px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); background: color-mix(in oklab, var(--accent) 12%, transparent); border: 1px solid color-mix(in oklab, var(--accent) 25%, transparent); border-radius: 999px; padding: 4px 10px; }
+  .pw-titulo { font-family: var(--font-display); font-size: 21px; font-weight: 700; text-align: center; line-height: 1.2; margin-top: 12px; }
+  .pw-planes { margin-top: 16px; display: flex; flex-direction: column; gap: 10px; }
+  .pw-plan { border-radius: var(--radius-card); padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; border: 1.5px solid color-mix(in oklab, var(--text-2) 22%, transparent); background: var(--surface); }
+  .pw-plan.recomendado { border: 1.5px solid transparent; background: linear-gradient(var(--surface), var(--surface)) padding-box, linear-gradient(135deg, color-mix(in oklab, var(--accent) 55%, transparent), transparent 60%) border-box; position: relative; }
+  .pw-plan .pw-tag { position: absolute; top: -9px; left: 14px; background: var(--accent); color: var(--bg); font-size: 9px; font-weight: 700; padding: 2px 8px; border-radius: 999px; }
+  .pw-plan .pw-nombre { font-size: 13px; font-weight: 700; }
+  .pw-plan .pw-detalle { font-size: 10.5px; color: var(--text-2); margin-top: 2px; }
+  .pw-plan .pw-precio { font-family: var(--font-display); font-size: 16px; font-weight: 700; }
+  .pw-nota { margin-top: 10px; font-size: 10.5px; color: var(--text-2); text-align: center; }
+
+  /* ── VISTA 4: Mecanismo — subir comprobante ── */
+  .mc-titulo { font-family: var(--font-display); font-size: 19px; font-weight: 700; margin-top: 14px; }
+  .mc-drop { margin-top: 16px; border: 1.5px dashed color-mix(in oklab, var(--accent) 45%, transparent); border-radius: var(--radius-card); padding: 24px 14px; text-align: center; background: color-mix(in oklab, var(--accent) 6%, transparent); }
+  .mc-drop .mc-icon { width: 40px; height: 40px; margin: 0 auto 8px; border-radius: 999px; background: color-mix(in oklab, var(--accent) 14%, transparent); display: flex; align-items: center; justify-content: center; }
+  .mc-drop p { font-size: 12px; color: var(--text-2); }
+  .mc-drop p b { color: var(--text-1); }
+  .mc-lista { margin-top: 14px; display: flex; flex-direction: column; gap: 8px; }
+  .mc-item { display: flex; align-items: center; gap: 10px; background: var(--surface); border-radius: var(--radius-card); padding: 10px 12px; border: 1px solid color-mix(in oklab, var(--text-2) 18%, transparent); }
+  .mc-item h4 { font-size: 12.5px; font-weight: 700; }
+  .mc-item p { font-size: 10.5px; color: var(--text-2); margin-top: 1px; }
+  .mc-estado { margin-left: auto; font-size: 9.5px; font-weight: 700; padding: 3px 8px; border-radius: 999px; }
+  .mc-estado.ok { color: var(--accent); background: color-mix(in oklab, var(--accent) 14%, transparent); }
+</style>
+</head>
+<body>
+
+<header class="cabecera">
+  <h1>Tu app por dentro — estilo "Revisión en Confianza"</h1>
+  <p class="sub">4 vistas clave de Coparentia ya vestidas con la dirección que elegiste. Revísalas como un
+  conjunto antes de fijar el estilo definitivo.</p>
+</header>
+
+<div class="vistas">
+
+  <!-- VISTA 1: pantalla principal -->
+  <div class="vista op-b">
+    <p class="rotulo">Tu pantalla de cada día</p>
+    <div class="telefono">
+      <div class="statusbar">
+        <span>9:41</span>
+        <span class="der">
+          <svg width="15" height="10" viewBox="0 0 17 11" fill="currentColor"><rect x="0" y="7" width="3" height="4" rx="0.8"/><rect x="4.5" y="5" width="3" height="6" rx="0.8"/><rect x="9" y="3" width="3" height="8" rx="0.8"/><rect x="13.5" y="0.5" width="3" height="10.5" rx="0.8"/></svg>
+          <svg width="22" height="11" viewBox="0 0 25 12"><rect x="0.5" y="0.5" width="21" height="11" rx="3" fill="none" stroke="currentColor" opacity="0.4"/><rect x="2" y="2" width="15" height="8" rx="1.6" fill="currentColor"/></svg>
+        </span>
+      </div>
+      <div class="pantalla">
+        <div class="encabezado-b">
+          <p class="periodo">Marzo 2026</p>
+          <h3 class="titulo-b">Tu expediente, <span class="marcador">en confianza</span></h3>
+        </div>
+        <div class="anillo-wrap halo">
+          <svg width="120" height="120" viewBox="0 0 132 132">
+            <circle cx="66" cy="66" r="57" fill="none" stroke-width="11" stroke="rgba(91,147,232,0.16)"/>
+            <circle cx="66" cy="66" r="57" fill="none" stroke-width="11" stroke="#5b93e8" stroke-linecap="round" stroke-dasharray="358.1" stroke-dashoffset="64.5" transform="rotate(-90 66 66)"/>
+          </svg>
+          <div class="centro"><span class="pct">82%</span><span class="pct-label">documentado</span></div>
+        </div>
+        <div class="grid2x2">
+          <div class="tile destacada"><p class="t-label">Comprobantes</p><p class="t-dato">18</p></div>
+          <div class="tile"><p class="t-label">Pendientes</p><p class="t-dato">2</p></div>
+          <div class="tile"><p class="t-label">Autorizaciones</p><p class="t-dato">3</p></div>
+          <div class="tile"><p class="t-label">Meses cubiertos</p><p class="t-dato">6</p></div>
+        </div>
+        <div class="cta principal">Revisar mi expediente</div>
+        <nav class="tabbar">
+          <a class="activa" href="#"><span class="tab-chip"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 10 9-7 9 7v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/></svg></span>Hoy</a>
+          <a href="#"><span class="tab-chip"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg></span>Progreso</a>
+          <a href="#"><span class="tab-chip"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M8 2v4M16 2v4M3 9h18"/></svg></span>Semana</a>
+          <a href="#"><span class="tab-chip"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"/></svg></span>Perfil</a>
+        </nav>
+      </div>
+      <div class="home-indicator"></div>
+    </div>
+  </div>
+
+  <!-- VISTA 2: onboarding -->
+  <div class="vista op-b">
+    <p class="rotulo">Así te pregunta al empezar</p>
+    <div class="telefono">
+      <div class="statusbar"><span>9:41</span><span class="der"></span></div>
+      <div class="pantalla">
+        <p class="ob-paso">Paso 2 de 5</p>
+        <div class="ob-barra"><span></span></div>
+        <h2 class="ob-pregunta">¿Cuál es tu situación con la cuota alimentaria hoy?</h2>
+        <div class="ob-opciones">
+          <div class="ob-op activa"><span class="ob-check"></span>Pago pero sin registro ordenado</div>
+          <div class="ob-op"><span class="ob-check"></span>Tengo disputas frecuentes con mi ex</div>
+          <div class="ob-op"><span class="ob-check"></span>Ya tengo un proceso legal en curso</div>
+        </div>
+        <div class="cta principal" style="margin-top:24px;">Continuar</div>
+      </div>
+      <div class="home-indicator"></div>
+    </div>
+  </div>
+
+  <!-- VISTA 3: paywall -->
+  <div class="vista op-b">
+    <p class="rotulo">Aquí eliges tu plan</p>
+    <div class="telefono">
+      <div class="statusbar"><span>9:41</span><span class="der"></span></div>
+      <div class="pantalla">
+        <div class="pw-badge halo"><span>7 días gratis</span></div>
+        <h2 class="pw-titulo">Blinda tu expediente desde hoy</h2>
+        <div class="pw-planes">
+          <div class="pw-plan recomendado">
+            <span class="pw-tag">Ahorras 33%</span>
+            <div><p class="pw-nombre">Anual</p><p class="pw-detalle">$89/año · $7.42/mes</p></div>
+            <p class="pw-precio">$89</p>
+          </div>
+          <div class="pw-plan">
+            <div><p class="pw-nombre">Mensual</p><p class="pw-detalle">Cancela cuando quieras</p></div>
+            <p class="pw-precio">$9.99</p>
+          </div>
+        </div>
+        <div class="cta principal" style="margin-top:18px;">Empezar mi prueba gratis</div>
+        <p class="pw-nota">Sin cobro hasta que termine tu prueba</p>
+      </div>
+      <div class="home-indicator"></div>
+    </div>
+  </div>
+
+  <!-- VISTA 4: mecanismo — subir comprobante -->
+  <div class="vista op-b">
+    <p class="rotulo">Así registras un pago</p>
+    <div class="telefono">
+      <div class="statusbar"><span>9:41</span><span class="der"></span></div>
+      <div class="pantalla">
+        <h2 class="mc-titulo">Subir comprobante</h2>
+        <div class="mc-drop halo">
+          <div class="mc-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5b93e8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 8 5-5 5 5"/><path d="M5 21h14"/></svg>
+          </div>
+          <p><b>Toca para subir</b> foto o PDF del comprobante</p>
+        </div>
+        <div class="mc-lista">
+          <div class="mc-item">
+            <div><h4>Cuota de marzo</h4><p>$450.000 · 05 mar</p></div>
+            <span class="mc-estado ok">Verificado</span>
+          </div>
+          <div class="mc-item">
+            <div><h4>Gasto de colegio</h4><p>$85.000 · 10 mar</p></div>
+            <span class="mc-estado ok">Verificado</span>
+          </div>
+        </div>
+        <div class="cta principal" style="margin-top:auto;">Confirmar registro</div>
+      </div>
+      <div class="home-indicator"></div>
+    </div>
+  </div>
+
+</div>
+
+<footer style="max-width:1180px;margin:36px auto 0;font-size:12.5px;color:#6a6a72;border-top:1px solid #d0d0d6;padding-top:14px;">
+  Tour construido a partir de la Opción B elegida en la ronda 3 (docs/revisiones/direcciones-abc-ronda3.html).
+  Mismo sistema de tokens, fuentes y dispositivo ownable (halo azul) en las 4 vistas.
+</footer>
+
+</body>
+</html>

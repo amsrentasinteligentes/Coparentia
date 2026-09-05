@@ -172,7 +172,15 @@ error visible) y el navegador cae al fallback-trampa (monospace). Corregido a `w
 (punto y coma). Revisar si se reutiliza EB Garamond (ronda 1, banco #9) más adelante — mismo
 riesgo por ser también una fuente estática.
 
-Pendiente: el usuario elige entre las 9 opciones totales (rondas 1+2+3), combina, o pide otra ronda.
+## DIRECCIÓN DE ARTE ELEGIDA (cosa juzgada, pendiente de aprobar el tour)
+El usuario eligió la **Opción B de la ronda 3 — "Revisión en Confianza"**.
+- Paleta: `--bg #0B1524 · --surface #13233A · --text-1 #E6EDF7 · --text-2 #7F93B3 · --accent #5B93E8`
+- Tipografía: Spectral (display) + IBM Plex Sans (body)
+- Radios: card 14px / botón 10px
+- Dispositivo ownable: halo azul detrás del anillo de avance (radial-gradient, 22% accent)
+- Composición base: encabezado centrado + anillo de progreso + grid 2x2 de datos clave + CTA + tab bar
+Siguiente paso: construir EL TOUR DE LA APP (vista-previa-app.html) con este estilo aplicado a
+4-5 vistas clave antes de cerrar FICHA-ARTE.md (protocolo del 54).
 
 ## Siguiente paso
 Preguntar al usuario el campo 20 (ventaja/contactos) y continuar con B3 — completar la
