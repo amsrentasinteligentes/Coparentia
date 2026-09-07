@@ -4,7 +4,7 @@
 // kit de components/landing/. Copy trazado a FICHA-AVATAR.md, tokens a FICHA-ARTE.md.
 // Copy fuente: docs/copy/landing.md.
 
-import { MessageCircleWarning, FileSearch, ReceiptText, ShieldAlert } from 'lucide-react';
+import { MessageCircleWarning, FileSearch, ReceiptText, ShieldAlert, Home as HomeIcon, ListChecks, CreditCard, Upload } from 'lucide-react';
 import { Hero } from '@/components/landing/Hero';
 import { Problema } from '@/components/landing/Problema';
 import { Agitacion } from '@/components/landing/Agitacion';
@@ -24,7 +24,7 @@ const CTA_LABEL = 'Crear mi expediente gratis';
 
 export default function Home() {
   return (
-    <div className="min-h-dvh bg-[var(--bg)] text-[var(--text-primary)] [font-family:var(--font-body)]">
+    <div id="main" className="min-h-dvh bg-[var(--bg)] text-[var(--text-primary)] [font-family:var(--font-body)]">
       {/* 1. HERO */}
       <Hero
         appName="Coparentia"
@@ -89,10 +89,10 @@ export default function Home() {
       <AppPorDentro
         tituloMarked="Tu expediente, [acento]siempre a mano[/acento]"
         frames={[
-          { label: 'Tu expediente al día', nombrePantalla: 'Inicio' },
-          { label: 'Cuéntanos tu situación', nombrePantalla: 'Onboarding' },
-          { label: 'Elige tu plan', nombrePantalla: 'Paywall' },
-          { label: 'Sube tu comprobante', nombrePantalla: 'Registro de pago' },
+          { label: 'Tu expediente al día', nombrePantalla: 'Inicio', iconoPlaceholder: HomeIcon },
+          { label: 'Cuéntanos tu situación', nombrePantalla: 'Onboarding', iconoPlaceholder: ListChecks },
+          { label: 'Elige tu plan', nombrePantalla: 'Paywall', iconoPlaceholder: CreditCard },
+          { label: 'Sube tu comprobante', nombrePantalla: 'Registro de pago', iconoPlaceholder: Upload },
         ]}
         ctaLabel={CTA_LABEL}
         ctaHref={CTA_HREF}

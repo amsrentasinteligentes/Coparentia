@@ -9,6 +9,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { motion, useReducedMotion } from 'motion/react';
+import type { LucideIcon } from 'lucide-react';
 import { CtaButton, Kicker, SectionShell, useReveal, VIEWPORT_ONCE } from './ui';
 import { MarkedCopy, warnCopy, warnRango } from './MarkedCopy';
 
@@ -20,6 +21,8 @@ export interface FrameCarrusel {
   label: string;
   /** Nombre de la pantalla futura para el placeholder ("Plan del día"). */
   nombrePantalla?: string;
+  /** Ícono del placeholder honesto (ancla visual, nunca finge ser el screenshot real). */
+  iconoPlaceholder?: LucideIcon;
 }
 
 export interface AppPorDentroProps {
@@ -115,9 +118,17 @@ export function AppPorDentro({
                       className="h-full w-full object-cover"
                     />
                   ) : (
-                    /* Placeholder honesto (55 §5.2): gris elevado + nombre + dashed —
+                    /* Placeholder honesto (55 §5.2): gris elevado + ícono + nombre + dashed —
                        nunca un frame que finja producto terminado */
-                    <div className="flex h-full w-full items-center justify-center border-2 border-dashed border-[color-mix(in_oklab,var(--text-tertiary)_40%,transparent)] bg-[var(--surface-2)] px-4">
+                    <div className="flex h-full w-full flex-col items-center justify-center gap-3 border-2 border-dashed border-[color-mix(in_oklab,var(--text-tertiary)_40%,transparent)] bg-[var(--surface-2)] px-4">
+                      {f.iconoPlaceholder && (
+                        <span
+                          aria-hidden="true"
+                          className="flex size-11 items-center justify-center rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_35%,transparent)] bg-[color-mix(in_oklab,var(--text-tertiary)_12%,transparent)]"
+                        >
+                          <f.iconoPlaceholder size={22} strokeWidth={2} color="var(--text-secondary)" aria-hidden="true" />
+                        </span>
+                      )}
                       <span className="text-center text-[14px] font-medium text-[var(--text-secondary)]">
                         {f.nombrePantalla ?? f.label}
                       </span>

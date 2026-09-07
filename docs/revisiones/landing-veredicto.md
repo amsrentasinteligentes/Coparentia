@@ -1,14 +1,15 @@
-# VEREDICTO revisor-visual — landing
+# VEREDICTO revisor-visual — Landing Coparentia
 Fecha: 2026-09-07 00:00
 Screenshot: docs/revisiones/landing-375.png
-Usabilidad: 29/40
-Craft: 14/20
-Copy (si vende): 15/20
+Usabilidad: 32/40
+Craft: 16/20
+Copy (si vende): 17/20
 Fidelidad (si hubo referencia): N-A
 Veredicto: NO LISTA
+
 Top defectos:
-1. [Sección OFERTA, cards Anual/Mensual, botones CTA] La garantía de 15 días no aparece junto al CTA de compra — vive sola en la sección #7 (Garantía), separada de Oferta.tsx → agregar una línea "Respaldada por la Garantía del Primer Expediente (15 días)" debajo de cada botón CTA en Oferta.tsx.
-2. [Transiciones entre secciones, todo el scroll] La alternancia base/elevada (--bg #0B1524 vs --surface #13233A) es casi imperceptible a simple vista en 375px, dificultando reconocer dónde empieza cada sección → aumentar el delta de luminosidad entre los dos tokens o añadir un hairline visible en cada cambio de sección.
-3. [Hero → placeholder de captura; sección "La app por dentro" → frames del carrusel] Los visuales del producto siguen siendo placeholders rotulados (cámara + texto de sugerencia / frames vacíos con nombre de pantalla) [PENDIENTE CONOCIDO — no accionable hoy, previsto para Sesión 5 según regla "MOCKUPS HONESTOS PRE-LANZAMIENTO"].
-4. [Kit global, heurística 7 — verificado en ui.tsx/StickyCtaMobile] Fuera del cambio inteligente de la barra sticky (ver oferta antes de mostrar el CTA comercial), no hay otros atajos/defaults de eficiencia → agregar un enlace "Ver precios" en el header fijo del Hero, no solo en la sticky bar mobile.
-5. [Sección OFERTA, card Mensual vs Anual] Ambas cards muestran el mismo TrialBadge "7 días gratis" con igual peso, diluyendo cuál es la acción primaria recomendada → quitar el badge de trial duplicado en la card Mensual para reforzar que la Anual es la única acción dominante.
+1. [components/landing/Oferta.tsx L189-195] El CTA "Elegir mensual" es un `<motion.a>` construido a mano en vez de reusar `<CtaButton>` (que sí tienen el CTA anual, el del hero y el mid-page) → riesgo de que un cambio futuro de estilo/tap-feedback quede desincronizado entre botones (heurística 4, consistencia). Fix: agregar variante `outline` a `CtaButton` y usarla ahí.
+2. [components/landing/ui.tsx L349-369, StickyCtaMobile] La barra sticky mobile no tiene control de cierre manual: una vez aparece, el usuario no puede descartarla salvo scrolleando hasta #oferta o #cta-final (heurística 3, control y libertad, verificado en código). Fix: botón "x" que la oculte con estado local hasta el próximo hito de scroll.
+3. [components/landing/*, todo el kit] Sin atajos más allá de tab/enter nativo — verificado en código, no hay accesskeys ni navegación rápida entre secciones aparte del skip-to-content (heurística 7). Aceptable para una landing, pero dejó el eje en el mínimo funcional. Fix opcional: no crítico para este tipo de pantalla.
+4. [PENDIENTE CONOCIDO] Hero (`Camera` placeholder) y carrusel de AppPorDentro (frames con ícono) siguen sin screenshots reales de la app — correcto y esperado hasta Sesión 5, no cuenta como defecto accionable.
+5. [ESTRUCTURA CANÓNICA] Los 4 CTAs repiten el mismo copy "Crear mi expediente gratis" — regla dura de 19-PAGINA-DE-VENTAS.md (mismo verbo repetido), no cuenta como defecto.

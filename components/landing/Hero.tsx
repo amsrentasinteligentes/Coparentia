@@ -61,8 +61,8 @@ export function Hero({
         className="pointer-events-none absolute inset-0 -z-10"
         style={{
           background:
-            'radial-gradient(900px 480px at 50% -10%, color-mix(in oklab, var(--accent) 8%, transparent) 0%, transparent 60%), ' +
-            'radial-gradient(640px 420px at 100% 0%, color-mix(in oklab, var(--accent-2) 6%, transparent) 0%, transparent 55%)',
+            'radial-gradient(900px 480px at 50% -10%, color-mix(in oklab, var(--accent) 18%, transparent) 0%, transparent 62%), ' +
+            'radial-gradient(640px 420px at 100% 0%, color-mix(in oklab, var(--accent-2) 13%, transparent) 0%, transparent 58%)',
         }}
       />
 

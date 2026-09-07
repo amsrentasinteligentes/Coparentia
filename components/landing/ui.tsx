@@ -6,10 +6,57 @@
 // alternancia base/elevado, reveal con reduced-motion): las secciones componen,
 // no re-estilan. Consume SOLO los tokens de tokens.css.
 
-import { useEffect, useState, type ReactNode } from 'react';
-import { AnimatePresence, motion, useReducedMotion, type Variants } from 'motion/react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
+import {
+  AnimatePresence,
+  motion,
+  useInView,
+  useMotionValue,
+  useReducedMotion,
+  useTransform,
+  animate,
+  type Variants,
+} from 'motion/react';
 import { Check } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
+
+/* ── <CountUp> — cifra héroe que cuenta desde 0 al entrar en viewport (eje
+   MOVIMIENTO del craft). Recibe el texto YA formateado ("$7.42", "$9.99") y
+   anima solo la parte numérica, conservando prefijo/sufijo tal cual. ── */
+export function CountUp({ text, durationMs = 900 }: { text: string; durationMs?: number }) {
+  const match = text.match(/-?\d+(\.\d+)?/);
+  const ref = useRef<HTMLSpanElement | null>(null);
+  const inView = useInView(ref, { once: true, amount: 0.6 });
+  const reduce = useReducedMotion();
+  const target = match ? parseFloat(match[0]) : 0;
+  const decimals = match?.[1] ? match[1].length - 1 : 0;
+  const mv = useMotionValue(reduce ? target : 0);
+  const rounded = useTransform(mv, (v) => v.toFixed(decimals));
+  const [display, setDisplay] = useState(reduce ? (match ? target.toFixed(decimals) : '') : '0'.padStart(1, '0'));
+
+  useEffect(() => {
+    if (!match || reduce) return;
+    if (!inView) return;
+    const controls = animate(mv, target, { duration: durationMs / 1000, ease: [0.16, 1, 0.3, 1] });
+    return () => controls.stop();
+  }, [inView, match, mv, reduce, target, durationMs]);
+
+  useEffect(() => {
+    const unsub = rounded.on('change', (v) => setDisplay(v));
+    return unsub;
+  }, [rounded]);
+
+  if (!match) return <>{text}</>;
+  const pre = text.slice(0, match.index);
+  const post = text.slice((match.index ?? 0) + match[0].length);
+  return (
+    <span ref={ref}>
+      {pre}
+      {display}
+      {post}
+    </span>
+  );
+}
 
 /* ── <Accent> — la palabra que vende, en el acento del kit + el dispositivo
      ownable de FICHA-ARTE.md (halo + subrayado marcador, fusión banco 54 dir.1/dir.6) ── */
@@ -114,6 +161,7 @@ export function MiniRing({
   stroke?: number;
   tone?: 'accent' | 'muted';
 }) {
+  const reduce = useReducedMotion();
   const r = (size - stroke) / 2;
   const c = 2 * Math.PI * r;
   const offset = c * (1 - Math.max(0, Math.min(100, value)) / 100);
@@ -128,13 +176,17 @@ export function MiniRing({
         stroke="color-mix(in oklab, var(--text-tertiary) 18%, transparent)"
         strokeWidth={stroke}
       />
-      <circle
+      <motion.circle
         cx={size / 2}
         cy={size / 2}
         r={r}
         fill="none"
         stroke={color}
         strokeWidth={stroke}
+        initial={{ strokeDashoffset: c }}
+        whileInView={{ strokeDashoffset: offset }}
+        viewport={VIEWPORT_ONCE}
+        transition={{ duration: reduce ? 0 : 0.9, ease: [0.16, 1, 0.3, 1] }}
         strokeLinecap="round"
         strokeDasharray={c}
         strokeDashoffset={offset}
@@ -166,11 +218,27 @@ export function SectionShell({
 }) {
   const pt = flush === 'top' ? 'pt-0' : compacta ? 'pt-12 md:pt-16' : 'pt-16 md:pt-24';
   const pb = flush === 'bottom' ? 'pb-8 md:pb-10' : compacta ? 'pb-12 md:pb-16' : 'pb-16 md:pb-24';
+  /* Degradé suave dentro de la misma familia de FICHA-ARTE (nunca un color nuevo):
+     mesh radial del acento sobre la superficie base/elevada — rompe el fill plano
+     sin tocar los hex aprobados (solo color-mix del token ya existente). */
+  const mesh =
+    elevacion === 'elevada'
+      ? 'radial-gradient(1100px 620px at 15% -10%, color-mix(in oklab, var(--accent) 16%, transparent) 0%, transparent 60%), ' +
+        'radial-gradient(700px 500px at 105% 105%, color-mix(in oklab, var(--accent) 12%, transparent) 0%, transparent 55%), ' +
+        'var(--surface)'
+      : 'radial-gradient(900px 560px at 100% -5%, color-mix(in oklab, var(--accent) 13%, transparent) 0%, transparent 60%), ' +
+        'var(--bg)';
+  /* Hairline horizontal en el cambio base↔elevada (nunca entre secciones "flush",
+     que son UN solo movimiento visual — 55 T1): ancla el ojo al límite exacto de
+     cada bloque, el mismo problema que "Secciones adyacentes distinguibles". */
+  const borderTop =
+    flush === 'top' ? '' : '1px solid color-mix(in oklab, var(--text-tertiary) 12%, transparent)';
   return (
     <section
       id={id}
       aria-label={ariaLabel}
-      className={`${elevacion === 'elevada' ? 'bg-[var(--surface)]' : ''} ${pt} ${pb} ${className}`}
+      className={`${pt} ${pb} ${className}`}
+      style={{ background: mesh, borderTop }}
     >
       <div className="mx-auto w-full max-w-[1140px] px-5">{children}</div>
     </section>

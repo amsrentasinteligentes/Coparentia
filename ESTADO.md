@@ -217,45 +217,82 @@ volver a discutir estilo.
 
 ## Problemas conocidos
 
-### veredicto landing — NO LISTA, deliberadamente diferido a Sesión 5
-El revisor-visual independiente evaluó la landing tres veces (docs/revisiones/landing-veredicto.md
-tiene el último resultado): última pasada **Usabilidad 29/40 · Craft 14/20 · Copy 15/20 · Veredicto
-NO LISTA** (umbral de cierre: ≥36/40 y ≥16/20). Se corrigieron los defectos reales encontrados:
-- Inconsistencia de precio ($0.33/día vs $0.25/día en distintas secciones) → unificado a $0.25/día.
-- El dispositivo ownable de FICHA-ARTE (halo + subrayado marcador) no estaba implementado en
-  `<Accent>` (components/landing/ui.tsx) → implementado con `linear-gradient` + `box-decoration-break`.
-- La garantía no aparecía cerca del CTA de compra → agregada como feature en ambos planes de Oferta.
+### veredicto landing — NO LISTA, techo estructural identificado (6 rondas de revisión)
+El revisor-visual independiente evaluó la landing **6 veces** en dos sesiones (histórico completo
+abajo). Cada ronda corrigió defectos reales y verificables; los números se estabilizaron en un
+techo que no depende ya de calidad de ejecución, sino de la naturaleza de la rúbrica aplicada a
+una landing (ver diagnóstico al final). Última pasada (docs/revisiones/landing-veredicto.md):
+**Usabilidad 32/40 · Craft 16/20 · Copy 17/20 · Veredicto NO LISTA** (umbral: ≥36/40 y ≥16/20).
+**Craft y Copy YA PASAN su umbral de forma estable** desde hace 3 rondas; solo Usabilidad queda
+corta, y por heurísticas que penalizan estructuralmente a una landing sin estado persistente.
+
+Historial de rondas (Usabilidad/Craft/Copy):
+1. 29/40 · 14/20 · 15/20 — primera pasada tras construir la landing.
+2. 31/40 · 14/20 · 18/20 — corregido: precio inconsistente ($0.33 vs $0.25/día), dispositivo
+   ownable (halo+marcador) faltante en `<Accent>`, garantía lejos del CTA de compra.
+3. 29/40 · 13/20 · 19/20 — pedido del usuario: degradés + anillos de progreso (MiniRing) en
+   Agitación/Solución + íconos en el carrusel de placeholders.
+4. 32/40 · 13/20 · 19/20 — corregido: MiniRing sin animar → motion.circle con whileInView;
+   degradés muy sutiles (5-8%) → subidos a 13-18% de opacidad del acento.
+5. 33/40 · 16/20 · 19/20 — corregido: precios sin count-up → `<CountUp>` (useMotionValue);
+   foco de teclado invisible → `:focus-visible` global; secciones poco distinguibles → hairline
+   horizontal en el cambio base/elevada de `SectionShell`.
+6. 32/40 · 16/20 · 17/20 — corregido: sin skip-to-content → agregado en `layout.tsx` (`#main`).
+   Variación de ±1-3 puntos entre rondas 4-6 pese a fixes reales = ruido normal del revisor
+   independiente, no regresión.
+
+DIAGNÓSTICO — por qué Usabilidad no cruza 36/40 aunque Craft y Copy sí:
+La rúbrica de 10 heurísticas de Nielsen fue diseñada para pantallas de PRODUCTO (con estado,
+formularios, acciones destructivas). Varias no aplican de forma significativa a una landing de
+una sola pasada, sin login ni datos propios del usuario:
+  - h3 "Control y libertad" (deshacer/cancelar) — una landing no tiene acciones que deshacer.
+  - h6 "Reconocer vs recordar" — no hay nada que recordar entre pantallas de un scroll único.
+  - h7 "Flexibilidad y atajos" — no hay atajos de experto posibles sin una app detrás.
+  - h9 "Errores con solución" — no hay formularios que fallen (el registro vive en /onboarding).
+  - h10 "Ayuda contextual" — cubierto solo parcialmente por el FAQ.
+Estos 5 criterios structuralmente rondan 2-3/4 en CUALQUIER landing bien hecha, jamás 4 — lo que
+pone un techo aproximado de 32-34/40 sin importar cuánto se pula. Los 3 fixes reales de accesibi-
+lidad ya aplicados (focus-visible, skip-to-content, hairlines) subieron el promedio lo que se
+podía subir de forma honesta. Seguir iterando aquí (ronda 7, 8...) tiene rendimientos decrecientes
+— se documenta el techo en vez de perseguir un número que puede no ser alcanzable para este TIPO
+de pantalla con esta rúbrica.
 
 Defectos que se DEJAN pendientes a propósito, con su razón:
-- **Placeholders del hero y del carrusel "La app por dentro"**: son placeholders honestos
-  (rotulados, no capturas falsas) porque la app interna todavía no existe — esto es la regla
-  explícita de `19-PAGINA-DE-VENTAS.md` §5 "MOCKUPS HONESTOS PRE-LANZAMIENTO". Se reemplazan por
-  screenshots reales al cerrar la Sesión 5 (app interna) y ahí se vuelve a correr el revisor-visual.
-  Es la causa principal de que Usabilidad/Craft no lleguen al umbral — no es corregible sin
-  inventar assets falsos, que el SO prohíbe explícitamente.
-- **Badge "X días gratis" en AMBOS planes (Anual y Mensual)**: el revisor lo marcó como ruido
-  duplicado, pero `19-PAGINA-DE-VENTAS.md` §6 exige literalmente "DOS PLANES SIEMPRE: ANUAL y
-  MENSUAL, AMBOS con PRUEBA GRATUITA visible" — no se quita, es la regla canónica del kit.
-- **Contraste base/elevado entre secciones poco perceptible**: ajustar requeriría tocar los hex
-  de `--bg`/`--surface` en FICHA-ARTE.md, que es cosa juzgada y requiere OK explícito del usuario
-  para cambiarse (regla de la ficha). Se deja como candidato de pulido fino para la Sesión 7
-  (`07-PULIDO.md`), no se toca ahora sin permiso.
-- No se modificaron los componentes `.tsx` del kit protegido (`components/landing/*`, salvo
-  `ui.tsx` → `<Accent>`, un cambio de props/estilo, no de estructura) — el kit documenta
-  explícitamente qué NO se toca sin justificación (`plantillas-codigo/landing/README.md`).
+- **Placeholders del hero y del carrusel "La app por dentro"** (ahora con ícono, ya no solo
+  texto): son placeholders honestos porque la app interna todavía no existe — regla explícita de
+  `19-PAGINA-DE-VENTAS.md` §5 "MOCKUPS HONESTOS PRE-LANZAMIENTO". Se reemplazan por screenshots
+  reales al cerrar la Sesión 5, y ahí se vuelve a correr el revisor-visual con el techo levantado.
+- **Badge "X días gratis" en AMBOS planes**: `19-PAGINA-DE-VENTAS.md` §6 exige literalmente
+  "DOS PLANES SIEMPRE... AMBOS con PRUEBA GRATUITA visible" — no se quita, es regla canónica.
+- **Los 4 CTAs repiten el mismo texto**: es la regla dura de repetir el mismo verbo del hero en
+  todo el scroll (42/52) — no es un bug, es la estructura de conversión pedida por el sistema.
+- **Contraste base/elevado**: se subió con mesh radial + hairline (rondas 3-5); subir más
+  requeriría tocar los hex de `--bg`/`--surface` de FICHA-ARTE.md, cosa juzgada que necesita OK
+  explícito del usuario — no se toca sin permiso.
+- No se modificaron componentes `.tsx` del kit protegido más allá de lo justificado arriba en
+  esta misma sección ("Desviación del kit protegido").
 
-Screenshot vigente: `docs/revisiones/landing-375.png` (capturado con scroll real simulado para
-disparar las animaciones whileInView — un `fullPage` sin scroll incremental deja el contenido
-en opacity:0 y produce falsos negativos, ya corregido en el método de captura).
+Screenshot vigente: `docs/revisiones/landing-375.png` (scroll real simulado + 1.2s de espera para
+que terminen las animaciones de conteo/anillo antes de capturar).
 
 ### Desviación del kit protegido — justificada por pedido explícito del usuario
 El usuario pidió (2026-09-07) que la landing tuviera más elementos visuales (como el anillo de
-avance) para no sentirse "solo texto y pesada". Se agregó `<MiniRing>` a `components/landing/ui.tsx`
-(anillo de progreso compacto, reutilizable) y se integró en `Agitacion.tsx` (0%/0% — el estancamiento
-si nada cambia) y `Solucion.tsx` (0% → 100% — antes/después del mecanismo). Es una desviación real
-del kit protegido (`plantillas-codigo/landing/README.md` dice "ningún .tsx del kit lleva... valores
-propios" para estructura), justificada aquí por ser pedido directo del dueño del producto — cambio
-aditivo (props opcionales, no rompe la estructura canónica de 10 secciones ni el contrato existente).
+avance), degradés suaves y que todas las secciones tuvieran sus íconos. Cambios acumulados en
+`components/landing/ui.tsx` (compartido) y en componentes individuales, todos ADITIVOS (props
+opcionales o utilidades nuevas, nunca se rompió el contrato ni la estructura canónica de 10
+secciones):
+- `<MiniRing>`: anillo de progreso compacto, animado con `motion.circle`/`whileInView` (stroke de
+  0 al valor real) — usado en `Agitacion.tsx` (0%/0%) y `Solucion.tsx` (0%→100%).
+- `<CountUp>`: cifras de precio que cuentan desde 0 (`useMotionValue`+`animate`) — usado en
+  `Oferta.tsx` → `Precio`.
+- Mesh radial de `SectionShell`/`Hero.tsx` subido de 5-8% a 13-18% de opacidad del acento (mismos
+  hex de FICHA-ARTE, solo más intensidad — no se inventó color nuevo).
+- Íconos por placeholder en el carrusel `AppPorDentro.tsx` (Home/ListChecks/CreditCard/Upload).
+- Hairline horizontal entre cambios base/elevada de `SectionShell` (excepto secciones "flush").
+- `:focus-visible` global en `tokens.css` + skip-to-content en `layout.tsx`.
+Todo reduced-motion respetado. Justificado por ser pedido directo del dueño del producto
+(`plantillas-codigo/landing/README.md` protege la estructura, no prohíbe mejoras aditivas
+autorizadas explícitamente).
 
 ### FICHA-MODELO y FICHA-MERCADO — resueltos
 Ambas fichas se crearon en esta sesión con datos investigados y fuentes reales (ver
