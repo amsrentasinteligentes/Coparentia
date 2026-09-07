@@ -58,8 +58,10 @@ export default function Home() {
         contraste={{
           labelHoy: 'Hoy',
           hoy: 'Capturas de pantalla dispersas y la ansiedad de no poder probar nada.',
+          anilloHoy: 0,
           labelFuturo: 'En 6 meses, si nada cambia',
           futuro: 'El mismo desorden — con 6 meses menos de comprobantes a mano.',
+          anilloFuturo: 0,
         }}
       />
 
@@ -76,8 +78,10 @@ export default function Home() {
         antesDespues={{
           labelAntes: 'Antes',
           antes: 'Capturas perdidas en el chat y ningún orden.',
+          anilloAntes: 0,
           labelDespues: 'Después',
           despues: 'Un expediente exportable, con fecha y soporte, listo en segundos.',
+          anilloDespues: 100,
         }}
       />
 

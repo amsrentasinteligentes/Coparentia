@@ -248,6 +248,15 @@ Screenshot vigente: `docs/revisiones/landing-375.png` (capturado con scroll real
 disparar las animaciones whileInView — un `fullPage` sin scroll incremental deja el contenido
 en opacity:0 y produce falsos negativos, ya corregido en el método de captura).
 
+### Desviación del kit protegido — justificada por pedido explícito del usuario
+El usuario pidió (2026-09-07) que la landing tuviera más elementos visuales (como el anillo de
+avance) para no sentirse "solo texto y pesada". Se agregó `<MiniRing>` a `components/landing/ui.tsx`
+(anillo de progreso compacto, reutilizable) y se integró en `Agitacion.tsx` (0%/0% — el estancamiento
+si nada cambia) y `Solucion.tsx` (0% → 100% — antes/después del mecanismo). Es una desviación real
+del kit protegido (`plantillas-codigo/landing/README.md` dice "ningún .tsx del kit lleva... valores
+propios" para estructura), justificada aquí por ser pedido directo del dueño del producto — cambio
+aditivo (props opcionales, no rompe la estructura canónica de 10 secciones ni el contrato existente).
+
 ### FICHA-MODELO y FICHA-MERCADO — resueltos
 Ambas fichas se crearon en esta sesión con datos investigados y fuentes reales (ver
 FICHA-MODELO.md y FICHA-MERCADO.md en la raíz). La garantía de 15 días quedó verificada contra

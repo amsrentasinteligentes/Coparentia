@@ -99,6 +99,51 @@ export function CheckCustom() {
   );
 }
 
+/* ── <MiniRing> — anillo de progreso compacto (el mismo dispositivo del anillo
+   de avance de la app, en miniatura) — rompe bloques de puro texto con un dato
+   visual real, nunca decorativo: SIEMPRE va con un valor y una etiqueta reales. ── */
+export function MiniRing({
+  value,
+  size = 72,
+  stroke = 7,
+  tone = 'accent',
+}: {
+  /** 0-100 */
+  value: number;
+  size?: number;
+  stroke?: number;
+  tone?: 'accent' | 'muted';
+}) {
+  const r = (size - stroke) / 2;
+  const c = 2 * Math.PI * r;
+  const offset = c * (1 - Math.max(0, Math.min(100, value)) / 100);
+  const color = tone === 'accent' ? 'var(--accent)' : 'var(--text-tertiary)';
+  return (
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} aria-hidden="true" className="shrink-0">
+      <circle
+        cx={size / 2}
+        cy={size / 2}
+        r={r}
+        fill="none"
+        stroke="color-mix(in oklab, var(--text-tertiary) 18%, transparent)"
+        strokeWidth={stroke}
+      />
+      <circle
+        cx={size / 2}
+        cy={size / 2}
+        r={r}
+        fill="none"
+        stroke={color}
+        strokeWidth={stroke}
+        strokeLinecap="round"
+        strokeDasharray={c}
+        strokeDashoffset={offset}
+        transform={`rotate(-90 ${size / 2} ${size / 2})`}
+      />
+    </svg>
+  );
+}
+
 /* ── <SectionShell> — ritmo vertical y alternancia base↔elevado (55 T1).
    64px mobile / 96px desktop; compacta (garantía) 48/64. flush pega las
    secciones que son UN movimiento visual (problema+agitación). ── */

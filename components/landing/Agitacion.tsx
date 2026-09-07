@@ -8,18 +8,21 @@
 // (un solo movimiento visual, sin separador). Cero decoración de miedo.
 
 import { motion } from 'motion/react';
-import { SectionShell, useReveal, VIEWPORT_ONCE } from './ui';
+import { MiniRing, SectionShell, useReveal, VIEWPORT_ONCE } from './ui';
 import { MarkedCopy, warnCopy, warnRango } from './MarkedCopy';
 
 export interface AgitacionProps {
   /** 2-4 frases MARCADAS y cortas — el array es el contrato: nada de párrafos. */
   frases: string[];
-  /** Mini-card opcional "hoy vs en 6 meses" (55 §3). */
+  /** Mini-card opcional "hoy vs en 6 meses" (55 §3). anilloValor (0-100) es
+   *  OPCIONAL y solo se pinta con un dato real y honesto — nunca decorativo. */
   contraste?: {
     labelHoy: string;
     hoy: string;
+    anilloHoy?: number;
     labelFuturo: string;
     futuro: string;
+    anilloFuturo?: number;
   };
   id?: string;
 }
@@ -52,18 +55,38 @@ export function Agitacion({ frases, contraste, id }: AgitacionProps) {
 
         {contraste && (
           <motion.div variants={item} className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <div className="rounded-[var(--radius-card)] bg-[var(--bg)] p-5">
-              <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-[var(--text-tertiary)]">
-                {contraste.labelHoy}
-              </p>
-              <p className="mt-2 text-[15px] leading-snug text-[var(--text-primary)]">{contraste.hoy}</p>
+            <div className="flex items-center gap-4 rounded-[var(--radius-card)] bg-[var(--bg)] p-5">
+              {contraste.anilloHoy !== undefined && (
+                <div className="relative shrink-0">
+                  <MiniRing value={contraste.anilloHoy} tone="muted" />
+                  <span className="absolute inset-0 flex items-center justify-center text-[15px] font-bold tabular-nums text-[var(--text-secondary)] [font-family:var(--font-display)]">
+                    {contraste.anilloHoy}%
+                  </span>
+                </div>
+              )}
+              <div>
+                <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-[var(--text-tertiary)]">
+                  {contraste.labelHoy}
+                </p>
+                <p className="mt-2 text-[15px] leading-snug text-[var(--text-primary)]">{contraste.hoy}</p>
+              </div>
             </div>
             {/* "si nada cambia": más apagado/frío — el peso lo pone el copy, no el rojo */}
-            <div className="rounded-[var(--radius-card)] bg-[var(--surface-2)] p-5">
-              <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-[var(--text-tertiary)]">
-                {contraste.labelFuturo}
-              </p>
-              <p className="mt-2 text-[15px] leading-snug text-[var(--text-secondary)]">{contraste.futuro}</p>
+            <div className="flex items-center gap-4 rounded-[var(--radius-card)] bg-[var(--surface-2)] p-5">
+              {contraste.anilloFuturo !== undefined && (
+                <div className="relative shrink-0">
+                  <MiniRing value={contraste.anilloFuturo} tone="muted" />
+                  <span className="absolute inset-0 flex items-center justify-center text-[15px] font-bold tabular-nums text-[var(--text-secondary)] [font-family:var(--font-display)]">
+                    {contraste.anilloFuturo}%
+                  </span>
+                </div>
+              )}
+              <div>
+                <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-[var(--text-tertiary)]">
+                  {contraste.labelFuturo}
+                </p>
+                <p className="mt-2 text-[15px] leading-snug text-[var(--text-secondary)]">{contraste.futuro}</p>
+              </div>
             </div>
           </motion.div>
         )}

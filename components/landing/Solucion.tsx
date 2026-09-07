@@ -8,7 +8,7 @@
 // escalonados (whileInView + stagger, reduced-motion respetado).
 
 import { motion } from 'motion/react';
-import { Accent, Hairline, Kicker, SectionShell, useReveal, VIEWPORT_ONCE } from './ui';
+import { Accent, Hairline, Kicker, MiniRing, SectionShell, useReveal, VIEWPORT_ONCE } from './ui';
 import { MarkedCopy, warnCopy } from './MarkedCopy';
 
 export interface PasoMecanismo {
@@ -29,12 +29,15 @@ export interface SolucionProps {
   bigIdeaMarked: string;
   /** Los 3 pasos del mecanismo — la tupla obliga a que sean exactamente 3. */
   pasos: [PasoMecanismo, PasoMecanismo, PasoMecanismo];
-  /** Antes/después opcional: split 2 columnas, el "después" con acento sutil. */
+  /** Antes/después opcional: split 2 columnas, el "después" con acento sutil.
+   *  anilloAntes/anilloDespues (0-100) son OPCIONALES — solo con un valor real. */
   antesDespues?: {
     labelAntes: string;
     antes: string;
+    anilloAntes?: number;
     labelDespues: string;
     despues: string;
+    anilloDespues?: number;
   };
   id?: string;
 }
@@ -102,20 +105,40 @@ export function Solucion({
 
         {antesDespues && (
           <motion.div variants={item} className="mt-10 grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <div className="rounded-[var(--radius-card)] bg-[var(--surface-2)] p-5">
-              <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-[var(--text-tertiary)]">
-                {antesDespues.labelAntes}
-              </p>
-              <p className="mt-2 text-[15px] leading-snug text-[var(--text-secondary)]">{antesDespues.antes}</p>
+            <div className="flex items-center gap-4 rounded-[var(--radius-card)] bg-[var(--surface-2)] p-5">
+              {antesDespues.anilloAntes !== undefined && (
+                <div className="relative shrink-0">
+                  <MiniRing value={antesDespues.anilloAntes} tone="muted" />
+                  <span className="absolute inset-0 flex items-center justify-center text-[15px] font-bold tabular-nums text-[var(--text-secondary)] [font-family:var(--font-display)]">
+                    {antesDespues.anilloAntes}%
+                  </span>
+                </div>
+              )}
+              <div>
+                <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-[var(--text-tertiary)]">
+                  {antesDespues.labelAntes}
+                </p>
+                <p className="mt-2 text-[15px] leading-snug text-[var(--text-secondary)]">{antesDespues.antes}</p>
+              </div>
             </div>
             {/* El "después" con acento sutil de fondo (4-6%) */}
-            <div className="rounded-[var(--radius-card)] bg-[color-mix(in_oklab,var(--accent)_6%,transparent)] p-5">
-              <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-[var(--accent)]">
-                {antesDespues.labelDespues}
-              </p>
-              <p className="mt-2 text-[15px] font-medium leading-snug text-[var(--text-primary)]">
-                {antesDespues.despues}
-              </p>
+            <div className="flex items-center gap-4 rounded-[var(--radius-card)] bg-[color-mix(in_oklab,var(--accent)_6%,transparent)] p-5">
+              {antesDespues.anilloDespues !== undefined && (
+                <div className="relative shrink-0">
+                  <MiniRing value={antesDespues.anilloDespues} tone="accent" />
+                  <span className="absolute inset-0 flex items-center justify-center text-[15px] font-bold tabular-nums text-[var(--accent)] [font-family:var(--font-display)]">
+                    {antesDespues.anilloDespues}%
+                  </span>
+                </div>
+              )}
+              <div>
+                <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-[var(--accent)]">
+                  {antesDespues.labelDespues}
+                </p>
+                <p className="mt-2 text-[15px] font-medium leading-snug text-[var(--text-primary)]">
+                  {antesDespues.despues}
+                </p>
+              </div>
             </div>
           </motion.div>
         )}
