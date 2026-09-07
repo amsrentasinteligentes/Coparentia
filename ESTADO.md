@@ -208,7 +208,52 @@ necesita landing con SEO + app tras login, no es solo herramienta interna.
 - Modelo de monetización: **onboarding-first (Modelo 2)** — CTAs llevan a /onboarding, no a
   checkout directo. (Decisión técnica, no se preguntó al usuario — DECIDE-INFORMA-AVANZA.)
 
-## Siguiente paso — Sesión 4: Onboarding, paywall y login
+## Sesión 4 — TERMINADA (2026-09-07): Onboarding, paywall y login
+Construido siguiendo `02B-ONBOARDING-Y-PAYWALL.md` (estrategia) + `50-DISENO-ONBOARDING-PAYWALL.md`
+(especificación visual exacta). Kit compartido en `components/funnel/ui.tsx` (header de marca,
+barra de progreso animada con endowed progress, chips, CTA fijo) — misma identidad de
+FICHA-ARTE.md que la landing.
+
+- **`/onboarding`** (`app/onboarding/page.tsx`): 5 preguntas reales derivadas de FICHA-AVATAR.md
+  (situación → eco de objeciones/consciencia, con escape hatch "otra cosa" · preocupación → eco
+  literal de los dolores #1-#4 · meta de compromiso (slider 1-12 meses) · momento del día (ancla
+  la hora de recordatorios futuros) · atribución (canal, patrón Cal AI)) + 2 pantallas de
+  reconocimiento (la primera desculpa con la causa real, la última etiqueta con identidad
+  positiva — regla b de LA ESCALERA) + loading "Construyendo tu expediente…" con 4 líneas que
+  citan las respuestas reales del usuario (labor illusion, patrón Noom) y anillo de progreso.
+  Auto-avance de chips a 300ms, transiciones deslizantes, barra que nunca empieza en 0%.
+- **`/paywall`** (`app/paywall/page.tsx`): paywall DE SECUENCIA (3 pantallas, +37% vs una sola —
+  Superwall 2026): (1) recap con la inversión visible ("Hecho con tus 5 respuestas" — costo
+  hundido, regla a de LA ESCALERA), (2) timeline del trial (Hoy → Día 5 → Día 7 con fecha y
+  monto exactos, patrón Blinkist), (3) precio (anual $7.42/mes preseleccionado con badge "4
+  meses gratis", mensual $9.99/mes, CTA en 1ª persona, garantía de 15 días visible, "Ahora no"
+  sin confirmshaming, X de cierre desde el frame 1).
+- **`/entrar`** (`app/entrar/page.tsx`): login sin contraseña (magic link), con los 3 estados
+  reales (enviando/enviado con countdown de reenvío/error) + botón Google (visual, sin OAuth
+  real todavía).
+- Verificado end-to-end con clics reales/simulados por todo el flujo completo
+  onboarding→paywall→login: cada pantalla personaliza correctamente con las respuestas
+  anteriores (confirmado en pantalla, no solo en código).
+- `tsc` + `next build` limpios con las 3 rutas nuevas generadas.
+
+⚠️ PENDIENTES anotados (no bloquean el cierre, se resuelven en Sesión 6):
+- **Todo es mock sin backend**: las respuestas viajan por `sessionStorage` (no hay servidor
+  todavía). El envío del magic link en `/entrar` está SIMULADO (setTimeout, nunca se manda un
+  correo real) — Sesión 6 conecta Supabase Auth (magic link real) + el webhook de Hotmart que
+  crea el usuario passwordless. El botón "Continuar con Google" es solo visual (sin OAuth real).
+- El CTA final del paywall lleva a `/entrar` en vez de a un checkout real de Hotmart — correcto
+  para esta etapa (C3ter: "nunca un checkout falso que parezca procesar un cobro real"); en
+  Sesión 6 se reemplaza por el link real de Hotmart con los parámetros de trial.
+- Simplificaciones deliberadas frente al máximo detalle de `50`: no se implementó Lottie
+  (se usó CSS/motion para el anillo y las transiciones, opción explícitamente permitida) ni el
+  ritual opcional de "mantener presionado" (`C3bis`, patrón Flo — es opcional, no obligatorio).
+- El link del logo en el header del funnel vuelve a `/` sin pedir confirmación de pérdida de
+  progreso (50 lo sugiere) — mejora menor pendiente para Sesión 7 (pulido).
+- Falta el gate del revisor-visual sobre estas 3 pantallas nuevas (obligatorio en
+  `PLANTILLA-REVISION-PANTALLA.md` para onboarding/pago) — no se corrió en esta sesión por
+  presupuesto; queda anotado para antes de declarar el funnel "vendible" de verdad.
+
+## Siguiente paso — Sesión 5: App interna simplificada
 Construir la landing con las 10 secciones canónicas (19-PAGINA-DE-VENTAS.md): hero 4U's →
 problema → agitación → mecanismo → carrusel → oferta (anual+mensual con trial) → garantía →
 FAQ → CTA emocional → footer legal. Copy derivado 100% de FICHA-AVATAR (el avatar "Carlos" ya
