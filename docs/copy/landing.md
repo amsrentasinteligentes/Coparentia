@@ -17,7 +17,7 @@ sin pelear por WhatsApp.
 - H1 (marcado): "Tu cuota, [acento]pagada y probada[/acento]"
 - Subtítulo (marcado): "El Sello de Confianza convierte tus comprobantes en un expediente [b]listo para mostrar[/b]"
 - CTA: "Crear mi expediente gratis" → /onboarding
-- Social proof: Garantía Hotmart de 7 días — sin preguntas
+- Social proof: 7 días de prueba gratis — cancela cuando quieras
 - Visual: placeholder del dashboard (pantalla principal — "Tu expediente, en confianza")
 
 ## 2. PROBLEMA
@@ -47,7 +47,7 @@ sin pelear por WhatsApp.
   plan" (Paywall) · "Sube tu comprobante" (Registro de pago)
 
 ## 6. OFERTA
-- Título (marcado): "Empieza gratis. Sigue por [acento]menos de $0.33/día[/acento]"
+- Título (marcado): "Empieza gratis. Sigue por [acento]menos de $0.25/día[/acento]"
 - Trial: 7 días
 - Stack: Coparentia Pro con el Sello de Confianza (12 meses) $120 · Plantilla de autorización
   de gastos extraordinarios $19 · Guía "Tu primer expediente en 10 minutos" $15 → total $154
@@ -55,11 +55,11 @@ sin pelear por WhatsApp.
   "menos de $0.25 al día"
 - Mensual: $9.99/mes
 
-## 7. GARANTÍA
+## 7. GARANTÍA (15 días — mayor que los 7 de prueba, regla dura 18/FICHA-MERCADO.md)
 - Nombre: "la Garantía del Primer Expediente"
-- Condición (marcada): "Si en 7 días no tienes tu primer comprobante organizado y listo para
+- Condición (marcada): "Si en 15 días no tienes tu primer comprobante organizado y listo para
   exportar, escribes un correo y [b]te devolvemos todo[/b]. Sin preguntas."
-- Piso legal: Respaldada por la garantía Hotmart de 7 días
+- Piso legal: Respaldada por la garantía Hotmart de 15 días
 
 ## 8. FAQ (objeciones de la ficha)
 1. "¿Mi ex tiene que descargar la app también?" → "No. Coparentia funciona 100% de forma
@@ -68,7 +68,7 @@ sin pelear por WhatsApp.
    y fechado para tu abogado o conciliador — no reemplaza la asesoría legal, la potencia."
 3. "¿Por qué no me sirve un Excel gratis?" → "Un Excel se pierde y se cuestiona; tu expediente
    queda con fecha, soporte y sin ediciones silenciosas."
-4. "¿Es muy cara la suscripción?" → "Menos de $0.33 al día — comparado con los $100 que cobra
+4. "¿Es muy cara la suscripción?" → "Menos de $0.25 al día con el plan anual — comparado con los $100 que cobra
    un abogado por cada correo de aclaración, se paga solo."
 5. "¿Mis datos financieros están seguros?" → "Cifrado en tránsito y en reposo. Tus datos nunca
    se comparten sin tu autorización."
@@ -77,10 +77,10 @@ sin pelear por WhatsApp.
 - H2 (marcado): "Imagina [acento]dormir en paz[/acento]"
 - Future pacing (marcado): "La próxima vez que te reclamen por WhatsApp, abres tu expediente y
   respondes con hechos — no con capturas sueltas."
-- Recap: "Garantía del Primer Expediente · 7 días gratis"
+- Recap: "7 días de prueba gratis · Garantía del Primer Expediente (15 días)"
 - PS (marcado): "PS: Coparentia convierte tus comprobantes en un expediente fechado y listo
   para mostrar con el Sello de Confianza. Hoy entras con 7 días gratis y la Garantía del
-  Primer Expediente."
+  Primer Expediente de 15 días."
 
 ## 10. FOOTER LEGAL
 - Email de soporte: soporte@coparentia.app (placeholder — confirmar con el usuario en Sesión 6)

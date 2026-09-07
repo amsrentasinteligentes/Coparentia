@@ -33,7 +33,7 @@ export default function Home() {
         subtitleMarked="El Sello de Confianza convierte tus comprobantes en un expediente [b]listo para mostrar[/b]"
         ctaLabel={CTA_LABEL}
         ctaHref={CTA_HREF}
-        socialProof={<span>Garantía Hotmart de 7 días — sin preguntas</span>}
+        socialProof={<span>7 días de prueba gratis — cancela cuando quieras</span>}
         visualPlaceholderSugerencia="captura de la pantalla principal: expediente con el anillo de avance"
       />
 
@@ -96,7 +96,7 @@ export default function Home() {
 
       {/* 6. OFERTA */}
       <Oferta
-        tituloMarked="Empieza gratis. Sigue por [acento]menos de $0.33/día[/acento]"
+        tituloMarked="Empieza gratis. Sigue por [acento]menos de $0.25/día[/acento]"
         trialDias={7}
         stack={{
           lineas: [
@@ -121,6 +121,7 @@ export default function Home() {
             'Expediente exportable en PDF foliado',
             'Registro de autorizaciones y controversias',
             'Alertas de vencimiento y soporte faltante',
+            'Garantía del Primer Expediente (15 días)',
           ],
         }}
         mensual={{
@@ -133,15 +134,16 @@ export default function Home() {
             'Expediente exportable en PDF foliado',
             'Registro de autorizaciones y controversias',
             'Cancelas cuando quieras',
+            'Garantía del Primer Expediente (15 días)',
           ],
         }}
       />
 
-      {/* 7. GARANTÍA */}
+      {/* 7. GARANTÍA — 15 días > 7 días de prueba (regla dura 18, verificada en FICHA-MERCADO.md) */}
       <Garantia
         nombre="la Garantía del Primer Expediente"
-        condicionMarked="Si en 7 días no tienes tu primer comprobante organizado y listo para exportar, escribes un correo y [b]te devolvemos todo[/b]. Sin preguntas."
-        pisoLegal="Respaldada por la garantía Hotmart de 7 días"
+        condicionMarked="Si en 15 días no tienes tu primer comprobante organizado y listo para exportar, escribes un correo y [b]te devolvemos todo[/b]. Sin preguntas."
+        pisoLegal="Respaldada por la garantía Hotmart de 15 días"
       />
 
       {/* 8. FAQ */}
@@ -165,7 +167,7 @@ export default function Home() {
           {
             pregunta: '¿Es muy cara la suscripción?',
             respuestaMarked:
-              'Menos de $0.33 al día — comparado con los $100 que cobra un abogado por cada correo de aclaración, [b]se paga solo[/b].',
+              'Menos de $0.25 al día con el plan anual — comparado con los $100 que cobra un abogado por cada correo de aclaración, [b]se paga solo[/b].',
           },
           {
             pregunta: '¿Mis datos financieros están seguros?',
@@ -181,8 +183,8 @@ export default function Home() {
         futurePacingMarked="La próxima vez que te reclamen por WhatsApp, abres tu expediente y respondes con hechos — no con capturas sueltas."
         ctaLabel={CTA_LABEL}
         ctaHref={CTA_HREF}
-        recap="Garantía del Primer Expediente · 7 días gratis"
-        psMarked="PS: Coparentia convierte tus comprobantes en un expediente fechado y listo para mostrar con el Sello de Confianza. Hoy entras con 7 días gratis y la Garantía del Primer Expediente."
+        recap="7 días de prueba gratis · Garantía del Primer Expediente (15 días)"
+        psMarked="PS: Coparentia convierte tus comprobantes en un expediente fechado y listo para mostrar con el Sello de Confianza. Hoy entras con 7 días gratis y la Garantía del Primer Expediente de 15 días."
       />
 
       {/* 10. FOOTER LEGAL */}

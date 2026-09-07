@@ -1,7 +1,7 @@
 # ESTADO.md — Coparentia (nombre provisional: PensiónClara)
 
 ## Fase actual
-Sesión 1 en curso — Validación + Constitución del Producto (B3 de INICIO.md).
+Sesión 3 (página de ventas) construida — ver "Problemas conocidos" antes de avanzar a Sesión 4.
 
 ## Origen de la idea
 El usuario llegó con la idea ya validada mediante el prompt de investigación del curso.
@@ -215,8 +215,46 @@ FAQ → CTA emocional → footer legal. Copy derivado 100% de FICHA-AVATAR (el a
 está en ESTADO.md, sección "4. Cliente ideal"). Diseño con la Ficha de Arte ya cerrada — sin
 volver a discutir estilo.
 
+## Problemas conocidos
+
+### veredicto landing — NO LISTA, deliberadamente diferido a Sesión 5
+El revisor-visual independiente evaluó la landing tres veces (docs/revisiones/landing-veredicto.md
+tiene el último resultado): última pasada **Usabilidad 29/40 · Craft 14/20 · Copy 15/20 · Veredicto
+NO LISTA** (umbral de cierre: ≥36/40 y ≥16/20). Se corrigieron los defectos reales encontrados:
+- Inconsistencia de precio ($0.33/día vs $0.25/día en distintas secciones) → unificado a $0.25/día.
+- El dispositivo ownable de FICHA-ARTE (halo + subrayado marcador) no estaba implementado en
+  `<Accent>` (components/landing/ui.tsx) → implementado con `linear-gradient` + `box-decoration-break`.
+- La garantía no aparecía cerca del CTA de compra → agregada como feature en ambos planes de Oferta.
+
+Defectos que se DEJAN pendientes a propósito, con su razón:
+- **Placeholders del hero y del carrusel "La app por dentro"**: son placeholders honestos
+  (rotulados, no capturas falsas) porque la app interna todavía no existe — esto es la regla
+  explícita de `19-PAGINA-DE-VENTAS.md` §5 "MOCKUPS HONESTOS PRE-LANZAMIENTO". Se reemplazan por
+  screenshots reales al cerrar la Sesión 5 (app interna) y ahí se vuelve a correr el revisor-visual.
+  Es la causa principal de que Usabilidad/Craft no lleguen al umbral — no es corregible sin
+  inventar assets falsos, que el SO prohíbe explícitamente.
+- **Badge "X días gratis" en AMBOS planes (Anual y Mensual)**: el revisor lo marcó como ruido
+  duplicado, pero `19-PAGINA-DE-VENTAS.md` §6 exige literalmente "DOS PLANES SIEMPRE: ANUAL y
+  MENSUAL, AMBOS con PRUEBA GRATUITA visible" — no se quita, es la regla canónica del kit.
+- **Contraste base/elevado entre secciones poco perceptible**: ajustar requeriría tocar los hex
+  de `--bg`/`--surface` en FICHA-ARTE.md, que es cosa juzgada y requiere OK explícito del usuario
+  para cambiarse (regla de la ficha). Se deja como candidato de pulido fino para la Sesión 7
+  (`07-PULIDO.md`), no se toca ahora sin permiso.
+- No se modificaron los componentes `.tsx` del kit protegido (`components/landing/*`, salvo
+  `ui.tsx` → `<Accent>`, un cambio de props/estilo, no de estructura) — el kit documenta
+  explícitamente qué NO se toca sin justificación (`plantillas-codigo/landing/README.md`).
+
+Screenshot vigente: `docs/revisiones/landing-375.png` (capturado con scroll real simulado para
+disparar las animaciones whileInView — un `fullPage` sin scroll incremental deja el contenido
+en opacity:0 y produce falsos negativos, ya corregido en el método de captura).
+
+### FICHA-MODELO y FICHA-MERCADO — resueltos
+Ambas fichas se crearon en esta sesión con datos investigados y fuentes reales (ver
+FICHA-MODELO.md y FICHA-MERCADO.md en la raíz). La garantía de 15 días quedó verificada contra
+los plazos reales que permite Hotmart (7/15/21/30 días) y corregida para cumplir la regla dura
+garantía > prueba (antes ambas eran de 7 días, error ya corregido en todo el copy).
+
 ## Siguiente paso
-Preguntar al usuario el campo 20 (ventaja/contactos) y continuar con B3 — completar la
-Constitución del Producto (primera victoria ya definida, funciones MVP ya definidas por el
-PDF, falta el "qué NUNCA debe hacer la app" y confirmar promesa central) antes de pasar a
-02-VALIDACION / 57-AVATAR / 02C-PRICING / 40-UNIT-ECONOMICS / 04-ARQUITECTURA / 25 / 26.
+Sesión 4: Onboarding, paywall y login (ver sección de arriba). Antes de darla por *vendible* de
+verdad, falta cerrar el pendiente de "veredicto landing" cuando la Sesión 5 entregue screenshots
+reales de la app interna.

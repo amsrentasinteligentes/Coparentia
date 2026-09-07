@@ -11,9 +11,21 @@ import { AnimatePresence, motion, useReducedMotion, type Variants } from 'motion
 import { Check } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
-/* ── <Accent> — la palabra que vende, en el acento del kit ─────────────────── */
+/* ── <Accent> — la palabra que vende, en el acento del kit + el dispositivo
+     ownable de FICHA-ARTE.md (halo + subrayado marcador, fusión banco 54 dir.1/dir.6) ── */
 export function Accent({ children }: { children: ReactNode }) {
-  return <span className="text-[var(--accent)]">{children}</span>;
+  return (
+    <span
+      className="text-[var(--accent)] [box-decoration-break:clone] [-webkit-box-decoration-break:clone]"
+      style={{
+        backgroundImage:
+          'linear-gradient(transparent 66%, color-mix(in oklab, var(--accent) 28%, transparent) 66%)',
+        padding: '0 0.05em',
+      }}
+    >
+      {children}
+    </span>
+  );
 }
 
 /* ── <Kicker> — caps 12px/600 tracking +0.08em en acento (máx 1 por sección) ── */
