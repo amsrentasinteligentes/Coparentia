@@ -7,7 +7,7 @@
 // gris con el nombre de la pantalla futura (pendiente en ESTADO.md). Los
 // screenshots reales los toma la IA al cerrar la app (paso obligatorio de 19 §5).
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react';
 import { motion, useReducedMotion } from 'motion/react';
 import type { LucideIcon } from 'lucide-react';
 import { CtaButton, Kicker, SectionShell, useReveal, VIEWPORT_ONCE } from './ui';
@@ -82,6 +82,38 @@ export function AppPorDentro({
     });
   };
 
+  // Arrastre con mouse (el swipe táctil ya es nativo con overflow-x + scroll-snap;
+  // en desktop, un div con overflow-x-auto NO se arrastra con el mouse por defecto).
+  const arrastre = useRef<{ activo: boolean; x: number; scrollLeft: number }>({
+    activo: false,
+    x: 0,
+    scrollLeft: 0,
+  });
+  const onPointerDown = (e: ReactPointerEvent<HTMLDivElement>): void => {
+    if (e.pointerType !== 'mouse') return; // touch/pen: dejar el scroll nativo
+    const scroller = scrollerRef.current;
+    if (!scroller) return;
+    arrastre.current = { activo: true, x: e.clientX, scrollLeft: scroller.scrollLeft };
+    scroller.setPointerCapture(e.pointerId);
+    scroller.style.scrollSnapType = 'none'; // libera el snap mientras se arrastra
+    scroller.style.cursor = 'grabbing';
+  };
+  const onPointerMove = (e: ReactPointerEvent<HTMLDivElement>): void => {
+    if (!arrastre.current.activo) return;
+    const scroller = scrollerRef.current;
+    if (!scroller) return;
+    scroller.scrollLeft = arrastre.current.scrollLeft - (e.clientX - arrastre.current.x);
+  };
+  const onPointerUp = (e: ReactPointerEvent<HTMLDivElement>): void => {
+    if (!arrastre.current.activo) return;
+    arrastre.current.activo = false;
+    const scroller = scrollerRef.current;
+    if (!scroller) return;
+    scroller.releasePointerCapture(e.pointerId);
+    scroller.style.cursor = 'grab';
+    scroller.style.scrollSnapType = ''; // el snap-x del className vuelve a mandar
+  };
+
   return (
     <SectionShell id={id} elevacion="elevada" ariaLabel="La app por dentro">
       <motion.div variants={contenedor} initial="hidden" whileInView="visible" viewport={VIEWPORT_ONCE}>
@@ -96,7 +128,11 @@ export function AppPorDentro({
         <motion.div variants={item} className="mt-10">
           <div
             ref={scrollerRef}
-            className="flex snap-x snap-mandatory gap-5 overflow-x-auto px-[max(20px,calc(50%-125px))] pb-2 [scrollbar-width:none] [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)] [&::-webkit-scrollbar]:hidden"
+            onPointerDown={onPointerDown}
+            onPointerMove={onPointerMove}
+            onPointerUp={onPointerUp}
+            onPointerLeave={onPointerUp}
+            className="flex snap-x snap-mandatory gap-5 overflow-x-auto px-[max(20px,calc(50%-125px))] pb-2 [scrollbar-width:none] active:cursor-grabbing md:cursor-grab [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)] [&::-webkit-scrollbar]:hidden"
           >
             {frames.map((f, i) => (
               <div key={i} className="shrink-0 snap-center">
