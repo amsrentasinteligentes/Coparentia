@@ -185,7 +185,30 @@ y aprobado). Detalle completo, tokens, tabla de líderes y trazabilidad → `FIC
 ## Sesión 2 — TERMINADA
 Identidad visual completa: FICHA-ARTE.md aprobada, tokens definidos, tour de la app aprobado.
 
-## Siguiente paso — Sesión 3: Página de ventas
+## Sesión 3 — TERMINADA (2026-09-07): Página de ventas
+Stack decidido (regla del stack, 12-FLUJO-AGENTICO.md): **Next.js App Router** — la app
+necesita landing con SEO + app tras login, no es solo herramienta interna.
+- Scaffold: Next.js 16 + React 19 + TypeScript + Tailwind v4 + `motion` + `lucide-react`.
+- `FICHA-AVATAR.md` creada y aprobada (derivada del RESUMEN FINAL ya validado del usuario).
+- Mecanismo bautizado: **"el Sello de Confianza"** (sube comprobante → se fecha y asocia →
+  queda en el expediente). Big Idea en `docs/copy/landing.md`.
+- Landing construida con el KIT CANÓNICO (`plantillas-codigo/landing/` → `components/landing/`),
+  10 secciones en el orden inmutable de `19-PAGINA-DE-VENTAS.md`. `tokens.css` tematizado con
+  FICHA-ARTE.md (azul de confianza). Copy en `docs/copy/landing.md`, cableado en `app/page.tsx`.
+- Verificado: `tsc --noEmit` ✓ · `next build` ✓ · dev server arranca sin errores · rendering a
+  375px revisado sección por sección (hero, problema, agitación, solución, carrusel, oferta,
+  garantía, FAQ, CTA final, footer) — todas correctas, presupuesto de copy dentro de límites.
+- Páginas legales creadas y enlazadas (privacidad, términos, reembolsos, aviso de IA) — CONTENIDO
+  REAL pero marcado explícitamente como "en revisión legal final antes del lanzamiento" (no son
+  enlaces muertos, cumple la regla dura del footer, pero NO reemplaza validación de un abogado).
+- ⚠️ PENDIENTE (anotado, no bloquea cierre de sesión): el carrusel de "La app por dentro" usa
+  PLACEHOLDERS honestos (rotulados) porque la app interna aún no existe — se reemplazan por
+  screenshots reales al cerrar la Sesión 5. CTA lleva a `/onboarding`, ruta que se construye en
+  la Sesión 4.
+- Modelo de monetización: **onboarding-first (Modelo 2)** — CTAs llevan a /onboarding, no a
+  checkout directo. (Decisión técnica, no se preguntó al usuario — DECIDE-INFORMA-AVANZA.)
+
+## Siguiente paso — Sesión 4: Onboarding, paywall y login
 Construir la landing con las 10 secciones canónicas (19-PAGINA-DE-VENTAS.md): hero 4U's →
 problema → agitación → mecanismo → carrusel → oferta (anual+mensual con trial) → garantía →
 FAQ → CTA emocional → footer legal. Copy derivado 100% de FICHA-AVATAR (el avatar "Carlos" ya
