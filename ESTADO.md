@@ -275,6 +275,22 @@ Defectos que se DEJAN pendientes a propósito, con su razón:
 Screenshot vigente: `docs/revisiones/landing-375.png` (scroll real simulado + 1.2s de espera para
 que terminen las animaciones de conteo/anillo antes de capturar).
 
+### Sección extra "Para abogados de familia" — nueva línea de ingresos (2026-09-07)
+El usuario pidió agregar, al final de la landing, un bloque para vender publicidad a abogados de
+familia que quieran aparecer como referencia dentro de la app. Es una audiencia distinta a Carlos
+(el avatar comprador de la app) — **no se agregó como una 11ª sección canónica del 19**, sino como
+un bloque aparte (`components/landing/AnuncioAbogados.tsx`), visualmente distinto (card con borde,
+tono B2B, CTA en outline para no competir con el CTA principal), colocado DESPUÉS de la sección 9
+(CTA final) y ANTES de la 10 (footer legal) — la estructura de 10 secciones que vende a Carlos NO
+se tocó ni se reordenó.
+- CTA: mailto a `alianzas@coparentia.app` (placeholder — confirmar email real con el usuario).
+- Conecta con la ventaja ya documentada del usuario (campo 20/21: contacto cercano con un
+  abogado de familia) — este bloque es el mecanismo de producto para monetizar esa relación a
+  escala, más allá de un solo aliado.
+- Pendiente para cuando haya interés real: definir precio/plan de publicidad (necesitaría su
+  propia FICHA-MERCADO si se vuelve una línea de negocio formal) y una página de aterrizaje
+  propia para abogados si el volumen de interesados lo justifica.
+
 ### Desviación del kit protegido — justificada por pedido explícito del usuario
 El usuario pidió (2026-09-07) que la landing tuviera más elementos visuales (como el anillo de
 avance), degradés suaves y que todas las secciones tuvieran sus íconos. Cambios acumulados en

@@ -14,6 +14,7 @@ import { Oferta } from '@/components/landing/Oferta';
 import { Garantia } from '@/components/landing/Garantia';
 import { Faq } from '@/components/landing/Faq';
 import { CtaFinal } from '@/components/landing/CtaFinal';
+import { AnuncioAbogados } from '@/components/landing/AnuncioAbogados';
 import { FooterLegal } from '@/components/landing/FooterLegal';
 import { StickyCtaMobile } from '@/components/landing/ui';
 
@@ -190,6 +191,10 @@ export default function Home() {
         recap="7 días de prueba gratis · Garantía del Primer Expediente (15 días)"
         psMarked="PS: Coparentia convierte tus comprobantes en un expediente fechado y listo para mostrar con el Sello de Confianza. Hoy entras con 7 días gratis y la Garantía del Primer Expediente de 15 días."
       />
+
+      {/* SECCIÓN EXTRA (fuera de la estructura canónica de 19, pedida por el usuario):
+          audiencia distinta — abogados de familia que quieren anunciarse en la app. */}
+      <AnuncioAbogados contactoEmail="alianzas@coparentia.app" />
 
       {/* 10. FOOTER LEGAL */}
       <FooterLegal
