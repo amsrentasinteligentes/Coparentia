@@ -172,15 +172,25 @@ error visible) y el navegador cae al fallback-trampa (monospace). Corregido a `w
 (punto y coma). Revisar si se reutiliza EB Garamond (ronda 1, banco #9) más adelante — mismo
 riesgo por ser también una fuente estática.
 
-## DIRECCIÓN DE ARTE ELEGIDA (cosa juzgada, pendiente de aprobar el tour)
-El usuario eligió la **Opción B de la ronda 3 — "Revisión en Confianza"**.
+## DIRECCIÓN DE ARTE — COSA JUZGADA (Sesión 2 cerrada — 2026-09-07)
+El usuario eligió y aprobó la **Opción B de la ronda 3 — "Revisión en Confianza"** (tour visto
+y aprobado). Detalle completo, tokens, tabla de líderes y trazabilidad → `FICHA-ARTE.md`
+(raíz del proyecto). Resumen rápido:
 - Paleta: `--bg #0B1524 · --surface #13233A · --text-1 #E6EDF7 · --text-2 #7F93B3 · --accent #5B93E8`
-- Tipografía: Spectral (display) + IBM Plex Sans (body)
-- Radios: card 14px / botón 10px
-- Dispositivo ownable: halo azul detrás del anillo de avance (radial-gradient, 22% accent)
-- Composición base: encabezado centrado + anillo de progreso + grid 2x2 de datos clave + CTA + tab bar
-Siguiente paso: construir EL TOUR DE LA APP (vista-previa-app.html) con este estilo aplicado a
-4-5 vistas clave antes de cerrar FICHA-ARTE.md (protocolo del 54).
+- Tipografía: Spectral (display) + IBM Plex Sans (body) · radios card 14px / botón 10px
+- Dispositivo ownable: halo azul + subrayado marcador (fusión banco 54 dir.1 + dir.6)
+- Personalidad compilada: Sereno + Sobrio + Cálido · voz: mentor sereno
+- Mapa de rutas planeado: / -> /onboarding -> /paywall -> /login -> /app
+
+## Sesión 2 — TERMINADA
+Identidad visual completa: FICHA-ARTE.md aprobada, tokens definidos, tour de la app aprobado.
+
+## Siguiente paso — Sesión 3: Página de ventas
+Construir la landing con las 10 secciones canónicas (19-PAGINA-DE-VENTAS.md): hero 4U's →
+problema → agitación → mecanismo → carrusel → oferta (anual+mensual con trial) → garantía →
+FAQ → CTA emocional → footer legal. Copy derivado 100% de FICHA-AVATAR (el avatar "Carlos" ya
+está en ESTADO.md, sección "4. Cliente ideal"). Diseño con la Ficha de Arte ya cerrada — sin
+volver a discutir estilo.
 
 ## Siguiente paso
 Preguntar al usuario el campo 20 (ventaja/contactos) y continuar con B3 — completar la
