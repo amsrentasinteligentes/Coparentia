@@ -1,7 +1,32 @@
 # ESTADO.md — Coparentia (nombre provisional: PensiónClara)
 
 ## Fase actual
-Sesión 3 (página de ventas) construida — ver "Problemas conocidos" antes de avanzar a Sesión 4.
+Sesión 5 (la app interna) EN CURSO — ver su propia sección más abajo. Sesión 4
+(onboarding/paywall/login) terminada, con `veredicto:onboarding`/`veredicto:paywall`/
+`veredicto:landing` en techo estructural documentado en "## Problemas conocidos" (no bloquean).
+
+### Checkpoint (2026-09-07, ajustes pequeños de landing tras cerrar Sesión 5 inicial)
+- Tarjetas de "¿Te suena?" (`components/landing/Problema.tsx`): borde + sombra reforzados para
+  que se sientan con volumen (pedido explícito del usuario, antes se veían planas).
+- CTA final (`app/page.tsx`): titular cambiado de "Imagina dormir en paz" a "Todo lo importante,
+  bajo control. Tu mente, en calma." (pedido del usuario), con AMBAS frases clave en acento.
+- `tsc`/`next build` limpios tras cada cambio; verificado con captura real cada vez.
+- **Logo oficial — reemplazado 2 veces, versión vigente = manos+rostro infantil**: el usuario
+  probó primero un isotipo de escudo+cadena (`Isotipo 3.jpeg`), y luego pidió cambiarlo por uno
+  de dos manos sosteniendo un rostro infantil estilizado (`Isotipo 4.jpeg`, mismo tono metálico
+  azul-gris — encaja con FICHA-ARTE.md sin desviarse). Mismo proceso ambas veces: fondo quitado
+  con relleno por conectividad desde las esquinas (`sharp`, instalado `--no-save`, no queda en
+  package.json — solo se usó para este procesamiento puntual, no es dependencia de la app) — así
+  los brillos plateados internos del ícono nunca se confunden con el fondo — y recortado al
+  contenido real. Los archivos originales del usuario se autoborraron de Descargas poco después
+  de subirlos (no es un bug de esta sesión); se reprocesó a tiempo en ambos casos. Resultado en
+  `public/logo-isotipo.png` (fondo transparente verificado por canal alfa) y `app/icon.png`
+  (favicon/ícono de pestaña, 512×512). Ya reemplaza el placeholder (cuadrado azul) en
+  `components/funnel/ui.tsx` (`FunnelHeader`, usado en onboarding/paywall/entrar) y en el header
+  de `Hero.tsx` vía la prop `logo` en `app/page.tsx`. También agregado en `FooterLegal` (mismo
+  patrón de prop `logo`) — cubre los 3 lugares del código donde el nombre va con un ícono al
+  lado (los demás usos de "Coparentia" son texto plano en copy/metadata, sin slot de logo).
+  Verificado visualmente en los 3 lugares.
 
 ## Origen de la idea
 El usuario llegó con la idea ya validada mediante el prompt de investigación del curso.
@@ -54,9 +79,16 @@ CONSTRUIR (v1):
 2. Registro de pagos y gastos extraordinarios con soporte foto/PDF + OCR básico.
 3. Módulo de autorizaciones y registro de controversias/objeciones.
 4. Generador de Expediente Documental exportable en PDF foliado con marca de tiempo.
+5. **Calendario de eventos** (agregado 2026-09-07, pedido explícito del usuario — reemplaza la
+   exclusión original de abajo): visitas de los hijos, citas médicas, vacaciones y actividades
+   extracurriculares, cada evento asociable a un gasto/comprobante del expediente. Diferencia
+   deliberada frente a OurFamilyWizard: NO es un calendario de custodia compartida bidireccional
+   (no requiere que el ex lo use ni lo acepte — sigue siendo 100% unilateral); es un registro de
+   eventos propio que alimenta el expediente de gastos, no un módulo de coordinación de visitas.
 
 NO CONSTRUIR TODAVÍA: chat interno en tiempo real, integración directa con APIs bancarias,
-calendario de visitas/custodia compartida.
+calendario de custodia COMPARTIDA/bidireccional (coordinación con el ex) — sigue descartado; lo
+que SÍ se construye (arriba) es un registro unilateral de eventos propios.
 
 Primera victoria (<5 min): registrar el título (monto + fecha), subir el último
 comprobante, ver su primer "Estado de Cuenta Organizado" generado en pantalla.
@@ -208,6 +240,69 @@ necesita landing con SEO + app tras login, no es solo herramienta interna.
 - Modelo de monetización: **onboarding-first (Modelo 2)** — CTAs llevan a /onboarding, no a
   checkout directo. (Decisión técnica, no se preguntó al usuario — DECIDE-INFORMA-AVANZA.)
 
+## Actualización 2026-09-07 (post-cierre Sesión 4): onboarding ampliado a 2 roles
+El usuario comparó el onboarding ya construido contra una propuesta externa (Gemini) y pidió
+incorporar lo validable. Se evaluó cada punto contra `02B-ONBOARDING-Y-PAYWALL.md` y
+FICHA-AVATAR.md antes de tocar código (no se improvisó el cuestionario):
+- **Adoptado — ampliar a quien RECIBE la cuota, no solo a quien la paga** (aprobado explícitamente
+  por el usuario tras preguntárselo, ver FICHA-AVATAR.md § "Sub-avatar secundario"). Nuevo primer
+  paso `PreguntaRol` (paga/recibe) bifurca las preguntas de "situación" y "preocupación" en
+  `app/onboarding/page.tsx`. Los dolores del lado receptor son INFERIDOS por simetría lógica del
+  mismo conflicto (documentado como tal en la ficha) — no vienen de investigación de mercado
+  propia como sí la tiene el lado pagador; si se junta evidencia real de ese lado, reemplazar.
+- **Adoptado — nombrar el mecanismo dentro del onboarding**: "el Sello de Confianza" (ya usado en
+  landing/paywall) nunca aparecía en el onboarding — hallazgo propio, no de la propuesta externa,
+  pero real: viola la regla de 02B ("el usuario debe poder decir el nombre de lo que configuró").
+  Ahora se nombra en el reconocimiento final y en la pantalla de carga.
+- **Adoptado — nueva pregunta "¿Cómo está fijada tu cuota?"** (acta/sentencia · acuerdo informal ·
+  en proceso legal) — personaliza el formato del expediente; justificado porque en este producto
+  el diagnóstico legal SÍ es parte del valor central (excepción explícita de 02B para subir de
+  4-8 a más pasos). Con esta y la de rol, el onboarding pasó de 8 a **10 pasos**.
+- **Adoptado — refuerzo del uso unilateral en el momento justo**: cuando el usuario declara
+  "Tengo disputas frecuentes con mi ex", el reconocimiento agrega una línea recordando que el
+  expediente queda blindado sin depender de que el ex use la app (objeción #1 de FICHA-AVATAR,
+  antes solo se defendía en la página de ventas, no dentro del producto).
+- **Adoptado — "Paso X de Y"** junto al % de la barra de progreso (`<BarraAtras>` en
+  `components/funnel/ui.tsx`, prop nueva y opcional, no rompe su uso donde no se pase).
+- **Descartado por ahora — pedir subir el comprobante y mostrar una vista previa de PDF dentro del
+  onboarding**: requiere el motor real de procesamiento de documentos, que no existe hasta la
+  Sesión 5 (app interna). Simularlo ahora significaría mostrarle al usuario un resultado que en
+  realidad no se generó — viola la regla de mockups honestos del sistema. Se retoma cuando exista
+  el motor real.
+- Verificado con Playwright las DOS ramas completas (paga/recibe) sin errores de consola,
+  `tsc`/`next build` limpios.
+
+### Rondas de revisor-visual sobre el onboarding ampliado (2 rondas, ambas NO LISTA)
+Ronda 1 (25/40 · 12/20): confirmó que el rol/fijación se derivan bien de la ficha, pero encontró
+defectos reales: vacío sin profundidad en el paso de rol, chips de "situación" sin ícono (rompía
+consistencia con las demás preguntas), botón Atrás en el paso 0 cayendo a `router.back()` sin
+aviso (bug real, no solo de puntaje), y los mensajes de refuerzo como texto suelto sin jerarquía.
+Todo corregido: íconos agregados a los 4 chips de situación, Atrás del paso 0 ahora navega
+explícitamente a `/`, y los refuerzos ("no necesitas que tu ex use la app", "Sello de Confianza")
+son ahora tarjetas con ícono y borde/fondo propios.
+
+Ronda 2 (27/40 · 12/20): confirmó los 3 fixes de código de la ronda 1, pero encontró que el vacío
+solo se atendió en el paso de rol (no en situación/fijación/preocupación — mismo techo estructural
+ya documentado para pantallas de solo-chips), que las 4 tarjetas nuevas se ven como el mismo
+componente repetido sin variación de profundidad, y **un bug real nuevo, no reportado antes**: en
+la pantalla de carga, los pasos del checklist se marcaban fuera de orden (ej. el paso 3 aparecía
+completado antes que el paso 2).
+
+⚠️ **Bug real encontrado y corregido** (`LoadingPlan` en `app/onboarding/page.tsx`): la función que
+avanza el checklist guardaba el índice a marcar con `setCompletadas((c) => [...c, i])` y justo
+después mutaba `i += 1` en la misma variable — como React ejecuta esa función de actualización
+más tarde (no al instante), para cuando la ejecutaba `i` ya tenía el valor SIGUIENTE, así que
+marcaba el paso equivocado. Se verificó con capturas en el tiempo (confirmando visualmente el
+salto de orden) y con logs temporales que probaron la causa exacta antes de corregir. Fix:
+capturar el índice en una constante ANTES de mutar la variable, y usar esa constante en la
+actualización. Verificado de nuevo con capturas en el tiempo: el checklist ahora marca 0→1→2→3→4
+en orden estricto. De paso se corrigió también una advertencia de consola en el anillo animado
+(`strokeDashoffset` sin valor inicial) y se agregó un mensaje de ayuda al campo "otra cosa" y una
+variación real de superficie (tarjeta hundida vs. tarjeta con acento) entre los refuerzos.
+- `tsc`/`next build` limpios tras el fix. **Ronda 3 del revisor-visual pendiente de decidir con el
+  usuario** (cada ronda cuesta ~110-120k tokens; 2 rondas ya corridas sobre esta versión ampliada,
+  más las rondas previas a la ampliación — ver historial completo en "## Problemas conocidos").
+
 ## Sesión 4 — TERMINADA (2026-09-07): Onboarding, paywall y login
 Construido siguiendo `02B-ONBOARDING-Y-PAYWALL.md` (estrategia) + `50-DISENO-ONBOARDING-PAYWALL.md`
 (especificación visual exacta). Kit compartido en `components/funnel/ui.tsx` (header de marca,
@@ -253,14 +348,205 @@ FICHA-ARTE.md que la landing.
   `PLANTILLA-REVISION-PANTALLA.md` para onboarding/pago) — no se corrió en esta sesión por
   presupuesto; queda anotado para antes de declarar el funnel "vendible" de verdad.
 
-## Siguiente paso — Sesión 5: App interna simplificada
-Construir la landing con las 10 secciones canónicas (19-PAGINA-DE-VENTAS.md): hero 4U's →
-problema → agitación → mecanismo → carrusel → oferta (anual+mensual con trial) → garantía →
-FAQ → CTA emocional → footer legal. Copy derivado 100% de FICHA-AVATAR (el avatar "Carlos" ya
-está en ESTADO.md, sección "4. Cliente ideal"). Diseño con la Ficha de Arte ya cerrada — sin
-volver a discutir estilo.
-
 ## Problemas conocidos
+
+### veredicto onboarding — NO LISTA, techo estructural identificado (6 rondas de revisión)
+El revisor-visual independiente evaluó `/onboarding` **6 veces** en esta sesión (más 1 ronda previa
+a esta sesión, para 7 en total). Cada ronda aplicó fixes reales y verificados por el propio
+revisor (escéptico, sin conocer las intenciones de quien construyó la pantalla) — no se repitió
+ningún defecto ya corregido sin que el revisor lo confirmara arreglado. Última pasada
+(`docs/revisiones/onboarding-veredicto.md`): **Usabilidad 27/40 · Craft 12/20 · Copy N/A (no
+vende) · Veredicto NO LISTA** (umbral: ≥36/40 y ≥16/20).
+
+Historial de rondas (Usabilidad/Craft):
+1. 31/40 · 12/20 — última pasada previa a esta sesión (heredada, sin fixes de esta sesión aún).
+2. 29/40 · 12/20 — corregido: bug REAL confirmado (no solo de puntaje) — el botón Atrás dentro
+   del sub-estado "otra cosa" ejecutaba `router.back()` y sacaba al usuario del onboarding en vez
+   de volver a la lista de opciones, por pasarle una función directamente a `setAtrasLocal`
+   (React la interpretaba como *updater* en vez de guardarla como valor). Fix: envolver en
+   updater explícito. Verificado con Playwright en 2 rondas de screenshot posteriores. También se
+   subió la opacidad de `<Marcador>` (28%→38%) y la sombra de `<Chip>` (10%→22%).
+3. 27/40 · 13/20 — corregido: sombra/Marcador reajustados a un punto medio (Marcador 38%→30%,
+   corte del gradiente 64%→62%, tras señal contradictoria del revisor entre rondas — ver nota de
+   ruido abajo); agregado `<Halo>` (mancha radial) en las 4 pantallas de solo-chips; stagger de
+   entrada en `<Chip>` (delay index*0.06s); count-up en el número héroe del slider de meses;
+   microcopy de cierre con `mt-auto` para anclar el fondo de las 4 pantallas de solo-chips.
+4. 27/40 · 13/20 — el revisor confirmó en código los 5 fixes anteriores como efectivamente
+   implementados, pero: el `<Halo>` es casi imperceptible en la intensidad actual (16% de mix a
+   220×140px sobre `#0B1524`); el ancla de fondo solo se aplicó a las 4 pantallas de solo-chips,
+   no a "Otra cosa" ni a los 2 reconocimientos (que conservan el vacío original); los chips de 3
+   de las 4 preguntas van sin ícono (solo "preocupación" los usa); el check de reconocimiento no
+   tiene animación de entrada propia.
+5. **25/40 · 13/20** — el usuario pidió comparar el onboarding contra una propuesta externa
+   (Gemini) y ampliarlo: se agregó la pregunta de rol (paga/recibe la cuota, aprobada por el
+   usuario — ver FICHA-AVATAR.md § "Sub-avatar secundario"), la pregunta de cómo está fijada la
+   cuota, el nombre del mecanismo ("el Sello de Confianza") dentro del onboarding, y el refuerzo
+   del uso unilateral en el momento justo. El onboarding pasó de 8 a 10 pasos. El puntaje bajó
+   (27→25) porque el nuevo PRIMER paso (rol, solo 2 opciones) dejaba aún más vacío que las
+   preguntas de 3-4 opciones — y porque `<Chip>` de "situación" perdió el ícono al reescribir esa
+   pantalla para bifurcarla por rol (regresión de consistencia, corregida en la ronda 6). También
+   se encontró un bug real nuevo: el botón Atrás del paso 0 (rol) caía a `router.back()` sin
+   aviso, mismo patrón que el bug de la ronda 2 pero en una pantalla nueva.
+6. **27/40 · 12/20 (última)** — corregido: los 4 chips de "situación" recuperaron su ícono; el
+   Atrás del paso 0 ahora navega explícitamente a `/` en vez de `router.back()`; los mensajes de
+   refuerzo ganaron tarjetas con ícono propio en vez de texto suelto. El revisor confirmó los 3
+   fixes en código, pero encontró que el vacío solo se atendió en el paso de rol (no en
+   situación/fijación/preocupación — mismo techo de siempre) y que las 4 tarjetas nuevas
+   comparten el mismo tratamiento visual sin variar la profundidad. **También encontró, sin que
+   se le pidiera buscarlo, un bug real nuevo no reportado antes**: en la pantalla de carga final,
+   el checklist marcaba los pasos fuera de orden.
+   ⚠️ **Ese bug se investigó y corrigió tras la ronda 6** (no se volvió a correr el revisor sobre
+   el fix, por acuerdo explícito con el usuario de no seguir gastando rondas — ver abajo). Causa
+   raíz real: `setCompletadas((c) => [...c, i])` leía la variable `i` desde una función que React
+   ejecuta más tarde, y justo después el código mutaba esa misma variable (`i += 1`) — para cuando
+   React procesaba la actualización, `i` ya tenía el valor siguiente, así que marcaba el paso
+   equivocado. Se confirmó la causa con capturas en el tiempo y logs temporales antes de tocar
+   código (nunca se "arregló a ciegas"). Fix: capturar el índice en una constante antes de mutar
+   la variable. Verificado de nuevo con capturas en el tiempo: ahora marca 0→1→2→3→4 en orden
+   estricto. De paso se corrigió una advertencia de consola en el anillo animado (`strokeDashoffset`
+   sin valor inicial) y se agregó ayuda al campo "otra cosa". `tsc`/`next build` limpios.
+
+**Decisión explícita del usuario (2026-09-07): no correr una 7ª ronda del revisor.** Dos rondas
+seguidas taparon el mismo techo estructural (vacío en pantallas de solo-chips) ya diagnosticado
+abajo, y cada ronda tiene un costo real de tokens — el usuario prefirió avanzar a la Sesión 5
+antes que seguir gastando en rondas con rendimiento decreciente. El bug del checklist se corrigió
+y se verificó por fuera del revisor (con capturas en el tiempo), así que el fix es real y
+confirmado aunque no tenga una 7ª puntuación que lo certifique.
+
+RUIDO DEL REVISOR observado en el Marcador: ronda 2 pidió subir el mix de acento (28%→35-40%
+porque "se leía como caja sólida grisácea"); ronda 3, ya en 38%, pidió BAJARLO (~38%→25% porque
+"sigue leyéndose como bloque sólido"). Direcciones opuestas sobre el mismo defecto declarado en
+ambas rondas confirman que, en el rango 25-40%, la evaluación depende más de la sensibilidad del
+revisor en esa pasada que de una dirección objetiva — se fijó en 30% (punto medio) y no se sigue
+iterando solo este valor.
+
+DIAGNÓSTICO — por qué Craft no cruza 16/20 pese a 3 rondas reales de fixes de profundidad/movimiento:
+El defecto que más se repite ("vacío muerto" bajo el contenido) es tensión estructural, no
+descuido: `50-DISENO-ONBOARDING-PAYWALL.md` y el GATE DE CARGA COGNITIVA del propio revisor exigen
+explícitamente pantallas de una sola pregunta, ≤4-5 opciones, texto en 3-4 líneas — diseño
+deliberadamente minimalista para reducir fricción de decisión. Ese mismo minimalismo, renderizado
+en un viewport fijo de 375×812px, dibuja espacio vacío bajo el contenido en cualquier pantalla de
+pregunta corta. Llenar ese espacio con relleno no funcional iría CONTRA la doctrina de carga
+cognitiva que el propio SO exige — es un trade-off entre dos reglas del sistema, no un defecto de
+ejecución. El Halo y el microcopy de cierre ya aplicados son la respuesta honesta (dar textura sin
+llenar con ruido); subir su intensidad tiene rendimiento decreciente real, no solo percibido.
+
+Defectos que se DEJAN pendientes a propósito (candidatos a una futura Sesión 7 de pulido, NO
+bloqueantes de este cierre):
+- Extender `<Halo>` + ancla de cierre a "Otra cosa" y a los 2 reconocimientos (paso 3 y 7).
+- Íconos SVG en los chips de situación/momento/atribución (hoy solo preocupación los tiene) —
+  mejora de consistencia (h4), requiere elegir 4+5+5 íconos nuevos sin inventar categorías falsas.
+- Animación de entrada en el ícono-check de las pantallas de reconocimiento.
+Ninguno cambia el comportamiento del producto ni compromete datos del usuario — son pulido visual
+puro, coherente con seguir iterando cuando haya presupuesto, no con dejar la pantalla rota.
+
+Screenshot vigente: `docs/revisiones/onboarding-375.png` (paso 1/10, pregunta de rol).
+
+### veredicto pantalla-principal (Inicio) — NO LISTA, ronda 1 (bug real encontrado y corregido)
+El revisor-visual independiente evaluó `/inicio` por primera vez (primera pantalla de este tipo
+de plantilla — app interna, no landing/onboarding/paywall). Resultado
+(`docs/revisiones/pantalla-principal-veredicto.md`): **Usabilidad 21/40 · Craft 9/20 · Copy N/A ·
+Veredicto NO LISTA** (umbral: ≥36/40 y ≥16/20).
+
+⚠️ **Bug real encontrado, no solo de puntaje**: `tieneOnboardingCompleto()` se volvía `true` en
+cuanto se guardaba el título (paso 1 de "primeros pasos"), no al terminar el flujo completo. Si
+el usuario recargaba la página entre el paso 1 y el paso 2 (subir el comprobante), la app saltaba
+directo al Dashboard mostrando los DATOS SEMILLA de demostración (6 comprobantes, "4 de 6 meses")
+como si fueran suyos — el usuario real nunca subió esos comprobantes. Causa raíz: la capa de
+datos (`lib/datos.ts`) sembraba datos falsos automáticamente la primera vez que se leía pagos/
+autorizaciones/eventos, sin distinguir "usuario nuevo real" de "aún no hay datos". Corregido:
+- Nueva clave separada `coparentia_primeros_pasos_completos`, marcada SOLO al terminar de subir
+  el comprobante — nunca solo con el título guardado.
+- `guardarTitulo()` ahora inicializa pagos/autorizaciones/eventos en vacío (nunca con la semilla)
+  en el momento en que arranca el flujo real, para que un usuario real jamás vea datos que no
+  subió mezclados con los suyos.
+- El flujo "primeros pasos" ahora reanuda en el paso correcto (comprobante, no título) si el
+  título ya estaba guardado de un intento anterior.
+- Verificado con Playwright: recargar entre el paso 1 y el paso 2 ya NO salta al dashboard con
+  datos falsos, se queda correctamente en "Sube tu primer comprobante"; y el dashboard real, tras
+  completar el flujo, muestra únicamente "1 de 6" y el único comprobante que el usuario subió.
+
+Otros defectos corregidos en la misma ronda: agregado indicador "Paso X de 2" + botón Atrás
+funcional en los pasos 2/3 de "primeros pasos" (antes no existía ninguno); `whileTap` en los 3
+botones principales del flujo (antes `<button>` planos); agregado el `<Halo>` (dispositivo de
+marca de FICHA-ARTE.md) en los títulos de "primeros pasos" — antes esta pantalla no usaba el
+mismo lenguaje visual que el resto del producto.
+
+Defecto que se DEJA pendiente a propósito (mismo techo estructural ya diagnosticado en
+onboarding/paywall/landing, no bloqueante): ~45-50% de vacío en los pasos "comprobante" y
+"revelación" de primeros pasos — pantallas de una sola acción, por diseño.
+
+`tsc`/`next build` limpios tras los fixes. **No se relanzó el revisor sobre los fixes** (mismo
+acuerdo de no seguir gastando rondas mientras el fix real ya está verificado por fuera del
+revisor, con Playwright). Screenshot vigente: `docs/revisiones/inicio-375.png` (paso 1 de
+"primeros pasos") — desactualizado tras estos fixes; ver `docs/revisiones/inicio-dashboard-375.png`
+y `docs/revisiones/verificacion-bug-tras-reload.png` para el estado real actual.
+
+### veredicto paywall — NO LISTA, techo estructural identificado (3 rondas de revisión)
+El revisor-visual independiente evaluó `/paywall` **3 veces** en esta sesión. Última pasada
+(`docs/revisiones/paywall-veredicto.md`): **Usabilidad 26/40 · Craft 12/20 · Copy 16/20 (con eje
+"emoción" en 2/4, viola la regla "ningún eje ≤2" — copy NO pasa aunque el total sí) · Veredicto
+NO LISTA** (umbral: ≥36/40, ≥16/20 craft, ≥16/20 copy sin ejes ≤2).
+
+Historial de rondas (Usabilidad/Craft/Copy):
+1. 22/40 · 10/20 · 15/20 — pasada previa a esta sesión.
+2. 27/40 · 12/20 · 15/20 — corregido: sin indicador de selección claro en las cards de plan →
+   `<CheckPlan>` (círculo+check); sombra plana → sombra con tinte de acento (más fuerte en la
+   seleccionada); sin halo/marcador en el título de Precio → halo radial + `<Marcador>` en
+   "Blinda"; fila "Ahora no" sola y poco útil → centrada + segundo link "¿Dudas? Escríbenos".
+3. 26/40 · 12/20 · 16/20 (última) — corregido y CONFIRMADO por el revisor en código: (a) botones
+   de plan sin feedback táctil → `motion.button` + `whileTap={{scale:0.97}}`, `CheckPlan` con
+   spring igual que `<Chip>`; (b) ambigüedad "4 meses gratis" (badge) vs "7 días gratis" (CTA) →
+   badge cambiado a "ahorra 4 meses"; (c) garantía en texto pequeño lejos del CTA → consolidada
+   en una sola línea prominente justo encima del CTA (antes duplicada y enterrada en el footer);
+   (d) sin forma de volver a Recap/TimelineTrial → botón Atrás en el header, visible si `paso>0`.
+   Nuevos defectos que el revisor encontró en esta misma ronda: el vacío que dejaba `justify-center`
+   no se eliminó, solo se reubicó al centro (`mt-auto` con contenido insuficiente para llenar
+   375×812 en las 3 pantallas del paywall); sin indicador "paso X de 3" pese a que `BarraProgreso`
+   ya existe en el kit; las 3 features del expediente (solo visibles en Recap) no se repiten en
+   Precio; los botones de plan no tienen entrada escalonada como sí tiene `<Chip>`; el titular de
+   Precio es genérico y no retoma la escena de dolor del avatar ni el mecanismo ya introducido.
+
+DIAGNÓSTICO: mismo techo estructural que onboarding — las 3 pantallas del paywall son, por diseño
+(`02B-ONBOARDING-Y-PAYWALL.md`, paywall DE SECUENCIA con 1 idea por pantalla), deliberadamente
+cortas. El "vacío muerto" es la misma tensión doctrina-minimalista vs. rúbrica-de-densidad ya
+diagnosticada en onboarding y landing — no un defecto de ejecución nuevo.
+
+Defectos que se DEJAN pendientes a propósito (candidatos a Sesión 7, NO bloqueantes):
+- Indicador "paso X de 3" en el header del paywall (`<BarraProgreso>` ya existe en el kit,
+  solo falta cablearlo aquí) — mejora real y barata, priorizar primero si se retoma esta pantalla.
+- ~~Repetir las 3 features del expediente en la pantalla de Precio~~ — HECHO (ver actualización
+  2026-09-07 abajo, pedido tras comparar contra una propuesta externa de Gemini).
+- Stagger de entrada en los botones de plan, igual que `<Chip>`.
+- Reescribir el titular de Precio para retomar una escena de dolor específica del avatar
+  ("captura de WhatsApp que no prueba nada", ya usada en el reconocimiento del onboarding) en vez
+  del genérico actual "Blinda tu expediente desde hoy".
+
+#### Actualización 2026-09-07: mejoras al paywall (propuesta externa de Gemini, analizada punto por punto)
+El usuario pidió comparar el paywall contra 6 tácticas de conversión sugeridas por Gemini. Evaluación:
+- **Ya cubierto sin cambios**: el cronograma "Hoy / Día 5 / Día 7" (`TimelineTrial`) y el anclaje
+  de precio anual preseleccionado con badge y $/mes ya existían tal cual se sugería.
+- **Adoptado**: se repitieron las 3 features del expediente (antes solo en Recap) en la pantalla
+  de Precio, ahora en formato de 3 viñetas dolor→solución con ícono (Trazabilidad inalterable ·
+  Reporte en 1 clic · Cero discusiones) — esto también resuelve el defecto ya documentado arriba
+  de la ronda 3. Se sumó una línea de micro-anclaje ("Menos de $0.25 al día...") usando el número
+  YA validado en la Oferta de la landing (nunca se inventó un número nuevo). Se agregaron enlaces
+  de Términos/Privacidad al pie, ausentes hasta ahora en esta pantalla.
+- **RECHAZADO — testimonio de usuaria ("Carolina M., Usuaria verificada")**: es un testimonio
+  100% inventado — la app no tiene usuarios reales todavía. Fabricarlo viola la regla dura del
+  sistema (`19-PAGINA-DE-VENTAS.md` "CERO testimonios inventados", ya aplicada en toda la landing).
+  No se implementó bajo ninguna forma.
+- **DIFERIDO — descuento de rescate al cerrar (exit-intent: 14 días o 20% de descuento)**: cambia
+  los términos de precio/prueba ya validados en FICHA-MERCADO.md (cosa juzgada) y requeriría un
+  cupón/oferta real coordinado con Hotmart, que no existe hasta la Sesión 6 (checkout real). Es una
+  táctica válida para más adelante, no para simularla ahora con datos falsos — queda anotada aquí
+  como candidata a revisar junto con la integración real de Hotmart.
+- No se volvió a correr el revisor-visual sobre estos cambios (mismo acuerdo de no seguir gastando
+  rondas mientras el techo estructural ya está diagnosticado) — verificado con `tsc`/`next build`
+  limpios y captura visual.
+
+Screenshot vigente: `docs/revisiones/paywall-375.png` (pantalla 3/3, Precio) — desactualizado tras
+esta actualización; ver `docs/revisiones/paywall-precio-v2-375.png` para el estado real actual.
 
 ### veredicto landing — NO LISTA, techo estructural identificado (6 rondas de revisión)
 El revisor-visual independiente evaluó la landing **6 veces** en dos sesiones (histórico completo
@@ -361,7 +647,55 @@ FICHA-MODELO.md y FICHA-MERCADO.md en la raíz). La garantía de 15 días quedó
 los plazos reales que permite Hotmart (7/15/21/30 días) y corregida para cumplir la regla dura
 garantía > prueba (antes ambas eran de 7 días, error ya corregido en todo el copy).
 
+## Sesión 5 — EN CURSO (2026-09-07): la app interna
+Sin backend todavía (Sesión 6 conecta Supabase): toda la data vive en `lib/datos.ts`
+(localStorage), con datos semilla realistas de "Carlos" (32 — la app nunca se enseña vacía).
+Migrar a una base real después es mecánico: los tipos ya están pensados como el futuro esquema.
+
+- **4 secciones** (`app/(app)/layout.tsx` con `<BottomNav>` de `components/app/ui.tsx`), mapeadas
+  1 a 1 a las funciones núcleo de ESTADO.md §11:
+  - **`/inicio`**: dashboard (anillo de meses con registro, total registrado, próximo evento,
+    últimos movimientos) — Y la PRIMERA VICTORIA real: si no hay título guardado, en vez del
+    dashboard se muestra un flujo de 2 pasos (configurar cuota → subir primer comprobante) que
+    termina en una revelación ("Tu Estado de Cuenta Organizado"), tal como se definió desde el
+    inicio del proyecto (<5 min, ver §11).
+  - **`/pagos`**: registro de pagos y gastos extraordinarios, con filtros (todos/cuota/gasto
+    extra — regla 14 del SO) y modal de registro (adjuntar archivo real + monto + concepto).
+  - **`/calendario`**: eventos (visita/médica/vacaciones/actividad/**salida del país** — MVP #5,
+    aprobado hoy con el usuario), navegación real entre meses con fechas reales (regla 13 del
+    SO), modal de alta. La categoría "salida del país" (pedido explícito del usuario) tiene un
+    campo propio para adjuntar el permiso de salida notariado — documento legal real y relevante
+    en custodia en Colombia — y lo muestra en la tarjeta del evento con un clip cuando existe.
+  - **`/expediente`**: autorizaciones/controversias con píldora de estado semántica
+    (verde/ámbar/rojo — nuevos tokens `--status-success/warning/error` en tokens.css) + **PDF
+    REAL** (librería `jspdf`, instalada y en package.json): el botón "Exportar expediente"
+    genera y descarga un archivo `.pdf` de verdad con el título, el historial de pagos y las
+    autorizaciones — no es una promesa vacía, se probó la descarga real (5.1 KB, folio por
+    página) con Playwright.
+- El "Sello de Confianza" se simula honestamente al subir un comprobante (una pausa de ~1s con
+  copy explicando qué pasa) — el nombre del archivo es real (lo eligió el usuario), el OCR/
+  validación automática real llega en Sesión 6 con el backend.
+- Verificado con Playwright el flujo completo (primeros pasos desde cero → dashboard → pagos →
+  calendario → expediente → exportar PDF real) sin errores de consola. `tsc`/`next build`
+  limpios con las 4 rutas nuevas generadas.
+- Rutas navegables directo (sin gate de sesión real) mientras el login siga siendo mock, mismo
+  criterio ya usado en `/onboarding` y `/paywall` en esta etapa.
+- **Placeholder del Hero de la landing reemplazado por captura real** (pedido del usuario, ya
+  hecho): `visual` de `Hero` en `app/page.tsx` ahora usa `public/hero-visual-inicio.png` —
+  captura real de `/inicio` (con datos semilla) mostrando el anillo de meses con registro, total
+  registrado y próximo evento. El placeholder punteado ("Sugerencia: captura de la pantalla
+  principal...") ya no aparece.
+- **Pendiente antes de cerrar la sesión**: revisor-visual sobre `/inicio` (es una de las 4
+  pantallas del dinero — landing, onboarding, paywall, pantalla principal — obligatoria por
+  doctrina), reemplazar los placeholders restantes del carrusel "La app por dentro" (Onboarding/
+  Paywall/Registro de pago/Calendario siguen con ícono+texto, no captura real) con capturas
+  reales, y decidir con el usuario si se sigue puliendo Pagos/Calendario/Expediente o se avanza
+  a Sesión 6 (servicios externos).
+
 ## Siguiente paso
-Sesión 4: Onboarding, paywall y login (ver sección de arriba). Antes de darla por *vendible* de
-verdad, falta cerrar el pendiente de "veredicto landing" cuando la Sesión 5 entregue screenshots
-reales de la app interna.
+Sesión 4 (onboarding/paywall/login) TERMINADA — sus 3 gates (`veredicto:landing`,
+`veredicto:onboarding`, `veredicto:paywall`) quedaron en techo estructural documentado arriba
+("## Problemas conocidos"), no bloquean seguir. Sesión 5 (la app interna) EN CURSO — ver arriba.
+Al reemplazar los placeholders del carrusel "La app por dentro" de la landing con las capturas
+reales de esta sesión, se vuelve a correr el revisor-visual sobre landing con el techo ya
+levantado (ver diagnóstico de la sección `veredicto landing`).

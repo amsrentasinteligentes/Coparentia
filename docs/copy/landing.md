@@ -21,8 +21,8 @@ sin pelear por WhatsApp.
 - Visual: placeholder del dashboard (pantalla principal — "Tu expediente, en confianza")
 
 ## 2. PROBLEMA
-- "¿Te reclaman por WhatsApp pagos que ya hiciste?"
-- "¿Terminas la noche buscando un comprobante de hace 6 meses?"
+- "¿Te reclaman pagos que ya hiciste y no encuentras el comprobante?"
+- "¿No tienes clara tu fecha de pago o cuándo aumenta tu cuota?"
 - "¿Te piden dinero para gastos 'urgentes' sin ningún soporte?"
 - "¿Vives con miedo a una demanda que no sabrías cómo responder?"
 
@@ -44,7 +44,8 @@ sin pelear por WhatsApp.
 ## 5. LA APP POR DENTRO
 - Título (marcado): "Tu expediente, [acento]siempre a mano[/acento]"
 - Frames: "Tu expediente al día" (Home) · "Cuéntanos tu situación" (Onboarding) · "Elige tu
-  plan" (Paywall) · "Sube tu comprobante" (Registro de pago)
+  plan" (Paywall) · "Sube tu comprobante" (Registro de pago) · "Visitas, citas y actividades"
+  (Calendario — registro unilateral de eventos propios, no de custodia compartida)
 
 ## 6. OFERTA
 - Título (marcado): "Empieza gratis. Sigue por [acento]menos de $0.25/día[/acento]"
@@ -74,7 +75,7 @@ sin pelear por WhatsApp.
    se comparten sin tu autorización."
 
 ## 9. CTA FINAL
-- H2 (marcado): "Imagina [acento]dormir en paz[/acento]"
+- H2 (marcado): "Todo lo importante, [acento]bajo control[/acento]. Tu mente, [acento]en calma[/acento]."
 - Future pacing (marcado): "La próxima vez que te reclamen por WhatsApp, abres tu expediente y
   respondes con hechos — no con capturas sueltas."
 - Recap: "7 días de prueba gratis · Garantía del Primer Expediente (15 días)"

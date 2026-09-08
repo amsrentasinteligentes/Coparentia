@@ -4,7 +4,7 @@
 // kit de components/landing/. Copy trazado a FICHA-AVATAR.md, tokens a FICHA-ARTE.md.
 // Copy fuente: docs/copy/landing.md.
 
-import { MessageCircleWarning, FileSearch, ReceiptText, ShieldAlert, Home as HomeIcon, ListChecks, CreditCard, Upload } from 'lucide-react';
+import { MessageCircleWarning, ReceiptText, ShieldAlert, CalendarClock, CalendarDays, Home as HomeIcon, ListChecks, CreditCard, Upload } from 'lucide-react';
 import { Hero } from '@/components/landing/Hero';
 import { Problema } from '@/components/landing/Problema';
 import { Agitacion } from '@/components/landing/Agitacion';
@@ -29,21 +29,22 @@ export default function Home() {
       {/* 1. HERO */}
       <Hero
         appName="Coparentia"
+        logo={<img src="/logo-isotipo.png" alt="" aria-hidden="true" className="size-6 object-contain" />}
         loginHref="/entrar"
         h1Marked="Tu cuota, [acento]pagada y probada[/acento]"
         subtitleMarked="El Sello de Confianza convierte tus comprobantes en un expediente [b]listo para mostrar[/b]"
         ctaLabel={CTA_LABEL}
         ctaHref={CTA_HREF}
         socialProof={<span>7 días de prueba gratis — cancela cuando quieras</span>}
-        visualPlaceholderSugerencia="captura de la pantalla principal: expediente con el anillo de avance"
+        visual={<img src="/hero-visual-inicio.png" alt="Tu expediente: anillo de avance, total registrado y próximo evento" className="w-full" />}
       />
 
       {/* 2. PROBLEMA */}
       <Problema
         titulo="¿Te suena?"
         preguntas={[
-          { icon: MessageCircleWarning, textoMarked: '¿Te reclaman por WhatsApp pagos que [b]ya hiciste[/b]?' },
-          { icon: FileSearch, textoMarked: '¿Terminas la noche buscando un comprobante de hace 6 meses?' },
+          { icon: MessageCircleWarning, textoMarked: '¿Te reclaman pagos que [b]ya hiciste[/b] y no encuentras el comprobante?' },
+          { icon: CalendarClock, textoMarked: '¿No tienes clara tu fecha de pago o cuándo aumenta tu cuota?' },
           { icon: ReceiptText, textoMarked: '¿Te piden dinero para gastos "urgentes" sin ningún soporte?' },
           { icon: ShieldAlert, textoMarked: '¿Vives con miedo a una demanda que no sabrías cómo responder?' },
         ]}
@@ -94,6 +95,7 @@ export default function Home() {
           { label: 'Cuéntanos tu situación', nombrePantalla: 'Onboarding', iconoPlaceholder: ListChecks },
           { label: 'Elige tu plan', nombrePantalla: 'Paywall', iconoPlaceholder: CreditCard },
           { label: 'Sube tu comprobante', nombrePantalla: 'Registro de pago', iconoPlaceholder: Upload },
+          { label: 'Visitas, citas y actividades', nombrePantalla: 'Calendario', iconoPlaceholder: CalendarDays },
         ]}
         ctaLabel={CTA_LABEL}
         ctaHref={CTA_HREF}
@@ -184,7 +186,7 @@ export default function Home() {
 
       {/* 9. CTA FINAL */}
       <CtaFinal
-        h2Marked="Imagina [acento]dormir en paz[/acento]"
+        h2Marked="Todo lo importante, [acento]bajo control[/acento]. Tu mente, [acento]en calma[/acento]."
         futurePacingMarked="La próxima vez que te reclamen por WhatsApp, abres tu expediente y respondes con hechos — no con capturas sueltas."
         ctaLabel={CTA_LABEL}
         ctaHref={CTA_HREF}
@@ -199,6 +201,7 @@ export default function Home() {
       {/* 10. FOOTER LEGAL */}
       <FooterLegal
         appName="Coparentia"
+        logo={<img src="/logo-isotipo.png" alt="" aria-hidden="true" className="size-5 object-contain" />}
         soporteEmail="soporte@coparentia.app"
         enlaces={[
           { label: 'Privacidad', href: '/privacidad' },

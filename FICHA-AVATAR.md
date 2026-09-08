@@ -98,6 +98,30 @@
   demuestra el cumplimiento sin necesidad de discutir) — se repite en landing, onboarding y
   paywall.
 
+## Sub-avatar secundario — quien RECIBE la cuota (actualización 2026-09-07)
+- Estado: **APROBADO por el usuario** (2026-09-07) — a diferencia del resto de esta ficha, este
+  bloque NO viene del "RESUMEN FINAL" original (ese PDF investigó solo el lado de quien PAGA).
+  El usuario pidió explícitamente ampliar la app también a quien COBRA la cuota, tras comparar
+  el onboarding ya construido con una propuesta externa. Los dolores de abajo son INFERIDOS por
+  simetría lógica del mismo conflicto (el lado opuesto del problema que Carlos ya vive) — no son
+  frases textuales de investigación de mercado propia. Si más adelante se recopila VoC real de
+  este lado (entrevistas, reseñas), reemplazar esta sección con evidencia citada.
+- Arquetipo: mismo contexto que Carlos (padre/madre separado, Colombia), pero es quien RECIBE el
+  dinero para los hijos, no quien lo paga. Mismo nivel de consciencia (DE SOLUCIÓN) y mismo canal
+  de distribución/pricing — no es un producto distinto, es la otra mitad del mismo conflicto.
+- Dolores inferidos (simétricos a los de Carlos, no sustituyen los suyos):
+  1. "Nunca sé si el pago de este mes va a llegar completo o a tiempo."
+  2. "No tengo cómo demostrar qué gastos extra ya cubrí yo sola/o, sin ayuda."
+  3. "Si algún día tengo que reclamar lo que no me han pagado, no tengo con qué probarlo."
+  4. "Me da miedo que si algo pasa, quede como que yo no fui clara con las cuentas."
+- El mecanismo ("el Sello de Confianza") y el diferenciador de uso UNILATERAL sirven IGUAL para
+  este lado: el expediente protege a quien lo lleva, sin importar si paga o recibe.
+- Implicación de copy: el onboarding pregunta el ROL (paga/recibe) al inicio y bifurca las
+  preguntas de "preocupación" según la respuesta — el resto del funnel (landing, paywall) NO se
+  reescribe todavía: sigue hablándole a Carlos (quien paga) porque es el lado con investigación
+  real. Revisar landing/paywall para el lado receptor solo si hay evidencia de demanda real de
+  ese segmento (no especular sin datos).
+
 ## Cierre
 - INVENTARIO DE PRUEBA DÍA-1: sin usuarios reales todavía. Se usará la jerarquía día-1 de
   `19-PAGINA-DE-VENTAS.md`: garantía Hotmart destacada + demo del mecanismo (mini-demo

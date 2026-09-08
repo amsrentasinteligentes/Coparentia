@@ -18,7 +18,7 @@ export function FunnelHeader({ appName = 'Coparentia' }: { appName?: string }) {
       href="/"
       className="mb-2 inline-flex items-center gap-2 py-3 text-[15px] font-semibold text-[var(--text-primary)]"
     >
-      <span aria-hidden="true" className="size-6 shrink-0 rounded-[8px] bg-[var(--accent)]" />
+      <img src="/logo-isotipo.png" alt="" aria-hidden="true" className="size-6 shrink-0 object-contain" />
       {appName}
     </Link>
   );
@@ -47,7 +47,17 @@ export function BarraProgreso({ porcentaje }: { porcentaje: number }) {
 }
 
 /* ── <BarraAtras> — atrás (44×44 táctil) + barra de progreso, mismo renglón (A2) ── */
-export function BarraAtras({ porcentaje, onAtras }: { porcentaje: number; onAtras?: () => void }) {
+export function BarraAtras({
+  porcentaje,
+  onAtras,
+  pasoActual,
+  pasoTotal,
+}: {
+  porcentaje: number;
+  onAtras?: () => void;
+  pasoActual?: number;
+  pasoTotal?: number;
+}) {
   const router = useRouter();
   return (
     <div className="flex items-center gap-2">
@@ -60,10 +70,42 @@ export function BarraAtras({ porcentaje, onAtras }: { porcentaje: number; onAtra
         <ChevronLeft size={22} aria-hidden="true" />
       </button>
       <BarraProgreso porcentaje={porcentaje} />
-      <span className="w-9 shrink-0 text-right text-[12px] tabular-nums text-[var(--text-tertiary)]">
-        {Math.round(Math.max(6, Math.min(100, porcentaje)))}%
+      <span className="shrink-0 whitespace-nowrap text-right text-[12px] tabular-nums text-[var(--text-tertiary)]">
+        {pasoActual && pasoTotal ? `Paso ${pasoActual} de ${pasoTotal}` : `${Math.round(Math.max(6, Math.min(100, porcentaje)))}%`}
       </span>
     </div>
+  );
+}
+
+/* ── <Marcador> — subrayado en la palabra clave (dispositivo ownable de FICHA-ARTE.md,
+   halo + marcador — mismo device que <Accent> de la landing) ── */
+export function Marcador({ children }: { children: ReactNode }) {
+  return (
+    <span
+      className="[box-decoration-break:clone] [-webkit-box-decoration-break:clone]"
+      style={{
+        backgroundImage:
+          'linear-gradient(transparent 62%, color-mix(in oklab, var(--accent) 30%, transparent) 62%)',
+        padding: '0 0.05em',
+      }}
+    >
+      {children}
+    </span>
+  );
+}
+
+/* ── <Halo> — mancha radial detrás de un título (dispositivo ownable, mismo device que
+   el hero de la landing) — para sostener 3 niveles de profundidad en pantallas de solo-chips ── */
+export function Halo() {
+  return (
+    <span
+      aria-hidden="true"
+      className="pointer-events-none absolute -inset-x-6 -inset-y-8 -z-10"
+      style={{
+        background:
+          'radial-gradient(220px 140px at 15% 20%, color-mix(in oklab, var(--accent) 16%, transparent) 0%, transparent 65%)',
+      }}
+    />
   );
 }
 
@@ -73,18 +115,24 @@ export function Chip({
   onClick,
   children,
   icon,
+  index = 0,
 }: {
   seleccionado: boolean;
   onClick: () => void;
   children: ReactNode;
   icon?: ReactNode;
+  index?: number;
 }) {
+  const reduce = useReducedMotion();
   return (
     <motion.button
       type="button"
       onClick={onClick}
       whileTap={{ scale: 0.97 }}
-      className={`flex h-14 w-full items-center gap-3 rounded-[var(--radius-button)] border px-4 text-left text-[16px] font-medium transition-colors duration-150 [touch-action:manipulation] ${
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: reduce ? 0 : 0.25, delay: reduce ? 0 : index * 0.06, ease: [0.16, 1, 0.3, 1] }}
+      className={`flex h-14 w-full items-center gap-3 rounded-[var(--radius-button)] border px-4 text-left text-[16px] font-medium shadow-[0_3px_14px_color-mix(in_oklab,var(--accent)_22%,transparent)] transition-colors duration-150 [touch-action:manipulation] ${
         seleccionado
           ? 'border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_10%,transparent)] text-[var(--text-primary)]'
           : 'border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] bg-[var(--surface)] text-[var(--text-primary)]'

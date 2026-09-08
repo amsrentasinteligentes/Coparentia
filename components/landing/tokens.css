@@ -45,6 +45,11 @@
 
   /* ── DERIVADOS (no se tocan: se recalculan solos desde --accent) ── */
   --chip-bg: color-mix(in oklab, var(--accent) 10%, transparent);
+
+  /* ── SEMÁNTICOS (app interna) — separados del acento de marca, solo en su función (regla 15) ── */
+  --status-success: #4ade80;
+  --status-warning: #fbbf24;
+  --status-error: #f87171;
 }
 
 /* ============================================================================

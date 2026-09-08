@@ -8,8 +8,31 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion } from 'motion/react';
-import { X, Check, ShieldCheck, Lock } from 'lucide-react';
-import { CtaFunnel, FunnelHeader, usePasoVariants } from '@/components/funnel/ui';
+import { ChevronLeft, X, Check, ShieldCheck, Lock, FileCheck2, HeartHandshake } from 'lucide-react';
+import { CtaFunnel, FunnelHeader, Marcador, usePasoVariants } from '@/components/funnel/ui';
+
+/* ── <CheckPlan> — check circular animado del plan activo, mismo device que <Chip> ── */
+function CheckPlan({ activo }: { activo: boolean }) {
+  return (
+    <span
+      aria-hidden="true"
+      className={`mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full border-2 transition-colors ${
+        activo ? 'border-[var(--accent)] bg-[var(--accent)]' : 'border-[color-mix(in_oklab,var(--text-tertiary)_40%,transparent)] bg-transparent'
+      }`}
+    >
+      {activo && (
+        <motion.span
+          initial={{ scale: 0.5, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.2, type: 'spring', bounce: 0.35 }}
+          className="flex items-center justify-center"
+        >
+          <Check size={12} strokeWidth={3} color="var(--bg)" />
+        </motion.span>
+      )}
+    </span>
+  );
+}
 
 type Respuestas = {
   situacion: string;
@@ -51,7 +74,19 @@ export default function Paywall() {
   return (
     <div className="mx-auto flex min-h-dvh max-w-[520px] flex-col px-4 pt-4 pb-[max(20px,env(safe-area-inset-bottom))]">
       <div className="flex items-center justify-between">
-        <FunnelHeader />
+        <div className="flex items-center gap-1">
+          {paso > 0 && (
+            <button
+              type="button"
+              onClick={() => setPaso((p) => Math.max(0, p - 1))}
+              aria-label="Volver"
+              className="flex size-11 shrink-0 items-center justify-center text-[var(--text-secondary)] [touch-action:manipulation]"
+            >
+              <ChevronLeft size={22} aria-hidden="true" />
+            </button>
+          )}
+          <FunnelHeader />
+        </div>
         <button
           type="button"
           onClick={cerrar}
@@ -167,69 +202,112 @@ function Precio({
 }) {
   return (
     <div className="flex flex-1 flex-col">
-      <h1 className="text-balance text-[26px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)]">
-        Blinda tu expediente <span className="text-[var(--accent)]">desde hoy</span>
+      <h1 className="relative text-balance text-[26px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)]">
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute -inset-x-6 -inset-y-8 -z-10"
+          style={{
+            background:
+              'radial-gradient(220px 140px at 20% 30%, color-mix(in oklab, var(--accent) 20%, transparent) 0%, transparent 65%)',
+          }}
+        />
+        <Marcador>Blinda</Marcador> tu expediente <span className="text-[var(--accent)]">desde hoy</span>
       </h1>
 
       <div className="mt-6 flex flex-col gap-3">
-        <button
+        <motion.button
           type="button"
           onClick={() => onCambiarPlan('anual')}
-          className={`relative rounded-[var(--radius-card)] border p-4 text-left transition-colors [touch-action:manipulation] ${
+          whileTap={{ scale: 0.97 }}
+          className={`relative flex items-start gap-3 rounded-[var(--radius-card)] border p-4 text-left transition-colors [touch-action:manipulation] ${
             plan === 'anual'
-              ? 'border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_7%,transparent)]'
-              : 'border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] bg-[var(--surface)]'
+              ? 'border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_7%,transparent)] shadow-[0_6px_20px_color-mix(in_oklab,var(--accent)_18%,transparent)]'
+              : 'border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] bg-[var(--surface)] shadow-[var(--shadow-1)]'
           }`}
         >
           <span className="absolute -top-2.5 left-4 rounded-full bg-[var(--accent)] px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-[0.06em] text-[var(--bg)]">
-            Más popular · 4 meses gratis
+            Más popular · ahorra 4 meses
           </span>
-          <div className="mt-1.5 flex items-baseline justify-between">
-            <span className="text-[15px] font-semibold text-[var(--text-primary)]">Anual</span>
-            <span className="text-[24px] font-bold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
-              {PLAN_ANUAL.precioMes}<span className="text-[13px] font-normal text-[var(--text-secondary)]">/mes</span>
-            </span>
+          <CheckPlan activo={plan === 'anual'} />
+          <div className="mt-1.5 flex-1">
+            <div className="flex items-baseline justify-between">
+              <span className="text-[15px] font-semibold text-[var(--text-primary)]">Anual</span>
+              <span className="text-[24px] font-bold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
+                {PLAN_ANUAL.precioMes}<span className="text-[13px] font-normal text-[var(--text-secondary)]">/mes</span>
+              </span>
+            </div>
+            <p className="mt-1 text-[13px] text-[var(--text-secondary)]">{PLAN_ANUAL.totalAnual}</p>
           </div>
-          <p className="mt-1 text-[13px] text-[var(--text-secondary)]">{PLAN_ANUAL.totalAnual}</p>
-        </button>
+        </motion.button>
 
-        <button
+        <motion.button
           type="button"
           onClick={() => onCambiarPlan('mensual')}
-          className={`rounded-[var(--radius-card)] border p-4 text-left transition-colors [touch-action:manipulation] ${
+          whileTap={{ scale: 0.97 }}
+          className={`flex items-start gap-3 rounded-[var(--radius-card)] border p-4 text-left transition-colors [touch-action:manipulation] ${
             plan === 'mensual'
-              ? 'border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_7%,transparent)]'
-              : 'border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] bg-[var(--surface)]'
+              ? 'border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_7%,transparent)] shadow-[0_6px_20px_color-mix(in_oklab,var(--accent)_18%,transparent)]'
+              : 'border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] bg-[var(--surface)] shadow-[var(--shadow-1)]'
           }`}
         >
-          <div className="flex items-baseline justify-between">
-            <span className="text-[15px] font-semibold text-[var(--text-primary)]">Mensual</span>
-            <span className="text-[24px] font-bold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
-              {PLAN_MENSUAL.precioMes}<span className="text-[13px] font-normal text-[var(--text-secondary)]">/mes</span>
-            </span>
+          <CheckPlan activo={plan === 'mensual'} />
+          <div className="flex-1">
+            <div className="flex items-baseline justify-between">
+              <span className="text-[15px] font-semibold text-[var(--text-primary)]">Mensual</span>
+              <span className="text-[24px] font-bold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
+                {PLAN_MENSUAL.precioMes}<span className="text-[13px] font-normal text-[var(--text-secondary)]">/mes</span>
+              </span>
+            </div>
           </div>
-        </button>
+        </motion.button>
       </div>
 
-      <div className="mt-6">
+      <div className="mt-6 flex flex-col gap-3">
+        {[
+          { icon: ShieldCheck, texto: 'Trazabilidad inalterable: cada comprobante con fecha y respaldo' },
+          { icon: FileCheck2, texto: 'Reporte en 1 clic: expediente en PDF listo para tu abogado' },
+          { icon: HeartHandshake, texto: 'Cero discusiones: evita reclamos por gastos que ya cubriste' },
+        ].map(({ icon: Icon, texto }) => (
+          <div key={texto} className="flex items-center gap-3">
+            <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[color-mix(in_oklab,var(--accent)_12%,transparent)]">
+              <Icon size={15} color="var(--accent)" aria-hidden="true" />
+            </span>
+            <span className="text-[14px] text-[var(--text-secondary)]">{texto}</span>
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-auto pt-6">
+        <div className="mb-3 flex items-center justify-center gap-1.5 text-[13px] font-medium text-[var(--text-secondary)]">
+          <ShieldCheck size={14} color="var(--accent)" aria-hidden="true" />
+          Garantía del Primer Expediente · 15 días
+        </div>
         <CtaFunnel onClick={onCta}>Empezar mis 7 días gratis</CtaFunnel>
         <p className="mt-2 text-center text-[13px] text-[var(--text-secondary)]">
           Hoy no pagas nada · Te avisamos antes del cobro · Cancela en 1 tap
         </p>
+        <p className="mt-2 text-center text-[13px] text-[var(--text-tertiary)]">
+          Menos de $0.25 al día — menos que un mensaje aclaratorio a tu abogado.
+        </p>
       </div>
 
-      <div className="mt-4 flex justify-center">
+      <div className="mt-4 flex justify-center gap-4">
         <button type="button" onClick={onAhoraNo} className="px-2 py-3 text-[14px] text-[var(--text-tertiary)] [touch-action:manipulation]">
           Ahora no
         </button>
+        <a href="mailto:soporte@coparentia.app" className="px-2 py-3 text-[14px] text-[var(--text-tertiary)] underline-offset-2 hover:underline [touch-action:manipulation]">
+          ¿Dudas? Escríbenos
+        </a>
       </div>
 
       <div className="mt-2 flex items-center justify-center gap-1.5 text-[12px] text-[var(--text-tertiary)]">
         <Lock size={13} aria-hidden="true" />
         Pago seguro
+      </div>
+      <div className="mt-1 flex items-center justify-center gap-2 text-[11px] text-[var(--text-tertiary)]">
+        <a href="/terminos" className="underline-offset-2 hover:underline">Términos</a>
         <span aria-hidden="true">·</span>
-        <ShieldCheck size={13} aria-hidden="true" />
-        Garantía del Primer Expediente (15 días)
+        <a href="/privacidad" className="underline-offset-2 hover:underline">Privacidad</a>
       </div>
     </div>
   );
