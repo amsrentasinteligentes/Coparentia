@@ -133,16 +133,19 @@ CURSO: el usuario ya tenía cuentas de GitHub/Supabase/Hotmart; falta Vercel. Pr
   correo en spam por ahora. Retomar esto en la sesión de dominio/lanzamiento (ver `18-VENTA-
   HOTMART.md`/`62-PUBLICACION-SEGURA-Y-CONTINUA.md`).
 
-⚠️ **PENDIENTE — sin almacenamiento real del comprobante subido (hallazgo del usuario, real)**:
-  probando en su celular, el usuario notó que la app solo guarda el NOMBRE del archivo del
-  comprobante (`comprobante_nombre`), nunca la foto/PDF en sí — no hay ninguna prueba real
-  almacenada, algo especialmente delicado porque el producto vende justo eso ("el Sello de
-  Confianza"). `supabase/schema.sql` ya tiene la columna `comprobante_path` reservada con el
-  comentario "cuando se conecte la subida real" — era un hueco ya previsto, no descubierto ahora
-  por accidente. **Falta conectar Supabase Storage de verdad**: crear un bucket privado, subir el
-  archivo real al guardar el pago (`agregarPago` en `lib/datos.ts`), guardar su ruta en
-  `comprobante_path`, y permitir verlo/descargarlo después desde `/pagos` o el PDF exportado.
-  Tarea pendiente, no bloqueante para seguir probando, pero sí antes de vender en serio.
+✅ **RESUELTO — almacenamiento real del comprobante subido (hallazgo del usuario, real)**:
+  probando en su celular, el usuario notó que la app solo guardaba el NOMBRE del archivo del
+  comprobante (`comprobante_nombre`), nunca la foto/PDF en sí — algo especialmente delicado
+  porque el producto vende justo eso ("el Sello de Confianza"). Conectado Supabase Storage de
+  verdad el mismo día: `supabase/storage.sql` (bucket privado `comprobantes` + políticas RLS de
+  `storage.objects`, cada usuario solo lee/sube/borra dentro de su propia carpeta
+  `{user_id}/...`, ya corrido por el usuario en producción); `agregarPago()` en `lib/datos.ts`
+  sube el archivo real antes de guardar la fila y guarda su ruta en `comprobante_path`; nueva
+  `obtenerUrlComprobante()` genera un link firmado y temporal (10 min) para ver/descargar el
+  archivo — el bucket nunca es público. En `/pagos`, cada registro con comprobante real ahora es
+  tocable y abre el archivo real en una pestaña nueva. Pendiente menor (no bloqueante): el mismo
+  patrón para `documentoAdjunto` de `Evento` (permiso de salida del país en `/calendario`) sigue
+  guardando solo el nombre — replicar el mismo enfoque cuando haga falta.
 
 ✅ **RESUELTO — desbordamiento horizontal en tarjetas con texto largo (hallazgo del usuario,
   real)**: en `/pagos`, el nombre de archivo real que pone el celular a las fotos (muy largo, tipo
