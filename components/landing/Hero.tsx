@@ -54,7 +54,7 @@ export function Hero({
   const subtitulo = truncarMarcado(subtitleMarked, 14);
 
   return (
-    <section id={id} className="relative overflow-hidden">
+    <section id={id} className="relative overflow-hidden pb-16 md:pb-24">
       {/* Fondo con profundidad: mesh/radial sutil del acento — nunca fill plano */}
       <div
         aria-hidden="true"
