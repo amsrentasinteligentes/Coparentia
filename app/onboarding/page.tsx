@@ -200,28 +200,30 @@ function PreguntaRol({ valor, onElegir }: { valor: Rol; onElegir: (v: Rol) => vo
   ];
   return (
     <div className="flex flex-1 flex-col">
-      <h1 className="relative text-balance text-[28px] font-bold leading-[1.1] text-[var(--text-primary)] [font-family:var(--font-display)]">
-        <Halo />
-        ¿Cuál es tu <Marcador>rol</Marcador> hoy?
-      </h1>
-      <p className="mt-2 text-[14px] text-[var(--text-secondary)]">Así adaptamos las preguntas y tu expediente</p>
-      <div className="mt-6 flex flex-col gap-3" onKeyDown={manejarFlechasChips}>
-        {opciones.map(({ icon: Icon, label, value }, i) => (
-          <Chip
-            key={value}
-            index={i}
-            seleccionado={(local ?? valor) === value}
-            onClick={() => elegir(value)}
-            icon={<Icon size={20} className="shrink-0 text-[var(--text-secondary)]" aria-hidden="true" />}
-          >
-            {label}
-          </Chip>
-        ))}
+      <div className="flex flex-1 flex-col justify-center">
+        <h1 className="relative text-balance text-[28px] font-bold leading-[1.1] text-[var(--text-primary)] [font-family:var(--font-display)]">
+          <Halo />
+          ¿Cuál es tu <Marcador>rol</Marcador> hoy?
+        </h1>
+        <p className="mt-2 text-[14px] text-[var(--text-secondary)]">Así adaptamos las preguntas y tu expediente</p>
+        <div className="mt-6 flex flex-col gap-3" onKeyDown={manejarFlechasChips}>
+          {opciones.map(({ icon: Icon, label, value }, i) => (
+            <Chip
+              key={value}
+              index={i}
+              seleccionado={(local ?? valor) === value}
+              onClick={() => elegir(value)}
+              icon={<Icon size={20} className="shrink-0 text-[var(--text-secondary)]" aria-hidden="true" />}
+            >
+              {label}
+            </Chip>
+          ))}
+        </div>
+        <InfoContextual anclar={false}>
+          ¿Por qué lo preguntamos? Quien paga y quien recibe la cuota enfrentan riesgos distintos —
+          así usamos las palabras y ejemplos correctos en tu expediente.
+        </InfoContextual>
       </div>
-      <InfoContextual anclar={false}>
-        ¿Por qué lo preguntamos? Quien paga y quien recibe la cuota enfrentan riesgos distintos —
-        así usamos las palabras y ejemplos correctos en tu expediente.
-      </InfoContextual>
       <div className="mt-auto pt-4 flex items-start gap-3 rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--accent)_25%,transparent)] bg-[color-mix(in_oklab,var(--accent)_8%,transparent)] p-4">
         <ShieldCheck size={18} className="mt-0.5 shrink-0 text-[var(--accent)]" aria-hidden="true" />
         <p className="text-[13px] leading-[1.5] text-[var(--text-secondary)]">
@@ -344,25 +346,27 @@ function PreguntaFijacion({ valor, onElegir }: { valor: string; onElegir: (v: st
   const { local, elegir } = useSeleccionRetrasada<string>(onElegir);
   return (
     <div className="flex flex-1 flex-col">
-      <h1 className="relative text-balance text-[28px] font-bold leading-[1.1] text-[var(--text-primary)] [font-family:var(--font-display)]">
-        <Halo />
-        ¿Cómo está <Marcador>fijada</Marcador> tu cuota?
-      </h1>
-      <p className="mt-2 text-[14px] text-[var(--text-secondary)]">Así damos el formato correcto a tu expediente</p>
-      <div className="mt-6 flex flex-col gap-3" onKeyDown={manejarFlechasChips}>
-        {opciones.map(({ icon: Icon, label }, i) => (
-          <Chip
-            key={label}
-            index={i}
-            seleccionado={(local ?? valor) === label}
-            onClick={() => elegir(label)}
-            icon={<Icon size={20} className="shrink-0 text-[var(--text-secondary)]" aria-hidden="true" />}
-          >
-            {label}
-          </Chip>
-        ))}
+      <div className="flex flex-1 flex-col justify-center">
+        <h1 className="relative text-balance text-[28px] font-bold leading-[1.1] text-[var(--text-primary)] [font-family:var(--font-display)]">
+          <Halo />
+          ¿Cómo está <Marcador>fijada</Marcador> tu cuota?
+        </h1>
+        <p className="mt-2 text-[14px] text-[var(--text-secondary)]">Así damos el formato correcto a tu expediente</p>
+        <div className="mt-6 flex flex-col gap-3" onKeyDown={manejarFlechasChips}>
+          {opciones.map(({ icon: Icon, label }, i) => (
+            <Chip
+              key={label}
+              index={i}
+              seleccionado={(local ?? valor) === label}
+              onClick={() => elegir(label)}
+              icon={<Icon size={20} className="shrink-0 text-[var(--text-secondary)]" aria-hidden="true" />}
+            >
+              {label}
+            </Chip>
+          ))}
+        </div>
       </div>
-      <InfoContextual>
+      <InfoContextual anclar={false}>
         ¿Por qué lo preguntamos? El formato de tu expediente cambia según cómo esté fijada tu
         cuota — así el PDF que generes tiene el respaldo correcto para tu caso. No reemplazamos a
         tu abogado.

@@ -1,5 +1,66 @@
 # ESTADO.md — Coparentia (nombre provisional: PensiónClara)
 
+## Sesión de pulido (2026-09-08, tras cerrar la migración a Supabase de la Sesión 6)
+El usuario pidió invertir tiempo en subir el puntaje de las 3 pantallas con veredicto NO LISTA
+(landing, onboarding, paywall) antes de seguir con Hotmart. Se hicieron **6 rondas** de revisor-
+visual en total (2-3 por pantalla) con fixes reales entre cada una — no solo cosméticos:
+
+⚠️ **2 bugs reales encontrados y corregidos, no solo de puntaje**:
+1. **`<Marcador>` (subrayado de palabra clave, `components/funnel/ui.tsx`) rompía visualmente en
+   títulos de 2 líneas**: con `leading-[1.1]` (tipografía compacta), el alto real de la caja de
+   línea de un span inline superaba el line-height calculado (la tinta de Spectral es más alta
+   que el interlineado apretado) — el gradiente del subrayado, calculado por PORCENTAJE de ese
+   alto, quedaba varios px más abajo de lo esperado y se veía como un rectángulo flotante
+   desconectado del texto. Fix: tamaño y posición del subrayado en unidades FIJAS (`em`), ancladas
+   al borde inferior de la caja, en vez de un porcentaje del alto total. Verificado con DevTools
+   (`getBoundingClientRect`) antes de tocar código, y visualmente después.
+2. **La pantalla de onboarding se ROMPÍA POR COMPLETO (crash) al tocar "Otra cosa"**: el hook
+   `useSeleccionRetrasada` en `PreguntaSituacion` se llamaba DESPUÉS de un `if (otra) return`,
+   violando las reglas de hooks de React (número de hooks distinto entre renders → "Rendered fewer
+   hooks than expected"). Fix: mover el hook antes de cualquier return condicional. Verificado en
+   el navegador real (no solo en código) que la pantalla ya carga sin errores.
+
+⚠️ **Error de dinero real encontrado y corregido**: el badge del plan anual decía "ahorra 4 meses"
+y la landing "AHORRAS 33%" — ambos números eran matemáticamente incorrectos. Cuenta real: $9.99×12
+= $119.88 (costo mes a mes) vs $89/año → ahorro real $30.88 = **25.76%** (no 33%) y **~3.09 meses**
+(no 4). Corregido en `app/paywall/page.tsx`, `app/page.tsx` y `docs/copy/landing.md`, con la cuenta
+completa anotada en el código para que no se repita el error.
+
+**Puntajes, antes → después de toda la ronda de pulido** (umbral para "LISTA": ≥36/40 usabilidad,
+≥16/20 craft, ≥16/20 copy sin ejes ≤2):
+- **Landing**: 32/40 · 16/20 · 17/20 → **34/40 · 17/20 · 18/20**. Fixes: CTA "Elegir mensual"
+  unificado al componente compartido (antes duplicado a mano), barra sticky mobile con botón de
+  cerrar manual (con reaparición en el siguiente hito de scroll, nunca "para siempre"), badge de
+  ahorro corregido. Sigue NO LISTA — el techo de usabilidad (~32-34/40) es estructural: 5 de las
+  10 heurísticas de Nielsen no aplican de forma significativa a una landing de una sola pasada sin
+  login (ya diagnosticado en rondas anteriores, ver más abajo en el archivo).
+- **Onboarding**: 27/40 · 12/20 → (tras el crash, ronda intermedia 24/40) → **30/40 · 15/20**.
+  Fixes: ícono en 2 preguntas que no lo tenían, tarjeta "¿Por qué lo preguntamos?" en las 6
+  pantallas de solo-chips (mismo patrón, antes solo la primera la tenía), navegación con flechas
+  de teclado, `focus-visible` en `<Chip>`, el check se ve antes de avanzar de paso (antes ocurría
+  en el mismo tick), Atribución bajada de 5 a 4 opciones, subtítulo agregado donde faltaba, y el
+  crash de "Otra cosa" corregido. Sigue NO LISTA — el defecto que persiste es el mismo de siempre
+  (vacío en pantallas de pocas opciones, tensión doctrina-minimalista vs. rúbrica-de-densidad).
+- **Paywall**: 26/40 · 12/20 · 16/20 → **28/40 · 14/20 · 19/20 copy**. Fixes: indicador "Paso X de
+  3", entrada escalonada en los botones de plan, titular reescrito con la escena de dolor real,
+  íconos del header con fondo circular, badge de ahorro corregido, copy más específico (con dato
+  concreto en cada viñeta), footer condensado y acortado hasta caber completo en 375×812 (antes se
+  cortaba), borde de la card no seleccionada reforzado, badge del plan recomendado con más
+  despegue del borde de la tarjeta. Copy ya PASA su umbral (19/20, todos los ejes ≥3). Sigue NO
+  LISTA por usabilidad/craft — defectos que quedan: halo ownable poco perceptible, densidad del
+  pie de página, sin atajos más allá de la preselección (techo esperado para este tipo de pantalla).
+
+**Decisión**: no se relanzó una 7ª ronda de revisor tras los últimos 2 fixes menores (badge del
+paywall, consistencia de layout en onboarding) — se verificaron con `tsc`/`build`/captura manual.
+Las 3 pantallas suben de puntaje real esta sesión pero NINGUNA cruza el gate de "LISTA" — los
+defectos que quedan son, en su mayoría, el mismo techo estructural ya diagnosticado en sesiones
+anteriores (tensión entre el minimalismo pedido por `50-DISENO-ONBOARDING-PAYWALL.md` y las
+heurísticas de densidad de la rúbrica), no descuido de ejecución. Seguir iterando aquí tiene
+rendimiento decreciente real — cada ronda cuesta ~70-90k tokens y las últimas rondas subieron 1-3
+puntos por pantalla. Se recomienda continuar con Hotmart (el siguiente paso pendiente de Sesión 6)
+y retomar el pulido visual más adelante si aparece evidencia nueva (uso real, feedback de
+compradores) que justifique seguir invirtiendo aquí.
+
 ## Fase actual
 Sesión 5 (la app interna) TERMINADA (ver su sección más abajo). Sesión 6 (servicios externos) EN
 CURSO: el usuario ya tenía cuentas de GitHub/Supabase/Hotmart; falta Vercel. Progreso:

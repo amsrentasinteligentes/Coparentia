@@ -225,7 +225,7 @@ function Precio({
         Una <Marcador>captura de WhatsApp</Marcador> no prueba nada —<span className="text-[var(--accent)]"> tu expediente sí</span>
       </h1>
 
-      <div className="mt-6 flex flex-col gap-3">
+      <div className="mt-8 flex flex-col gap-3">
         <motion.button
           type="button"
           onClick={() => onCambiarPlan('anual')}
@@ -239,7 +239,7 @@ function Precio({
               : 'border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] bg-[var(--surface)] shadow-[var(--shadow-1)]'
           }`}
         >
-          <span className="absolute -top-2.5 left-4 rounded-full bg-[var(--accent)] px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-[0.06em] text-[var(--bg)]">
+          <span className="absolute -top-3 left-4 rounded-full bg-[var(--accent)] px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.06em] text-[var(--bg)] shadow-[0_2px_8px_color-mix(in_oklab,var(--accent)_35%,transparent)]">
             Más popular · ahorra 3 meses
           </span>
           <CheckPlan activo={plan === 'anual'} />
