@@ -144,9 +144,9 @@ export default function Expediente() {
           <Tarjeta key={a.id}>
             <div className="flex items-start gap-3">
               <IconoCirculo icon={Scale} />
-              <div className="flex-1">
+              <div className="min-w-0 flex-1">
                 <div className="flex items-center justify-between gap-2">
-                  <p className="text-[14px] font-medium text-[var(--text-primary)]">{a.concepto}</p>
+                  <p className="truncate text-[14px] font-medium text-[var(--text-primary)]">{a.concepto}</p>
                   <Pildora texto={PILDORA[a.estado].texto} tono={PILDORA[a.estado].tono} />
                 </div>
                 <p className="mt-0.5 text-[12px] text-[var(--text-tertiary)]">{formatoFechaLarga(a.fecha)} · {formatoCOP(a.monto)}</p>

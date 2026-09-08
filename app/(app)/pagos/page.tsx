@@ -65,11 +65,11 @@ export default function Pagos() {
         {visibles.map((p) => (
           <Tarjeta key={p.id} className="flex items-center gap-3">
             <IconoCirculo icon={p.tipo === 'cuota' ? ShieldCheck : FileCheck2} />
-            <div className="flex-1">
-              <p className="text-[14px] font-medium text-[var(--text-primary)]">{p.concepto}</p>
-              <p className="text-[12px] text-[var(--text-tertiary)]">{formatoFechaLarga(p.fecha)} · {p.comprobanteNombre}</p>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-[14px] font-medium text-[var(--text-primary)]">{p.concepto}</p>
+              <p className="truncate text-[12px] text-[var(--text-tertiary)]">{formatoFechaLarga(p.fecha)} · {p.comprobanteNombre}</p>
             </div>
-            <p className="text-[14px] font-semibold tabular-nums text-[var(--text-primary)]">{formatoCOP(p.monto)}</p>
+            <p className="shrink-0 text-[14px] font-semibold tabular-nums text-[var(--text-primary)]">{formatoCOP(p.monto)}</p>
           </Tarjeta>
         ))}
       </div>

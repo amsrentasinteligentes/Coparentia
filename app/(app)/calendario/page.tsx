@@ -74,13 +74,13 @@ export default function Calendario() {
                 <span className="text-[10px] uppercase text-[var(--text-tertiary)]">{d.toLocaleDateString('es-CO', { month: 'short' })}</span>
               </div>
               <IconoCirculo icon={Icon} />
-              <div className="flex-1">
-                <p className="text-[13px] text-[var(--text-secondary)]">{LABEL[e.tipo]}</p>
-                <p className="text-[14px] font-medium text-[var(--text-primary)]">{e.titulo}</p>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-[13px] text-[var(--text-secondary)]">{LABEL[e.tipo]}</p>
+                <p className="truncate text-[14px] font-medium text-[var(--text-primary)]">{e.titulo}</p>
                 {e.documentoAdjunto && (
                   <p className="mt-0.5 flex items-center gap-1 text-[12px] text-[var(--accent)]">
-                    <Paperclip size={12} aria-hidden="true" />
-                    {e.documentoAdjunto}
+                    <Paperclip size={12} className="shrink-0" aria-hidden="true" />
+                    <span className="truncate">{e.documentoAdjunto}</span>
                   </p>
                 )}
               </div>

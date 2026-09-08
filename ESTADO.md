@@ -70,9 +70,90 @@ CURSO: el usuario ya tenía cuentas de GitHub/Supabase/Hotmart; falta Vercel. Pr
   configurado en el repo local). Push verificado con `git ls-remote`.
 - **Vercel conectado y desplegado**: proyecto importado desde GitHub, primer deploy exitoso
   (verificado por el usuario abriendo la URL — el navegador de Claude no pudo verlo porque
-  Vercel exige sesión iniciada en deployments; normal, no es un bug). Protección de acceso de
-  Vercel (pide login) sigue activa a propósito — se desactiva justo antes del lanzamiento
-  público, no antes.
+  Vercel exige sesión iniciada en deployments; normal, no es un bug).
+  ✅ **Protección de acceso de Vercel DESACTIVADA (2026-09-08)**: el usuario intentó crear una
+  cuenta de prueba real para verificar la app en su celular y el enlace mágico del correo lo
+  redirigía a "Login to Vercel" — la protección bloqueaba a CUALQUIERA, no solo a él, así que
+  ningún cliente real habría podido completar el registro nunca. Se desactivó en Vercel →
+  Settings → Deployment Protection. El sitio ya es públicamente accesible sin iniciar sesión en
+  Vercel — paso necesario para que el registro funcione de verdad, no solo para pruebas.
+⚠️ **PENDIENTE — creación de cuenta de prueba bloqueada por el límite de correos de Supabase,
+  CAUSA CONFIRMADA**: al intentar crear una cuenta real desde el celular, `/entrar` empezó a
+  mostrar "No pudimos enviar el enlace". Confirmado con el usuario en Supabase → Authentication →
+  Rate Limits: **"Rate limit for sending emails: 2 emails/h"** — el límite de prueba de Supabase
+  es literalmente 2 correos por hora, agotado entre los varios intentos de esta sesión. El usuario
+  decidió ESPERAR ~1 hora (recordatorio programado) y retomar entonces para conectar Resend como
+  proveedor SMTP real de Supabase Auth — 2 correos/hora no alcanza ni para pruebas, mucho menos
+  para clientes reales, así que esto había que resolverlo de todas formas antes de vender.
+  **Cuando se retome, en este orden**: (1) el usuario crea su cuenta gratis en Resend, (2) guiarlo
+  a Supabase → Authentication → Emails (o Settings → Auth → SMTP Settings) para conectar el SMTP
+  de Resend con el protocolo de cero secretos (él pega la API key de Resend directo en el panel de
+  Supabase, nunca en el chat), (3) reintentar el enlace mágico ya sin el límite de 2/hora, (4)
+  retomar la creación de la cuenta de prueba para revisar la app en el celular real (motivo
+  original de esta sección).
+
+⚠️ **Segundo bug real encontrado y CORREGIDO en la misma prueba — Site URL/Redirect URLs
+  desactualizadas**: tras esperar el límite de correos, el enlace mágico seguía sin funcionar —
+  llevaba de vuelta a la página principal en vez de a `/inicio`. Causa confirmada con captura del
+  usuario: en Supabase → Authentication → URL Configuration, tanto la **Site URL** como la única
+  entrada de Vercel en **Redirect URLs** apuntaban a una URL de despliegue vieja y específica
+  (`coparentia-i4aj5ll38-amsrentasinteligentes-9577.vercel.app`), no al dominio real y estable
+  (`coparentia.vercel.app`). Como `emailRedirectTo` en `app/entrar/page.tsx` usa
+  `window.location.origin` (el dominio real desde el que se pide el enlace), Supabase rechazaba
+  ese redirect por no estar en la lista blanca y caía al Site URL viejo — nunca llegaba a ejecutar
+  `app/auth/callback/route.ts`, así que el código nunca se canjeaba por una sesión real. Corregido
+  por el usuario: Site URL → `https://coparentia.vercel.app`, y agregada
+  `https://coparentia.vercel.app/auth/callback` a Redirect URLs (las 2 entradas viejas se dejaron,
+  no estorban). ✅ **CONFIRMADO por el usuario**: con la config corregida, el enlace mágico ya
+  lleva directo a `/inicio` con sesión real — el flujo de registro/login funciona de punta a punta
+  en producción, verificado con una cuenta real en un celular real (no solo en código).
+✅ **MIGRACIÓN A SUPABASE VALIDADA DE PUNTA A PUNTA (2026-09-08)**: el usuario completó el flujo
+  real completo desde su celular — magic link → sesión real → "primeros pasos" (cuota + primer
+  comprobante con foto real tomada desde el celular) → el pago quedó guardado en la base de datos
+  real de Supabase y se ve correctamente en `/pagos` ("Primer comprobante registrado", $5.000.000,
+  con el nombre real del archivo de la foto). Confirma que `lib/datos.ts` (migrado de localStorage
+  a Supabase en esta misma sesión) funciona correctamente en producción con un usuario real, no
+  solo en pruebas locales con datos de ejemplo.
+
+✅ **Resend conectado como SMTP real de Supabase Auth (mismo día)**: el usuario creó su cuenta en
+  Resend, generó una API key (nunca vista en este chat) y la conectó en Supabase → Authentication
+  → Emails → SMTP Settings (host `smtp.resend.com`, puerto 465, usuario `resend`). Ya no depende
+  del límite de 2 correos/hora del buzón de prueba de Supabase.
+⚠️ **PENDIENTE — correos de magic link caen en spam**: confirmado por el usuario en su primera
+  prueba real. Causa: se está usando el remitente genérico compartido `onboarding@resend.dev` (sin
+  dominio propio verificado, sin SPF/DKIM/DMARC alineados a Coparentia) — normal que un dominio
+  compartido nuevo caiga en spam. Fix real: verificar un dominio PROPIO de Coparentia en Resend
+  (agregar los registros DNS que Resend pide) y usar un remitente de ese dominio (ej.
+  `entrar@coparentia.app`) en vez de `onboarding@resend.dev`. Requiere que el usuario tenga (o
+  compre) un dominio — pendiente de confirmar con él si ya tiene uno. Sin esto, la app FUNCIONA
+  pero cualquier cliente real tendría que ir a buscar el correo a spam — no es aceptable para
+  lanzamiento, sí es aceptable para seguir probando mientras tanto.
+  **Decisión del usuario (2026-09-08)**: no tiene dominio propio todavía y prefiere esperar a
+  comprarlo más cerca del lanzamiento en vez de hacerlo ahora — sigue probando la app buscando el
+  correo en spam por ahora. Retomar esto en la sesión de dominio/lanzamiento (ver `18-VENTA-
+  HOTMART.md`/`62-PUBLICACION-SEGURA-Y-CONTINUA.md`).
+
+⚠️ **PENDIENTE — sin almacenamiento real del comprobante subido (hallazgo del usuario, real)**:
+  probando en su celular, el usuario notó que la app solo guarda el NOMBRE del archivo del
+  comprobante (`comprobante_nombre`), nunca la foto/PDF en sí — no hay ninguna prueba real
+  almacenada, algo especialmente delicado porque el producto vende justo eso ("el Sello de
+  Confianza"). `supabase/schema.sql` ya tiene la columna `comprobante_path` reservada con el
+  comentario "cuando se conecte la subida real" — era un hueco ya previsto, no descubierto ahora
+  por accidente. **Falta conectar Supabase Storage de verdad**: crear un bucket privado, subir el
+  archivo real al guardar el pago (`agregarPago` en `lib/datos.ts`), guardar su ruta en
+  `comprobante_path`, y permitir verlo/descargarlo después desde `/pagos` o el PDF exportado.
+  Tarea pendiente, no bloqueante para seguir probando, pero sí antes de vender en serio.
+
+✅ **RESUELTO — desbordamiento horizontal en tarjetas con texto largo (hallazgo del usuario,
+  real)**: en `/pagos`, el nombre de archivo real que pone el celular a las fotos (muy largo, tipo
+  UUID) empujaba el monto ($) fuera de la pantalla — visible en un celular real, no solo teórico.
+  Causa raíz: los `<div className="flex-1">` que envuelven texto variable no tenían `min-w-0`
+  (por defecto un hijo flex no se encoge más allá del ancho de su contenido, así que un texto sin
+  espacios lo desborda) — regla del 43-MICRO-CRAFT-Y-EJECUCION.md, defecto real, no solo de
+  puntaje. Corregido en las 4 pantallas con el mismo patrón (`inicio`, `pagos`, `calendario`,
+  `expediente`): `min-w-0` en el contenedor + `truncate` en los textos largos + `shrink-0` en el
+  monto/ícono que no debe encogerse. Verificado con un nombre de archivo real de 39 caracteres:
+  ahora corta con "…" y el monto se ve completo.
 - **Supabase — código listo, falta la conexión real**: el usuario ya creó el proyecto real en
   Supabase. Se preparó TODO el código de conexión sin tocar ni ver ninguna clave (protocolo cero
   secretos en chat, regla 4 de este mismo archivo):
