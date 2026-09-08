@@ -6,9 +6,19 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Upload, ShieldCheck, FileCheck2, X } from 'lucide-react';
+import { Upload, ShieldCheck, FileCheck2, X, ChevronRight } from 'lucide-react';
 import { ContenedorApp, PageHeader, Tarjeta, IconoCirculo, BotonFlotante } from '@/components/app/ui';
-import { type Pago, type Titulo, type TipoMovimiento, obtenerPagos, agregarPago, obtenerTitulo, formatoCOP, formatoFechaLarga } from '@/lib/datos';
+import {
+  type Pago,
+  type Titulo,
+  type TipoMovimiento,
+  obtenerPagos,
+  agregarPago,
+  obtenerTitulo,
+  obtenerUrlComprobante,
+  formatoCOP,
+  formatoFechaLarga,
+} from '@/lib/datos';
 
 type Filtro = 'todos' | TipoMovimiento;
 
@@ -16,10 +26,21 @@ export default function Pagos() {
   const [pagos, setPagos] = useState<Pago[]>([]);
   const [filtro, setFiltro] = useState<Filtro>('todos');
   const [modalAbierto, setModalAbierto] = useState(false);
+  const [abriendo, setAbriendo] = useState<string | null>(null);
 
   useEffect(() => {
     obtenerPagos().then(setPagos);
   }, []);
+
+  // Abre el archivo REAL del comprobante (URL firmada, temporal — el bucket es privado) en una
+  // pestaña nueva. Antes no había forma de comprobar que el comprobante existiera de verdad.
+  const verComprobante = async (p: Pago): Promise<void> => {
+    if (!p.comprobantePath || abriendo) return;
+    setAbriendo(p.id);
+    const url = await obtenerUrlComprobante(p.comprobantePath);
+    setAbriendo(null);
+    if (url) window.open(url, '_blank', 'noopener,noreferrer');
+  };
 
   const visibles = pagos
     .filter((p) => filtro === 'todos' || p.tipo === filtro)
@@ -62,16 +83,39 @@ export default function Pagos() {
             <p className="text-[14px] text-[var(--text-secondary)]">Todavía no tienes registros en esta categoría.</p>
           </Tarjeta>
         )}
-        {visibles.map((p) => (
-          <Tarjeta key={p.id} className="flex items-center gap-3">
-            <IconoCirculo icon={p.tipo === 'cuota' ? ShieldCheck : FileCheck2} />
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-[14px] font-medium text-[var(--text-primary)]">{p.concepto}</p>
-              <p className="truncate text-[12px] text-[var(--text-tertiary)]">{formatoFechaLarga(p.fecha)} · {p.comprobanteNombre}</p>
-            </div>
-            <p className="shrink-0 text-[14px] font-semibold tabular-nums text-[var(--text-primary)]">{formatoCOP(p.monto)}</p>
-          </Tarjeta>
-        ))}
+        {visibles.map((p) => {
+          const contenido = (
+            <>
+              <IconoCirculo icon={p.tipo === 'cuota' ? ShieldCheck : FileCheck2} />
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-[14px] font-medium text-[var(--text-primary)]">{p.concepto}</p>
+                <p className="truncate text-[12px] text-[var(--text-tertiary)]">{formatoFechaLarga(p.fecha)} · {p.comprobanteNombre}</p>
+              </div>
+              <p className="shrink-0 text-[14px] font-semibold tabular-nums text-[var(--text-primary)]">{formatoCOP(p.monto)}</p>
+              {p.comprobantePath && (
+                <ChevronRight size={16} className="shrink-0 text-[var(--text-tertiary)]" aria-hidden="true" />
+              )}
+            </>
+          );
+          if (!p.comprobantePath) {
+            return (
+              <Tarjeta key={p.id} className="flex items-center gap-3">
+                {contenido}
+              </Tarjeta>
+            );
+          }
+          return (
+            <button
+              key={p.id}
+              type="button"
+              onClick={() => verComprobante(p)}
+              disabled={abriendo === p.id}
+              className="text-left [touch-action:manipulation]"
+            >
+              <Tarjeta className="flex items-center gap-3">{contenido}</Tarjeta>
+            </button>
+          );
+        })}
       </div>
 
       <BotonFlotante onClick={() => setModalAbierto(true)}>
@@ -111,13 +155,16 @@ function ModalRegistro({ onCerrar, onGuardado }: { onCerrar: () => void; onGuard
   const guardar = (): void => {
     if (!archivo || !monto || !concepto.trim()) return;
     setProcesando(true);
-    agregarPago({
-      fecha: new Date().toISOString().slice(0, 10),
-      monto: Number(monto),
-      concepto: concepto.trim(),
-      tipo,
-      comprobanteNombre: archivo.name,
-    }).then((nuevo) => {
+    agregarPago(
+      {
+        fecha: new Date().toISOString().slice(0, 10),
+        monto: Number(monto),
+        concepto: concepto.trim(),
+        tipo,
+        comprobanteNombre: archivo.name,
+      },
+      archivo
+    ).then((nuevo) => {
       setProcesando(false);
       onGuardado(nuevo);
     });

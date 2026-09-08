@@ -84,13 +84,16 @@ function PrimerosPasos({ onListo }: { onListo: () => void }) {
     setProcesando(true);
     // Sello de Confianza: fecha + asocia el comprobante — mock honesto (sin OCR real todavía,
     // Sesión 6), pero el NOMBRE del archivo es real (lo eligió el usuario, no se inventa).
-    agregarPago({
-      fecha: new Date().toISOString().slice(0, 10),
-      monto: Number(monto) || 0,
-      concepto: 'Primer comprobante registrado',
-      tipo: 'cuota',
-      comprobanteNombre: f.name,
-    }).then(() => {
+    agregarPago(
+      {
+        fecha: new Date().toISOString().slice(0, 10),
+        monto: Number(monto) || 0,
+        concepto: 'Primer comprobante registrado',
+        tipo: 'cuota',
+        comprobanteNombre: f.name,
+      },
+      f
+    ).then(() => {
       setProcesando(false);
       setPaso('revelacion');
     });

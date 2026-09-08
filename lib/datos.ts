@@ -23,6 +23,7 @@ export interface Pago {
   concepto: string;
   tipo: TipoMovimiento;
   comprobanteNombre: string;
+  comprobantePath?: string; // ruta real en Supabase Storage (bucket "comprobantes")
 }
 
 export interface Autorizacion {
@@ -59,6 +60,7 @@ function mapPago(row: {
   concepto: string;
   tipo: TipoMovimiento;
   comprobante_nombre: string;
+  comprobante_path: string | null;
 }): Pago {
   return {
     id: row.id,
@@ -67,6 +69,7 @@ function mapPago(row: {
     concepto: row.concepto,
     tipo: row.tipo,
     comprobanteNombre: row.comprobante_nombre,
+    comprobantePath: row.comprobante_path ?? undefined,
   };
 }
 
@@ -155,8 +158,32 @@ export async function obtenerPagos(): Promise<Pago[]> {
   return (data ?? []).map(mapPago);
 }
 
-export async function agregarPago(pago: Omit<Pago, 'id'>): Promise<Pago> {
+// Sube el archivo REAL (foto/PDF) al bucket privado "comprobantes" — cada usuario tiene su
+// propia carpeta (`{userId}/...`), reforzada por las políticas de supabase/storage.sql. Antes
+// de esto, la app solo guardaba el NOMBRE del archivo — nunca el archivo en sí, así que no había
+// forma de comprobar que el comprobante existiera de verdad (hallazgo real de un usuario probando
+// en su celular).
+async function subirArchivoComprobante(userId: string, archivo: File): Promise<string> {
+  const supabase = crearClienteSupabase();
+  const nombreSeguro = archivo.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+  const ruta = `${userId}/${Date.now()}_${nombreSeguro}`;
+  const { error } = await supabase.storage.from('comprobantes').upload(ruta, archivo);
+  if (error) throw error;
+  return ruta;
+}
+
+// URL firmada y temporal (10 min) para ver/descargar un comprobante real — el bucket es privado,
+// así que nunca hay un link público permanente al archivo de nadie.
+export async function obtenerUrlComprobante(ruta: string): Promise<string | null> {
+  const supabase = crearClienteSupabase();
+  const { data, error } = await supabase.storage.from('comprobantes').createSignedUrl(ruta, 600);
+  if (error || !data) return null;
+  return data.signedUrl;
+}
+
+export async function agregarPago(pago: Omit<Pago, 'id' | 'comprobantePath'>, archivo: File): Promise<Pago> {
   const { supabase, userId } = await usuarioActual();
+  const rutaComprobante = await subirArchivoComprobante(userId, archivo);
   const { data, error } = await supabase
     .from('pagos')
     .insert({
@@ -166,6 +193,7 @@ export async function agregarPago(pago: Omit<Pago, 'id'>): Promise<Pago> {
       concepto: pago.concepto,
       tipo: pago.tipo,
       comprobante_nombre: pago.comprobanteNombre,
+      comprobante_path: rutaComprobante,
     })
     .select()
     .single();
