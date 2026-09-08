@@ -78,14 +78,25 @@ export function BarraAtras({
 }
 
 /* ── <Marcador> — subrayado en la palabra clave (dispositivo ownable de FICHA-ARTE.md,
-   halo + marcador — mismo device que <Accent> de la landing) ── */
+   halo + marcador — mismo device que <Accent> de la landing).
+   Bug real encontrado y corregido (revisor-visual, ronda de pulido): con `leading-[1.1]`
+   (tipografía display muy compacta) el alto real de la caja de línea de un span inline
+   supera el line-height calculado (el bloque de tinta de Spectral es más alto que el
+   interlineado apretado) — un gradiente por PORCENTAJE del alto de esa caja (62%) quedaba
+   entonces varios px más abajo de lo esperado, y en títulos que envuelven a 2 líneas se veía
+   como un rectángulo flotante, desconectado del texto. Fix: tamaño y posición del subrayado
+   en unidades FIJAS (em, ancladas al borde inferior de la caja) en vez de un porcentaje del
+   alto total — así el grosor y la posición ya no dependen de cuánto se infle esa caja. ── */
 export function Marcador({ children }: { children: ReactNode }) {
   return (
     <span
       className="[box-decoration-break:clone] [-webkit-box-decoration-break:clone]"
       style={{
         backgroundImage:
-          'linear-gradient(transparent 62%, color-mix(in oklab, var(--accent) 30%, transparent) 62%)',
+          'linear-gradient(color-mix(in oklab, var(--accent) 30%, transparent), color-mix(in oklab, var(--accent) 30%, transparent))',
+        backgroundRepeat: 'no-repeat',
+        backgroundPosition: '0 100%',
+        backgroundSize: '100% 0.22em',
         padding: '0 0.05em',
       }}
     >

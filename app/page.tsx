@@ -116,10 +116,10 @@ export default function Home() {
         }}
         anual={{
           nombre: 'Anual',
-          badge: 'AHORRAS 33%',
+          badge: 'AHORRAS 25%',
           precioMes: '$7.42',
           totalAnual: 'Se cobra $89/año',
-          ahorro: '4 meses gratis',
+          ahorro: '3 meses gratis',
           descomposicionDia: 'menos de $0.25 al día',
           ctaLabel: 'Empezar mis 7 días gratis',
           ctaHref: CTA_HREF,

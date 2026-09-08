@@ -1,14 +1,9 @@
 # VEREDICTO revisor-visual — paywall
-Fecha: 2026-09-07 00:00
-Screenshot: docs/revisiones/paywall-375.png
-Usabilidad: 26/40
-Craft: 12/20
-Copy (si vende): 16/20 (eje emoción/dolor real = 2, viola "ningún eje ≤2")
+Fecha: 2026-09-08 00:00
+Screenshot: docs/revisiones/paywall-precio-v3-375.png
+Usabilidad: 31/40
+Craft: 14/20
+Copy (si vende): 17/20
 Fidelidad (si hubo referencia): N-A
 Veredicto: NO LISTA
-Top defectos:
-1. [Precio, entre cards de plan y bloque garantía/CTA] Vacío muerto de ~250-300px en el centro de la pantalla (mismo problema reportado en ronda 2, solo desplazado del borde al centro por el `mt-auto`) → llenar ese espacio con contenido de valor (recordatorio de features, trust bar) o resolver el layout sin dejar un hueco muerto entre bloques.
-2. [Header de las 3 pantallas del paywall] No existe indicador de progreso ("paso 2 de 3") pese a que `BarraProgreso` ya existe en el kit compartido y se usa en el onboarding — el usuario no sabe cuántas pantallas le faltan → agregar `BarraProgreso`/segmentos de 3 pasos junto al `FunnelHeader`.
-3. [Precio, pantalla final] Las 3 features del expediente (Sello de Confianza, PDF foliado, alertas) se muestran solo en Recap y no se repiten en la pantalla de compra — viola heurística "reconocer mejor que recordar" → repetir 1-2 líneas de "qué recibes" cerca del CTA final.
-4. [Precio, botones Anual/Mensual] Sin animación de entrada escalonada (`initial`/`animate`+delay por índice) que sí tiene `<Chip>` del mismo kit — inconsistencia de movimiento entre paywall y onboarding, y falta una de las 7 baseline (entrada escalonada) → replicar el patrón de `Chip`.
-5. [Precio, titular "Blinda tu expediente desde hoy"] Copy genérico en la pantalla donde se decide comprar, sin conectar con la escena de dolor específica del avatar (reclamo por WhatsApp, "mala paga") ni con el mecanismo "Sello de Confianza" ya presentado en Recap → sumar una línea de contexto emocional/mecanismo específico cerca del titular o del CTA.
+Top defectos: 1. [Badge "MÁS POPULAR · AHORRA 4 MESES"] Ahorro matemáticamente incorrecto: $89/año vs $9.99×12=$119.88 son ~3.1 meses de ahorro, no 4 → corregir el número o el precio para que cuadre. 2. [motion.button Anual/Mensual en app/paywall/page.tsx] No usan useReducedMotion() a diferencia de <Chip>/<BarraProgreso> del mismo kit → envolver con el hook `reduce`. 3. [Footer pantalla Precio] Demasiados bloques secundarios apilados bajo el CTA empujan contenido fuera del viewport 375×812 → condensar líneas de microcopy. 4. [Header] Chevron "volver" y "X" en text-secondary sobre fondo muy oscuro, poco perceptibles como tappables. 5. [CheckPlan vs Chip] Tarjetas de plan usan radius-card (14px) mientras <Chip> de onboarding usa radius-button (10px) para el mismo patrón de selección → unificar token.

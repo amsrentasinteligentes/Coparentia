@@ -24,6 +24,13 @@ import {
   Pencil,
   ShieldCheck,
   Info,
+  Sunrise,
+  Sun,
+  Moon,
+  Bell,
+  Sparkles,
+  Users,
+  HelpCircle,
 } from 'lucide-react';
 import {
   BarraAtras,
@@ -219,7 +226,8 @@ function PreguntaSituacion({
   if (otra) {
     return (
       <div className="flex flex-1 flex-col">
-        <h1 className="text-balance text-[28px] font-bold leading-[1.1] text-[var(--text-primary)] [font-family:var(--font-display)]">
+        <h1 className="relative text-balance text-[28px] font-bold leading-[1.1] text-[var(--text-primary)] [font-family:var(--font-display)]">
+          <Halo />
           Cuéntanos con <Marcador>tus palabras</Marcador>
         </h1>
         <input
@@ -231,7 +239,10 @@ function PreguntaSituacion({
           className="mt-6 h-14 w-full rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--surface)] px-4 text-[16px] text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)]"
         />
         <p className="mt-2 text-[13px] text-[var(--text-tertiary)]">Escribe al menos unas palabras para continuar.</p>
-        <div className="mt-auto pt-6">
+        <p className="mt-auto pt-8 text-center text-[13px] text-[var(--text-tertiary)]">
+          Tus respuestas son privadas — solo se usan para armar tu expediente.
+        </p>
+        <div className="pt-6">
           <CtaFunnel disabled={!texto.trim()} onClick={() => onElegir(texto.trim())}>
             Continuar
           </CtaFunnel>
@@ -384,14 +395,18 @@ function ReconocimientoPreocupacion({
       'Ese miedo baja cuando tienes con qué respaldar tu reclamo. No se trata de "tener razón" — se trata de tener la prueba a la mano.',
   };
   const mostrarRefuerzoUnilateral = situacion === 'Tengo disputas frecuentes con mi ex';
+  const reduce = useReducedMotion();
   return (
     <div className="flex flex-1 flex-col items-center text-center">
-      <span
+      <motion.span
+        initial={{ scale: 0.6, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ type: 'spring', bounce: 0.4, duration: reduce ? 0 : 0.5 }}
         aria-hidden="true"
         className="flex size-16 items-center justify-center rounded-full bg-[color-mix(in_oklab,var(--accent)_12%,transparent)]"
       >
         <Check size={28} strokeWidth={2.4} color="var(--accent)" aria-hidden="true" />
-      </span>
+      </motion.span>
       <h1 className="mt-6 text-balance text-[26px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)]">
         Tiene sentido que te preocupe
       </h1>
@@ -472,7 +487,12 @@ function PreguntaMeta({ valor, onFijar }: { valor: number; onFijar: (v: number) 
 
 /* ── Paso 6: anclaje contextual (siempre va — fija hora de recordatorio) ── */
 function PreguntaMomento({ valor, onElegir }: { valor: string; onElegir: (v: string) => void }) {
-  const opciones = ['En la mañana', 'A mitad de tarde', 'En la noche', 'Cuando llega un reclamo'];
+  const opciones = [
+    { icon: Sunrise, label: 'En la mañana' },
+    { icon: Sun, label: 'A mitad de tarde' },
+    { icon: Moon, label: 'En la noche' },
+    { icon: Bell, label: 'Cuando llega un reclamo' },
+  ];
   return (
     <div className="flex flex-1 flex-col">
       <h1 className="relative text-balance text-[28px] font-bold leading-[1.1] text-[var(--text-primary)] [font-family:var(--font-display)]">
@@ -481,9 +501,15 @@ function PreguntaMomento({ valor, onElegir }: { valor: string; onElegir: (v: str
       </h1>
       <p className="mt-2 text-[14px] text-[var(--text-secondary)]">Así te avisamos en el momento correcto</p>
       <div className="mt-6 flex flex-col gap-3">
-        {opciones.map((op, i) => (
-          <Chip key={op} index={i} seleccionado={valor === op} onClick={() => onElegir(op)}>
-            {op}
+        {opciones.map(({ icon: Icon, label }, i) => (
+          <Chip
+            key={label}
+            index={i}
+            seleccionado={valor === label}
+            onClick={() => onElegir(label)}
+            icon={<Icon size={20} className="shrink-0 text-[var(--text-secondary)]" aria-hidden="true" />}
+          >
+            {label}
           </Chip>
         ))}
       </div>
@@ -496,7 +522,13 @@ function PreguntaMomento({ valor, onElegir }: { valor: string; onElegir: (v: str
 
 /* ── Paso 7: atribución (Cal AI pattern — dato de marketing) ── */
 function PreguntaAtribucion({ valor, onElegir }: { valor: string; onElegir: (v: string) => void }) {
-  const opciones = ['Instagram o TikTok', 'Mi abogado me la recomendó', 'Google', 'Un amigo o familiar', 'Otro'];
+  const opciones = [
+    { icon: Sparkles, label: 'Instagram o TikTok' },
+    { icon: Scale, label: 'Mi abogado me la recomendó' },
+    { icon: FileSearch, label: 'Google' },
+    { icon: Users, label: 'Un amigo o familiar' },
+    { icon: HelpCircle, label: 'Otro' },
+  ];
   return (
     <div className="flex flex-1 flex-col">
       <h1 className="relative text-balance text-[28px] font-bold leading-[1.1] text-[var(--text-primary)] [font-family:var(--font-display)]">
@@ -504,9 +536,15 @@ function PreguntaAtribucion({ valor, onElegir }: { valor: string; onElegir: (v: 
         ¿Cómo <Marcador>conociste</Marcador> Coparentia?
       </h1>
       <div className="mt-6 flex flex-col gap-3">
-        {opciones.map((op, i) => (
-          <Chip key={op} index={i} seleccionado={valor === op} onClick={() => onElegir(op)}>
-            {op}
+        {opciones.map(({ icon: Icon, label }, i) => (
+          <Chip
+            key={label}
+            index={i}
+            seleccionado={valor === label}
+            onClick={() => onElegir(label)}
+            icon={<Icon size={20} className="shrink-0 text-[var(--text-secondary)]" aria-hidden="true" />}
+          >
+            {label}
           </Chip>
         ))}
       </div>
@@ -521,14 +559,18 @@ function PreguntaAtribucion({ valor, onElegir }: { valor: string; onElegir: (v: 
    Nombra el mecanismo (regla del 02B: "el usuario debe poder decir el nombre de lo que
    acaba de configurar") — antes solo vivía en landing/paywall, nunca en el onboarding. ── */
 function ReconocimientoFinal({ respuestas, onContinuar }: { respuestas: Respuestas; onContinuar: () => void }) {
+  const reduce = useReducedMotion();
   return (
     <div className="flex flex-1 flex-col items-center text-center">
-      <span
+      <motion.span
+        initial={{ scale: 0.6, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ type: 'spring', bounce: 0.4, duration: reduce ? 0 : 0.5 }}
         aria-hidden="true"
         className="flex size-16 items-center justify-center rounded-full bg-[color-mix(in_oklab,var(--accent)_12%,transparent)]"
       >
         <Check size={28} strokeWidth={2.4} color="var(--accent)" aria-hidden="true" />
-      </span>
+      </motion.span>
       <h1 className="mt-6 text-balance text-[26px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)]">
         Tus respuestas te describen
       </h1>

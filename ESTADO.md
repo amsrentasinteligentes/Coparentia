@@ -541,7 +541,42 @@ bloqueantes de este cierre):
 Ninguno cambia el comportamiento del producto ni compromete datos del usuario — son pulido visual
 puro, coherente con seguir iterando cuando haya presupuesto, no con dejar la pantalla rota.
 
-Screenshot vigente: `docs/revisiones/onboarding-375.png` (paso 1/10, pregunta de rol).
+### Ronda 7 (2026-09-08, sesión de pulido pedida explícitamente por el usuario): 29/40 · 12/20
+El usuario pidió invertir la sesión en subir la calidad de las 3 pantallas con veredicto NO LISTA
+(landing/onboarding/paywall) en vez de seguir con Hotmart. Se aplicaron primero los 3 fixes ya
+documentados como pendientes arriba (Halo+ancla en "Otra cosa", íconos en momento/atribución,
+animación de entrada en los check de reconocimiento) y se relanzó el revisor-visual independiente:
+**Usabilidad 29/40 (+2) · Craft 12/20 (=) · Veredicto NO LISTA** (`docs/revisiones/onboarding-veredicto.md`).
+
+⚠️ **Bug real nuevo encontrado por el revisor, no solo de puntaje**: en el paso "Momento"
+(título de 2 líneas), debajo de "¿Cuándo revisas tus gastos familiares?" aparecía un rectángulo
+azul oscuro flotante y desconectado del texto — se investigó con DevTools (no se "arregló a
+ciegas"): con `leading-[1.1]` (tipografía display muy compacta), el alto REAL de la caja de línea
+de un span inline resultó ser 43px pese a que el line-height calculado era 30.8px (confirmado con
+`getBoundingClientRect`/`getClientRects()` — el bloque de tinta de Spectral es más alto que el
+interlineado apretado). El subrayado de `<Marcador>` (`components/funnel/ui.tsx`) se pintaba con
+un gradiente por PORCENTAJE de ese alto (62%), así que en títulos que envuelven a 2 líneas quedaba
+varios px más abajo de lo esperado, viéndose como una caja suelta. **Fix**: se cambió el subrayado
+a tamaño y posición FIJOS en `em`, anclados al borde inferior de la caja (`background-size: 100%
+0.22em; background-position: 0 100%`) en vez de un porcentaje del alto total — así deja de importar
+cuánto se infle esa caja. Verificado visualmente: el glitch desapareció tanto en el título de 2
+líneas (Momento) como en los de 1 línea (Rol) — sin relanzar el revisor sobre este fix puntual
+(ver nota de presupuesto abajo).
+
+Los otros 2 defectos reales de la ronda (vacío ~170px en pantallas de solo-chips sin CTA, y la
+inconsistencia de patrón de anclaje vertical entre "Reconocimiento" y "Momento") son la MISMA
+tensión estructural ya diagnosticada en rondas anteriores (minimalismo del 50 vs. densidad de la
+rúbrica) — no tienen un fix barato sin rediseñar el patrón de estas pantallas. El defecto de
+navegación por teclado entre chips (h7) es una mejora real pero menor, no crítica para el gate.
+
+**Decisión**: no se relanzó una 8ª ronda del revisor tras el fix del bug de Marcador — mismo
+acuerdo de presupuesto que en sesiones anteriores (cada ronda cuesta ~75-80k tokens; se prioriza
+verificación directa con DevTools/captura para bugs puntuales ya confirmados, y se reserva el
+revisor para cambios estructurales grandes). El bug del rectángulo está corregido y confirmado
+visualmente; el vacío estructural queda documentado como no bloqueante, igual que en la ronda 6.
+
+Screenshot vigente: `docs/revisiones/onboarding-momento-375.png` (paso 7/10, con el bug de
+Marcador ya corregido) — reemplaza al de paso 1/10 como referencia principal de esta ronda.
 
 ### veredicto pantalla-principal (Inicio) — NO LISTA, ronda 1 (bug real encontrado y corregido)
 El revisor-visual independiente evaluó `/inicio` por primera vez (primera pantalla de este tipo
@@ -648,6 +683,40 @@ El usuario pidió comparar el paywall contra 6 tácticas de conversión sugerida
 
 Screenshot vigente: `docs/revisiones/paywall-375.png` (pantalla 3/3, Precio) — desactualizado tras
 esta actualización; ver `docs/revisiones/paywall-precio-v2-375.png` para el estado real actual.
+
+### Ronda 4 (2026-09-08, misma sesión de pulido que onboarding): 31/40 · 14/20 · Copy 17/20
+Se aplicaron primero los 3 fixes ya documentados como pendientes arriba (indicador "Paso X de 3",
+stagger de entrada en los botones de plan, titular de Precio reescrito con la escena de dolor real
+— "Una captura de WhatsApp no prueba nada — tu expediente sí") y se relanzó el revisor-visual:
+**Usabilidad 31/40 (+5) · Craft 14/20 (+2) · Copy 17/20** (`docs/revisiones/paywall-veredicto.md`)
+— Copy pasa el umbral pero con el eje "especificidad" en 2/4 (ningún eje ≤2 es la regla dura).
+
+⚠️ **Bug real de dinero encontrado por el revisor, corregido de inmediato**: el badge del plan
+anual decía "Más popular · ahorra 4 meses" y la landing decía "AHORRAS 33%" — ambos números eran
+matemáticamente incorrectos. Verificado a mano: $9.99×12 = $119.88 (costo si pagaras mes a mes) vs
+$89/año → el ahorro real es $30.88, que es **25.76%** (no 33%) y equivale a **3.09 meses** de plan
+mensual (no 4). Es un defecto grave de integridad de claims (regla 61/48 del SO: nunca un número
+de dinero sin verificar) y especialmente dañino porque el avatar (Carlos) desconfía justo de
+"cuentas que no cuadran". Corregido en 3 lugares: `app/paywall/page.tsx` (badge "ahorra 3 meses" +
+comentario con la cuenta completa), `app/page.tsx` (landing: badge "AHORRAS 25%" + "3 meses
+gratis") y `docs/copy/landing.md` (fuente de copy, con la verificación anotada).
+
+Otros 2 fixes aplicados en la misma pasada: (1) los botones de plan Anual/Mensual no respetaban
+`prefers-reduced-motion` a diferencia de `<Chip>`/`<BarraProgreso>` del mismo kit — se agregó
+`useReducedMotion()`; (2) las tarjetas de plan usaban `radius-card` (14px) mientras `<Chip>` (mismo
+patrón funcional) usa `radius-button` (10px) — unificado a `radius-button`. También se condensó el
+footer de la pantalla Precio (se fusionaron 2 líneas de microcopy en 1) para reducir el desborde
+fuera del viewport 375×812 que el revisor señaló.
+
+**Decisión**: no se relanzó una 5ª ronda del revisor tras estos últimos 3 fixes — mismo acuerdo de
+presupuesto que en onboarding (ver arriba). El bug de dinero (el más grave de los encontrados en
+toda esta ronda de pulido) está corregido y verificado a mano con la fórmula completa documentada
+aquí mismo; los defectos de vacío/jerarquía ya diagnosticados como techo estructural en rondas
+anteriores siguen pendientes, sin cambio.
+
+Screenshot vigente: `docs/revisiones/paywall-precio-v3-375.png` (pantalla 3/3, con indicador de
+paso, botones con stagger y el titular nuevo — desactualizado en el badge de ahorro, corregido
+después de tomar esta captura; el número real ya está en el código).
 
 ### veredicto landing — NO LISTA, techo estructural identificado (6 rondas de revisión)
 El revisor-visual independiente evaluó la landing **6 veces** en dos sesiones (histórico completo

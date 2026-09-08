@@ -52,8 +52,10 @@ sin pelear por WhatsApp.
 - Trial: 7 días
 - Stack: Coparentia Pro con el Sello de Confianza (12 meses) $120 · Plantilla de autorización
   de gastos extraordinarios $19 · Guía "Tu primer expediente en 10 minutos" $15 → total $154
-- Anual: $89/año ($7.42/mes) · badge "Ahorras 33%" · ahorro "4 meses gratis" · descomposición
-  "menos de $0.25 al día"
+- Anual: $89/año ($7.42/mes) · badge "Ahorras 25%" · ahorro "3 meses gratis" · descomposición
+  "menos de $0.25 al día" (verificado: $9.99×12=$119.88 vs $89 = $30.88 de ahorro ≈ 25.76% y
+  ≈3.09 meses de plan mensual — corregido tras bug real encontrado por el revisor-visual, antes
+  decía "33%"/"4 meses", números que no correspondían al precio real)
 - Mensual: $9.99/mes
 
 ## 7. GARANTÍA (15 días — mayor que los 7 de prueba, regla dura 18/FICHA-MERCADO.md)

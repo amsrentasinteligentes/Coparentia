@@ -1,14 +1,14 @@
 # VEREDICTO revisor-visual — onboarding
-Fecha: 2026-09-07 00:00
-Screenshot: docs/revisiones/onboarding-375.png
-Usabilidad: 27/40
+Fecha: 2026-09-08 00:00
+Screenshot: docs/revisiones/onboarding-momento-375.png
+Usabilidad: 29/40
 Craft: 12/20
 Copy (si vende): N-A
 Fidelidad (si hubo referencia): N-A
 Veredicto: NO LISTA
 Top defectos:
-1. [pasos 2/3/4 — situación, fijación, preocupación] Vacío muerto de ~300-400px entre los chips y el disclaimer inferior en TODAS estas pantallas (screenshots onb-paga/recibe-01/02/03) → sin corregir pese a estar reportado en la ronda anterior; agregar una tarjeta de contexto (ícono+texto, mismo patrón del paso 0) o reubicar/agrandar el disclaimer a media altura.
-2. [paso 0 "rol"] Persiste un vacío de ~250px entre la tarjeta "¿Por qué lo preguntamos?" y la tarjeta de ventaja unilateral, pese a haber agregado ambas tarjetas → falta un tercer elemento entre las dos, o acercarlas, para no dejar el tercio medio de la pantalla vacío.
-3. [craft, eje profundidad] Las 4 tarjetas informativas nuevas (rol×2, reconocimiento-preocupación, reconocimiento-final) usan EXACTAMENTE el mismo tratamiento (borde + fondo tintado 8-12% + ícono a la izquierda) → se percibe como un único componente copiado 4 veces, no como 3 niveles de profundidad (base/elevado/hundido); variar el tratamiento de al menos una (fondo sólido sin borde, o superficie hundida) para diferenciar jerarquía de mensajes.
-4. [paso 10, LoadingPlan en app/onboarding/page.tsx] En onb-final-loading-375.png el ítem 2 ("Activando el Sello de Confianza") aparece SIN marcar mientras el ítem 3 ("Ajustando a tu meta") ya tiene check — secuencia fuera de orden visible en la pantalla que vende justamente "registro confiable y sin alterar en silencio" → revisar la lógica de completadas/activa por posible doble-ejecución del efecto (p. ej. React Strict Mode) generando dos temporizadores en carrera.
-5. [input "otra cosa", PreguntaSituacion] Si el usuario deja el campo vacío o en blanco, el CTA solo se deshabilita sin ningún mensaje — no cumple heurística de errores con solución; agregar un texto de ayuda bajo el input ("Escribe tu situación para continuar").
+1. Paso 7 (Momento) — debajo de "¿Cuándo revisas tus gastos familiares?" aparece un rectángulo azul oscuro flotante, desconectado del texto y de bordes duros (el dispositivo <Marcador> mal calculado en un título de 2 líneas) → fix: revisar el linear-gradient de Marcador con leading-[1.1] en títulos que envuelven, forzar line-height consistente o pasar a un <mark> real con padding controlado, y testear en TODOS los títulos de 2 líneas del onboarding.
+2. Paso 7 (Momento) — tras los 4 chips queda un vacío de ~170px sin ningún elemento hasta la nota de pie ("Puedes cambiar el horario...", sin CTA visible) → fix: centrar verticalmente el bloque pregunta+chips o anclar el pie con un elemento visual, en vez de dejar aire muerto con mt-auto puro.
+3. Consistencia de layout entre pasos — "Reconocimiento" (paso 5) ancla el CTA al fondo llenando el espacio; "Momento" (paso 7, sin CTA) deja la mitad inferior vacía: dos patrones de balance vertical compiten dentro del mismo flujo y se sienten inconsistentes.
+4. h7 Flexibilidad (código) — ui.tsx/page.tsx no implementan navegación por teclado entre opciones de un mismo paso (flechas arriba/abajo); solo Tab+Enter nativo del button. Aceptable pero no da atajos al usuario experto.
+5. Identidad ownable — el glitch del punto 1 ocurre justo en el dispositivo diferenciador de la marca (Marcador+Halo), lo que en este screenshot se lee más como bug de plantilla que como diseño intencional; corregirlo antes de cualquier otra pulida visual.

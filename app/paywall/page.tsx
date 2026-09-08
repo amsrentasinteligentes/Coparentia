@@ -7,9 +7,9 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { AnimatePresence, motion } from 'motion/react';
+import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { ChevronLeft, X, Check, ShieldCheck, Lock, FileCheck2, HeartHandshake } from 'lucide-react';
-import { CtaFunnel, FunnelHeader, Marcador, usePasoVariants } from '@/components/funnel/ui';
+import { BarraProgreso, CtaFunnel, FunnelHeader, Marcador, usePasoVariants } from '@/components/funnel/ui';
 
 /* ── <CheckPlan> — check circular animado del plan activo, mismo device que <Chip> ── */
 function CheckPlan({ activo }: { activo: boolean }) {
@@ -43,7 +43,10 @@ type Respuestas = {
   atribucion: string;
 };
 
-const PLAN_ANUAL = { precioMes: '$7.42', totalAnual: 'Se cobra $89/año', ahorro: '4 meses gratis' };
+// $89/año vs $9.99×12=$119.88 mensual: ahorro real $30.88 ≈ 3.09 meses de plan mensual — nunca
+// redondear al alza (bug real encontrado por el revisor-visual: decía "4 meses", matemáticamente
+// incorrecto y dañino para un avatar que desconfía justo de las cuentas que no cuadran).
+const PLAN_ANUAL = { precioMes: '$7.42', totalAnual: 'Se cobra $89/año', ahorro: '3 meses gratis' };
 const PLAN_MENSUAL = { precioMes: '$9.99' };
 
 export default function Paywall() {
@@ -95,6 +98,13 @@ export default function Paywall() {
         >
           <X size={20} aria-hidden="true" />
         </button>
+      </div>
+
+      <div className="mt-1 flex items-center gap-2">
+        <BarraProgreso porcentaje={((paso + 1) / 3) * 100} />
+        <span className="shrink-0 whitespace-nowrap text-right text-[12px] tabular-nums text-[var(--text-tertiary)]">
+          Paso {paso + 1} de 3
+        </span>
       </div>
 
       <div className="relative mt-4 flex flex-1 flex-col">
@@ -200,6 +210,7 @@ function Precio({
   onCta: () => void;
   onAhoraNo: () => void;
 }) {
+  const reduce = useReducedMotion();
   return (
     <div className="flex flex-1 flex-col">
       <h1 className="relative text-balance text-[26px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)]">
@@ -211,7 +222,7 @@ function Precio({
               'radial-gradient(220px 140px at 20% 30%, color-mix(in oklab, var(--accent) 20%, transparent) 0%, transparent 65%)',
           }}
         />
-        <Marcador>Blinda</Marcador> tu expediente <span className="text-[var(--accent)]">desde hoy</span>
+        Una <Marcador>captura de WhatsApp</Marcador> no prueba nada —<span className="text-[var(--accent)]"> tu expediente sí</span>
       </h1>
 
       <div className="mt-6 flex flex-col gap-3">
@@ -219,14 +230,17 @@ function Precio({
           type="button"
           onClick={() => onCambiarPlan('anual')}
           whileTap={{ scale: 0.97 }}
-          className={`relative flex items-start gap-3 rounded-[var(--radius-card)] border p-4 text-left transition-colors [touch-action:manipulation] ${
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: reduce ? 0 : 0.25, delay: reduce ? 0 : 0, ease: [0.16, 1, 0.3, 1] }}
+          className={`relative flex items-start gap-3 rounded-[var(--radius-button)] border p-4 text-left transition-colors [touch-action:manipulation] ${
             plan === 'anual'
               ? 'border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_7%,transparent)] shadow-[0_6px_20px_color-mix(in_oklab,var(--accent)_18%,transparent)]'
               : 'border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] bg-[var(--surface)] shadow-[var(--shadow-1)]'
           }`}
         >
           <span className="absolute -top-2.5 left-4 rounded-full bg-[var(--accent)] px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-[0.06em] text-[var(--bg)]">
-            Más popular · ahorra 4 meses
+            Más popular · ahorra 3 meses
           </span>
           <CheckPlan activo={plan === 'anual'} />
           <div className="mt-1.5 flex-1">
@@ -244,7 +258,10 @@ function Precio({
           type="button"
           onClick={() => onCambiarPlan('mensual')}
           whileTap={{ scale: 0.97 }}
-          className={`flex items-start gap-3 rounded-[var(--radius-card)] border p-4 text-left transition-colors [touch-action:manipulation] ${
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: reduce ? 0 : 0.25, delay: reduce ? 0 : 0.06, ease: [0.16, 1, 0.3, 1] }}
+          className={`flex items-start gap-3 rounded-[var(--radius-button)] border p-4 text-left transition-colors [touch-action:manipulation] ${
             plan === 'mensual'
               ? 'border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_7%,transparent)] shadow-[0_6px_20px_color-mix(in_oklab,var(--accent)_18%,transparent)]'
               : 'border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] bg-[var(--surface)] shadow-[var(--shadow-1)]'
@@ -284,10 +301,7 @@ function Precio({
         </div>
         <CtaFunnel onClick={onCta}>Empezar mis 7 días gratis</CtaFunnel>
         <p className="mt-2 text-center text-[13px] text-[var(--text-secondary)]">
-          Hoy no pagas nada · Te avisamos antes del cobro · Cancela en 1 tap
-        </p>
-        <p className="mt-2 text-center text-[13px] text-[var(--text-tertiary)]">
-          Menos de $0.25 al día — menos que un mensaje aclaratorio a tu abogado.
+          Hoy no pagas nada · Cancela en 1 tap · Menos de $0.25 al día después
         </p>
       </div>
 
