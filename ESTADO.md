@@ -143,7 +143,9 @@ CURSO: el usuario ya tenía cuentas de GitHub/Supabase/Hotmart; falta Vercel. Pr
   sube el archivo real antes de guardar la fila y guarda su ruta en `comprobante_path`; nueva
   `obtenerUrlComprobante()` genera un link firmado y temporal (10 min) para ver/descargar el
   archivo — el bucket nunca es público. En `/pagos`, cada registro con comprobante real ahora es
-  tocable y abre el archivo real en una pestaña nueva. Pendiente menor (no bloqueante): el mismo
+  tocable y abre el archivo real en una pestaña nueva. ✅ **CONFIRMADO por el usuario**: probó
+  subiendo un comprobante nuevo desde su celular real y tocando el registro se abrió la foto
+  real correctamente. Pendiente menor (no bloqueante): el mismo
   patrón para `documentoAdjunto` de `Evento` (permiso de salida del país en `/calendario`) sigue
   guardando solo el nombre — replicar el mismo enfoque cuando haga falta.
 
