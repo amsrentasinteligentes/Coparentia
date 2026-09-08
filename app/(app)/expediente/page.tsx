@@ -29,15 +29,15 @@ export default function Expediente() {
   const [generado, setGenerado] = useState(false);
 
   useEffect(() => {
-    setAutorizaciones(obtenerAutorizaciones());
+    obtenerAutorizaciones().then(setAutorizaciones);
   }, []);
 
   const exportarPdf = async (): Promise<void> => {
     setGenerando(true);
     try {
       const { jsPDF } = await import('jspdf');
-      const titulo = obtenerTitulo();
-      const pagos = [...obtenerPagos()].sort((a, b) => a.fecha.localeCompare(b.fecha));
+      const titulo = await obtenerTitulo();
+      const pagos = (await obtenerPagos()).sort((a, b) => a.fecha.localeCompare(b.fecha));
       const doc = new jsPDF({ unit: 'pt', format: 'letter' });
       const margen = 48;
       let y = margen;

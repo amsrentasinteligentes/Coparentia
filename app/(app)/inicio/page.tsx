@@ -5,7 +5,7 @@
 // Sin backend todavía (Sesión 6): todo vive en lib/datos.ts (localStorage), con datos semilla
 // realistas — la app nunca se enseña vacía (32).
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion, useReducedMotion } from 'motion/react';
 import { Upload, Check, CalendarClock, ShieldCheck, ChevronRight, FileCheck2, Globe } from 'lucide-react';
 import { MiniRing } from '@/components/landing/ui';
@@ -16,7 +16,6 @@ import {
   type Pago,
   type Evento,
   tieneOnboardingCompleto,
-  marcarPrimerosPasosCompletos,
   obtenerTitulo,
   guardarTitulo,
   obtenerPagos,
@@ -35,8 +34,10 @@ export default function Inicio() {
   const [completo, setCompleto] = useState(false);
 
   useEffect(() => {
-    setCompleto(tieneOnboardingCompleto());
-    setListo(true);
+    tieneOnboardingCompleto().then((c) => {
+      setCompleto(c);
+      setListo(true);
+    });
   }, []);
 
   if (!listo) return null;
@@ -50,9 +51,7 @@ function PrimerosPasos({ onListo }: { onListo: () => void }) {
   // Si el título ya se guardó en un intento anterior (ej. recargó la página a mitad de camino),
   // se retoma en el paso del comprobante — nunca se vuelve a pedir la cuota ni se salta al
   // dashboard con datos que no son del usuario.
-  const [paso, setPaso] = useState<'titulo' | 'comprobante' | 'revelacion'>(
-    obtenerTitulo() ? 'comprobante' : 'titulo'
-  );
+  const [paso, setPaso] = useState<'titulo' | 'comprobante' | 'revelacion'>('titulo');
   const [monto, setMonto] = useState('450000');
   const [dia, setDia] = useState('5');
   const [reajuste, setReajuste] = useState('IPC (Índice de Precios al Consumidor)');
@@ -60,14 +59,23 @@ function PrimerosPasos({ onListo }: { onListo: () => void }) {
   const [procesando, setProcesando] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const confirmarTitulo = (): void => {
+  // Si el título ya se guardó en un intento anterior (ej. recargó la página a mitad de camino),
+  // se retoma en el paso del comprobante — nunca se vuelve a pedir la cuota ni se salta al
+  // dashboard con datos que no son del usuario.
+  useEffect(() => {
+    obtenerTitulo().then((t) => {
+      if (t) setPaso('comprobante');
+    });
+  }, []);
+
+  const confirmarTitulo = async (): Promise<void> => {
     const t: Titulo = {
       montoMensual: Number(monto) || 0,
       diaPago: Number(dia) || 1,
       indiceReajuste: reajuste,
       fechaInicio: new Date().toISOString().slice(0, 10),
     };
-    guardarTitulo(t);
+    await guardarTitulo(t);
     setPaso('comprobante');
   };
 
@@ -76,18 +84,16 @@ function PrimerosPasos({ onListo }: { onListo: () => void }) {
     setProcesando(true);
     // Sello de Confianza: fecha + asocia el comprobante — mock honesto (sin OCR real todavía,
     // Sesión 6), pero el NOMBRE del archivo es real (lo eligió el usuario, no se inventa).
-    setTimeout(() => {
-      agregarPago({
-        fecha: new Date().toISOString().slice(0, 10),
-        monto: Number(monto) || 0,
-        concepto: 'Primer comprobante registrado',
-        tipo: 'cuota',
-        comprobanteNombre: f.name,
-      });
-      marcarPrimerosPasosCompletos();
+    agregarPago({
+      fecha: new Date().toISOString().slice(0, 10),
+      monto: Number(monto) || 0,
+      concepto: 'Primer comprobante registrado',
+      tipo: 'cuota',
+      comprobanteNombre: f.name,
+    }).then(() => {
       setProcesando(false);
       setPaso('revelacion');
-    }, 1100);
+    });
   };
 
   return (
@@ -253,11 +259,12 @@ function Revelacion({ onContinuar }: { onContinuar: () => void }) {
 function Dashboard() {
   const [pagos, setPagos] = useState<Pago[]>([]);
   const [eventos, setEventos] = useState<Evento[]>([]);
-  const titulo = useMemo(() => obtenerTitulo(), []);
+  const [titulo, setTitulo] = useState<Titulo | null>(null);
 
   useEffect(() => {
-    setPagos(obtenerPagos());
-    setEventos(obtenerEventos());
+    obtenerTitulo().then(setTitulo);
+    obtenerPagos().then(setPagos);
+    obtenerEventos().then(setEventos);
   }, []);
 
   const totalRegistrado = pagos.reduce((acc, p) => acc + p.monto, 0);

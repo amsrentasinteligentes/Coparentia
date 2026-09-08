@@ -1,8 +1,109 @@
 # ESTADO.md — Coparentia (nombre provisional: PensiónClara)
 
 ## Fase actual
-Sesión 5 (la app interna) EN CURSO — ver su propia sección más abajo. Sesión 4
-(onboarding/paywall/login) terminada, con `veredicto:onboarding`/`veredicto:paywall`/
+Sesión 5 (la app interna) TERMINADA (ver su sección más abajo). Sesión 6 (servicios externos) EN
+CURSO: el usuario ya tenía cuentas de GitHub/Supabase/Hotmart; falta Vercel. Progreso:
+- **GitHub conectado**: todo el código de esta sesión (Sesión 5 completa + fixes de onboarding/
+  paywall/landing) ya está commiteado y pusheado a
+  `https://github.com/amsrentasinteligentes/Coparentia` (rama `master`, remoto `origin`
+  configurado en el repo local). Push verificado con `git ls-remote`.
+- **Vercel conectado y desplegado**: proyecto importado desde GitHub, primer deploy exitoso
+  (verificado por el usuario abriendo la URL — el navegador de Claude no pudo verlo porque
+  Vercel exige sesión iniciada en deployments; normal, no es un bug). Protección de acceso de
+  Vercel (pide login) sigue activa a propósito — se desactiva justo antes del lanzamiento
+  público, no antes.
+- **Supabase — código listo, falta la conexión real**: el usuario ya creó el proyecto real en
+  Supabase. Se preparó TODO el código de conexión sin tocar ni ver ninguna clave (protocolo cero
+  secretos en chat, regla 4 de este mismo archivo):
+  - `lib/supabase/client.ts` (cliente de navegador) y `lib/supabase/server.ts` (Server
+    Components/Actions) con `@supabase/ssr` — instalado `@supabase/supabase-js` y `@supabase/ssr`
+    (SÍ quedan en package.json, son dependencias reales de la app, a diferencia de `sharp`/
+    `playwright` que se instalan `--no-save` solo para procesar imágenes o probar en esta sesión).
+  - `proxy.ts` (antes `middleware.ts` — Next.js 16 renombró la convención; se migró con el
+    codemod oficial `@next/codemod middleware-to-proxy`) refresca la sesión de Supabase en cada
+    request.
+  - `supabase/schema.sql`: esquema completo (`titulos`, `pagos`, `autorizaciones`, `eventos`)
+    con RLS `(select auth.uid()) = user_id` en las 4 tablas, índices en cada FK (regla #1 de
+    25-BASE-DE-DATOS.md), `numeric` para dinero, `updated_at` automático en `titulos` — el
+    usuario debe pegarlo en Supabase → SQL Editor → Run (no se puede ejecutar desde aquí sin
+    credenciales de servidor).
+  - Pedido al usuario: agregar `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_ANON_KEY` en
+    Vercel → Settings → Environment Variables (él copia los valores directo desde Supabase, sin
+    pegarlos en el chat) — **en curso, ver incidente de seguridad abajo**.
+
+⚠️ **Incidente de seguridad menor, resuelto en el momento**: al llenar `.env.local`, el usuario
+pegó por error la **service_role key** (el secreto que salta toda la seguridad de Supabase) en
+la variable `NEXT_PUBLIC_SUPABASE_URL` — si eso hubiera llegado a build/deploy, habría quedado
+expuesto en el navegador de cualquier visitante. Se detectó de inmediato (el valor nunca se repite
+ni se guarda en texto plano en ningún archivo de este repo), se le pidió al usuario **rotar/
+regenerar esa clave en Supabase** y corregir la línea con la Project URL real (`https://algo.
+supabase.co`). La `NEXT_PUBLIC_SUPABASE_ANON_KEY` sí estaba correcta. Si en el futuro se necesita
+la service_role key (ej. el webhook de Hotmart), va en una variable SIN el prefijo `NEXT_PUBLIC_`
+y solo se usa en código de servidor — nunca en un archivo que el navegador descarga.
+  - `tsc`/`next build` limpios con todo esto ya en el código (los archivos no fallan sin las
+    variables porque nada los usa todavía en runtime — el `!` de TypeScript no valida en build).
+### Actualización — Auth real conectada (mismo día, continuación)
+- ⚠️ **Segundo incidente menor, mismo patrón**: al corregir la variable, el usuario volvió a
+  pegar una clave privada (esta vez `sb_secret_...`, el nuevo formato de Supabase que reemplaza a
+  `service_role`) en `NEXT_PUBLIC_SUPABASE_ANON_KEY`. Se detectó igual que la primera vez (por el
+  prefijo, sin repetir el valor), se explicó la diferencia `sb_publishable_` (segura, pública) vs
+  `sb_secret_` (privada, nunca en `NEXT_PUBLIC_`), y el usuario corrigió con la publishable key
+  correcta — verificado con un script que solo lee el PREFIJO de cada variable, nunca el valor
+  completo. Ambas variables confirmadas correctas: URL real + `sb_publishable_...`.
+- **`/entrar` ya usa Supabase Auth real**: `signInWithOtp` (magic link, jerarquía de
+  26-AUTH-MODERNO.md) — crea el usuario si no existe (registro passwordless, igual que hará el
+  webhook de Hotmart más adelante). Aprovechando el cambio, se corrigió también un botón inerte
+  que ya existía ("Continuar con Google" no hacía nada al tocarlo — regla 11 del SO): ahora está
+  visiblemente deshabilitado con la etiqueta "— próximamente" en vez de fingir que funciona.
+- **`app/auth/callback/route.ts`** (nuevo): recibe el enlace mágico, intercambia el código por una
+  sesión real (`exchangeCodeForSession`) y redirige a `/inicio`; si el enlace ya se usó o expiró,
+  vuelve a `/entrar?error=enlace_invalido` con aviso visible (antes no existía ningún manejo de
+  este caso).
+- **`app/(app)/layout.tsx`**: ahora es un Server Component async que exige sesión real
+  (`supabase.auth.getUser()`) antes de mostrar Inicio/Pagos/Calendario/Expediente — sin sesión,
+  redirige a `/entrar`. Verificado: entrar directo a `/inicio` sin sesión SÍ redirige (antes estas
+  rutas eran navegables libremente, documentado como aceptable solo mientras el login era mock).
+- Verificado end-to-end con el correo real del usuario: el envío del enlace mágico se completó sin
+  errores (confirma que las variables de entorno están bien conectadas) — revisado sin errores de
+  consola ni de red. `tsc`/`next build` limpios (fue necesario envolver `EntrarInterno` en
+  `<Suspense>` porque `useSearchParams` lo exige en Next.js 16, si no falla el build).
+- **Pendiente inmediato**: el usuario está configurando en Supabase → Authentication → URL
+  Configuration la Site URL (su dominio de Vercel) y las Redirect URLs
+  (`http://localhost:3000/auth/callback` + la URL de Vercel + `/auth/callback`) — sin esto, el
+  enlace mágico redirige a `localhost` incluso en producción.
+- ✅ (1) Redirect URLs confirmadas por el usuario. ✅ (2) `supabase/schema.sql` corrido con éxito en
+  el SQL Editor — las 4 tablas reales (`titulos`, `pagos`, `autorizaciones`, `eventos`) ya existen
+  en producción, con RLS e índices. ✅ (3) `lib/datos.ts` migrado de localStorage a Supabase real
+  (ver detalle abajo). Quedan: (4) conectar Hotmart (producto + webhook con hottok que activa/crea
+  el usuario), (5) desactivar las claves antiguas ("Legacy API Keys") en Supabase para cerrar del
+  todo el tema de seguridad de los dos incidentes de arriba.
+- **Investigado y descartado — enlazar Claude directamente con Vercel/Supabase por CLI**: no hay
+  conectores instalados para ninguno de los dos. GitHub ya está enlazado de forma segura (el flujo
+  propio de git nunca le muestra una clave a Claude). Vercel/Supabase por CLI sí exigirían pasar un
+  token de acceso personal por este chat — eso rompe la regla "cero secretos en chat" del proyecto,
+  así que se descartó; se sigue con el copiar/pegar manual en los paneles oficiales.
+### Actualización — `lib/datos.ts` migrado a Supabase real (mismo día, continuación)
+- Mismos tipos y firmas de función que la versión de localStorage (`Titulo`, `Pago`, `Autorizacion`,
+  `Evento`, `obtenerX`/`agregarX`/`guardarTitulo`) — las 4 pantallas de la app interna (Inicio,
+  Pagos, Calendario, Expediente) casi no cambiaron: solo se convirtieron sus llamadas a estas
+  funciones (ahora asíncronas) a `useEffect` + `.then(...)` en vez de lectura síncrona.
+- `tieneOnboardingCompleto()` ya no depende de una bandera separada en localStorage — se DERIVA en
+  vivo de si el usuario tiene título Y al menos un pago guardados en la base real (más robusto:
+  nunca puede desincronizarse). Se eliminó `marcarPrimerosPasosCompletos()` (ya no hace falta).
+- Cada función obtiene el usuario autenticado con `supabase.auth.getUser()` y filtra/inserta por su
+  `user_id` — la RLS del `schema.sql` refuerza esto igual del lado del servidor si algo se escapara
+  aquí.
+- Los datos semilla de demostración (pagos/autorizaciones/eventos de ejemplo) se eliminaron de esta
+  capa: un usuario real autenticado ahora empieza con su cuenta vacía de verdad (las pantallas ya
+  tenían sus propios estados vacíos con mensaje, así que no queda ninguna vista "en blanco muerta").
+- Verificado: `tsc --noEmit` ✓ · `next build` ✓ (17 rutas generadas sin error) · dev server sin
+  errores de consola ni de servidor · gate de sesión de `/inicio` sigue funcionando (sin sesión,
+  redirige). No se repitió el flujo completo de magic-link + guardar datos en esta pasada (ya se
+  verificó el envío real del correo en el paso anterior de esta misma sesión); el siguiente paso
+  natural es que el usuario complete "primeros pasos" con su cuenta real y confirme que ve sus
+  propios datos en el dashboard.
+
+Sesión 4 (onboarding/paywall/login) terminada, con `veredicto:onboarding`/`veredicto:paywall`/
 `veredicto:landing` en techo estructural documentado en "## Problemas conocidos" (no bloquean).
 
 ### Checkpoint (2026-09-07, ajustes pequeños de landing tras cerrar Sesión 5 inicial)

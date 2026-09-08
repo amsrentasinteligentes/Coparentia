@@ -1,40 +1,62 @@
 'use client';
 
 // LOGIN (E de 50-DISENO-ONBOARDING-PAYWALL.md): magic link por email, sin contraseña
-// (decisión Hotmart-first de 26-AUTH-MODERNO.md). Sin Supabase/Hotmart conectados
-// todavía (Sesión 6): el envío es SIMULADO con estado local — nunca se promete un
-// correo real que no se manda. Se documenta en ESTADO.md como mock pendiente.
+// (decisión Hotmart-first de 26-AUTH-MODERNO.md). Sesión 6: conectado a Supabase Auth
+// de verdad — signInWithOtp crea al usuario si no existe (registro passwordless) y
+// envía el enlace real. El webhook de Hotmart (más adelante) hará lo mismo desde el
+// servidor cuando exista el cobro real; este camino ya es honesto sin él.
 
-import { useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { motion } from 'motion/react';
 import { Lock, Mail } from 'lucide-react';
 import { ContenedorFunnel, CtaFunnel, FunnelHeader } from '@/components/funnel/ui';
+import { crearClienteSupabase } from '@/lib/supabase/client';
 
 type Estado = 'idle' | 'enviando' | 'enviado' | 'error';
 
 export default function Entrar() {
+  return (
+    <Suspense fallback={null}>
+      <EntrarInterno />
+    </Suspense>
+  );
+}
+
+function EntrarInterno() {
+  const params = useSearchParams();
   const [email, setEmail] = useState('');
   const [estado, setEstado] = useState<Estado>('idle');
   const [countdown, setCountdown] = useState(0);
 
-  const enviar = (e: React.FormEvent): void => {
+  useEffect(() => {
+    if (params.get('error') === 'enlace_invalido') setEstado('error');
+  }, [params]);
+
+  const enviar = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
     if (!email.includes('@') || estado === 'enviando') return;
     setEstado('enviando');
-    // MOCK — Sesión 6 conecta Supabase Auth (magic link real) + webhook de Hotmart.
-    setTimeout(() => {
-      setEstado('enviado');
-      setCountdown(60);
-      const tick = setInterval(() => {
-        setCountdown((c) => {
-          if (c <= 1) {
-            clearInterval(tick);
-            return 0;
-          }
-          return c - 1;
-        });
-      }, 1000);
-    }, 900);
+    const supabase = crearClienteSupabase();
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
+    });
+    if (error) {
+      setEstado('error');
+      return;
+    }
+    setEstado('enviado');
+    setCountdown(60);
+    const tick = setInterval(() => {
+      setCountdown((c) => {
+        if (c <= 1) {
+          clearInterval(tick);
+          return 0;
+        }
+        return c - 1;
+      });
+    }, 1000);
   };
 
   return (
@@ -78,10 +100,12 @@ export default function Entrar() {
 
             <button
               type="button"
-              className="mt-3 flex h-14 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] text-[15px] font-medium text-[var(--text-primary)] [touch-action:manipulation]"
+              disabled
+              title="Próximamente"
+              className="mt-3 flex h-14 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] text-[15px] font-medium text-[var(--text-tertiary)] opacity-60 [touch-action:manipulation]"
             >
               <span aria-hidden="true" className="text-[15px] font-bold">G</span>
-              Continuar con Google
+              Continuar con Google — próximamente
             </button>
 
             <p className="mt-4 flex items-center gap-1.5 text-[13px] text-[var(--text-tertiary)]">

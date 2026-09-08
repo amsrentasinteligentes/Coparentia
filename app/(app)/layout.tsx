@@ -1,10 +1,23 @@
 import type { ReactNode } from 'react';
+import { redirect } from 'next/navigation';
 import { BottomNav } from '@/components/app/ui';
+import { crearClienteSupabaseServidor } from '@/lib/supabase/server';
 
-// SHELL de la app interna (Sesión 5): altura dinámica de viewport + nav al fondo (regla 43 §13).
-// Sin gate de sesión real todavía (Sesión 6 conecta Supabase Auth) — estas rutas son navegables
-// directo mientras el login es mock, igual que /onboarding y /paywall en esta etapa del proyecto.
-export default function AppLayout({ children }: { children: ReactNode }) {
+// SHELL de la app interna: altura dinámica de viewport + nav al fondo (regla 43 §13).
+// Sesión 6: gate de sesión REAL con Supabase Auth — sin sesión válida, no se entra.
+// (Los datos que se muestran adentro siguen en localStorage por ahora — lib/datos.ts
+// se migra a las tablas reales de supabase/schema.sql en el siguiente paso de esta
+// misma sesión, ya con el usuario autenticado disponible.)
+export default async function AppLayout({ children }: { children: ReactNode }) {
+  const supabase = await crearClienteSupabaseServidor();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect('/entrar');
+  }
+
   return (
     <div className="min-h-dvh bg-[var(--bg)] text-[var(--text-primary)] [font-family:var(--font-body)]">
       {children}

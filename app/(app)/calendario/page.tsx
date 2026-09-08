@@ -27,7 +27,7 @@ export default function Calendario() {
   const [modalAbierto, setModalAbierto] = useState(false);
 
   useEffect(() => {
-    setEventos(obtenerEventos());
+    obtenerEventos().then(setEventos);
   }, []);
 
   const delMes = eventos
@@ -119,13 +119,12 @@ function ModalEvento({ onCerrar, onGuardado }: { onCerrar: () => void; onGuardad
 
   const guardar = (): void => {
     if (!titulo.trim()) return;
-    const nuevo = agregarEvento({
+    agregarEvento({
       tipo,
       titulo: titulo.trim(),
       fecha,
       ...(esSalidaPais && documento ? { documentoAdjunto: documento.name } : {}),
-    });
-    onGuardado(nuevo);
+    }).then(onGuardado);
   };
 
   return (

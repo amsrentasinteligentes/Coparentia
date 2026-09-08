@@ -8,7 +8,7 @@ import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Upload, ShieldCheck, FileCheck2, X } from 'lucide-react';
 import { ContenedorApp, PageHeader, Tarjeta, IconoCirculo, BotonFlotante } from '@/components/app/ui';
-import { type Pago, type TipoMovimiento, obtenerPagos, agregarPago, obtenerTitulo, formatoCOP, formatoFechaLarga } from '@/lib/datos';
+import { type Pago, type Titulo, type TipoMovimiento, obtenerPagos, agregarPago, obtenerTitulo, formatoCOP, formatoFechaLarga } from '@/lib/datos';
 
 type Filtro = 'todos' | TipoMovimiento;
 
@@ -18,7 +18,7 @@ export default function Pagos() {
   const [modalAbierto, setModalAbierto] = useState(false);
 
   useEffect(() => {
-    setPagos(obtenerPagos());
+    obtenerPagos().then(setPagos);
   }, []);
 
   const visibles = pagos
@@ -95,28 +95,32 @@ export default function Pagos() {
 }
 
 function ModalRegistro({ onCerrar, onGuardado }: { onCerrar: () => void; onGuardado: (p: Pago) => void }) {
-  const titulo = obtenerTitulo();
   const [tipo, setTipo] = useState<TipoMovimiento>('cuota');
-  const [monto, setMonto] = useState(titulo ? String(titulo.montoMensual) : '');
+  const [monto, setMonto] = useState('');
   const [concepto, setConcepto] = useState('');
   const [archivo, setArchivo] = useState<File | null>(null);
   const [procesando, setProcesando] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  useEffect(() => {
+    obtenerTitulo().then((t: Titulo | null) => {
+      if (t) setMonto(String(t.montoMensual));
+    });
+  }, []);
+
   const guardar = (): void => {
     if (!archivo || !monto || !concepto.trim()) return;
     setProcesando(true);
-    setTimeout(() => {
-      const nuevo = agregarPago({
-        fecha: new Date().toISOString().slice(0, 10),
-        monto: Number(monto),
-        concepto: concepto.trim(),
-        tipo,
-        comprobanteNombre: archivo.name,
-      });
+    agregarPago({
+      fecha: new Date().toISOString().slice(0, 10),
+      monto: Number(monto),
+      concepto: concepto.trim(),
+      tipo,
+      comprobanteNombre: archivo.name,
+    }).then((nuevo) => {
       setProcesando(false);
       onGuardado(nuevo);
-    }, 900);
+    });
   };
 
   return (

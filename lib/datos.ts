@@ -1,7 +1,9 @@
-// CAPA DE DATOS DE LA APP INTERNA — Sesión 5. Sin backend todavía (Sesión 6 conecta Supabase):
-// todo vive en localStorage, con datos semilla realistas (32 — "la app nunca se enseña vacía").
-// Tipos y forma de los datos ya pensados como el futuro esquema real (25-BASE-DE-DATOS.md),
-// para que migrar a una base real después sea mecánico, no un rediseño.
+// CAPA DE DATOS DE LA APP INTERNA — Sesión 6: conectada a Supabase de verdad (supabase/schema.sql).
+// Mismos tipos y firmas de función que la Sesión 5 (localStorage) para que las pantallas casi no
+// cambien — ahora cada función habla con la base real, filtrada por el usuario autenticado (RLS
+// en el servidor lo refuerza igual si algo se nos escapa aquí).
+
+import { crearClienteSupabase } from '@/lib/supabase/client';
 
 export type TipoMovimiento = 'cuota' | 'gasto_extra';
 export type EstadoAutorizacion = 'aprobada' | 'pendiente' | 'objetada';
@@ -41,141 +43,190 @@ export interface Evento {
   documentoAdjunto?: string; // ej. permiso de salida del país — nombre real del archivo subido
 }
 
-const CLAVE_TITULO = 'coparentia_titulo';
-const CLAVE_PAGOS = 'coparentia_pagos';
-const CLAVE_AUTORIZACIONES = 'coparentia_autorizaciones';
-const CLAVE_EVENTOS = 'coparentia_eventos';
-const CLAVE_PRIMEROS_PASOS_COMPLETOS = 'coparentia_primeros_pasos_completos';
-
-function leer<T>(clave: string): T | null {
-  try {
-    const raw = localStorage.getItem(clave);
-    return raw ? (JSON.parse(raw) as T) : null;
-  } catch {
-    return null;
-  }
+async function usuarioActual() {
+  const supabase = crearClienteSupabase();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) throw new Error('No hay sesión activa.');
+  return { supabase, userId: user.id };
 }
 
-function escribir<T>(clave: string, valor: T): void {
-  try {
-    localStorage.setItem(clave, JSON.stringify(valor));
-  } catch {}
+function mapPago(row: {
+  id: string;
+  fecha: string;
+  monto: number | string;
+  concepto: string;
+  tipo: TipoMovimiento;
+  comprobante_nombre: string;
+}): Pago {
+  return {
+    id: row.id,
+    fecha: row.fecha,
+    monto: Number(row.monto),
+    concepto: row.concepto,
+    tipo: row.tipo,
+    comprobanteNombre: row.comprobante_nombre,
+  };
+}
+
+function mapAutorizacion(row: {
+  id: string;
+  fecha: string;
+  concepto: string;
+  monto: number | string;
+  estado: EstadoAutorizacion;
+  nota: string | null;
+}): Autorizacion {
+  return {
+    id: row.id,
+    fecha: row.fecha,
+    concepto: row.concepto,
+    monto: Number(row.monto),
+    estado: row.estado,
+    nota: row.nota ?? undefined,
+  };
+}
+
+function mapEvento(row: {
+  id: string;
+  fecha: string;
+  tipo: TipoEvento;
+  titulo: string;
+  nota: string | null;
+  documento_adjunto: string | null;
+}): Evento {
+  return {
+    id: row.id,
+    fecha: row.fecha,
+    tipo: row.tipo,
+    titulo: row.titulo,
+    nota: row.nota ?? undefined,
+    documentoAdjunto: row.documento_adjunto ?? undefined,
+  };
 }
 
 // `tieneOnboardingCompleto` marca el FIN real de "primeros pasos" (cuota + primer comprobante
-// subido) — nunca solo la cuota guardada. Si solo mirara el título, recargar la página entre el
-// paso 1 y el paso 2 saltaría directo al dashboard mostrando datos semilla como si fueran del
-// usuario (bug real encontrado por el revisor-visual, corregido aquí).
-export function tieneOnboardingCompleto(): boolean {
-  return leer<boolean>(CLAVE_PRIMEROS_PASOS_COMPLETOS) === true;
+// subido) — nunca solo la cuota guardada. Se deriva de datos reales (título creado Y al menos un
+// pago) en vez de una bandera aparte, así nunca puede quedar desincronizada de lo que hay guardado.
+export async function tieneOnboardingCompleto(): Promise<boolean> {
+  const { supabase, userId } = await usuarioActual();
+  const [{ data: titulo }, { count }] = await Promise.all([
+    supabase.from('titulos').select('id').eq('user_id', userId).maybeSingle(),
+    supabase.from('pagos').select('id', { count: 'exact', head: true }).eq('user_id', userId),
+  ]);
+  return Boolean(titulo) && (count ?? 0) > 0;
 }
 
-export function marcarPrimerosPasosCompletos(): void {
-  escribir(CLAVE_PRIMEROS_PASOS_COMPLETOS, true);
+export async function obtenerTitulo(): Promise<Titulo | null> {
+  const { supabase, userId } = await usuarioActual();
+  const { data } = await supabase.from('titulos').select('*').eq('user_id', userId).maybeSingle();
+  if (!data) return null;
+  return {
+    montoMensual: Number(data.monto_mensual),
+    diaPago: data.dia_pago,
+    indiceReajuste: data.indice_reajuste,
+    fechaInicio: data.fecha_inicio,
+  };
 }
 
-export function obtenerTitulo(): Titulo | null {
-  return leer<Titulo>(CLAVE_TITULO);
+export async function guardarTitulo(t: Titulo): Promise<void> {
+  const { supabase, userId } = await usuarioActual();
+  const { error } = await supabase.from('titulos').upsert(
+    {
+      user_id: userId,
+      monto_mensual: t.montoMensual,
+      dia_pago: t.diaPago,
+      indice_reajuste: t.indiceReajuste,
+      fecha_inicio: t.fechaInicio,
+    },
+    { onConflict: 'user_id' }
+  );
+  if (error) throw error;
 }
 
-// Al guardar el título (arranque real de "primeros pasos") se inicializan pagos/autorizaciones/
-// eventos en vacío — NUNCA con la semilla de demostración — para que el usuario real nunca vea
-// datos que no son suyos mezclados con los que sí sube.
-export function guardarTitulo(t: Titulo): void {
-  escribir(CLAVE_TITULO, t);
-  escribir(CLAVE_PAGOS, [] as Pago[]);
-  escribir(CLAVE_AUTORIZACIONES, [] as Autorizacion[]);
-  escribir(CLAVE_EVENTOS, [] as Evento[]);
+export async function obtenerPagos(): Promise<Pago[]> {
+  const { supabase, userId } = await usuarioActual();
+  const { data } = await supabase
+    .from('pagos')
+    .select('*')
+    .eq('user_id', userId)
+    .order('fecha', { ascending: false });
+  return (data ?? []).map(mapPago);
 }
 
-function fechaISO(diasAtras: number): string {
-  const d = new Date();
-  d.setDate(d.getDate() - diasAtras);
-  return d.toISOString().slice(0, 10);
-}
-function fechaFutura(diasAdelante: number): string {
-  const d = new Date();
-  d.setDate(d.getDate() + diasAdelante);
-  return d.toISOString().slice(0, 10);
-}
-
-function pagosSemilla(): Pago[] {
-  return [
-    { id: 'p1', fecha: fechaISO(3), monto: 450000, concepto: 'Cuota de septiembre', tipo: 'cuota', comprobanteNombre: 'transferencia_sept.pdf' },
-    { id: 'p2', fecha: fechaISO(34), monto: 450000, concepto: 'Cuota de agosto', tipo: 'cuota', comprobanteNombre: 'transferencia_ago.pdf' },
-    { id: 'p3', fecha: fechaISO(40), monto: 180000, concepto: 'Matrícula extracurricular — natación', tipo: 'gasto_extra', comprobanteNombre: 'recibo_natacion.jpg' },
-    { id: 'p4', fecha: fechaISO(65), monto: 450000, concepto: 'Cuota de julio', tipo: 'cuota', comprobanteNombre: 'transferencia_jul.pdf' },
-    { id: 'p5', fecha: fechaISO(96), monto: 450000, concepto: 'Cuota de junio', tipo: 'cuota', comprobanteNombre: 'transferencia_jun.pdf' },
-    { id: 'p6', fecha: fechaISO(110), monto: 95000, concepto: 'Medicamentos — control pediatra', tipo: 'gasto_extra', comprobanteNombre: 'factura_farmacia.jpg' },
-  ];
+export async function agregarPago(pago: Omit<Pago, 'id'>): Promise<Pago> {
+  const { supabase, userId } = await usuarioActual();
+  const { data, error } = await supabase
+    .from('pagos')
+    .insert({
+      user_id: userId,
+      fecha: pago.fecha,
+      monto: pago.monto,
+      concepto: pago.concepto,
+      tipo: pago.tipo,
+      comprobante_nombre: pago.comprobanteNombre,
+    })
+    .select()
+    .single();
+  if (error || !data) throw error ?? new Error('No se pudo guardar el pago.');
+  return mapPago(data);
 }
 
-function autorizacionesSemilla(): Autorizacion[] {
-  return [
-    { id: 'a1', fecha: fechaISO(40), concepto: 'Matrícula extracurricular — natación', monto: 180000, estado: 'aprobada' },
-    { id: 'a2', fecha: fechaISO(12), concepto: 'Uniforme nuevo de colegio', monto: 130000, estado: 'pendiente', nota: 'Esperando respuesta por WhatsApp desde hace 5 días.' },
-    { id: 'a3', fecha: fechaISO(58), concepto: 'Consulta con especialista', monto: 220000, estado: 'objetada', nota: 'Se objetó por no ser gasto médico urgente — quedó registrado con la respuesta completa.' },
-  ];
+export async function obtenerAutorizaciones(): Promise<Autorizacion[]> {
+  const { supabase, userId } = await usuarioActual();
+  const { data } = await supabase
+    .from('autorizaciones')
+    .select('*')
+    .eq('user_id', userId)
+    .order('fecha', { ascending: false });
+  return (data ?? []).map(mapAutorizacion);
 }
 
-function eventosSemilla(): Evento[] {
-  return [
-    { id: 'e1', fecha: fechaFutura(2), tipo: 'visita', titulo: 'Fin de semana con papá' },
-    { id: 'e2', fecha: fechaFutura(6), tipo: 'medica', titulo: 'Control pediatra — Dra. Ramírez' },
-    { id: 'e3', fecha: fechaFutura(14), tipo: 'extracurricular', titulo: 'Clase de natación' },
-    { id: 'e4', fecha: fechaFutura(30), tipo: 'vacaciones', titulo: 'Vacaciones de mitad de año' },
-    { id: 'e5', fecha: fechaISO(5), tipo: 'visita', titulo: 'Fin de semana con papá' },
-    { id: 'e6', fecha: fechaFutura(38), tipo: 'salida_pais', titulo: 'Viaje a Panamá con mamá', documentoAdjunto: 'permiso_salida_notariado.pdf' },
-  ];
+export async function agregarAutorizacion(auth: Omit<Autorizacion, 'id'>): Promise<Autorizacion> {
+  const { supabase, userId } = await usuarioActual();
+  const { data, error } = await supabase
+    .from('autorizaciones')
+    .insert({
+      user_id: userId,
+      fecha: auth.fecha,
+      concepto: auth.concepto,
+      monto: auth.monto,
+      estado: auth.estado,
+      nota: auth.nota ?? null,
+    })
+    .select()
+    .single();
+  if (error || !data) throw error ?? new Error('No se pudo guardar la autorización.');
+  return mapAutorizacion(data);
 }
 
-export function obtenerPagos(): Pago[] {
-  let p = leer<Pago[]>(CLAVE_PAGOS);
-  if (!p) {
-    p = pagosSemilla();
-    escribir(CLAVE_PAGOS, p);
-  }
-  return p;
+export async function obtenerEventos(): Promise<Evento[]> {
+  const { supabase, userId } = await usuarioActual();
+  const { data } = await supabase
+    .from('eventos')
+    .select('*')
+    .eq('user_id', userId)
+    .order('fecha', { ascending: true });
+  return (data ?? []).map(mapEvento);
 }
 
-export function agregarPago(pago: Omit<Pago, 'id'>): Pago {
-  const nuevo: Pago = { ...pago, id: `p${Date.now()}` };
-  const actuales = obtenerPagos();
-  const actualizados = [nuevo, ...actuales];
-  escribir(CLAVE_PAGOS, actualizados);
-  return nuevo;
-}
-
-export function obtenerAutorizaciones(): Autorizacion[] {
-  let a = leer<Autorizacion[]>(CLAVE_AUTORIZACIONES);
-  if (!a) {
-    a = autorizacionesSemilla();
-    escribir(CLAVE_AUTORIZACIONES, a);
-  }
-  return a;
-}
-
-export function agregarAutorizacion(auth: Omit<Autorizacion, 'id'>): Autorizacion {
-  const nueva: Autorizacion = { ...auth, id: `a${Date.now()}` };
-  const actuales = obtenerAutorizaciones();
-  escribir(CLAVE_AUTORIZACIONES, [nueva, ...actuales]);
-  return nueva;
-}
-
-export function obtenerEventos(): Evento[] {
-  let e = leer<Evento[]>(CLAVE_EVENTOS);
-  if (!e) {
-    e = eventosSemilla();
-    escribir(CLAVE_EVENTOS, e);
-  }
-  return e;
-}
-
-export function agregarEvento(evento: Omit<Evento, 'id'>): Evento {
-  const nuevo: Evento = { ...evento, id: `e${Date.now()}` };
-  const actuales = obtenerEventos();
-  escribir(CLAVE_EVENTOS, [...actuales, nuevo]);
-  return nuevo;
+export async function agregarEvento(evento: Omit<Evento, 'id'>): Promise<Evento> {
+  const { supabase, userId } = await usuarioActual();
+  const { data, error } = await supabase
+    .from('eventos')
+    .insert({
+      user_id: userId,
+      fecha: evento.fecha,
+      tipo: evento.tipo,
+      titulo: evento.titulo,
+      nota: evento.nota ?? null,
+      documento_adjunto: evento.documentoAdjunto ?? null,
+    })
+    .select()
+    .single();
+  if (error || !data) throw error ?? new Error('No se pudo guardar el evento.');
+  return mapEvento(data);
 }
 
 export function formatoCOP(valor: number): string {
