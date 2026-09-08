@@ -83,7 +83,7 @@ export default function Paywall() {
               type="button"
               onClick={() => setPaso((p) => Math.max(0, p - 1))}
               aria-label="Volver"
-              className="flex size-11 shrink-0 items-center justify-center text-[var(--text-secondary)] [touch-action:manipulation]"
+              className="flex size-11 shrink-0 items-center justify-center rounded-full bg-[color-mix(in_oklab,var(--text-tertiary)_10%,transparent)] text-[var(--text-secondary)] [touch-action:manipulation]"
             >
               <ChevronLeft size={22} aria-hidden="true" />
             </button>
@@ -94,7 +94,7 @@ export default function Paywall() {
           type="button"
           onClick={cerrar}
           aria-label="Cerrar"
-          className="flex size-11 items-center justify-center text-[var(--text-secondary)] [touch-action:manipulation]"
+          className="flex size-11 items-center justify-center rounded-full bg-[color-mix(in_oklab,var(--text-tertiary)_10%,transparent)] text-[var(--text-secondary)] [touch-action:manipulation]"
         >
           <X size={20} aria-hidden="true" />
         </button>
@@ -264,7 +264,7 @@ function Precio({
           className={`flex items-start gap-3 rounded-[var(--radius-button)] border p-4 text-left transition-colors [touch-action:manipulation] ${
             plan === 'mensual'
               ? 'border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_7%,transparent)] shadow-[0_6px_20px_color-mix(in_oklab,var(--accent)_18%,transparent)]'
-              : 'border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] bg-[var(--surface)] shadow-[var(--shadow-1)]'
+              : 'border-[color-mix(in_oklab,var(--text-tertiary)_35%,transparent)] bg-[var(--surface)] shadow-[var(--shadow-1)]'
           }`}
         >
           <CheckPlan activo={plan === 'mensual'} />
@@ -279,17 +279,21 @@ function Precio({
         </motion.button>
       </div>
 
-      <div className="mt-6 flex flex-col gap-3">
+      <div className="mt-4 flex flex-col gap-2.5">
         {[
-          { icon: ShieldCheck, texto: 'Trazabilidad inalterable: cada comprobante con fecha y respaldo' },
-          { icon: FileCheck2, texto: 'Reporte en 1 clic: expediente en PDF listo para tu abogado' },
-          { icon: HeartHandshake, texto: 'Cero discusiones: evita reclamos por gastos que ya cubriste' },
-        ].map(({ icon: Icon, texto }) => (
-          <div key={texto} className="flex items-center gap-3">
+          { icon: ShieldCheck, pre: 'Trazabilidad: ', fuerte: 'fecha y hora exactas', post: ' en cada comprobante.' },
+          { icon: FileCheck2, pre: 'Reporte en 1 clic: ', fuerte: 'PDF foliado', post: ' listo para tu abogado.' },
+          { icon: HeartHandshake, pre: 'Cero discusiones: ', fuerte: 'fecha exacta', post: ' en cada gasto cubierto.' },
+        ].map(({ icon: Icon, pre, fuerte, post }) => (
+          <div key={fuerte} className="flex items-center gap-3">
             <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[color-mix(in_oklab,var(--accent)_12%,transparent)]">
               <Icon size={15} color="var(--accent)" aria-hidden="true" />
             </span>
-            <span className="text-[14px] text-[var(--text-secondary)]">{texto}</span>
+            <span className="text-[14px] text-[var(--text-secondary)]">
+              {pre}
+              <span className="font-semibold text-[var(--text-primary)]">{fuerte}</span>
+              {post}
+            </span>
           </div>
         ))}
       </div>
@@ -305,20 +309,20 @@ function Precio({
         </p>
       </div>
 
-      <div className="mt-4 flex justify-center gap-4">
-        <button type="button" onClick={onAhoraNo} className="px-2 py-3 text-[14px] text-[var(--text-tertiary)] [touch-action:manipulation]">
+      <div className="mt-3 flex items-center justify-center gap-3 text-[13px] text-[var(--text-tertiary)]">
+        <button type="button" onClick={onAhoraNo} className="py-2 [touch-action:manipulation]">
           Ahora no
         </button>
-        <a href="mailto:soporte@coparentia.app" className="px-2 py-3 text-[14px] text-[var(--text-tertiary)] underline-offset-2 hover:underline [touch-action:manipulation]">
+        <span aria-hidden="true">·</span>
+        <a href="mailto:soporte@coparentia.app" className="py-2 underline-offset-2 hover:underline [touch-action:manipulation]">
           ¿Dudas? Escríbenos
         </a>
       </div>
 
-      <div className="mt-2 flex items-center justify-center gap-1.5 text-[12px] text-[var(--text-tertiary)]">
-        <Lock size={13} aria-hidden="true" />
-        Pago seguro
-      </div>
       <div className="mt-1 flex items-center justify-center gap-2 text-[11px] text-[var(--text-tertiary)]">
+        <Lock size={12} aria-hidden="true" />
+        Pago seguro
+        <span aria-hidden="true">·</span>
         <a href="/terminos" className="underline-offset-2 hover:underline">Términos</a>
         <span aria-hidden="true">·</span>
         <a href="/privacidad" className="underline-offset-2 hover:underline">Privacidad</a>

@@ -6,7 +6,7 @@
 // en sessionStorage y viajan al paywall — nada se envía a un servidor real aún (mock
 // honesto, 50 C3ter).
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion, useMotionValue, useReducedMotion, useTransform, animate } from 'motion/react';
 import {
@@ -55,6 +55,47 @@ type Respuestas = {
   momento: string;
   atribucion: string;
 };
+
+// Tarjeta "¿Por qué lo preguntamos?" — mismo patrón en TODAS las preguntas de solo-chips
+// (antes solo la tenía el paso 0). Da un motivo real (nunca relleno decorativo), ancla el
+// cierre de cada pantalla de forma consistente (antes cada paso resolvía el espacio inferior
+// distinto — el revisor-visual lo marcó como falta de "encaje" entre pasos) y sube la
+// heurística de ayuda contextual (h10) con contenido funcional, no con aire vacío.
+// Flechas ↑/↓ para moverse entre opciones sin soltar el teclado (h7 "flexibilidad y atajos" —
+// antes solo existía Tab+Enter nativo del <button>, señalado por el revisor-visual).
+function manejarFlechasChips(e: KeyboardEvent<HTMLDivElement>): void {
+  if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+  const botones = Array.from(e.currentTarget.querySelectorAll('button'));
+  const actual = botones.indexOf(document.activeElement as HTMLButtonElement);
+  if (actual === -1) return;
+  e.preventDefault();
+  const siguiente = e.key === 'ArrowDown' ? Math.min(actual + 1, botones.length - 1) : Math.max(actual - 1, 0);
+  botones[siguiente]?.focus();
+}
+
+function InfoContextual({ children, anclar = true }: { children: ReactNode; anclar?: boolean }) {
+  return (
+    <div
+      className={`flex items-start gap-3 rounded-[var(--radius-card)] bg-[color-mix(in_oklab,var(--bg)_60%,black)] p-4 shadow-[inset_0_1px_2px_rgb(0_0_0_/_0.3)] ${anclar ? 'mt-auto' : 'mt-6'}`}
+    >
+      <Info size={18} className="mt-0.5 shrink-0 text-[var(--text-tertiary)]" aria-hidden="true" />
+      <p className="text-[13px] leading-[1.5] text-[var(--text-secondary)]">{children}</p>
+    </div>
+  );
+}
+
+// Retrasa ~180ms el avance real tras elegir una opción: sin esto, `avanzar()` cambia de paso
+// en el MISMO tick del clic y el spring del check de <Chip> nunca alcanza a verse (defecto real
+// encontrado por el revisor-visual). El estado local muestra el check de inmediato; el padre
+// se entera un instante después, cuando ya se vio la selección.
+function useSeleccionRetrasada<T>(onElegir: (v: T) => void, ms = 180): { local: T | null; elegir: (v: T) => void } {
+  const [local, setLocal] = useState<T | null>(null);
+  const elegir = (v: T): void => {
+    setLocal(v);
+    setTimeout(() => onElegir(v), ms);
+  };
+  return { local, elegir };
+}
 
 const VACIAS: Respuestas = {
   rol: '',
@@ -152,6 +193,7 @@ export default function Onboarding() {
 /* ── Paso 0: rol (aprobado 2026-09-07 — abre la app también a quien RECIBE la cuota,
    ver FICHA-AVATAR.md "Sub-avatar secundario"). Bifurca el copy de las 2 preguntas siguientes. ── */
 function PreguntaRol({ valor, onElegir }: { valor: Rol; onElegir: (v: Rol) => void }) {
+  const { local, elegir } = useSeleccionRetrasada<Rol>(onElegir);
   const opciones: { icon: typeof Wallet; label: string; value: Rol }[] = [
     { icon: Wallet, label: 'Yo pago la cuota alimentaria', value: 'paga' },
     { icon: HandCoins, label: 'Yo recibo la cuota alimentaria', value: 'recibe' },
@@ -163,27 +205,24 @@ function PreguntaRol({ valor, onElegir }: { valor: Rol; onElegir: (v: Rol) => vo
         ¿Cuál es tu <Marcador>rol</Marcador> hoy?
       </h1>
       <p className="mt-2 text-[14px] text-[var(--text-secondary)]">Así adaptamos las preguntas y tu expediente</p>
-      <div className="mt-6 flex flex-col gap-3">
+      <div className="mt-6 flex flex-col gap-3" onKeyDown={manejarFlechasChips}>
         {opciones.map(({ icon: Icon, label, value }, i) => (
           <Chip
             key={value}
             index={i}
-            seleccionado={valor === value}
-            onClick={() => onElegir(value)}
+            seleccionado={(local ?? valor) === value}
+            onClick={() => elegir(value)}
             icon={<Icon size={20} className="shrink-0 text-[var(--text-secondary)]" aria-hidden="true" />}
           >
             {label}
           </Chip>
         ))}
       </div>
-      <div className="mt-6 flex items-start gap-3 rounded-[var(--radius-card)] bg-[color-mix(in_oklab,var(--bg)_60%,black)] p-4 shadow-[inset_0_1px_2px_rgb(0_0_0_/_0.3)]">
-        <Info size={18} className="mt-0.5 shrink-0 text-[var(--text-tertiary)]" aria-hidden="true" />
-        <p className="text-[13px] leading-[1.5] text-[var(--text-secondary)]">
-          ¿Por qué lo preguntamos? Quien paga y quien recibe la cuota enfrentan riesgos distintos —
-          así usamos las palabras y ejemplos correctos en tu expediente.
-        </p>
-      </div>
-      <div className="mt-auto flex items-start gap-3 rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--accent)_25%,transparent)] bg-[color-mix(in_oklab,var(--accent)_8%,transparent)] p-4">
+      <InfoContextual anclar={false}>
+        ¿Por qué lo preguntamos? Quien paga y quien recibe la cuota enfrentan riesgos distintos —
+        así usamos las palabras y ejemplos correctos en tu expediente.
+      </InfoContextual>
+      <div className="mt-auto pt-4 flex items-start gap-3 rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--accent)_25%,transparent)] bg-[color-mix(in_oklab,var(--accent)_8%,transparent)] p-4">
         <ShieldCheck size={18} className="mt-0.5 shrink-0 text-[var(--accent)]" aria-hidden="true" />
         <p className="text-[13px] leading-[1.5] text-[var(--text-secondary)]">
           Sin importar tu rol, tu expediente queda blindado aunque el otro padre no use la app.
@@ -213,6 +252,11 @@ function PreguntaSituacion({
     { icon: MessageCircleWarning, label: 'Tengo disputas frecuentes con mi ex' },
     { icon: Scale, label: 'Ya tengo un proceso legal en curso' },
   ];
+  // Bug real encontrado por el revisor-visual: este hook estaba DESPUÉS del `if (otra) return`
+  // de abajo — al pasar otra=false→true, React llamaba MENOS hooks que en el render anterior
+  // ("Rendered fewer hooks than expected"), rompiendo la pantalla justo al tocar "Otra cosa".
+  // Todo hook va ANTES de cualquier return condicional (regla de hooks de React).
+  const { local, elegir } = useSeleccionRetrasada<string>(onElegir);
 
   // Mientras "otra" está abierto, Atrás debe volver a la lista de opciones — no salir del paso.
   useEffect(() => {
@@ -252,35 +296,39 @@ function PreguntaSituacion({
   }
   return (
     <div className="flex flex-1 flex-col">
-      <h1 className="relative text-balance text-[28px] font-bold leading-[1.1] text-[var(--text-primary)] [font-family:var(--font-display)]">
-        <Halo />
-        ¿Cuál es tu <Marcador>situación</Marcador> hoy?
-      </h1>
-      <p className="mt-2 text-[14px] text-[var(--text-secondary)]">Esto nos ayuda a armar tu expediente</p>
-      <div className="mt-6 flex flex-col gap-3">
-        {opciones.map(({ icon: Icon, label }, i) => (
+      <div className="flex flex-1 flex-col justify-center">
+        <h1 className="relative text-balance text-[28px] font-bold leading-[1.1] text-[var(--text-primary)] [font-family:var(--font-display)]">
+          <Halo />
+          ¿Cuál es tu <Marcador>situación</Marcador> hoy?
+        </h1>
+        <p className="mt-2 text-[14px] text-[var(--text-secondary)]">Esto nos ayuda a armar tu expediente</p>
+        <div className="mt-6 flex flex-col gap-3" onKeyDown={manejarFlechasChips}>
+          {opciones.map(({ icon: Icon, label }, i) => (
+            <Chip
+              key={label}
+              index={i}
+              seleccionado={(local ?? valor) === label}
+              onClick={() => elegir(label)}
+              icon={<Icon size={20} className="shrink-0 text-[var(--text-secondary)]" aria-hidden="true" />}
+            >
+              {label}
+            </Chip>
+          ))}
           <Chip
-            key={label}
-            index={i}
-            seleccionado={valor === label}
-            onClick={() => onElegir(label)}
-            icon={<Icon size={20} className="shrink-0 text-[var(--text-secondary)]" aria-hidden="true" />}
+            index={opciones.length}
+            seleccionado={false}
+            onClick={() => setOtra(true)}
+            icon={<Pencil size={20} className="shrink-0 text-[var(--text-secondary)]" aria-hidden="true" />}
           >
-            {label}
+            Otra cosa (escribe la tuya)
           </Chip>
-        ))}
-        <Chip
-          index={opciones.length}
-          seleccionado={false}
-          onClick={() => setOtra(true)}
-          icon={<Pencil size={20} className="shrink-0 text-[var(--text-secondary)]" aria-hidden="true" />}
-        >
-          Otra cosa (escribe la tuya)
-        </Chip>
+        </div>
       </div>
-      <p className="mt-auto pt-8 text-center text-[13px] text-[var(--text-tertiary)]">
-        Tus respuestas son privadas — solo se usan para armar tu expediente.
-      </p>
+      <InfoContextual anclar={false}>
+        ¿Por qué lo preguntamos? Tu situación actual decide qué evidencia prioriza tu expediente
+        — nunca cambia tus derechos, solo el orden en que los organizamos. Tus respuestas son
+        privadas.
+      </InfoContextual>
     </div>
   );
 }
@@ -293,6 +341,7 @@ function PreguntaFijacion({ valor, onElegir }: { valor: string; onElegir: (v: st
     { icon: MessageSquare, label: 'Acuerdo informal, de palabra' },
     { icon: Scale, label: 'Estoy en proceso legal ahora mismo' },
   ];
+  const { local, elegir } = useSeleccionRetrasada<string>(onElegir);
   return (
     <div className="flex flex-1 flex-col">
       <h1 className="relative text-balance text-[28px] font-bold leading-[1.1] text-[var(--text-primary)] [font-family:var(--font-display)]">
@@ -300,22 +349,24 @@ function PreguntaFijacion({ valor, onElegir }: { valor: string; onElegir: (v: st
         ¿Cómo está <Marcador>fijada</Marcador> tu cuota?
       </h1>
       <p className="mt-2 text-[14px] text-[var(--text-secondary)]">Así damos el formato correcto a tu expediente</p>
-      <div className="mt-6 flex flex-col gap-3">
+      <div className="mt-6 flex flex-col gap-3" onKeyDown={manejarFlechasChips}>
         {opciones.map(({ icon: Icon, label }, i) => (
           <Chip
             key={label}
             index={i}
-            seleccionado={valor === label}
-            onClick={() => onElegir(label)}
+            seleccionado={(local ?? valor) === label}
+            onClick={() => elegir(label)}
             icon={<Icon size={20} className="shrink-0 text-[var(--text-secondary)]" aria-hidden="true" />}
           >
             {label}
           </Chip>
         ))}
       </div>
-      <p className="mt-auto pt-8 text-center text-[13px] text-[var(--text-tertiary)]">
-        No reemplazamos a tu abogado — organizamos lo que se necesita para tu caso.
-      </p>
+      <InfoContextual>
+        ¿Por qué lo preguntamos? El formato de tu expediente cambia según cómo esté fijada tu
+        cuota — así el PDF que generes tiene el respaldo correcto para tu caso. No reemplazamos a
+        tu abogado.
+      </InfoContextual>
     </div>
   );
 }
@@ -336,28 +387,33 @@ function PreguntaPreocupacion({ rol, valor, onElegir }: { rol: Rol; valor: strin
     { icon: ShieldAlert, label: 'Miedo a tener que reclamar y no tener pruebas' },
   ];
   const opciones = rol === 'recibe' ? opcionesRecibe : opcionesPaga;
+  const { local, elegir } = useSeleccionRetrasada<string>(onElegir);
   return (
     <div className="flex flex-1 flex-col">
-      <h1 className="relative text-balance text-[28px] font-bold leading-[1.1] text-[var(--text-primary)] [font-family:var(--font-display)]">
-        <Halo />
-        ¿Qué te <Marcador>preocupa</Marcador> más ahora mismo?
-      </h1>
-      <div className="mt-6 flex flex-col gap-3">
-        {opciones.map(({ icon: Icon, label }, i) => (
-          <Chip
-            key={label}
-            index={i}
-            seleccionado={valor === label}
-            onClick={() => onElegir(label)}
-            icon={<Icon size={20} className="shrink-0 text-[var(--text-secondary)]" aria-hidden="true" />}
-          >
-            {label}
-          </Chip>
-        ))}
+      <div className="flex flex-1 flex-col justify-center">
+        <h1 className="relative text-balance text-[28px] font-bold leading-[1.1] text-[var(--text-primary)] [font-family:var(--font-display)]">
+          <Halo />
+          ¿Qué te <Marcador>preocupa</Marcador> más ahora mismo?
+        </h1>
+        <p className="mt-2 text-[14px] text-[var(--text-secondary)]">No hay respuesta incorrecta</p>
+        <div className="mt-6 flex flex-col gap-3" onKeyDown={manejarFlechasChips}>
+          {opciones.map(({ icon: Icon, label }, i) => (
+            <Chip
+              key={label}
+              index={i}
+              seleccionado={(local ?? valor) === label}
+              onClick={() => elegir(label)}
+              icon={<Icon size={20} className="shrink-0 text-[var(--text-secondary)]" aria-hidden="true" />}
+            >
+              {label}
+            </Chip>
+          ))}
+        </div>
       </div>
-      <p className="mt-auto pt-8 text-center text-[13px] text-[var(--text-tertiary)]">
-        No hay respuesta incorrecta — nos sirve para priorizar tu expediente.
-      </p>
+      <InfoContextual anclar={false}>
+        ¿Por qué lo preguntamos? Priorizamos qué te mostramos primero en tu expediente según lo
+        que más te preocupa.
+      </InfoContextual>
     </div>
   );
 }
@@ -493,29 +549,33 @@ function PreguntaMomento({ valor, onElegir }: { valor: string; onElegir: (v: str
     { icon: Moon, label: 'En la noche' },
     { icon: Bell, label: 'Cuando llega un reclamo' },
   ];
+  const { local, elegir } = useSeleccionRetrasada<string>(onElegir);
   return (
     <div className="flex flex-1 flex-col">
-      <h1 className="relative text-balance text-[28px] font-bold leading-[1.1] text-[var(--text-primary)] [font-family:var(--font-display)]">
-        <Halo />
-        ¿Cuándo <Marcador>revisas</Marcador> tus gastos familiares?
-      </h1>
-      <p className="mt-2 text-[14px] text-[var(--text-secondary)]">Así te avisamos en el momento correcto</p>
-      <div className="mt-6 flex flex-col gap-3">
-        {opciones.map(({ icon: Icon, label }, i) => (
-          <Chip
-            key={label}
-            index={i}
-            seleccionado={valor === label}
-            onClick={() => onElegir(label)}
-            icon={<Icon size={20} className="shrink-0 text-[var(--text-secondary)]" aria-hidden="true" />}
-          >
-            {label}
-          </Chip>
-        ))}
+      <div className="flex flex-1 flex-col justify-center">
+        <h1 className="relative text-balance text-[28px] font-bold leading-[1.1] text-[var(--text-primary)] [font-family:var(--font-display)]">
+          <Halo />
+          ¿Cuándo <Marcador>revisas</Marcador> tus gastos familiares?
+        </h1>
+        <p className="mt-2 text-[14px] text-[var(--text-secondary)]">Así te avisamos en el momento correcto</p>
+        <div className="mt-6 flex flex-col gap-3" onKeyDown={manejarFlechasChips}>
+          {opciones.map(({ icon: Icon, label }, i) => (
+            <Chip
+              key={label}
+              index={i}
+              seleccionado={(local ?? valor) === label}
+              onClick={() => elegir(label)}
+              icon={<Icon size={20} className="shrink-0 text-[var(--text-secondary)]" aria-hidden="true" />}
+            >
+              {label}
+            </Chip>
+          ))}
+        </div>
       </div>
-      <p className="mt-auto pt-8 text-center text-[13px] text-[var(--text-tertiary)]">
-        Puedes cambiar el horario de tus alertas después.
-      </p>
+      <InfoContextual anclar={false}>
+        ¿Por qué lo preguntamos? Así te avisamos justo antes de que necesites revisar tus
+        comprobantes — puedes cambiar el horario de tus alertas cuando quieras.
+      </InfoContextual>
     </div>
   );
 }
@@ -523,34 +583,37 @@ function PreguntaMomento({ valor, onElegir }: { valor: string; onElegir: (v: str
 /* ── Paso 7: atribución (Cal AI pattern — dato de marketing) ── */
 function PreguntaAtribucion({ valor, onElegir }: { valor: string; onElegir: (v: string) => void }) {
   const opciones = [
-    { icon: Sparkles, label: 'Instagram o TikTok' },
+    { icon: Sparkles, label: 'Redes sociales (Instagram, TikTok, Google)' },
     { icon: Scale, label: 'Mi abogado me la recomendó' },
-    { icon: FileSearch, label: 'Google' },
     { icon: Users, label: 'Un amigo o familiar' },
     { icon: HelpCircle, label: 'Otro' },
   ];
+  const { local, elegir } = useSeleccionRetrasada<string>(onElegir);
   return (
     <div className="flex flex-1 flex-col">
-      <h1 className="relative text-balance text-[28px] font-bold leading-[1.1] text-[var(--text-primary)] [font-family:var(--font-display)]">
-        <Halo />
-        ¿Cómo <Marcador>conociste</Marcador> Coparentia?
-      </h1>
-      <div className="mt-6 flex flex-col gap-3">
-        {opciones.map(({ icon: Icon, label }, i) => (
-          <Chip
-            key={label}
-            index={i}
-            seleccionado={valor === label}
-            onClick={() => onElegir(label)}
-            icon={<Icon size={20} className="shrink-0 text-[var(--text-secondary)]" aria-hidden="true" />}
-          >
-            {label}
-          </Chip>
-        ))}
+      <div className="flex flex-1 flex-col justify-center">
+        <h1 className="relative text-balance text-[28px] font-bold leading-[1.1] text-[var(--text-primary)] [font-family:var(--font-display)]">
+          <Halo />
+          ¿Cómo <Marcador>conociste</Marcador> Coparentia?
+        </h1>
+        <div className="mt-6 flex flex-col gap-3" onKeyDown={manejarFlechasChips}>
+          {opciones.map(({ icon: Icon, label }, i) => (
+            <Chip
+              key={label}
+              index={i}
+              seleccionado={(local ?? valor) === label}
+              onClick={() => elegir(label)}
+              icon={<Icon size={20} className="shrink-0 text-[var(--text-secondary)]" aria-hidden="true" />}
+            >
+              {label}
+            </Chip>
+          ))}
+        </div>
       </div>
-      <p className="mt-auto pt-8 text-center text-[13px] text-[var(--text-tertiary)]">
-        Último paso antes de ver tu plan.
-      </p>
+      <InfoContextual anclar={false}>
+        ¿Por qué lo preguntamos? Nos ayuda a saber dónde encontrarte, para seguir ayudando a más
+        familias como la tuya. Último paso antes de ver tu plan.
+      </InfoContextual>
     </div>
   );
 }

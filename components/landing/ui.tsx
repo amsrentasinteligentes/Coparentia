@@ -17,7 +17,7 @@ import {
   animate,
   type Variants,
 } from 'motion/react';
-import { Check } from 'lucide-react';
+import { Check, X } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 /* ── <CountUp> — cifra héroe que cuenta desde 0 al entrar en viewport (eje
@@ -272,19 +272,24 @@ export function CtaButton({
   children,
   alto = 52,
   fullMobile = true,
+  variant = 'solid',
 }: {
   href: string;
   children: ReactNode;
   alto?: 52 | 56;
   fullMobile?: boolean;
+  /** 'outline' — plan secundario (ej. "Elegir mensual"), nunca compite con el CTA principal. */
+  variant?: 'solid' | 'outline';
 }) {
   return (
     <motion.a
       whileTap={{ scale: 0.97 }}
       href={href}
-      className={`inline-flex items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] px-8 text-[17px] font-semibold text-[var(--bg)] shadow-[0_8px_30px_color-mix(in_oklab,var(--accent)_25%,transparent)] transition-colors duration-150 hover:bg-[color-mix(in_oklab,var(--accent)_88%,var(--text-primary))] [touch-action:manipulation] ${
-        alto === 56 ? 'h-14' : 'h-[52px]'
-      } ${fullMobile ? 'w-full sm:w-auto' : ''}`}
+      className={`inline-flex items-center justify-center rounded-[var(--radius-button)] px-8 text-[17px] font-semibold transition-colors duration-150 [touch-action:manipulation] ${
+        variant === 'outline'
+          ? 'border border-[color-mix(in_oklab,var(--accent)_45%,transparent)] text-[var(--accent)] hover:bg-[var(--chip-bg)]'
+          : 'bg-[var(--accent)] text-[var(--bg)] shadow-[0_8px_30px_color-mix(in_oklab,var(--accent)_25%,transparent)] hover:bg-[color-mix(in_oklab,var(--accent)_88%,var(--text-primary))]'
+      } ${alto === 56 ? 'h-14' : 'h-[52px]'} ${fullMobile ? 'w-full sm:w-auto' : ''}`}
     >
       {children}
     </motion.a>
@@ -316,6 +321,22 @@ export function StickyCtaMobile({
   const [ofertaVisible, setOfertaVisible] = useState(false);
   const [ofertaVista, setOfertaVista] = useState(false);
   const [finalVisible, setFinalVisible] = useState(false);
+  // Control manual de cierre (heurística 3: control y libertad) — un "x" que la descarta hasta
+  // el PRÓXIMO hito de scroll (entra/sale de hero, oferta o cta-final), nunca la esconde para
+  // siempre: si el usuario sigue navegando, la barra vuelve a ofrecer ayuda cuando haga falta.
+  const [descartada, setDescartada] = useState(false);
+  const ultimoHito = useRef({ heroVisible, ofertaVisible, finalVisible });
+
+  useEffect(() => {
+    const cambio =
+      ultimoHito.current.heroVisible !== heroVisible ||
+      ultimoHito.current.ofertaVisible !== ofertaVisible ||
+      ultimoHito.current.finalVisible !== finalVisible;
+    if (cambio) {
+      setDescartada(false);
+      ultimoHito.current = { heroVisible, ofertaVisible, finalVisible };
+    }
+  }, [heroVisible, ofertaVisible, finalVisible]);
 
   useEffect(() => {
     const observar = (id: string, onChange: (visible: boolean) => void): IntersectionObserver | null => {
@@ -344,7 +365,7 @@ export function StickyCtaMobile({
     };
   }, [heroId, ofertaId, ctaFinalId]);
 
-  const visible = !heroVisible && !ofertaVisible && !finalVisible;
+  const visible = !heroVisible && !ofertaVisible && !finalVisible && !descartada;
 
   return (
     <AnimatePresence>
@@ -354,15 +375,23 @@ export function StickyCtaMobile({
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: reduce ? 0 : 88, opacity: 0 }}
           transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-          className="fixed inset-x-0 bottom-0 z-40 border-t border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] bg-[var(--surface)] px-4 pt-2 pb-[max(12px,env(safe-area-inset-bottom))] md:hidden"
+          className="fixed inset-x-0 bottom-0 z-40 flex items-center gap-2 border-t border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] bg-[var(--surface)] px-4 pt-2 pb-[max(12px,env(safe-area-inset-bottom))] md:hidden"
         >
           <motion.a
             whileTap={{ scale: 0.97 }}
             href={ofertaVista ? href : `#${ofertaId}`}
-            className="flex h-12 w-full items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-[16px] font-semibold text-[var(--bg)] [touch-action:manipulation]"
+            className="flex h-12 flex-1 items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-[16px] font-semibold text-[var(--bg)] [touch-action:manipulation]"
           >
             {ofertaVista ? labelComercial : labelPre}
           </motion.a>
+          <button
+            type="button"
+            onClick={() => setDescartada(true)}
+            aria-label="Cerrar esta barra"
+            className="flex size-12 shrink-0 items-center justify-center rounded-[var(--radius-button)] text-[var(--text-tertiary)] [touch-action:manipulation]"
+          >
+            <X size={18} aria-hidden="true" />
+          </button>
         </motion.div>
       )}
     </AnimatePresence>
