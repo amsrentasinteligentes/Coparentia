@@ -395,10 +395,15 @@ necesita landing con SEO + app tras login, no es solo herramienta interna.
 - Páginas legales creadas y enlazadas (privacidad, términos, reembolsos, aviso de IA) — CONTENIDO
   REAL pero marcado explícitamente como "en revisión legal final antes del lanzamiento" (no son
   enlaces muertos, cumple la regla dura del footer, pero NO reemplaza validación de un abogado).
-- ⚠️ PENDIENTE (anotado, no bloquea cierre de sesión): el carrusel de "La app por dentro" usa
-  PLACEHOLDERS honestos (rotulados) porque la app interna aún no existe — se reemplazan por
-  screenshots reales al cerrar la Sesión 5. CTA lleva a `/onboarding`, ruta que se construye en
-  la Sesión 4.
+- ✅ RESUELTO (2026-09-08): el carrusel de "La app por dentro" ya usa capturas REALES de las 5
+  pantallas (`public/frame-{inicio,onboarding,paywall,pagos,calendario}.png`), no los placeholders
+  con ícono+nombre de antes. Onboarding y Paywall se capturaron directo (son públicas); Inicio,
+  Pagos y Calendario necesitan sesión real, así que se generaron con un interruptor temporal
+  SOLO local (`NEXT_PUBLIC_SCREENSHOT_DEMO=1`, nunca en `.env.local` commiteado ni en Vercel) que
+  hace que `lib/datos.ts` devuelva datos de ejemplo realistas en vez de llamar a Supabase — el
+  gate de sesión de `app/(app)/layout.tsx` y todas las funciones reales de `lib/datos.ts` quedaron
+  intactas y verificadas con `git diff` vacío después de revertir. Verificado con `tsc`/`build` y
+  captura de las 5 tarjetas del carrusel ya deslizadas.
 - Modelo de monetización: **onboarding-first (Modelo 2)** — CTAs llevan a /onboarding, no a
   checkout directo. (Decisión técnica, no se preguntó al usuario — DECIDE-INFORMA-AVANZA.)
 
