@@ -1,0 +1,9 @@
+# VEREDICTO revisor-visual — admin
+Fecha: 2026-09-09 00:00
+Screenshot: docs/revisiones/admin-375.png
+Usabilidad: 37/40
+Craft: 14/20
+Copy (si vende): N-A
+Fidelidad (si hubo referencia): N-A
+Veredicto: NO LISTA
+Top defectos: 1. [Fondo del panel, tercio final del scroll — "Todas las cuentas" hacia abajo] el gradiente de profundidad (linear-gradient 22%→70%, background-attachment:fixed) sigue sin llegar visible al último tramo del scroll; el fondo vuelve a sentirse plano ahí → extender el gradiente con un segundo stop hacia el final del documento (o repetir un tinte de menor intensidad cada ~800px) para que la profundidad sea consistente en TODO el alto, no solo el primer 60%. 2. [Movimiento, pantalla completa] de las 7 baseline de animación solo hay 2 verificables en código (pulse del skeleton, whileTap del form): sin conteo animado en los números héroe de "Usuarios"/"Uso de la app" (3, 1, 2, 3, 9, 4, 2 aparecen estáticos) → animar el conteo de 0 al valor final en el primer render de cada stat. 3. [Stats "Usuarios"/"Uso de la app"] los números no están centrados ópticamente con su label (bloque alineado a la izquierda, número y label con el mismo margen sin ajuste óptico) → aplicar el ajuste de encaje del kit (line-height/tracking del número vs label). 4. [Toda la pantalla, jerarquía global] con 7+ secciones apiladas de peso visual similar (mismo radius, mismo padding, mismo tamaño de ícono-chip) el "entrecerrar los ojos" no arroja 3-4 niveles nítidos sino un patrón repetitivo de tarjetas → diferenciar al menos la sección más crítica (Ganancia real / alertas) con un tratamiento de tamaño o superficie distinto al resto. 5. [Atajos de experto, h7] sin atajos de teclado ni defaults inteligentes en el formulario "Agregar una persona a mano" (ej. autofocus, paste-friendly) → agregar autofocus al campo Nombre al expandir el formulario.

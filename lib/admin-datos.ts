@@ -1,0 +1,98 @@
+// CAPA DE DATOS DEL PANEL DE ADMINISTRACIÓN — solo lectura, solo server-side (Server Components
+// dentro de app/admin/). Cada función que devuelve un número lo saca de una tabla real; ninguna
+// inventa cifras. Las secciones que hoy no tienen fuente real (ventas, ganancia, IA, errores)
+// no tienen función aquí — el componente las marca "Sin datos" directamente (21-BACKOFFICE.md:
+// "si un dato no existe todavía, se marca como tal, nunca se inventa").
+
+import type { SupabaseClient } from '@supabase/supabase-js';
+import { crearClienteSupabaseServidor } from '@/lib/supabase/server';
+
+export interface PerfilAdmin {
+  id: string;
+  email: string;
+  nombre: string | null;
+  role: 'user' | 'admin';
+  source: string | null;
+  creadoManualmente: boolean;
+  createdAt: string;
+}
+
+// Verifica en el SERVIDOR si quien pide la pantalla es el dueño — la RLS de `profiles`/`event_log`
+// (supabase/admin.sql) refuerza esto igual del lado de la base de datos si algo se escapara aquí;
+// esto es la primera barrera, no la única (09-SEGURIDAD.md).
+export async function usuarioAdminActual(): Promise<{ esAdmin: boolean; email: string | null }> {
+  const supabase = await crearClienteSupabaseServidor();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { esAdmin: false, email: null };
+
+  const { data: perfil } = await supabase.from('profiles').select('role').eq('id', user.id).maybeSingle();
+  return { esAdmin: perfil?.role === 'admin', email: user.email ?? null };
+}
+
+export interface ResumenUsuarios {
+  total: number;
+  nuevos7d: number;
+  nuevos30d: number;
+  activosHoy: number; // usuarios con sesion_iniciada hoy (event_log) — 0 hasta que haya tráfico real
+}
+
+export async function obtenerResumenUsuarios(supabase: SupabaseClient): Promise<ResumenUsuarios> {
+  const hace7d = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+  const hace30d = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+  const hoy = new Date().toISOString().slice(0, 10);
+
+  const [{ count: total }, { count: nuevos7d }, { count: nuevos30d }, { data: sesionesHoy }] = await Promise.all([
+    supabase.from('profiles').select('id', { count: 'exact', head: true }),
+    supabase.from('profiles').select('id', { count: 'exact', head: true }).gte('created_at', hace7d),
+    supabase.from('profiles').select('id', { count: 'exact', head: true }).gte('created_at', hace30d),
+    supabase
+      .from('event_log')
+      .select('user_id')
+      .eq('nombre', 'sesion_iniciada')
+      .gte('created_at', `${hoy}T00:00:00.000Z`),
+  ]);
+
+  const activosHoy = new Set((sesionesHoy ?? []).map((r: { user_id: string | null }) => r.user_id)).size;
+
+  return { total: total ?? 0, nuevos7d: nuevos7d ?? 0, nuevos30d: nuevos30d ?? 0, activosHoy };
+}
+
+export interface FilaUso {
+  nombre: string;
+  total: number;
+}
+
+// Cuenta cada tipo de evento de los últimos 30 días — el "USO" real de la app, sin inventar
+// nombres bonitos: lo que diga el event_log es lo que hay.
+export async function obtenerUsoUltimos30Dias(supabase: SupabaseClient): Promise<FilaUso[]> {
+  const hace30d = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+  const { data } = await supabase.from('event_log').select('nombre').gte('created_at', hace30d);
+  if (!data || data.length === 0) return [];
+
+  const conteo = new Map<string, number>();
+  for (const fila of data as { nombre: string }[]) {
+    conteo.set(fila.nombre, (conteo.get(fila.nombre) ?? 0) + 1);
+  }
+  return Array.from(conteo.entries())
+    .map(([nombre, total]) => ({ nombre, total }))
+    .sort((a, b) => b.total - a.total);
+}
+
+export async function obtenerListaUsuarios(supabase: SupabaseClient): Promise<PerfilAdmin[]> {
+  const { data } = await supabase
+    .from('profiles')
+    .select('id, email, nombre, role, source, creado_manualmente, created_at')
+    .order('created_at', { ascending: false });
+
+  return (data ?? []).map((p) => ({
+    id: p.id,
+    email: p.email,
+    nombre: p.nombre,
+    role: p.role,
+    source: p.source,
+    creadoManualmente: p.creado_manualmente,
+    createdAt: p.created_at,
+  }));
+}

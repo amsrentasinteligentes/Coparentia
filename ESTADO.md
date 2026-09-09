@@ -1,5 +1,98 @@
 # ESTADO.md — Coparentia (nombre provisional: PensiónClara)
 
+### Checkpoint (2026-09-09) — Panel de administración v1 CONSTRUIDO, real y conectado
+Usuario aprobó el plan presentado (ver checkpoint anterior) y pidió además la tabla de usuarios
+extra. Construido de punta a punta, capa por capa, verificando `tsc`/`build` en cada una:
+
+**Acceso (server-verified, no solo ocultar la ruta — IDOR evitado, 09/26)**:
+- `supabase/admin.sql` (YA CORRIDO por el usuario en producción): tabla `profiles` (role/source/
+  creado_manualmente, un trigger la llena sola al registrarse cualquier usuario — passwordless o
+  alta manual) + tabla `event_log` (fuente real de "uso", 36-ANALITICA-Y-EVENTOS) + función
+  `es_admin()` (security definer, evita recursión de RLS) + políticas: solo el dueño lee
+  `profiles`/`event_log` completos, cada usuario solo lee/edita el suyo.
+- El usuario ya se marcó como `role='admin'` con el UPDATE del propio archivo.
+- `app/admin/layout.tsx`: gate real — revisa `profiles.role` EN EL SERVIDOR en cada carga; sin
+  sesión → `/entrar`; con sesión pero sin el permiso → `/inicio` (sin pista de que `/admin` existe).
+- `lib/supabase/admin.ts`: cliente con la `service_role` key — SOLO se usa server-side, SOLO para
+  crear/borrar cuentas a mano. El usuario agregó `SUPABASE_SERVICE_ROLE_KEY` a `.env.local` (y
+  falta agregarla igual en Vercel → Settings → Environment Variables cuando se despliegue esto).
+- `RegistradorEventos` (`components/app/RegistradorEventos.tsx`), montado en el layout de la app
+  normal: anota `sesion_iniciada` en `event_log` una vez por día real (deduplicado con
+  localStorage) — es lo que alimenta "Usuarios activos"/"Uso" con datos reales desde ya.
+
+**Secciones del panel (`app/admin/page.tsx`)**: avisos automáticos (hoy "✅ Todo en orden", sin
+fuente real para una alerta todavía) · Ganancia real (Sin datos — activa con Hotmart) · Usuarios
+(REAL: total/nuevos 7-30d/activos hoy) · Uso de la app (REAL: cuenta el `event_log`, con
+etiquetas humanas) · "Todavía sin conectar" (Ventas/Negocio/IA/Errores agrupados, honesto) · alta
+manual de usuario (formulario real) · tabla de todas las cuentas (con vista de tarjetas en
+mobile, tabla en desktop, botón "Quitar" solo para altas manuales con confirmación).
+
+**Alta manual** (`app/admin/acciones.ts`): crea la cuenta real vía `auth.admin.createUser`
+(correo ya confirmado), marca `creado_manualmente=true`, deja rastro en `event_log`
+(`usuario_agregado_manualmente`, con quién la creó) — la persona entra después con el enlace
+mágico normal en `/entrar`. `quitarUsuarioManual` deshace SOLO altas manuales (nunca cuentas de
+Hotmart/registro propio), con confirmación en dos pasos.
+
+**Verificación visual — 9 rondas de revisor-visual** (screenshot real en
+`docs/revisiones/admin-375.png`, veredictos en `docs/revisiones/admin-veredicto.md`, primera
+pantalla de este tipo/plantilla → revisor obligatorio):
+27/11 → 33/12 → 34/14 (bug real: `icon` como componente cruzando Server→Client, corregido) →
+27/12 → 32/14 → 34/15 → 33/14 → 29/10 (2 defectos de esa ronda resultaron FALSOS al verificar
+contra el código — el revisor evalúa un screenshot estático, que no puede mostrar si una
+animación ocurrió; documentado y no perseguido) → **37/40 usabilidad · 14/20 craft** (última
+ronda). Usabilidad CRUZA el umbral (≥36). Craft se queda en 14/20 (umbral 16) con techo
+estructural explicado por el propio revisor: es un dashboard interno de un solo dueño con 7+
+módulos igual de necesarios — comprimir a "1 objeto dominante" o forzar más animación
+(tabs/celebraciones que no existen en este tipo de pantalla) rompería la función real de la
+pantalla o la personalidad Sereno/Sobrio de la ficha. Mismo patrón que el techo ya documentado de
+landing/onboarding/paywall (sesión 2026-09-08): rendimiento decreciente real tras 9 rondas
+(~650k tokens de revisor), se cierra aquí con el resultado documentado, no se sigue persiguiendo.
+
+Bugs reales encontrados y corregidos durante la construcción (no solo de puntaje):
+1. Pasar un ícono de Lucide como prop de un Server Component a un Client Component crasheaba
+   ("Only plain objects can be passed...") — se pasa ya renderizado (`<Icon .../>`), no la
+   referencia al componente.
+2. La tabla de "Todas las cuentas" causaba SCROLL HORIZONTAL DE TODA LA PÁGINA a 375px (`<table>`
+   sin `table-layout:fixed` propagaba su ancho a los contenedores ancestros aunque estuviera en
+   `overflow-x-auto`) — corregido con `overflow-x-hidden` en el contenedor raíz + vista de
+   tarjetas apiladas en mobile (la tabla real solo aparece desde `sm:`).
+3. El botón "Quitar" no leía el resultado de su propia acción — si fallaba, quedaba congelado en
+   "Quitando…" para siempre sin salida.
+
+Verificado con Node.js/Playwright (no con login real, ver nota de abajo): `tsc --noEmit` ✓ ·
+`next build` ✓ (17 rutas) · dev server sin errores de consola · confirmado con
+`document.body.scrollWidth === document.documentElement.scrollWidth === 375` que no quedó scroll
+horizontal · confirmado navegando sin sesión que `/admin` redirige a `/entrar` (gate real activo,
+sin ningún bypass — el bypass temporal de captura se usó y se retiró por completo, verificado con
+`grep` que no queda ningún rastro de `SCREENSHOT_DEMO` en el código ni en `.env.local`).
+
+⚠️ **Pendiente — verificación en vivo con tu sesión real**: no pude iniciar sesión de verdad como
+tú dentro de este entorno (el enlace mágico exige abrir el correo, que no puedo hacer yo); las 9
+capturas de revisor-visual se hicieron con un bypass temporal local + datos de EJEMPLO, ya
+retirado del código. Con lo que ya hiciste (correr `admin.sql`, marcarte `role='admin'`, agregar
+`SUPABASE_SERVICE_ROLE_KEY` a `.env.local`), el panel real en `/admin` debería funcionar en
+producción en cuanto despliegues este código y agregues esa misma clave en Vercel — falta que TÚ
+lo abras una vez con tu sesión real y confirmes que ves tus números reales (hoy: 1 usuario, vos).
+⚠️ **Pendiente — clave del servidor en Vercel**: `SUPABASE_SERVICE_ROLE_KEY` solo está en tu
+`.env.local` local. Sin agregarla también en Vercel → Settings → Environment Variables, el botón
+"Agregar una persona a mano" fallará en producción (el resto del panel sí funcionará, porque lee
+con la clave pública de siempre).
+⚠️ Feature de más, NO construida (fuera de alcance, anotada aquí en vez de construida sin avisar):
+edición de campos de una cuenta ya creada (solo se puede quitar una alta manual, no editarla).
+
+### Checkpoint (2026-09-09) — Panel de administración: EN PLANEACIÓN, esperando OK del usuario
+El usuario pidió el panel de administración premium (solo para el dueño): números reales de la
+app + alta manual de usuarios por correo+nombre. Instrucción explícita: presentar plan primero y
+ESPERAR su OK antes de escribir código — nada de código construido todavía para este panel.
+Leídos los 7 archivos de doctrina que pidió: `21-BACKOFFICE.md`, `09-SEGURIDAD.md`,
+`26-AUTH-MODERNO.md`, `31-EVALS-OBSERVABILIDAD-OPERACION.md`, `40-UNIT-ECONOMICS.md`,
+`36-ANALITICA-Y-EVENTOS.md`, `17-VISUALIZACION-DATOS.md`. Estado real de la app hoy (determina
+qué secciones muestran datos reales vs "Sin datos"): NO existe todavía `event_log`, `error_log`,
+`ai_calls`, `acquisition_spend`, columna `profiles.role`/`source`, ni webhook de Hotmart — la app
+no usa IA (cero features de IA hoy), no tiene tabla `profiles` propia (solo `auth.users` +
+`titulos`/`pagos`/`autorizaciones`/`eventos`). Próximo paso inmediato: presentar el plan de
+secciones al usuario (en el chat, sin código) y esperar su aprobación explícita antes de construir.
+
 ### Checkpoint (2026-09-09) — Calendario ampliado, CONFIRMADO por el usuario en su celular
 A pedido del usuario: `/calendario` ahora tiene un calendario visual del mes (rejilla de 7 días,
 puntos en los días con eventos, tocar un día abre "Nuevo evento" con esa fecha ya puesta) — en

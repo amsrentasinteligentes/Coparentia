@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { redirect } from 'next/navigation';
 import { BottomNav } from '@/components/app/ui';
+import { RegistradorEventos } from '@/components/app/RegistradorEventos';
 import { crearClienteSupabaseServidor } from '@/lib/supabase/server';
 
 // SHELL de la app interna: altura dinámica de viewport + nav al fondo (regla 43 §13).
@@ -20,6 +21,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
 
   return (
     <div className="min-h-dvh bg-[var(--bg)] text-[var(--text-primary)] [font-family:var(--font-body)]">
+      <RegistradorEventos />
       {children}
       <BottomNav />
     </div>
