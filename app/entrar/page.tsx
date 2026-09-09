@@ -8,6 +8,7 @@
 
 import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 import { motion } from 'motion/react';
 import { Lock, Mail } from 'lucide-react';
 import { ContenedorFunnel, CtaFunnel, FunnelHeader } from '@/components/funnel/ui';
@@ -28,6 +29,9 @@ function EntrarInterno() {
   const [email, setEmail] = useState('');
   const [estado, setEstado] = useState<Estado>('idle');
   const [countdown, setCountdown] = useState(0);
+  // Autorización previa expresa (Ley 1581 de 2012, Colombia): checkbox NUNCA premarcado, en el
+  // mismo punto donde se recoge el correo — este login también crea la cuenta la primera vez.
+  const [acepta, setAcepta] = useState(false);
 
   useEffect(() => {
     if (params.get('error') === 'enlace_invalido') setEstado('error');
@@ -35,7 +39,7 @@ function EntrarInterno() {
 
   const enviar = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
-    if (!email.includes('@') || estado === 'enviando') return;
+    if (!email.includes('@') || !acepta || estado === 'enviando') return;
     setEstado('enviando');
     const supabase = crearClienteSupabase();
     const { error } = await supabase.auth.signInWithOtp({
@@ -88,7 +92,21 @@ function EntrarInterno() {
                 placeholder="tu@correo.com"
                 className="h-14 w-full rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--surface)] px-4 text-[16px] text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)]"
               />
-              <CtaFunnel type="submit" disabled={!email.includes('@') || estado === 'enviando'}>
+              <label className="flex items-start gap-2.5 py-1 [touch-action:manipulation]">
+                <input
+                  type="checkbox"
+                  checked={acepta}
+                  onChange={(e) => setAcepta(e.target.checked)}
+                  className="mt-0.5 size-5 shrink-0 rounded border-[color-mix(in_oklab,var(--text-tertiary)_40%,transparent)] accent-[var(--accent)]"
+                />
+                <span className="text-[13px] leading-[1.5] text-[var(--text-secondary)]">
+                  Autorizo el tratamiento de mis datos y acepto los{' '}
+                  <Link href="/terminos" target="_blank" className="text-[var(--accent)] underline">Términos</Link>{' '}
+                  y la{' '}
+                  <Link href="/privacidad" target="_blank" className="text-[var(--accent)] underline">Política de Privacidad</Link>.
+                </span>
+              </label>
+              <CtaFunnel type="submit" disabled={!email.includes('@') || !acepta || estado === 'enviando'}>
                 {estado === 'enviando' ? 'Enviando…' : 'Enviarme mi enlace de acceso'}
               </CtaFunnel>
               {estado === 'error' && (

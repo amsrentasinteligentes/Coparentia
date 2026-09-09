@@ -1,5 +1,65 @@
 # ESTADO.md — Coparentia (nombre provisional: PensiónClara)
 
+### Checkpoint (2026-09-09) — Auditoría legal completa (47-LEGAL-FISCAL-Y-PRIVACIDAD.md)
+Pedido del usuario: dejar la capa legal completa, profesional y coherente con lo que la app hace
+de verdad. Datos del responsable (dados por el usuario): **Alejandro Muñoz, persona natural,
+opera desde Colombia**, contacto `soporte@coparentia.app`.
+
+**Inventario real hecho ANTES de escribir nada** (código + ESTADO.md + FICHA-MERCADO.md):
+la app hoy usa Anthropic (IA, solo para leer el monto de un recibo), Supabase (datos/auth/
+archivos), Vercel (hosting), Resend (correo), Hotmart (pagos, aún no conectado con webhook) — sin
+analytics ni cookies de terceros; vende en Colombia; trial 7 días, garantía 15 días (consistente
+en landing/paywall/reembolsos); no recopila ningún dato de menores pese a que la Política de
+Privacidad ANTERIOR decía que sí.
+
+**🔴 Hallazgos CRÍTICOS corregidos:**
+1. La Política de Privacidad afirmaba recoger "nombre y fecha de nacimiento" de los hijos del
+   usuario — **falso**, ningún campo de la base de datos guarda eso. Corregido: ahora dice
+   explícitamente que NO se recoge ningún dato de menores.
+2. Ningún subprocesador estaba nombrado en ninguna página (violación directa del 47) —
+   corregido: Supabase, Anthropic, Vercel, Resend y Hotmart, cada uno con su función real.
+3. La transferencia internacional de datos a la IA (Anthropic, EE. UU.) no estaba declarada en
+   ningún lado — corregida en Privacidad y en Aviso de IA.
+4. El Aviso de IA prometía "sugerencia de categoría de gasto" y "detección de comprobantes
+   duplicados" — funciones que **no existen**. Corregido para describir solo lo real: lectura
+   automática del monto, nada más.
+5. **No existía ninguna forma de que un usuario elimine su propia cuenta** — el derecho de
+   eliminación de la Política de Privacidad era una promesa de correo sin implementación real.
+   Construido: `app/(app)/ajustes/` (nueva pantalla, accesible desde el ícono ⚙ en Expediente) con
+   `eliminarMiCuenta()` real — borra los archivos de Storage (fotos/PDF de comprobantes) y la
+   cuenta de `auth.users` (las filas de datos se van solas por `on delete cascade`).
+6. **No había página "Cómo cancelar" in-app** (obligatoria antes de vender suscripción, 47 §2) —
+   construida dentro de la misma pantalla de Ajustes, con link directo al portal de Hotmart.
+7. **El registro/login no tenía ningún checkbox de autorización** — la Ley 1581 de Colombia exige
+   autorización previa EXPRESA en el punto de recolección. Agregado a `/entrar`: checkbox NO
+   premarcado, botón deshabilitado hasta marcarlo, con link a Términos y Privacidad.
+8. **El paywall no avisaba la renovación automática** antes del checkout (obligatorio, 47 §2) —
+   corregido: "Se renueva automáticamente tras el día 7, cancela cuando quieras" junto al CTA
+   final, además del detalle exacto de fecha/monto que ya existía en la pantalla del timeline.
+
+**Verificado y CONFIRMADO SIN PROBLEMAS**: garantía de 15 días coherente en landing/paywall/
+reembolsos (no hay discrepancia de ventana) · disclaimer de IA visible junto a la salida (badge
+"Detectado automáticamente" + texto de ayuda en `/pagos`, ya construido en la sesión del lector de
+recibos) · sin cookies de terceros/analytics (no hace falta banner de consentimiento) · límite de
+responsabilidad presente en Términos · footer con los 4 enlaces legales, todos a páginas reales.
+
+`tsc`/`build` limpios en cada archivo tocado. Pantallas nuevas (`/ajustes`) verificadas por
+código + medición (secundaria, no una de las 4 del dinero — no requiere ronda de revisor-visual).
+
+⚠️ **Pendiente — solo el usuario/un abogado puede resolverlo**:
+- **Configurar en el panel de Hotmart la garantía del producto a 15 días exactos** cuando se
+  conecte Hotmart — si la landing promete 15 y el panel tiene otro número configurado, es
+  incumplimiento real, no solo un error de texto.
+- **Activar `soporte@coparentia.app` de verdad** — hoy es una promesa (el dominio `coparentia.app`
+  aún no se compra, decisión ya tomada por el usuario de esperar a más cerca del lanzamiento);
+  hasta entonces, ese correo no recibe nada. No bloquea seguir construyendo, sí bloquea vender.
+- **Validar con un abogado colombiano** la redacción final antes de la primera venta real — esta
+  auditoría deja la app COMPLETA y COHERENTE con lo que hace, no reemplaza la firma de un
+  profesional (mucho menos si el negocio crece o si algún día se maneja información más sensible).
+- **RNBD (Registro Nacional de Bases de Datos)** — aplica según umbral de activos de la empresa;
+  verificar con un contador cuando el negocio empiece a facturar en serio.
+
+### Checkpoint (2026-09-09) — Panel de administración: rediseño con tooltips + métricas futuras
 ✅ **CONFIRMADO por el usuario en su celular real (2026-09-09)**: "me gusta así" — el rediseño del
 panel (tooltips, reordenado por datos reales, "Métricas futuras" plegable) queda aprobado tal
 cual, pese al puntaje del revisor por debajo del estado anterior (ver detalle abajo) — decisión

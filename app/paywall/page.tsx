@@ -305,7 +305,7 @@ function Precio({
         </div>
         <CtaFunnel onClick={onCta}>Empezar mis 7 días gratis</CtaFunnel>
         <p className="mt-2 text-center text-[13px] text-[var(--text-secondary)]">
-          Hoy no pagas nada · Cancela en 1 tap · Menos de $0.25 al día después
+          Hoy no pagas nada · Se renueva automáticamente tras el día 7, cancela cuando quieras
         </p>
       </div>
 

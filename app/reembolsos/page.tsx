@@ -12,7 +12,7 @@ export default function Reembolsos() {
         <h1 className="mt-6 text-3xl font-bold [font-family:var(--font-display)]">
           Política de Reembolsos
         </h1>
-        <p className="mt-2 text-sm text-[var(--text-tertiary)]">Última actualización: septiembre de 2026</p>
+        <p className="mt-2 text-sm text-[var(--text-tertiary)]">Última actualización: 9 de septiembre de 2026 · versión 2</p>
 
         <div className="mt-8 space-y-6 text-[var(--text-secondary)] leading-relaxed">
           <h2 className="text-xl font-semibold text-[var(--text-primary)]">
@@ -38,13 +38,15 @@ export default function Reembolsos() {
 
           <h2 className="text-xl font-semibold text-[var(--text-primary)]">Después de los 15 días</h2>
           <p>
-            Pasado el período de garantía, puedes cancelar tu suscripción en cualquier momento — la
-            cancelación detiene los cobros futuros pero no genera reembolso de los períodos ya
-            facturados.
+            Pasado el período de garantía, puedes cancelar tu suscripción en cualquier momento desde{' '}
+            <strong>Expediente → Ajustes → Cómo cancelar</strong> dentro de la app, o directamente en
+            el portal de compras de Hotmart — la cancelación detiene los cobros futuros pero no
+            genera reembolso de los períodos ya facturados.
           </p>
 
           <p className="text-sm text-[var(--text-tertiary)] pt-4 border-t border-[var(--surface-2)]">
-            Este documento está en revisión legal final antes del lanzamiento público.
+            ¿Preguntas? Escríbenos a{' '}
+            <a href="mailto:soporte@coparentia.app" className="underline">soporte@coparentia.app</a>.
           </p>
         </div>
       </div>

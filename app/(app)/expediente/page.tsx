@@ -5,7 +5,8 @@
 // promesa vacía: al tocar "Exportar" se descarga un archivo real y utilizable.
 
 import { useEffect, useState } from 'react';
-import { Download, FileCheck2, Scale } from 'lucide-react';
+import Link from 'next/link';
+import { Download, FileCheck2, Scale, Settings } from 'lucide-react';
 import { ContenedorApp, PageHeader, Tarjeta, IconoCirculo, Pildora } from '@/components/app/ui';
 import {
   type Autorizacion,
@@ -116,7 +117,19 @@ export default function Expediente() {
 
   return (
     <ContenedorApp>
-      <PageHeader titulo="Expediente" subtitulo={pendientes > 0 ? `${pendientes} autorización(es) pendiente(s)` : 'Todo al día'} />
+      <PageHeader
+        titulo="Expediente"
+        subtitulo={pendientes > 0 ? `${pendientes} autorización(es) pendiente(s)` : 'Todo al día'}
+        accion={
+          <Link
+            href="/ajustes"
+            aria-label="Ajustes"
+            className="flex size-11 items-center justify-center rounded-full text-[var(--text-secondary)] [touch-action:manipulation]"
+          >
+            <Settings size={20} aria-hidden="true" />
+          </Link>
+        }
+      />
 
       <Tarjeta className="items-center text-center">
         <IconoCirculo icon={FileCheck2} size={24} />
