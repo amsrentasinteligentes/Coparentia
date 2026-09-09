@@ -64,9 +64,9 @@ servidor antes de guardar.
 panel de administración más allá del límite de correos de Supabase Auth ya configurado — riesgo
 bajo porque el panel completo ya exige ser tú, verificado en el servidor.
 
-⚠️ **PENDIENTE — el usuario debe correr el parche crítico**: `supabase/fix-privilegios-profiles.sql`
-(o pegar de nuevo `admin.sql`, que ya incluye el fix) en Supabase → SQL Editor → Run. Sin esto, el
-hallazgo crítico de arriba sigue abierto en producción.
+✅ **CONFIRMADO — parche crítico corrido por el usuario en producción**: `revoke update on
+profiles from authenticated` + `grant update (nombre) ...` ejecutado con éxito en Supabase. El
+hallazgo crítico de autoescalada a administrador queda cerrado.
 
 ### Checkpoint (2026-09-09) — Panel de administración v1 CONSTRUIDO, real y conectado
 Usuario aprobó el plan presentado (ver checkpoint anterior) y pidió además la tabla de usuarios
