@@ -15,7 +15,7 @@ import {
   obtenerPagos,
   agregarPago,
   obtenerTitulo,
-  obtenerUrlComprobante,
+  obtenerUrlArchivo,
   formatoCOP,
   formatoFechaLarga,
 } from '@/lib/datos';
@@ -37,7 +37,7 @@ export default function Pagos() {
   const verComprobante = async (p: Pago): Promise<void> => {
     if (!p.comprobantePath || abriendo) return;
     setAbriendo(p.id);
-    const url = await obtenerUrlComprobante(p.comprobantePath);
+    const url = await obtenerUrlArchivo(p.comprobantePath);
     setAbriendo(null);
     if (url) window.open(url, '_blank', 'noopener,noreferrer');
   };

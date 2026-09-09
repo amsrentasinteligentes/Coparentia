@@ -1,5 +1,20 @@
 # ESTADO.md — Coparentia (nombre provisional: PensiónClara)
 
+### Checkpoint (2026-09-09) — Calendario ampliado, código listo, falta 1 script SQL del usuario
+A pedido del usuario: `/calendario` ahora tiene un calendario visual del mes (rejilla de 7 días,
+puntos en los días con eventos, tocar un día abre "Nuevo evento" con esa fecha ya puesta) — en
+escritorio queda a la derecha (aprovecha el espacio antes vacío, regla 43 §13), en celular queda
+apilado arriba de la lista de siempre (nada se quitó). También: CUALQUIER tipo de evento (no solo
+"Salida del país") ya permite adjuntar un archivo real, mismo sistema de Supabase Storage que ya
+existía para pagos — generalizado `subirArchivoPrivado(userId, 'pagos'|'eventos', archivo)` y
+`obtenerUrlArchivo(ruta)` (antes `subirArchivoComprobante`/`obtenerUrlComprobante`, solo para
+pagos). Nueva columna `documento_adjunto_path` en `eventos` — el usuario ya corrió `supabase/eventos-adjuntos.sql`
+("Success. No rows returned"), confirmado. Queda commitear + publicar + verificar en producción.
+⚠️ Nota para mí mismo: al revertir un bypass temporal de pantalla con `git checkout -- archivo`,
+se perdieron por accidente cambios reales aún no commiteados en ese mismo archivo (tuve que
+rehacerlos) — a partir de ahora, antes de usar `git checkout` para deshacer un bypass, revisar con
+`git diff` que no haya OTROS cambios reales sin commitear en ese archivo primero.
+
 ## Sesión de pulido (2026-09-08, tras cerrar la migración a Supabase de la Sesión 6)
 El usuario pidió invertir tiempo en subir el puntaje de las 3 pantallas con veredicto NO LISTA
 (landing, onboarding, paywall) antes de seguir con Hotmart. Se hicieron **6 rondas** de revisor-

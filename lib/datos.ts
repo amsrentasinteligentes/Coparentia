@@ -41,7 +41,8 @@ export interface Evento {
   tipo: TipoEvento;
   titulo: string;
   nota?: string;
-  documentoAdjunto?: string; // ej. permiso de salida del país — nombre real del archivo subido
+  documentoAdjunto?: string; // nombre real del archivo subido (fórmula médica, permiso, etc.)
+  documentoAdjuntoPath?: string; // ruta real en Supabase Storage (bucket "comprobantes")
 }
 
 async function usuarioActual() {
@@ -98,6 +99,7 @@ function mapEvento(row: {
   titulo: string;
   nota: string | null;
   documento_adjunto: string | null;
+  documento_adjunto_path: string | null;
 }): Evento {
   return {
     id: row.id,
@@ -106,6 +108,7 @@ function mapEvento(row: {
     titulo: row.titulo,
     nota: row.nota ?? undefined,
     documentoAdjunto: row.documento_adjunto ?? undefined,
+    documentoAdjuntoPath: row.documento_adjunto_path ?? undefined,
   };
 }
 
@@ -159,22 +162,23 @@ export async function obtenerPagos(): Promise<Pago[]> {
 }
 
 // Sube el archivo REAL (foto/PDF) al bucket privado "comprobantes" — cada usuario tiene su
-// propia carpeta (`{userId}/...`), reforzada por las políticas de supabase/storage.sql. Antes
-// de esto, la app solo guardaba el NOMBRE del archivo — nunca el archivo en sí, así que no había
-// forma de comprobar que el comprobante existiera de verdad (hallazgo real de un usuario probando
-// en su celular).
-async function subirArchivoComprobante(userId: string, archivo: File): Promise<string> {
+// propia carpeta (`{userId}/...`), reforzada por las políticas de supabase/storage.sql; `carpeta`
+// separa por tipo (pagos/eventos) dentro de esa misma carpeta del usuario, sin necesitar otro
+// bucket ni otra política. Antes de esto, la app solo guardaba el NOMBRE del archivo — nunca el
+// archivo en sí, así que no había forma de comprobar que el comprobante existiera de verdad
+// (hallazgo real de un usuario probando en su celular).
+async function subirArchivoPrivado(userId: string, carpeta: 'pagos' | 'eventos', archivo: File): Promise<string> {
   const supabase = crearClienteSupabase();
   const nombreSeguro = archivo.name.replace(/[^a-zA-Z0-9._-]/g, '_');
-  const ruta = `${userId}/${Date.now()}_${nombreSeguro}`;
+  const ruta = `${userId}/${carpeta}/${Date.now()}_${nombreSeguro}`;
   const { error } = await supabase.storage.from('comprobantes').upload(ruta, archivo);
   if (error) throw error;
   return ruta;
 }
 
-// URL firmada y temporal (10 min) para ver/descargar un comprobante real — el bucket es privado,
-// así que nunca hay un link público permanente al archivo de nadie.
-export async function obtenerUrlComprobante(ruta: string): Promise<string | null> {
+// URL firmada y temporal (10 min) para ver/descargar un archivo real (comprobante de pago o
+// documento de un evento) — el bucket es privado, así que nunca hay un link público permanente.
+export async function obtenerUrlArchivo(ruta: string): Promise<string | null> {
   const supabase = crearClienteSupabase();
   const { data, error } = await supabase.storage.from('comprobantes').createSignedUrl(ruta, 600);
   if (error || !data) return null;
@@ -183,7 +187,7 @@ export async function obtenerUrlComprobante(ruta: string): Promise<string | null
 
 export async function agregarPago(pago: Omit<Pago, 'id' | 'comprobantePath'>, archivo: File): Promise<Pago> {
   const { supabase, userId } = await usuarioActual();
-  const rutaComprobante = await subirArchivoComprobante(userId, archivo);
+  const rutaComprobante = await subirArchivoPrivado(userId, 'pagos', archivo);
   const { data, error } = await supabase
     .from('pagos')
     .insert({
@@ -239,8 +243,12 @@ export async function obtenerEventos(): Promise<Evento[]> {
   return (data ?? []).map(mapEvento);
 }
 
-export async function agregarEvento(evento: Omit<Evento, 'id'>): Promise<Evento> {
+export async function agregarEvento(
+  evento: Omit<Evento, 'id' | 'documentoAdjuntoPath'>,
+  archivo?: File
+): Promise<Evento> {
   const { supabase, userId } = await usuarioActual();
+  const rutaDocumento = archivo ? await subirArchivoPrivado(userId, 'eventos', archivo) : null;
   const { data, error } = await supabase
     .from('eventos')
     .insert({
@@ -250,6 +258,7 @@ export async function agregarEvento(evento: Omit<Evento, 'id'>): Promise<Evento>
       titulo: evento.titulo,
       nota: evento.nota ?? null,
       documento_adjunto: evento.documentoAdjunto ?? null,
+      documento_adjunto_path: rutaDocumento,
     })
     .select()
     .single();
