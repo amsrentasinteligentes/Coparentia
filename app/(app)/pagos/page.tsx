@@ -6,7 +6,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Upload, ShieldCheck, FileCheck2, X, ChevronRight } from 'lucide-react';
+import { Upload, ShieldCheck, FileCheck2, X, ChevronRight, Sparkles } from 'lucide-react';
 import { ContenedorApp, PageHeader, Tarjeta, IconoCirculo, BotonFlotante } from '@/components/app/ui';
 import {
   type Pago,
@@ -19,6 +19,7 @@ import {
   formatoCOP,
   formatoFechaLarga,
 } from '@/lib/datos';
+import { leerMontoDeRecibo } from '@/lib/ocr-recibo';
 
 type Filtro = 'todos' | TipoMovimiento;
 
@@ -144,6 +145,8 @@ function ModalRegistro({ onCerrar, onGuardado }: { onCerrar: () => void; onGuard
   const [concepto, setConcepto] = useState('');
   const [archivo, setArchivo] = useState<File | null>(null);
   const [procesando, setProcesando] = useState(false);
+  const [leyendoRecibo, setLeyendoRecibo] = useState(false);
+  const [montoDetectado, setMontoDetectado] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -151,6 +154,22 @@ function ModalRegistro({ onCerrar, onGuardado }: { onCerrar: () => void; onGuard
       if (t) setMonto(String(t.montoMensual));
     });
   }, []);
+
+  // Lector automático de recibos: al elegir la foto, se le pide a la IA que lea el monto y se
+  // pre-llena el campo — el usuario SIEMPRE ve el número y puede corregirlo antes de guardar
+  // (nunca se confía a ciegas en la lectura). Solo funciona con fotos, no con PDF.
+  const elegirArchivo = async (f: File): Promise<void> => {
+    setArchivo(f);
+    setMontoDetectado(false);
+    if (!f.type.startsWith('image/')) return;
+    setLeyendoRecibo(true);
+    const resultado = await leerMontoDeRecibo(f);
+    setLeyendoRecibo(false);
+    if (resultado.monto && resultado.confianza !== 'baja') {
+      setMonto(String(Math.round(resultado.monto)));
+      setMontoDetectado(true);
+    }
+  };
 
   const guardar = (): void => {
     if (!archivo || !monto || !concepto.trim()) return;
@@ -217,12 +236,29 @@ function ModalRegistro({ onCerrar, onGuardado }: { onCerrar: () => void; onGuard
           className="mt-2 h-12 w-full rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--bg)] px-4 text-[15px] text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)]"
         />
 
-        <label className="mt-4 block text-[13px] font-medium text-[var(--text-secondary)]">Monto (COP)</label>
+        <div className="mt-4 flex items-center justify-between">
+          <label className="text-[13px] font-medium text-[var(--text-secondary)]">Monto (COP)</label>
+          {leyendoRecibo && (
+            <span className="flex items-center gap-1 text-[12px] text-[var(--accent)]">
+              <span className="size-1.5 animate-pulse rounded-full bg-[var(--accent)]" />
+              Leyendo el recibo…
+            </span>
+          )}
+          {montoDetectado && !leyendoRecibo && (
+            <span className="flex items-center gap-1 text-[12px] font-medium text-[var(--accent)]">
+              <Sparkles size={12} aria-hidden="true" />
+              Detectado automáticamente
+            </span>
+          )}
+        </div>
         <input
           type="number"
           inputMode="numeric"
           value={monto}
-          onChange={(e) => setMonto(e.target.value)}
+          onChange={(e) => {
+            setMonto(e.target.value);
+            setMontoDetectado(false); // el usuario corrigió a mano: ya no es "detectado", es suyo
+          }}
           className="mt-2 h-12 w-full rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--bg)] px-4 text-[15px] tabular-nums text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)]"
         />
 
@@ -231,7 +267,10 @@ function ModalRegistro({ onCerrar, onGuardado }: { onCerrar: () => void; onGuard
           type="file"
           accept="image/*,application/pdf"
           className="hidden"
-          onChange={(e) => setArchivo(e.target.files?.[0] ?? null)}
+          onChange={(e) => {
+            const f = e.target.files?.[0];
+            if (f) elegirArchivo(f);
+          }}
         />
         <button
           type="button"
@@ -241,6 +280,7 @@ function ModalRegistro({ onCerrar, onGuardado }: { onCerrar: () => void; onGuard
           <Upload size={16} aria-hidden="true" />
           {archivo ? archivo.name : 'Adjuntar comprobante'}
         </button>
+        <p className="mt-1.5 text-[12px] text-[var(--text-tertiary)]">Con una foto, el monto se completa solo — revísalo antes de guardar.</p>
 
         <button
           type="button"

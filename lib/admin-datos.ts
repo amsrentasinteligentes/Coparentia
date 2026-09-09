@@ -80,6 +80,37 @@ export async function obtenerUsoUltimos30Dias(supabase: SupabaseClient): Promise
     .sort((a, b) => b.total - a.total);
 }
 
+export interface ResumenIA {
+  llamadasHoy: number;
+  gastoHoyUsd: number;
+  gastoMesUsd: number;
+  fallasHoy: number;
+}
+
+// Costo real de IA desde ai_calls (31-EVALS-OBSERVABILIDAD-OPERACION.md) — cero si nunca se llamó,
+// nunca inventado. Vacío hasta que el usuario corra supabase/ai.sql (tabla nueva).
+export async function obtenerResumenIA(supabase: SupabaseClient): Promise<ResumenIA | null> {
+  const hoy = new Date().toISOString().slice(0, 10);
+  const inicioMes = `${hoy.slice(0, 7)}-01`;
+
+  const { data, error } = await supabase
+    .from('ai_calls')
+    .select('cost_usd, status, created_at')
+    .gte('created_at', `${inicioMes}T00:00:00.000Z`);
+
+  if (error) return null; // la tabla todavía no existe en esta base — sección "sin conectar"
+
+  const filas = (data ?? []) as { cost_usd: number | null; status: string; created_at: string }[];
+  const deHoy = filas.filter((f) => f.created_at.slice(0, 10) === hoy);
+
+  return {
+    llamadasHoy: deHoy.length,
+    gastoHoyUsd: deHoy.reduce((s, f) => s + (f.cost_usd ?? 0), 0),
+    gastoMesUsd: filas.reduce((s, f) => s + (f.cost_usd ?? 0), 0),
+    fallasHoy: deHoy.filter((f) => f.status !== 'ok').length,
+  };
+}
+
 export async function obtenerListaUsuarios(supabase: SupabaseClient): Promise<PerfilAdmin[]> {
   const { data } = await supabase
     .from('profiles')

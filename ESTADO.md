@@ -1,5 +1,49 @@
 # ESTADO.md — Coparentia (nombre provisional: PensiónClara)
 
+### Checkpoint (2026-09-09) — Lector automático de recibos (primera IA real de la app)
+Pedido del usuario: que el monto del comprobante se lea solo de la foto, en vez de escribirlo a
+mano. Aprobado explícitamente tras mostrarle el estimado de costo (~$0.002 USD/recibo, ~$2.500
+COP/mes con 300 recibos). Construido siguiendo `30-INTEGRACION-IA.md`:
+
+- **Síncrono, no un job** (es una extracción corta de segundos, no genera imagen/audio/video).
+- **Salida forzada por esquema** (tool use de Anthropic + zod) — nunca se parsea texto libre a
+  ciegas; si la IA no está segura (`confianza: 'baja'`), el campo se deja vacío para que la
+  persona lo escriba, nunca se guarda un número dudoso sin que alguien lo vea primero.
+- **El usuario SIEMPRE ve y puede corregir el monto** antes de guardar — la IA nunca escribe
+  directo a la base de datos.
+- `supabase/ai.sql` (NUEVO, falta correrlo — ver pendientes): tabla `ai_calls` (31-EVALS-
+  OBSERVABILIDAD-OPERACION.md), RLS de solo-dueño-lee, kill-switch de gasto diario ($1 USD/día,
+  muy por encima del uso esperado) ANTES de cada llamada.
+- `lib/ocr-recibo.ts`: `leerMontoDeRecibo(archivo)` — Server Action, nunca lanza al llamador
+  (cualquier fallo degrada a "no se pudo leer", la persona sigue pudiendo escribir a mano, como
+  siempre pudo — degradación elegante). Modelo en `AI_MODEL` (default `claude-haiku-4-5`, el más
+  barato para extracción, nunca hardcodeado sin default).
+- `app/(app)/pagos/page.tsx`: al elegir la foto en "Nuevo registro", se lee el monto y se
+  pre-llena con una insignia "Detectado automáticamente" (que desaparece si la persona corrige el
+  número a mano — deja de ser "detectado", pasa a ser suyo). Solo con fotos, no con PDF (el
+  modelo de visión no lee PDF directo).
+- Panel de administración (`app/admin/page.tsx`, `lib/admin-datos.ts`): la sección "Inteligencia
+  artificial" pasa de "Sin datos" a mostrar gasto real de hoy/mes, lecturas de hoy y fallas de hoy
+  — automático en cuanto exista la tabla `ai_calls` (`obtenerResumenIA` devuelve `null` si la
+  tabla no existe todavía, y la sección sigue en "Todavía sin conectar" hasta entonces).
+
+Verificado: `tsc --noEmit` ✓ · `next build` ✓ (17 rutas) · estructura visual de la nueva UI en
+`/pagos` revisada con bypass temporal local (ya retirado, `grep` confirma cero rastro) — pantalla
+SECUNDARIA (no una de las 4 del dinero), así que basta esta medición + checklist, sin ronda
+completa de revisor-visual. No se pudo probar la LECTURA real (necesita `ANTHROPIC_API_KEY`, que
+el usuario todavía no ha configurado) — queda pendiente que el usuario confirme con una foto real
+de un recibo suyo, en su celular, una vez conectada la clave.
+
+⚠️ **PENDIENTE — el usuario debe hacer 3 cosas** antes de que esto funcione en producción:
+1. Correr `supabase/ai.sql` en Supabase → SQL Editor → Run.
+2. Crear una cuenta en [console.anthropic.com](https://console.anthropic.com), generar una API
+   key y agregarla como `ANTHROPIC_API_KEY` en `.env.local` (nunca en el chat) — y también en
+   Vercel → Settings → Environments → Production → Environment Variables cuando esté listo para
+   publicar, igual que se hizo con `SUPABASE_SERVICE_ROLE_KEY`.
+3. En la consola de Anthropic, activar un tope de gasto (spend cap) — la CAPA 0 del kill-switch
+   de `30-INTEGRACION-IA.md`: el control en la base de datos es software propio y puede fallar
+   junto con el código; el tope del proveedor es la red de seguridad final.
+
 ### Checkpoint (2026-09-09) — Auditoría de seguridad completa (27-REVISION-SEGURIDAD.md)
 Pedido del usuario: explorar toda la app buscando vulnerabilidades/debilidades reales, no solo de
 puntaje. Se corrió la rutina completa del archivo 27 (grep de fail-open, `npm audit`, revisión de

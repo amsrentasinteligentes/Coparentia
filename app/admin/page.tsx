@@ -13,7 +13,7 @@ import {
 } from 'lucide-react';
 import { Marcador } from '@/components/funnel/ui';
 import { crearClienteSupabaseServidor } from '@/lib/supabase/server';
-import { obtenerResumenUsuarios, obtenerUsoUltimos30Dias, obtenerListaUsuarios } from '@/lib/admin-datos';
+import { obtenerResumenUsuarios, obtenerUsoUltimos30Dias, obtenerListaUsuarios, obtenerResumenIA } from '@/lib/admin-datos';
 import { ContenedorAdmin, TarjetaSeccion, DatoHeroe, SinDatos, ListaSinConectar } from '@/components/admin/ui';
 import { FormularioAgregarUsuario } from './FormularioAgregarUsuario';
 import { CerrarSesion } from './CerrarSesion';
@@ -33,10 +33,11 @@ const ETIQUETA_EVENTO: Record<string, string> = {
 
 export default async function PanelAdmin() {
   const supabase = await crearClienteSupabaseServidor();
-  const [usuarios, uso, listaUsuarios] = await Promise.all([
+  const [usuarios, uso, listaUsuarios, ia] = await Promise.all([
     obtenerResumenUsuarios(supabase),
     obtenerUsoUltimos30Dias(supabase),
     obtenerListaUsuarios(supabase),
+    obtenerResumenIA(supabase),
   ]);
 
   return (
@@ -127,11 +128,24 @@ export default async function PanelAdmin() {
           )}
         </TarjetaSeccion>
 
-        {/* VENTAS + NEGOCIO + IA + ERRORES — una sola card compacta: las 4 comparten el mismo
-            estado ("todavía sin conectar"), separarlas en 4 cards completas solo alargaba el
-            scroll sin sumar información (revisor-visual, ronda 2). */}
+        {/* INTELIGENCIA ARTIFICIAL — real desde que existe ai_calls (lector de recibos, 30-
+            INTEGRACION-IA.md). Antes de eso, esta sección vive en "Todavía sin conectar" abajo. */}
+        {ia && (
+          <TarjetaSeccion indice={3} titulo="Inteligencia artificial" subtitulo="Costo real del lector de recibos" icon={<Bot size={18} color="var(--accent)" aria-hidden="true" />}>
+            <div className="grid grid-cols-2 gap-4">
+              <DatoHeroe valor={`$${ia.gastoHoyUsd.toFixed(3)}`} label="Gasto de hoy (USD)" />
+              <DatoHeroe valor={`$${ia.gastoMesUsd.toFixed(2)}`} label="Gasto del mes (USD)" />
+              <DatoHeroe valor={String(ia.llamadasHoy)} label="Lecturas hoy" />
+              <DatoHeroe valor={String(ia.fallasHoy)} label="Fallas hoy" tono={ia.fallasHoy > 0 ? 'warning' : undefined} />
+            </div>
+          </TarjetaSeccion>
+        )}
+
+        {/* VENTAS + NEGOCIO + (IA si no está conectada) + ERRORES — una sola card compacta:
+            comparten el mismo estado ("todavía sin conectar"), separarlas en cards completas solo
+            alargaba el scroll sin sumar información (revisor-visual, ronda 2). */}
         <TarjetaSeccion
-          indice={3}
+          indice={4}
           titulo="Todavía sin conectar"
           subtitulo="Se activan solas en cuanto conectes cada pieza"
           icon={<Receipt size={18} color="var(--accent)" aria-hidden="true" />}
@@ -149,11 +163,15 @@ export default async function PanelAdmin() {
                 icon: <TrendingUp size={15} color="var(--accent)" aria-hidden="true" />,
                 nota: 'Cuánto deja cada cliente y cuánto cuesta conseguirlo, por canal — necesita ventas con canal de origen registrado.',
               },
-              {
-                titulo: 'Inteligencia artificial',
-                icon: <Bot size={15} color="var(--accent)" aria-hidden="true" />,
-                nota: 'Tu app no usa inteligencia artificial en ninguna pantalla todavía.',
-              },
+              ...(ia
+                ? []
+                : [
+                    {
+                      titulo: 'Inteligencia artificial',
+                      icon: <Bot size={15} color="var(--accent)" aria-hidden="true" />,
+                      nota: 'Tu app no usa inteligencia artificial en ninguna pantalla todavía.',
+                    },
+                  ]),
               {
                 titulo: 'Errores',
                 icon: <ShieldAlert size={15} color="var(--accent)" aria-hidden="true" />,
@@ -166,14 +184,14 @@ export default async function PanelAdmin() {
 
       {/* ALTA MANUAL DE USUARIO */}
       <section className="mt-8">
-        <TarjetaSeccion indice={4} titulo="Agregar una persona a mano" subtitulo="Por si no le llegó el acceso, o quieres darlo tú mismo" icon={<UserPlus size={18} color="var(--accent)" aria-hidden="true" />}>
+        <TarjetaSeccion indice={5} titulo="Agregar una persona a mano" subtitulo="Por si no le llegó el acceso, o quieres darlo tú mismo" icon={<UserPlus size={18} color="var(--accent)" aria-hidden="true" />}>
           <FormularioAgregarUsuario />
         </TarjetaSeccion>
       </section>
 
       {/* TABLA DE USUARIOS — la idea extra que aprobaste */}
       <section className="mt-4">
-        <TarjetaSeccion indice={5} titulo="Todas las cuentas" subtitulo={`${listaUsuarios.length} en total`} icon={<Users size={18} color="var(--accent)" aria-hidden="true" />}>
+        <TarjetaSeccion indice={6} titulo="Todas las cuentas" subtitulo={`${listaUsuarios.length} en total`} icon={<Users size={18} color="var(--accent)" aria-hidden="true" />}>
           {listaUsuarios.length === 0 ? (
             <SinDatos motivo="Todavía no hay ninguna cuenta creada." activaCon="alguien se registre, o la agregues tú arriba." />
           ) : (
