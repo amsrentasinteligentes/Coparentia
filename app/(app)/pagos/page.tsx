@@ -8,6 +8,7 @@ import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Upload, ShieldCheck, FileCheck2, X, ChevronRight, Sparkles } from 'lucide-react';
 import { ContenedorApp, PageHeader, Tarjeta, IconoCirculo, BotonFlotante } from '@/components/app/ui';
+import { VisorImagen } from '@/components/app/VisorImagen';
 import {
   type Pago,
   type Titulo,
@@ -29,19 +30,28 @@ export default function Pagos() {
   const [filtro, setFiltro] = useState<Filtro>('todos');
   const [modalAbierto, setModalAbierto] = useState(false);
   const [abriendo, setAbriendo] = useState<string | null>(null);
+  const [urlVisor, setUrlVisor] = useState<string | null>(null);
 
   useEffect(() => {
     obtenerPagos().then(setPagos);
   }, []);
 
-  // Abre el archivo REAL del comprobante (URL firmada, temporal — el bucket es privado) en una
-  // pestaña nueva. Antes no había forma de comprobar que el comprobante existiera de verdad.
+  // Abre el archivo REAL del comprobante (URL firmada, temporal — el bucket es privado). Las
+  // fotos se ven en el visor propio de la app (encaja a pantalla + pellizco para acercar — antes
+  // se abrían crudas en una pestaña nueva y no siempre ajustaban al tamaño de la pantalla,
+  // hallazgo real del usuario); un PDF sigue abriendo en una pestaña nueva, el navegador ya trae
+  // su propio visor con zoom.
   const verComprobante = async (p: Pago): Promise<void> => {
     if (!p.comprobantePath || abriendo) return;
     setAbriendo(p.id);
     const url = await obtenerUrlArchivo(p.comprobantePath);
     setAbriendo(null);
-    if (url) window.open(url, '_blank', 'noopener,noreferrer');
+    if (!url) return;
+    if (p.comprobanteNombre.toLowerCase().endsWith('.pdf')) {
+      window.open(url, '_blank', 'noopener,noreferrer');
+    } else {
+      setUrlVisor(url);
+    }
   };
 
   const visibles = pagos
@@ -136,6 +146,8 @@ export default function Pagos() {
           />
         )}
       </AnimatePresence>
+
+      <VisorImagen url={urlVisor} onCerrar={() => setUrlVisor(null)} />
     </ContenedorApp>
   );
 }

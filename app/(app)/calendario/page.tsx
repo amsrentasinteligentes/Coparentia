@@ -12,6 +12,7 @@ import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ChevronLeft, ChevronRight, Plus, X, Users, HeartPulse, Plane, Trophy, Globe, Paperclip } from 'lucide-react';
 import { ContenedorApp, PageHeader, Tarjeta, IconoCirculo, BotonFlotante } from '@/components/app/ui';
+import { VisorImagen } from '@/components/app/VisorImagen';
 import { type Evento, type TipoEvento, obtenerEventos, agregarEvento, obtenerUrlArchivo, formatoFechaLarga } from '@/lib/datos';
 
 const ICONO: Record<TipoEvento, typeof Users> = { visita: Users, medica: HeartPulse, vacaciones: Plane, extracurricular: Trophy, salida_pais: Globe };
@@ -137,15 +138,23 @@ export default function Calendario() {
    abrirlo (URL firmada y temporal, el bucket es privado). ── */
 function TarjetaEvento({ evento: e }: { evento: Evento }) {
   const [abriendo, setAbriendo] = useState(false);
+  const [urlVisor, setUrlVisor] = useState<string | null>(null);
   const Icon = ICONO[e.tipo];
   const d = new Date(e.fecha + 'T00:00:00');
 
+  // Las fotos se ven en el visor propio de la app (encaja a pantalla + pellizco para acercar);
+  // un PDF sigue abriendo en una pestaña nueva, el navegador ya trae su propio visor con zoom.
   const abrirDocumento = async (): Promise<void> => {
     if (!e.documentoAdjuntoPath || abriendo) return;
     setAbriendo(true);
     const url = await obtenerUrlArchivo(e.documentoAdjuntoPath);
     setAbriendo(false);
-    if (url) window.open(url, '_blank', 'noopener,noreferrer');
+    if (!url) return;
+    if (e.documentoAdjunto?.toLowerCase().endsWith('.pdf')) {
+      window.open(url, '_blank', 'noopener,noreferrer');
+    } else {
+      setUrlVisor(url);
+    }
   };
 
   const contenido = (
@@ -172,9 +181,12 @@ function TarjetaEvento({ evento: e }: { evento: Evento }) {
     return <Tarjeta className="flex items-center gap-3">{contenido}</Tarjeta>;
   }
   return (
-    <button type="button" onClick={abrirDocumento} disabled={abriendo} className="text-left [touch-action:manipulation]">
-      <Tarjeta className="flex items-center gap-3">{contenido}</Tarjeta>
-    </button>
+    <>
+      <button type="button" onClick={abrirDocumento} disabled={abriendo} className="text-left [touch-action:manipulation]">
+        <Tarjeta className="flex items-center gap-3">{contenido}</Tarjeta>
+      </button>
+      <VisorImagen url={urlVisor} onCerrar={() => setUrlVisor(null)} />
+    </>
   );
 }
 
