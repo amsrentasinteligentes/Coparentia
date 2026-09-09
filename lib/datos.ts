@@ -45,6 +45,18 @@ export interface Evento {
   documentoAdjuntoPath?: string; // ruta real en Supabase Storage (bucket "comprobantes")
 }
 
+// Anota una acción real en event_log (36-ANALITICA-Y-EVENTOS.md) — es lo que el panel de
+// administración lee en "Uso de la app". Nunca bloquea ni rompe la acción principal: si el
+// registro falla (ej. la tabla no existe todavía en una instalación vieja), se ignora en
+// silencio — guardar el pago/evento del usuario importa más que anotar que se guardó.
+async function registrarEvento(supabase: ReturnType<typeof crearClienteSupabase>, userId: string, nombre: string): Promise<void> {
+  try {
+    await supabase.from('event_log').insert({ user_id: userId, nombre, propiedades: {} });
+  } catch {
+    // silencioso a propósito — ver comentario de arriba
+  }
+}
+
 async function usuarioActual() {
   const supabase = crearClienteSupabase();
   const {
@@ -149,6 +161,7 @@ export async function guardarTitulo(t: Titulo): Promise<void> {
     { onConflict: 'user_id' }
   );
   if (error) throw error;
+  registrarEvento(supabase, userId, 'titulo_guardado');
 }
 
 export async function obtenerPagos(): Promise<Pago[]> {
@@ -202,6 +215,7 @@ export async function agregarPago(pago: Omit<Pago, 'id' | 'comprobantePath'>, ar
     .select()
     .single();
   if (error || !data) throw error ?? new Error('No se pudo guardar el pago.');
+  registrarEvento(supabase, userId, 'pago_agregado');
   return mapPago(data);
 }
 
@@ -230,6 +244,7 @@ export async function agregarAutorizacion(auth: Omit<Autorizacion, 'id'>): Promi
     .select()
     .single();
   if (error || !data) throw error ?? new Error('No se pudo guardar la autorización.');
+  registrarEvento(supabase, userId, 'autorizacion_agregada');
   return mapAutorizacion(data);
 }
 
@@ -263,6 +278,7 @@ export async function agregarEvento(
     .select()
     .single();
   if (error || !data) throw error ?? new Error('No se pudo guardar el evento.');
+  registrarEvento(supabase, userId, 'evento_agregado');
   return mapEvento(data);
 }
 

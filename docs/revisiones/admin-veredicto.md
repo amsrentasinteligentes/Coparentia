@@ -1,9 +1,14 @@
 # VEREDICTO revisor-visual — admin
 Fecha: 2026-09-09 00:00
 Screenshot: docs/revisiones/admin-375.png
-Usabilidad: 37/40
-Craft: 14/20
+Usabilidad: 30/40
+Craft: 15/20
 Copy (si vende): N-A
 Fidelidad (si hubo referencia): N-A
 Veredicto: NO LISTA
-Top defectos: 1. [Fondo del panel, tercio final del scroll — "Todas las cuentas" hacia abajo] el gradiente de profundidad (linear-gradient 22%→70%, background-attachment:fixed) sigue sin llegar visible al último tramo del scroll; el fondo vuelve a sentirse plano ahí → extender el gradiente con un segundo stop hacia el final del documento (o repetir un tinte de menor intensidad cada ~800px) para que la profundidad sea consistente en TODO el alto, no solo el primer 60%. 2. [Movimiento, pantalla completa] de las 7 baseline de animación solo hay 2 verificables en código (pulse del skeleton, whileTap del form): sin conteo animado en los números héroe de "Usuarios"/"Uso de la app" (3, 1, 2, 3, 9, 4, 2 aparecen estáticos) → animar el conteo de 0 al valor final en el primer render de cada stat. 3. [Stats "Usuarios"/"Uso de la app"] los números no están centrados ópticamente con su label (bloque alineado a la izquierda, número y label con el mismo margen sin ajuste óptico) → aplicar el ajuste de encaje del kit (line-height/tracking del número vs label). 4. [Toda la pantalla, jerarquía global] con 7+ secciones apiladas de peso visual similar (mismo radius, mismo padding, mismo tamaño de ícono-chip) el "entrecerrar los ojos" no arroja 3-4 niveles nítidos sino un patrón repetitivo de tarjetas → diferenciar al menos la sección más crítica (Ganancia real / alertas) con un tratamiento de tamaño o superficie distinto al resto. 5. [Atajos de experto, h7] sin atajos de teclado ni defaults inteligentes en el formulario "Agregar una persona a mano" (ej. autofocus, paste-friendly) → agregar autofocus al campo Nombre al expandir el formulario.
+Top defectos:
+1. [Bloque "Métricas futuras" expandido] Al abrirlo reaparecen 5 sub-bloques (Ventas, Negocio, Retención, Recorrido de bienvenida, Errores) con el mismo patrón de guiones repetido uno tras otro — la sobrecarga de la ronda anterior no se eliminó, se aplazó un tap. Fix: recortar a 2 métricas realmente próximas a activarse (Ventas, Retención) y sacar Errores/Recorrido de bienvenida hasta que existan esos sistemas.
+2. [Header, esquina superior derecha] "Volver a la app" y "Cerrar sesión" tienen el mismo peso visual (mismo tamaño, mismo borde) pese a ser acciones de frecuencia y riesgo distintos — el ojo no distingue cuál es la de uso diario. Fix: bajar el énfasis visual de "Cerrar sesión" (texto sin borde) o moverla a un menú.
+3. [Ícono "i" junto a cada título de card] Área táctil de 44px correcta, pero el glifo visible mide 14px sin fondo — a simple vista no se lee como botón de ayuda, se confunde con un adorno. Fix: fondo circular sutil (igual al de los íconos de card) para que se note tapable.
+4. [Card "Ganancia real" y "Uso de la app"] Ambas resuelven con el mismo componente SinDatos (caja punteada con 3 líneas de texto) inmediatamente debajo del título — dos cards seguidas con la misma caja gris alargan el scroll antes de llegar a un dato real (Usuarios). Fix: la primera card con dato real (Usuarios) debería ir antes que "Ganancia real" si esta última sigue sin datos.
+5. [Gate doble de cierre] 30/40 usabilidad y 15/20 craft quedan por debajo de 36/40 y 16/20 — mejora real sobre la ronda anterior pero todavía no cumple el umbral de "lista".

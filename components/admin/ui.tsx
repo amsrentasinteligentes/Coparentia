@@ -7,6 +7,19 @@
 import { useEffect, useState } from 'react';
 import { motion, useReducedMotion } from 'motion/react';
 import type { ReactNode } from 'react';
+import { Tooltip } from './Tooltip';
+
+// Encabezado de un GRUPO de cards (ej. "Dinero", "Personas", "Sistema") — le da al panel una
+// jerarquía real de secciones en vez de 9 cards sueltas del mismo peso visual (pedido explícito
+// del usuario: "que ayude a entender mejor el seguimiento" — agrupar es lo que más ayuda a eso).
+export function EncabezadoGrupo({ titulo, subtitulo }: { titulo: string; subtitulo?: string }) {
+  return (
+    <div className="mb-3 mt-8 flex items-baseline gap-2 first:mt-0">
+      <h2 className="text-[13px] font-bold uppercase tracking-[0.08em] text-[var(--accent)]">{titulo}</h2>
+      {subtitulo && <p className="text-[12px] text-[var(--text-tertiary)]">{subtitulo}</p>}
+    </div>
+  );
+}
 
 export function ContenedorAdmin({ children }: { children: ReactNode }) {
   // overflow-x-hidden a nivel raíz: sin esto, la tabla con scroll propio ("Todas las cuentas")
@@ -28,6 +41,8 @@ export function TarjetaSeccion({
   titulo,
   subtitulo,
   icon,
+  tooltip,
+  atenuada = false,
   className = '',
   indice = 0,
   children,
@@ -38,6 +53,14 @@ export function TarjetaSeccion({
   // Component no se puede serializar hacia este Client Component (bug real encontrado en la
   // primera captura: "Only plain objects can be passed..."). El llamador ya renderiza el ícono.
   icon: ReactNode;
+  // Explicación en simple de la métrica — pedido del usuario: "agrega tooltips" para que un
+  // dueño no técnico entienda cada número sin tener que preguntar.
+  tooltip?: string;
+  // Una card sin ningún dato real todavía (solo "—" o "Sin datos") pesa menos visualmente que
+  // una con números reales — encontrado por el revisor-visual: 6+ cards del mismo peso exacto
+  // que las reales generaba ruido gris repetido. Borde punteado + opacidad reducida las
+  // distingue de un vistazo, sin ocultar la información.
+  atenuada?: boolean;
   className?: string;
   indice?: number;
   children: ReactNode;
@@ -46,16 +69,23 @@ export function TarjetaSeccion({
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
+      animate={{ opacity: atenuada ? 0.82 : 1, y: 0 }}
       transition={{ duration: reduce ? 0 : 0.35, delay: reduce ? 0 : Math.min(indice, 8) * 0.06 }}
-      className={`rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--text-tertiary)_24%,transparent)] bg-[var(--surface)] p-5 shadow-[var(--shadow-2)] ${className}`}
+      className={`rounded-[var(--radius-card)] border bg-[var(--surface)] p-5 shadow-[var(--shadow-2)] ${
+        atenuada
+          ? 'border-dashed border-[color-mix(in_oklab,var(--text-tertiary)_20%,transparent)]'
+          : 'border-[color-mix(in_oklab,var(--text-tertiary)_24%,transparent)]'
+      } ${className}`}
     >
       <div className="flex items-center gap-2.5">
         <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[color-mix(in_oklab,var(--accent)_12%,transparent)]">
           {icon}
         </span>
-        <div className="min-w-0">
-          <h2 className="text-[15px] font-semibold text-[var(--text-primary)]">{titulo}</h2>
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-1.5">
+            <h2 className="text-[15px] font-semibold text-[var(--text-primary)]">{titulo}</h2>
+            {tooltip && <Tooltip texto={tooltip} />}
+          </div>
           {subtitulo && <p className="line-clamp-2 text-[12px] leading-[1.4] text-[var(--text-tertiary)]">{subtitulo}</p>}
         </div>
       </div>
@@ -118,24 +148,20 @@ export function SinDatos({ motivo, activaCon }: { motivo: string; activaCon: str
   );
 }
 
-// Varias secciones "todavía sin conectar" en UNA sola card compacta, en vez de 4 cards
-// completas repitiendo el mismo bloque — encontrado por el revisor-visual (ronda 2): alargaba
-// el scroll sin aportar información nueva. Ganancia real queda aparte porque el dueño la pidió
-// como el dato que más le importa (no se diluye en la lista).
-export function ListaSinConectar({ filas }: { filas: { titulo: string; icon: ReactNode; nota: string }[] }) {
+// La versión "número" de SinDatos: mismo lugar exacto donde iría el dato real cuando exista,
+// pero con un guion en vez de una cifra inventada — pedido del usuario ("pensando a futuro,
+// que ayuden a visualizar mejor el seguimiento"): ver la FORMA del panel completo desde ya,
+// aunque los números todavía no puedan llenarse.
+export function DatoPendiente({ label }: { label: string }) {
   return (
-    <div className="flex flex-col divide-y divide-[color-mix(in_oklab,var(--text-tertiary)_14%,transparent)]">
-      {filas.map((f) => (
-        <div key={f.titulo} className="flex items-start gap-3 py-3 first:pt-0 last:pb-0">
-          <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[color-mix(in_oklab,var(--accent)_10%,transparent)]">
-            {f.icon}
-          </span>
-          <div className="min-w-0">
-            <p className="text-[13.5px] font-semibold text-[var(--text-primary)]">{f.titulo}</p>
-            <p className="mt-0.5 text-[12.5px] leading-[1.45] text-[var(--text-tertiary)]">{f.nota}</p>
-          </div>
-        </div>
-      ))}
+    <div>
+      <p className="text-[22px] font-bold leading-none text-[var(--text-tertiary)]">—</p>
+      <p className="mt-1.5 text-[13px] text-[var(--text-tertiary)]">{label}</p>
     </div>
   );
+}
+
+// La frase corta que acompaña una grilla de DatoPendiente — qué falta para que se llene.
+export function NotaActivacion({ children }: { children: ReactNode }) {
+  return <p className="mt-3 text-[12px] font-medium text-[var(--accent)]">{children}</p>;
 }

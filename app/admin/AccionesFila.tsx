@@ -30,23 +30,23 @@ export function AccionesFila({ userId }: { userId: string }) {
   };
 
   if (quitando) {
-    return <span className="text-[12px] text-[var(--text-tertiary)]">Quitando…</span>;
+    return <span className="flex min-h-11 items-center text-[12px] text-[var(--text-tertiary)]">Quitando…</span>;
   }
 
   if (confirmando) {
     return (
-      <span className="flex items-center gap-2">
+      <span className="flex min-h-11 items-center gap-3">
         <button
           type="button"
           onClick={confirmar}
-          className="text-[12px] font-semibold text-[var(--status-error)] [touch-action:manipulation]"
+          className="flex min-h-11 items-center text-[12px] font-semibold text-[var(--status-error)] [touch-action:manipulation]"
         >
           ¿Seguro? Sí
         </button>
         <button
           type="button"
           onClick={() => setConfirmando(false)}
-          className="text-[12px] text-[var(--text-tertiary)] [touch-action:manipulation]"
+          className="flex min-h-11 items-center text-[12px] text-[var(--text-tertiary)] [touch-action:manipulation]"
         >
           No
         </button>
@@ -61,7 +61,7 @@ export function AccionesFila({ userId }: { userId: string }) {
         <button
           type="button"
           onClick={() => setError(null)}
-          className="flex items-center gap-1 text-[12px] text-[var(--text-tertiary)] [touch-action:manipulation]"
+          className="flex min-h-11 items-center gap-1 text-[12px] text-[var(--text-tertiary)] [touch-action:manipulation]"
         >
           <Trash2 size={13} aria-hidden="true" />
           Reintentar
@@ -74,7 +74,7 @@ export function AccionesFila({ userId }: { userId: string }) {
     <button
       type="button"
       onClick={() => setConfirmando(true)}
-      className="flex items-center gap-1 text-[12px] text-[var(--text-tertiary)] [touch-action:manipulation]"
+      className="flex min-h-11 items-center gap-1 text-[12px] text-[var(--text-tertiary)] [touch-action:manipulation]"
     >
       <Trash2 size={13} aria-hidden="true" />
       Quitar

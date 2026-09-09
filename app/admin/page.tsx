@@ -10,14 +10,17 @@ import {
   Activity,
   UserPlus,
   ArrowLeft,
+  Repeat,
+  Signpost,
 } from 'lucide-react';
 import { Marcador } from '@/components/funnel/ui';
 import { crearClienteSupabaseServidor } from '@/lib/supabase/server';
 import { obtenerResumenUsuarios, obtenerUsoUltimos30Dias, obtenerListaUsuarios, obtenerResumenIA } from '@/lib/admin-datos';
-import { ContenedorAdmin, TarjetaSeccion, DatoHeroe, SinDatos, ListaSinConectar } from '@/components/admin/ui';
+import { ContenedorAdmin, TarjetaSeccion, EncabezadoGrupo, DatoHeroe, DatoPendiente, SinDatos, NotaActivacion } from '@/components/admin/ui';
+import { MetricasFuturas } from '@/components/admin/MetricasFuturas';
 import { FormularioAgregarUsuario } from './FormularioAgregarUsuario';
 import { CerrarSesion } from './CerrarSesion';
-import { AccionesFila } from './AccionesFila';
+import { TablaUsuarios } from './TablaUsuarios';
 
 export const dynamic = 'force-dynamic'; // números del dueño: nunca cacheados entre visitas
 
@@ -28,6 +31,8 @@ const ETIQUETA_EVENTO: Record<string, string> = {
   sesion_iniciada: 'Inicios de sesión',
   pago_agregado: 'Pagos agregados',
   evento_agregado: 'Eventos de calendario agregados',
+  autorizacion_agregada: 'Autorizaciones registradas',
+  titulo_guardado: 'Cuotas configuradas',
   usuario_agregado_manualmente: 'Cuentas agregadas a mano',
 };
 
@@ -63,6 +68,7 @@ export default async function PanelAdmin() {
         <div className="flex shrink-0 items-center gap-2 pt-1">
           <Link
             href="/inicio"
+            aria-label="Volver a la app"
             className="flex h-11 items-center gap-1.5 rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_28%,transparent)] px-3 text-[12.5px] font-medium text-[var(--text-secondary)] [touch-action:manipulation]"
           >
             <ArrowLeft size={14} aria-hidden="true" />
@@ -90,17 +96,19 @@ export default async function PanelAdmin() {
         </div>
       </div>
 
-      <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {/* GANANCIA REAL — lo que más le importa al dueño, card ancha */}
-        <TarjetaSeccion indice={0} titulo="Ganancia real" subtitulo="Lo que queda limpio tras costos" icon={<DollarSign size={18} color="var(--accent)" aria-hidden="true" />} className="sm:col-span-2">
-          <SinDatos
-            motivo='Todavía no hay ventas ni costos reales que restar — sin esto no se puede decir "facturaste $X y te quedaron $Y limpios" sin inventarlo.'
-            activaCon="conectes el aviso de Hotmart (ventas) — el resto de costos (IA, infraestructura, correo) se suma automáticamente en cuanto exista."
-          />
-        </TarjetaSeccion>
-
-        {/* USUARIOS — el único bloque con números reales desde hoy */}
-        <TarjetaSeccion indice={1} titulo="Usuarios" subtitulo="Cuentas reales en la app" icon={<Users size={18} color="var(--accent)" aria-hidden="true" />}>
+      {/* ── PERSONAS primero: tiene datos REALES desde hoy. Dinero (abajo) todavía no tiene
+          ninguno — encontrado por el revisor-visual (ronda final): dos cajas "Sin datos" seguidas
+          antes de llegar al primer dato real alargaban el scroll sin necesidad; mientras Ganancia
+          real siga vacía, lo real va primero. ─────────────────────────────────────────────────── */}
+      <EncabezadoGrupo titulo="Personas" subtitulo="Quiénes son y qué hacen adentro" />
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <TarjetaSeccion
+          indice={0}
+          titulo="Usuarios"
+          subtitulo="Cuentas reales en la app"
+          icon={<Users size={18} color="var(--accent)" aria-hidden="true" />}
+          tooltip="Cuántas personas tienen cuenta, cuántas usaron la app hoy, y cuántas se unieron esta semana y este mes."
+        >
           <div className="grid grid-cols-2 gap-4">
             <DatoHeroe valor={String(usuarios.total)} label="Total" />
             <DatoHeroe valor={String(usuarios.activosHoy)} label="Activos hoy" />
@@ -109,8 +117,13 @@ export default async function PanelAdmin() {
           </div>
         </TarjetaSeccion>
 
-        {/* USO */}
-        <TarjetaSeccion indice={2} titulo="Uso de la app" subtitulo="Últimos 30 días" icon={<Activity size={18} color="var(--accent)" aria-hidden="true" />}>
+        <TarjetaSeccion
+          indice={2}
+          titulo="Uso de la app"
+          subtitulo="Últimos 30 días"
+          icon={<Activity size={18} color="var(--accent)" aria-hidden="true" />}
+          tooltip="Qué está haciendo la gente adentro — cada pago registrado, evento agregado o inicio de sesión queda anotado aquí."
+        >
           {uso.length === 0 ? (
             <SinDatos
               motivo="Todavía no se registró ninguna acción en el nuevo registro de eventos."
@@ -127,11 +140,36 @@ export default async function PanelAdmin() {
             </div>
           )}
         </TarjetaSeccion>
+      </div>
 
-        {/* INTELIGENCIA ARTIFICIAL — real desde que existe ai_calls (lector de recibos, 30-
-            INTEGRACION-IA.md). Antes de eso, esta sección vive en "Todavía sin conectar" abajo. */}
-        {ia && (
-          <TarjetaSeccion indice={3} titulo="Inteligencia artificial" subtitulo="Costo real del lector de recibos" icon={<Bot size={18} color="var(--accent)" aria-hidden="true" />}>
+      {/* ── DINERO — Ganancia real, el dato que más le importa al dueño (pedido explícito, nunca
+          se diluye) aunque hoy no tenga número. Ventas/Negocio (sin datos) viven en el bloque
+          plegable de abajo junto con el resto de métricas futuras. ─────────────────────────────── */}
+      <EncabezadoGrupo titulo="Dinero" subtitulo="Lo que queda limpio tras costos" />
+      <TarjetaSeccion
+        indice={1}
+        titulo="Ganancia real"
+        subtitulo="Lo que queda limpio tras costos"
+        icon={<DollarSign size={18} color="var(--accent)" aria-hidden="true" />}
+        tooltip="Lo que te queda después de restar todos los costos de operar la app (la plataforma de pago, afiliados, impuestos, IA, servidor y correo). No es cuánto vendiste — es cuánto te quedó de verdad."
+      >
+        <SinDatos
+          motivo='Todavía no hay ventas ni costos reales que restar — sin esto no se puede decir "facturaste $X y te quedaron $Y limpios" sin inventarlo.'
+          activaCon="conectes el aviso de Hotmart (ventas) — el resto de costos (IA, infraestructura, correo) se suma automáticamente en cuanto exista."
+        />
+      </TarjetaSeccion>
+
+      {/* ── SISTEMA — solo aparece si ya hay costo real de IA que mostrar. ─────────────────── */}
+      {ia && (
+        <>
+          <EncabezadoGrupo titulo="Sistema" subtitulo="Costo real de la inteligencia artificial" />
+          <TarjetaSeccion
+            indice={3}
+            titulo="Inteligencia artificial"
+            subtitulo="Costo real del lector de recibos"
+            icon={<Bot size={18} color="var(--accent)" aria-hidden="true" />}
+            tooltip="Cuánto te cuesta de verdad que la IA lea tus recibos automáticamente — para que nunca te sorprenda una factura."
+          >
             <div className="grid grid-cols-2 gap-4">
               <DatoHeroe valor={`$${ia.gastoHoyUsd.toFixed(3)}`} label="Gasto de hoy (USD)" />
               <DatoHeroe valor={`$${ia.gastoMesUsd.toFixed(2)}`} label="Gasto del mes (USD)" />
@@ -139,135 +177,115 @@ export default async function PanelAdmin() {
               <DatoHeroe valor={String(ia.fallasHoy)} label="Fallas hoy" tono={ia.fallasHoy > 0 ? 'warning' : undefined} />
             </div>
           </TarjetaSeccion>
-        )}
+        </>
+      )}
 
-        {/* VENTAS + NEGOCIO + (IA si no está conectada) + ERRORES — una sola card compacta:
-            comparten el mismo estado ("todavía sin conectar"), separarlas en cards completas solo
-            alargaba el scroll sin sumar información (revisor-visual, ronda 2). */}
-        <TarjetaSeccion
-          indice={4}
-          titulo="Todavía sin conectar"
-          subtitulo="Se activan solas en cuanto conectes cada pieza"
-          icon={<Receipt size={18} color="var(--accent)" aria-hidden="true" />}
-          className="sm:col-span-2"
-        >
-          <ListaSinConectar
-            filas={[
-              {
-                titulo: 'Ventas',
-                icon: <Receipt size={15} color="var(--accent)" aria-hidden="true" />,
-                nota: 'Ingresos, cancelaciones y cuánto entra cada mes — se activa con el aviso automático de Hotmart.',
-              },
-              {
-                titulo: 'Negocio',
-                icon: <TrendingUp size={15} color="var(--accent)" aria-hidden="true" />,
-                nota: 'Cuánto deja cada cliente y cuánto cuesta conseguirlo, por canal — necesita ventas con canal de origen registrado.',
-              },
-              ...(ia
-                ? []
-                : [
-                    {
-                      titulo: 'Inteligencia artificial',
-                      icon: <Bot size={15} color="var(--accent)" aria-hidden="true" />,
-                      nota: 'Tu app no usa inteligencia artificial en ninguna pantalla todavía.',
-                    },
-                  ]),
-              {
-                titulo: 'Errores',
-                icon: <ShieldAlert size={15} color="var(--accent)" aria-hidden="true" />,
-                nota: 'Se activa cuando conectes un servicio de monitoreo de errores (te guío cuando lo pidas).',
-              },
-            ]}
-          />
-        </TarjetaSeccion>
+      {/* ── MÉTRICAS FUTURAS — TODO lo que hoy no tiene ningún dato real, en un solo bloque
+          plegable (colapsado por defecto): existen y se pueden ver, pero no compiten por
+          atención con lo que sí importa ahora mismo (pedido explícito del revisor-visual tras
+          el rediseño: 5-6 cards vacías del mismo peso que las reales quedaban como "aire
+          muerto"). Sigue siendo lo que el usuario pidió — "pensando a futuro, para visualizar
+          mejor el seguimiento" — solo que agrupado, no repartido en cards sueltas. ──────────── */}
+      <div className="mt-8">
+        <MetricasFuturas
+          metricas={[
+            {
+              titulo: 'Ventas',
+              icon: <Receipt size={14} color="var(--accent)" aria-hidden="true" />,
+              contenido: (
+                <>
+                  <div className="grid grid-cols-3 gap-3">
+                    <DatoPendiente label="Ingresos del mes" />
+                    <DatoPendiente label="Cancelaciones" />
+                    <DatoPendiente label="Ingreso mensual fijo" />
+                  </div>
+                  <NotaActivacion>Se activa con el aviso automático de Hotmart.</NotaActivacion>
+                </>
+              ),
+            },
+            {
+              titulo: 'Negocio',
+              icon: <TrendingUp size={14} color="var(--accent)" aria-hidden="true" />,
+              contenido: (
+                <>
+                  <div className="grid grid-cols-2 gap-3">
+                    <DatoPendiente label="Gana por cliente" />
+                    <DatoPendiente label="Cuesta conseguir uno" />
+                    <DatoPendiente label="Veces que se recupera" />
+                    <DatoPendiente label="Meses para recuperar" />
+                  </div>
+                  <NotaActivacion>Necesita ventas con canal de origen registrado.</NotaActivacion>
+                </>
+              ),
+            },
+            {
+              titulo: 'Retención',
+              icon: <Repeat size={14} color="var(--accent)" aria-hidden="true" />,
+              contenido: (
+                <>
+                  <div className="grid grid-cols-3 gap-3">
+                    <DatoPendiente label="Día 1" />
+                    <DatoPendiente label="Día 7" />
+                    <DatoPendiente label="Día 30" />
+                  </div>
+                  <NotaActivacion>Se calcula cuando haya suficientes cuentas con un mes o más de antigüedad.</NotaActivacion>
+                </>
+              ),
+            },
+            {
+              titulo: 'Recorrido de bienvenida',
+              icon: <Signpost size={14} color="var(--accent)" aria-hidden="true" />,
+              contenido: (
+                <>
+                  <div className="grid grid-cols-3 gap-3">
+                    <DatoPendiente label="Lo empiezan" />
+                    <DatoPendiente label="Lo terminan" />
+                    <DatoPendiente label="% que termina" />
+                  </div>
+                  <NotaActivacion>Se activa cuando el recorrido de bienvenida anote sus propios pasos.</NotaActivacion>
+                </>
+              ),
+            },
+            ...(ia
+              ? []
+              : [
+                  {
+                    titulo: 'Inteligencia artificial',
+                    icon: <Bot size={14} color="var(--accent)" aria-hidden="true" />,
+                    contenido: (
+                      <SinDatos motivo="Tu app no usa inteligencia artificial en ninguna pantalla todavía." activaCon="agregues una función con IA a la app." />
+                    ),
+                  },
+                ]),
+            {
+              titulo: 'Errores',
+              icon: <ShieldAlert size={14} color="var(--accent)" aria-hidden="true" />,
+              contenido: (
+                <>
+                  <div className="grid grid-cols-2 gap-3">
+                    <DatoPendiente label="Errores hoy" />
+                    <DatoPendiente label="Alertas abiertas" />
+                  </div>
+                  <NotaActivacion>Se activa cuando conectes un servicio de monitoreo de errores (te guío cuando lo pidas).</NotaActivacion>
+                </>
+              ),
+            },
+          ]}
+        />
       </div>
 
-      {/* ALTA MANUAL DE USUARIO */}
-      <section className="mt-8">
-        <TarjetaSeccion indice={5} titulo="Agregar una persona a mano" subtitulo="Por si no le llegó el acceso, o quieres darlo tú mismo" icon={<UserPlus size={18} color="var(--accent)" aria-hidden="true" />}>
-          <FormularioAgregarUsuario />
-        </TarjetaSeccion>
-      </section>
+      {/* ── GESTIÓN — acciones sobre cuentas ────────────────────────────────────────────────── */}
+      <EncabezadoGrupo titulo="Gestión" subtitulo="Altas manuales y todas las cuentas" />
 
-      {/* TABLA DE USUARIOS — la idea extra que aprobaste */}
-      <section className="mt-4">
-        <TarjetaSeccion indice={6} titulo="Todas las cuentas" subtitulo={`${listaUsuarios.length} en total`} icon={<Users size={18} color="var(--accent)" aria-hidden="true" />}>
-          {listaUsuarios.length === 0 ? (
-            <SinDatos motivo="Todavía no hay ninguna cuenta creada." activaCon="alguien se registre, o la agregues tú arriba." />
-          ) : (
-            <>
-              {/* MOBILE (< sm): cada cuenta en su propia tarjeta, NADA cortado — la tabla de 5
-                  columnas no cabe entera a 375px sin recortar texto pese al scroll horizontal y
-                  el degradé de aviso (defecto real, ronda 7: "SE U…"/"20 d…" cercenados). */}
-              <div className="flex flex-col gap-3 sm:hidden">
-                {listaUsuarios.map((u) => (
-                  <div
-                    key={u.id}
-                    className="rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_14%,transparent)] bg-[var(--surface-2)] p-3.5"
-                  >
-                    <div className="flex items-start justify-between gap-2">
-                      <p className="text-[13.5px] font-semibold text-[var(--text-primary)]">
-                        {u.nombre ?? <span className="font-normal text-[var(--text-tertiary)]">Sin nombre</span>}
-                      </p>
-                      {u.creadoManualmente && <AccionesFila userId={u.id} />}
-                    </div>
-                    <p className="mt-1 break-all text-[12.5px] leading-[1.4] text-[var(--text-secondary)]">{u.email}</p>
-                    <p className="mt-1.5 text-[12px] text-[var(--text-tertiary)]">
-                      {new Date(u.createdAt).toLocaleDateString('es-CO', { day: 'numeric', month: 'short', year: 'numeric' })}
-                      {' · '}
-                      {u.creadoManualmente ? 'Agregado a mano' : (u.source ?? 'Directo')}
-                    </p>
-                  </div>
-                ))}
-              </div>
+      <TarjetaSeccion indice={9} titulo="Agregar una persona a mano" subtitulo="Por si no le llegó el acceso, o quieres darlo tú mismo" icon={<UserPlus size={18} color="var(--accent)" aria-hidden="true" />}>
+        <FormularioAgregarUsuario />
+      </TarjetaSeccion>
 
-              {/* DESKTOP/TABLET (≥ sm): la tabla real, con todo el espacio para 5 columnas. */}
-              <div className="hidden overflow-x-auto sm:block">
-                <table className="w-full min-w-[560px] border-collapse text-left">
-                <thead>
-                  <tr className="border-b border-[color-mix(in_oklab,var(--text-tertiary)_16%,transparent)]">
-                    <th scope="col" className="pb-2 text-[12px] font-medium uppercase tracking-[0.04em] text-[var(--text-tertiary)]">
-                      Nombre
-                    </th>
-                    <th scope="col" className="pb-2 text-[12px] font-medium uppercase tracking-[0.04em] text-[var(--text-tertiary)]">
-                      Correo
-                    </th>
-                    <th scope="col" className="pb-2 text-[12px] font-medium uppercase tracking-[0.04em] text-[var(--text-tertiary)]">
-                      Se unió
-                    </th>
-                    <th scope="col" className="pb-2 text-[12px] font-medium uppercase tracking-[0.04em] text-[var(--text-tertiary)]">
-                      Origen
-                    </th>
-                    <th scope="col" className="pb-2 text-[12px] font-medium uppercase tracking-[0.04em] text-[var(--text-tertiary)]">
-                      <span className="sr-only">Acciones</span>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {listaUsuarios.map((u) => (
-                    <tr key={u.id} className="border-b border-[color-mix(in_oklab,var(--text-tertiary)_10%,transparent)] last:border-0">
-                      <td className="py-2.5 pr-3 text-[13.5px] text-[var(--text-primary)]">
-                        {u.nombre ?? <span className="text-[var(--text-tertiary)]">Sin nombre</span>}
-                      </td>
-                      <td className="max-w-[220px] whitespace-normal break-all py-2.5 pr-3 text-[13.5px] leading-[1.4] text-[var(--text-secondary)]">
-                        {u.email}
-                      </td>
-                      <td className="py-2.5 pr-3 text-[13px] tabular-nums text-[var(--text-tertiary)]">
-                        {new Date(u.createdAt).toLocaleDateString('es-CO', { day: 'numeric', month: 'short', year: 'numeric' })}
-                      </td>
-                      <td className="py-2.5 pr-3 text-[13px] text-[var(--text-tertiary)]">
-                        {u.creadoManualmente ? 'Agregado a mano' : (u.source ?? 'Directo')}
-                      </td>
-                      <td className="py-2.5 text-[13px]">{u.creadoManualmente && <AccionesFila userId={u.id} />}</td>
-                    </tr>
-                  ))}
-                </tbody>
-                </table>
-              </div>
-            </>
-          )}
+      <div className="mt-4">
+        <TarjetaSeccion indice={10} titulo="Todas las cuentas" subtitulo={`${listaUsuarios.length} en total`} icon={<Users size={18} color="var(--accent)" aria-hidden="true" />}>
+          <TablaUsuarios usuarios={listaUsuarios} />
         </TarjetaSeccion>
-      </section>
+      </div>
     </ContenedorAdmin>
   );
 }

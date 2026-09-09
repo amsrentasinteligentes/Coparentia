@@ -1,5 +1,51 @@
 # ESTADO.md — Coparentia (nombre provisional: PensiónClara)
 
+### Checkpoint (2026-09-09) — Panel de administración: rediseño con tooltips + métricas futuras
+Pedido del usuario: "lo siento básico, agrega tooltips, mejora el diseño, y si crees que hace
+falta más métricas para pensar a futuro, agrégalas aunque hoy no muestren resultados reales."
+
+**Construido**:
+- Tooltips reales (`components/admin/Tooltip.tsx`): ícono "i" junto a cada título, toque para
+  abrir (no depende de hover, no existe en celular), explica la métrica en simple. Área de toque
+  44×44px con un círculo visible más pequeño adentro (16px) para no competir con el ícono de la
+  card.
+- Reorganización en grupos con encabezado (`EncabezadoGrupo`): Personas (Usuarios, Uso de la
+  app — datos reales) → Dinero (Ganancia real) → Sistema (IA, solo si hay datos) → Gestión (alta
+  manual, cuentas). Personas va primero porque es lo único con datos reales desde ya.
+- Bug real corregido de paso: `pago_agregado`/`evento_agregado` estaban en el diccionario de
+  "Uso de la app" pero nunca se registraban — `lib/datos.ts` ahora anota también
+  `autorizacion_agregada` y `titulo_guardado` en `event_log`.
+- Buscador en "Todas las cuentas" (`app/admin/TablaUsuarios.tsx`, extraído a client component) —
+  aparece solo con más de 5 cuentas (regla del SO: filtros desde 8-10 ítems).
+- **`components/admin/MetricasFuturas.tsx`** (la pieza central de esta sesión): las 5 métricas
+  que hoy no tienen NINGÚN dato real (Ventas, Negocio, Retención, Recorrido de bienvenida,
+  Errores — y también Inteligencia artificial si `ai_calls` no existe) se agruparon en UN bloque
+  plegable, colapsado por defecto, con contador ("N sin datos todavía"). Al abrirlo se ve la
+  FORMA exacta de cada número futuro (grid de guiones "—" + qué lo activa) — es lo que el usuario
+  pidió ("pensando a futuro, para visualizar mejor el seguimiento"), sin que compita por atención
+  con lo que sí importa hoy. Alto de la pantalla en su estado normal (colapsado): 2517px, contra
+  3383px con las mismas 5 métricas sueltas antes de este ajuste.
+
+**Verificación visual — 6 rondas más de revisor-visual sobre este rediseño** (screenshot en
+`docs/revisiones/admin-375.png`, veredicto en `docs/revisiones/admin-veredicto.md`):
+28/40·14/20 (regresión real del rediseño inicial, con jerga cruda en pantalla y 6 cards vacías
+del mismo peso que las reales) → 29/40·14/20 (labels sin jerga, botones a 44px, buscador
+agregado — pero el problema de fondo, demasiadas cards vacías, seguía sin resolverse) → **con el
+bloque plegable `MetricasFuturas`: 30/40·15/20**, con el propio revisor confirmando que la
+estructura ya no genera "aire muerto" al entrar. Ajustes finales de esta misma ronda (reordenar
+Personas antes de Dinero, atenuar "Cerrar sesión" frente a "Volver a la app", fondo circular en
+el ícono de tooltip) no se volvieron a mandar a una 7ª ronda de revisor — verificados a ojo con
+captura real, `tsc`/`build` limpios.
+
+⚠️ **Honesto: no se recuperó el 37/40 · 14/20 del panel ANTES de este rediseño.** El propio
+revisor lo señaló en su última pasada: agregar superficie de información (tooltips + 5-6
+métricas nuevas, aunque colapsadas) tiene un costo real en la rúbrica de densidad/simplicidad
+frente al estado anterior, que no tenía ninguna de esas dos cosas. Es una tensión real entre lo
+que el usuario pidió explícitamente (más visibilidad a futuro) y lo que la rúbrica de usabilidad
+premia (lo mínimo posible). Se prioriza el pedido explícito del usuario. Se cierra esta ronda de
+pulido aquí — van 15 pasadas de revisor acumuladas sobre este mismo panel en esta sesión, mismo
+patrón de rendimiento decreciente ya documentado para landing/onboarding/paywall.
+
 ### Checkpoint (2026-09-09) — Lector de recibos CONFIRMADO en producción por el usuario
 Los 3 pasos de configuración (`supabase/ai.sql`, cuenta de Anthropic + `ANTHROPIC_API_KEY` en
 `.env.local` y Vercel, tope de gasto sin recarga automática en la consola de Anthropic) quedaron
