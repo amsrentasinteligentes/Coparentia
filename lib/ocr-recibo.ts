@@ -13,6 +13,12 @@ import Anthropic from '@anthropic-ai/sdk';
 import { z } from 'zod';
 import { crearClienteSupabaseServidor } from '@/lib/supabase/server';
 
+// Nota: se intentó reforzar con `export const maxDuration` aquí, pero un archivo 'use server'
+// solo puede exportar funciones — cualquier otro export rompe TODAS las Server Actions del
+// archivo (error real de build: "The module has no exports at all"). El fix real contra una
+// llamada lenta vive del lado del cliente: comprimir la foto antes de mandarla (pagos/page.tsx,
+// lib/comprimir-imagen.ts) + un tope de 20s que libera el campo si nada responde a tiempo.
+
 const FEATURE = 'lector_recibo';
 
 // Precio aproximado del modelo de extracción (Haiku 4.5, USD por 1M tokens) — VERIFICAR el precio

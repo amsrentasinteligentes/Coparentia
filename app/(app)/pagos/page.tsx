@@ -20,6 +20,7 @@ import {
   formatoFechaLarga,
 } from '@/lib/datos';
 import { leerMontoDeRecibo } from '@/lib/ocr-recibo';
+import { comprimirParaLectura } from '@/lib/comprimir-imagen';
 
 type Filtro = 'todos' | TipoMovimiento;
 
@@ -163,7 +164,14 @@ function ModalRegistro({ onCerrar, onGuardado }: { onCerrar: () => void; onGuard
     setMontoDetectado(false);
     if (!f.type.startsWith('image/')) return;
     setLeyendoRecibo(true);
-    const resultado = await leerMontoDeRecibo(f);
+    // Se manda una copia comprimida SOLO para la lectura — el archivo real que se guarda en el
+    // expediente (arriba, `setArchivo(f)`) sigue siendo la foto original sin tocar.
+    // Tope de 20s en el cliente: si la red va lenta y nada responde, se libera el campo para
+    // escribir a mano en vez de dejar a la persona mirando "Leyendo el recibo…" para siempre.
+    const resultado = await Promise.race([
+      comprimirParaLectura(f).then(leerMontoDeRecibo),
+      new Promise<{ monto: null; confianza: null }>((resolve) => setTimeout(() => resolve({ monto: null, confianza: null }), 20_000)),
+    ]);
     setLeyendoRecibo(false);
     if (resultado.monto && resultado.confianza !== 'baja') {
       setMonto(String(Math.round(resultado.monto)));
