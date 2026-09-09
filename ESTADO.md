@@ -1,5 +1,73 @@
 # ESTADO.md — Coparentia (nombre provisional: PensiónClara)
 
+### Checkpoint (2026-09-09) — Auditoría de seguridad completa (27-REVISION-SEGURIDAD.md)
+Pedido del usuario: explorar toda la app buscando vulnerabilidades/debilidades reales, no solo de
+puntaje. Se corrió la rutina completa del archivo 27 (grep de fail-open, `npm audit`, revisión de
+secretos/gitignore, inventario de RLS/Storage/rutas, las 5 checklists + mapa OWASP).
+
+**THREAT MODEL LIGERO (4 preguntas)**:
+1. Lo más valioso que protege la app: los comprobantes de pago y documentos privados de los
+   usuarios (evidencia legal real) + el acceso de administrador sobre todos los usuarios.
+2. Quién la atacaría: nadie con interés en un ataque sofisticado a esta escala — el riesgo real es
+   un usuario curioso probando llamadas directas a la API, o un bot genérico buscando defaults
+   inseguros comunes en apps Next.js+Supabase.
+3. Peor caso si entran: alguien se auto-otorga el rol de administrador y ve/modifica datos de
+   todos los usuarios, o alguien accede a comprobantes/documentos de otra persona.
+4. Qué lo mitiga: RLS correcto en cada tabla y en Storage, privilegios de columna donde RLS no
+   alcanza, gate de admin verificado en servidor, sin secretos en el cliente ni en git.
+
+**🔴 CRÍTICO encontrado y CORREGIDO — autoescalada de privilegios a administrador**: la política
+`profiles_update_propio` (RLS) dejaba que cualquier usuario actualizara SU PROPIA fila de
+`profiles` — pero RLS controla FILAS, no COLUMNAS. Sin restricción de columna, cualquier persona
+con una cuenta normal podía, con una llamada técnica directa a la base de datos (sin usar ninguna
+pantalla de la app), marcarse a sí misma `role = 'admin'` y entrar al panel completo. Corregido en
+`supabase/admin.sql` y en el parche nuevo `supabase/fix-privilegios-profiles.sql` (YA HAY QUE
+CORRERLO — ver pendientes abajo): `revoke update on profiles from authenticated` + `grant update
+(nombre) on profiles to authenticated` — un usuario normal solo puede tocar su nombre, nunca
+`role`/`source`/`creado_manualmente`.
+
+**🟡 MEDIO encontrado y CORREGIDO — open-redirect en el enlace mágico**: `app/auth/callback/
+route.ts` tomaba el parámetro `next` de la URL sin validar y lo pegaba al dominio de la app para
+redirigir — un valor como `@evil.com` puede hacer que el navegador interprete el dominio real
+como "usuario" y navegue de verdad a `evil.com` (el truco clásico de la arroba en una URL). Hoy
+nada en la app arma links con `next`, así que no era explotable en la práctica todavía, pero
+quedaba ahí como una trampa lista para el futuro. Corregido: solo se acepta una ruta interna real
+(`/algo`, nunca `//algo`, ninguna que contenga `://` o `@`).
+
+**🟢 BAJO encontrado y CORREGIDO — sin encabezados de seguridad**: la app no mandaba ningún header
+de seguridad (nada impedía, por ejemplo, que otro sitio la empotrara en un `<iframe>` para un
+ataque de clickjacking). Agregados en `next.config.ts`: `X-Frame-Options: DENY`,
+`X-Content-Type-Options: nosniff`, `Referrer-Policy`, `Permissions-Policy` (bloquea cámara/
+micrófono/ubicación, que esta app nunca pide). Un CSP estricto con nonce queda pendiente para
+cuando haya scripts de terceros que lo justifiquen (hoy no hay ninguno).
+
+**🟢 BAJO encontrado y CORREGIDO — faltaba `.env.example`**: creado, con los NOMBRES de las 3
+variables reales del proyecto y ningún valor — así cualquiera puede levantar el proyecto sin
+adivinar qué necesita, sin exponer nada.
+
+**Revisado y CONFIRMADO SIN PROBLEMAS**: `npm audit` (0 vulnerabilidades) · `.env` nunca se
+commiteó (`git log --all -- .env`) · lockfile commiteado · sin defaults inseguros (`env.X ||
+'valor'`) · sin `dangerouslySetInnerHTML`/`eval` (sin superficie de XSS obvia) · sin `catch`
+vacíos que escondan errores reales (los 3 que hay son de `sessionStorage`, ya documentados) · sin
+CORS abierto · sin criptografía débil · Storage privado con RLS por carpeta de usuario, sin URLs
+públicas · RLS activo y correcto en `titulos`/`pagos`/`autorizaciones`/`eventos` (cada quien solo
+lee/toca lo suyo) · sin rastro de rutas de prueba/bypass/debug olvidadas en el código.
+
+⚠️ **Aceptado, no corregido (documentado, no urgente)**: los archivos que se suben (fotos/PDF de
+comprobantes) solo se validan por tipo en el navegador (`accept="image/*,application/pdf"`),
+nunca en el servidor — un usuario técnico podría subir otro tipo de archivo a su PROPIA carpeta
+privada. Riesgo bajo hoy (nadie más ve esos archivos salvo el dueño de la cuenta o tú como
+administrador, y Supabase Storage ya pone un tope de tamaño por archivo a nivel de plataforma) —
+se deja anotado para cuando haya presupuesto de sesión para validar tipo real (magic bytes) en el
+servidor antes de guardar.
+⚠️ **Aceptado, no corregido**: sin límite de intentos (rate limiting) propio en las acciones del
+panel de administración más allá del límite de correos de Supabase Auth ya configurado — riesgo
+bajo porque el panel completo ya exige ser tú, verificado en el servidor.
+
+⚠️ **PENDIENTE — el usuario debe correr el parche crítico**: `supabase/fix-privilegios-profiles.sql`
+(o pegar de nuevo `admin.sql`, que ya incluye el fix) en Supabase → SQL Editor → Run. Sin esto, el
+hallazgo crítico de arriba sigue abierto en producción.
+
 ### Checkpoint (2026-09-09) — Panel de administración v1 CONSTRUIDO, real y conectado
 Usuario aprobó el plan presentado (ver checkpoint anterior) y pidió además la tabla de usuarios
 extra. Construido de punta a punta, capa por capa, verificando `tsc`/`build` en cada una:

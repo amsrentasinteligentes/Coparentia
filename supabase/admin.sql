@@ -59,6 +59,12 @@ create policy "profiles_select_propio_o_admin" on public.profiles
 create policy "profiles_update_propio" on public.profiles
   for update using ((select auth.uid()) = id) with check ((select auth.uid()) = id);
 
+-- RLS controla FILAS, no COLUMNAS: sin esto, la política de arriba dejaría a cualquier usuario
+-- actualizar su PROPIO `role` a 'admin' con una llamada directa a la API (auto-escalada de
+-- privilegios, A01 de 27-REVISION-SEGURIDAD.md). Un usuario normal solo puede tocar su nombre.
+revoke update on public.profiles from authenticated;
+grant update (nombre) on public.profiles to authenticated;
+
 -- Sin política de insert/delete para clientes: los perfiles solo nacen del trigger (arriba,
 -- security definer) o de una acción de servidor con la service_role key (alta manual, ver
 -- app/admin/acciones.ts) — nunca directo desde el navegador.
