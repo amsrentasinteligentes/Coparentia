@@ -1,15 +1,22 @@
 # ESTADO.md — Coparentia (nombre provisional: PensiónClara)
 
-### Checkpoint (2026-09-09) — Calendario ampliado, código listo, falta 1 script SQL del usuario
+### Checkpoint (2026-09-09) — Calendario ampliado, CONFIRMADO por el usuario en su celular
 A pedido del usuario: `/calendario` ahora tiene un calendario visual del mes (rejilla de 7 días,
 puntos en los días con eventos, tocar un día abre "Nuevo evento" con esa fecha ya puesta) — en
 escritorio queda a la derecha (aprovecha el espacio antes vacío, regla 43 §13), en celular queda
-apilado arriba de la lista de siempre (nada se quitó). También: CUALQUIER tipo de evento (no solo
-"Salida del país") ya permite adjuntar un archivo real, mismo sistema de Supabase Storage que ya
-existía para pagos — generalizado `subirArchivoPrivado(userId, 'pagos'|'eventos', archivo)` y
-`obtenerUrlArchivo(ruta)` (antes `subirArchivoComprobante`/`obtenerUrlComprobante`, solo para
-pagos). Nueva columna `documento_adjunto_path` en `eventos` — el usuario ya corrió `supabase/eventos-adjuntos.sql`
-("Success. No rows returned"), confirmado. Queda commitear + publicar + verificar en producción.
+apilado arriba de la lista de siempre (nada se quitó). Se evaluó y DESCARTÓ forzar 2 columnas
+también en celular en vertical: los días del calendario quedarían por debajo del mínimo de 44px
+de toque — se probó con una captura real antes de decidir, no solo se asumió. En su lugar, el
+espacio libre junto al calendario visual (en celular, debajo; en escritorio, al lado) se llenó
+con `<ResumenMes>`: conteo real de eventos del mes por tipo (ej. "2 visitas · 1 cita médica"),
+dato derivado de los eventos ya cargados, sin repetir la lista de abajo.
+También: CUALQUIER tipo de evento (no solo "Salida del país") ya permite adjuntar un archivo
+real, mismo sistema de Supabase Storage que ya existía para pagos — generalizado
+`subirArchivoPrivado(userId, 'pagos'|'eventos', archivo)` y `obtenerUrlArchivo(ruta)` (antes
+`subirArchivoComprobante`/`obtenerUrlComprobante`, solo para pagos). Nueva columna
+`documento_adjunto_path` en `eventos`, ya corrida por el usuario (`supabase/eventos-adjuntos.sql`).
+✅ **Todo publicado y CONFIRMADO visualmente por el usuario en su celular real** — "se ve bien,
+por ahora dejémoslo así".
 ⚠️ Nota para mí mismo: al revertir un bypass temporal de pantalla con `git checkout -- archivo`,
 se perdieron por accidente cambios reales aún no commiteados en ese mismo archivo (tuve que
 rehacerlos) — a partir de ahora, antes de usar `git checkout` para deshacer un bypass, revisar con
