@@ -66,18 +66,28 @@ horizontal · confirmado navegando sin sesión que `/admin` redirige a `/entrar`
 sin ningún bypass — el bypass temporal de captura se usó y se retiró por completo, verificado con
 `grep` que no queda ningún rastro de `SCREENSHOT_DEMO` en el código ni en `.env.local`).
 
-⚠️ **Pendiente — verificación en vivo con tu sesión real**: no pude iniciar sesión de verdad como
-tú dentro de este entorno (el enlace mágico exige abrir el correo, que no puedo hacer yo); las 9
-capturas de revisor-visual se hicieron con un bypass temporal local + datos de EJEMPLO, ya
-retirado del código. Con lo que ya hiciste (correr `admin.sql`, marcarte `role='admin'`, agregar
-`SUPABASE_SERVICE_ROLE_KEY` a `.env.local`), el panel real en `/admin` debería funcionar en
-producción en cuanto despliegues este código y agregues esa misma clave en Vercel — falta que TÚ
-lo abras una vez con tu sesión real y confirmes que ves tus números reales (hoy: 1 usuario, vos).
-⚠️ **Pendiente — clave del servidor en Vercel**: `SUPABASE_SERVICE_ROLE_KEY` solo está en tu
-`.env.local` local. Sin agregarla también en Vercel → Settings → Environment Variables, el botón
-"Agregar una persona a mano" fallará en producción (el resto del panel sí funcionará, porque lee
-con la clave pública de siempre).
-⚠️ Feature de más, NO construida (fuera de alcance, anotada aquí en vez de construida sin avisar):
+✅ **CONFIRMADO por el usuario en producción (2026-09-09), celular Y computador**: código
+commiteado y pusheado a GitHub (`d8267f9`), Vercel desplegó solo. El usuario agregó
+`SUPABASE_SERVICE_ROLE_KEY` en Vercel → Settings → Environments → Production → Environment
+Variables (la ruta cambió de nombre en la versión nueva del panel de Vercel — ya no es una
+pestaña "Environment Variables" separada, vive dentro de cada entorno) e hizo redeploy.
+
+⚠️ **Bug real encontrado y corregido en la verificación en vivo — cuentas creadas ANTES de
+`admin.sql` no tenían fila en `profiles`**: el trigger `on_auth_user_created` solo se dispara en
+altas NUEVAS a `auth.users`; la cuenta del dueño ya existía de sesiones anteriores, así que nunca
+se le creó su fila en `profiles` — el `update ... where email = '...'` para marcarlo admin
+corría sin error pero sobre CERO filas (confirmado con `select * from auth.users` mostrando la
+cuenta real, y `select * from public.profiles` vacía). Diagnosticado paso a paso con el usuario
+(consultas de solo lectura antes de escribir nada) y resuelto con un `insert ... values (...) on
+conflict (id) do update` usando el `id` real de `auth.users` en vez de comparar el correo como
+texto. Confirmado con una lectura de `profiles` mostrando `role = 'admin'`, y confirmado
+visualmente por el usuario en `/admin` con sus números reales (1 usuario, 1 activo hoy).
+**Nota para cuando haya más cuentas viejas que necesiten este mismo arreglo**: el patrón general
+es `insert into public.profiles (id, email) select id, email from auth.users where id not in
+(select id from public.profiles)` — hace el backfill de cualquier cuenta anterior al trigger, sin
+tocar las que ya tienen fila.
+
+✅ Feature de más, NO construida (fuera de alcance, anotada aquí en vez de construida sin avisar):
 edición de campos de una cuenta ya creada (solo se puede quitar una alta manual, no editarla).
 
 ### Checkpoint (2026-09-09) — Panel de administración: EN PLANEACIÓN, esperando OK del usuario
