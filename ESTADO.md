@@ -1,5 +1,10 @@
 # ESTADO.md — Coparentia (nombre provisional: PensiónClara)
 
+✅ **CONFIRMADO por el usuario en su celular real (2026-09-09)**: "me gusta así" — el rediseño del
+panel (tooltips, reordenado por datos reales, "Métricas futuras" plegable) queda aprobado tal
+cual, pese al puntaje del revisor por debajo del estado anterior (ver detalle abajo) — decisión
+consciente de priorizar el pedido explícito del usuario sobre el criterio automático de densidad.
+
 ### Checkpoint (2026-09-09) — Panel de administración: rediseño con tooltips + métricas futuras
 Pedido del usuario: "lo siento básico, agrega tooltips, mejora el diseño, y si crees que hace
 falta más métricas para pensar a futuro, agrégalas aunque hoy no muestren resultados reales."
