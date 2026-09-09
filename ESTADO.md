@@ -1,5 +1,30 @@
 # ESTADO.md — Coparentia (nombre provisional: PensiónClara)
 
+### Checkpoint (2026-09-09) — Lector de recibos CONFIRMADO en producción por el usuario
+Los 3 pasos de configuración (`supabase/ai.sql`, cuenta de Anthropic + `ANTHROPIC_API_KEY` en
+`.env.local` y Vercel, tope de gasto sin recarga automática en la consola de Anthropic) quedaron
+hechos por el usuario. Primera prueba real con una foto de recibo de apuestas/lotería: el monto
+se leyó bien, pero la pantalla se quedaba congelada en "Leyendo el recibo…" sin terminar.
+
+⚠️ **Bug real encontrado y corregido — foto de cámara sin comprimir colgaba la lectura**: las
+fotos de cámara de celular pesan varios MB; sin comprimir, el viaje de ida y vuelta al servidor
+(subir + que la IA la procese) tardaba demasiado o se cortaba a medio camino, dejando la pantalla
+pegada sin ninguna salida. Corregido en dos capas (`lib/comprimir-imagen.ts` + `app/(app)/
+pagos/page.tsx`): (1) la foto se comprime en el navegador (máx. 1200px de lado, calidad 80%) antes
+de mandarla a leer — el archivo REAL que se guarda en el expediente sigue siendo la foto original
+sin tocar; (2) un tope de 20 segundos: si nada responde a tiempo, el campo se libera solo para
+escribir el monto a mano, en vez de quedar atascado para siempre.
+
+⚠️ **Segundo hallazgo real del usuario, mismo día — la foto de un comprobante ya guardado no se
+ajustaba a la pantalla al verla**: se abría cruda en una pestaña nueva del navegador, dependiendo
+de su visor por defecto. Corregido con un visor propio (`components/app/VisorImagen.tsx`): la
+foto SIEMPRE encaja completa en la pantalla al abrir, con el pellizco nativo para acercar donde
+haga falta. Aplicado en Pagos y en el Calendario (mismo patrón de "ver documento adjunto" en los
+dos lugares); un PDF sigue abriendo en pestaña nueva (el navegador ya trae su propio visor ahí).
+
+✅ **CONFIRMADO por el usuario en su celular real, ambos fixes**: "se ve bien funciona el zoom" —
+el lector automático de recibos y el visor de fotos ya funcionan de punta a punta en producción.
+
 ### Checkpoint (2026-09-09) — Lector automático de recibos (primera IA real de la app)
 Pedido del usuario: que el monto del comprobante se lea solo de la foto, en vez de escribirlo a
 mano. Aprobado explícitamente tras mostrarle el estimado de costo (~$0.002 USD/recibo, ~$2.500
