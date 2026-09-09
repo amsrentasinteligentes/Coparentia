@@ -99,6 +99,17 @@ export default function Ajustes() {
           </div>
         </div>
 
+        {/* Advertencia real: borrar la cuenta y cancelar la suscripción son DOS cosas distintas
+            — Coparentia y Hotmart son sistemas separados. Sin este aviso, alguien podría borrar
+            su cuenta pensando que con eso ya dejó de pagar, y Hotmart le seguiría cobrando. */}
+        <div className="mt-3 rounded-[var(--radius-button)] border border-dashed border-[color-mix(in_oklab,var(--status-warning)_35%,transparent)] px-3.5 py-3">
+          <p className="text-[12.5px] leading-[1.5] text-[var(--text-secondary)]">
+            <strong className="text-[var(--text-primary)]">Esto NO cancela tu suscripción de Hotmart.</strong>{' '}
+            Si tienes un plan activo, Hotmart te seguirá cobrando aunque borres tu cuenta aquí — cancela
+            primero desde el portal de Hotmart (arriba) si no quieres que te sigan cobrando.
+          </p>
+        </div>
+
         {error && <p className="mt-3 text-[12.5px] text-[var(--status-error)]">{error}</p>}
 
         {!confirmandoBorrado ? (
