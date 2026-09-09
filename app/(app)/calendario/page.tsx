@@ -24,6 +24,13 @@ const LABEL_ADJUNTO: Record<TipoEvento, string> = {
   salida_pais: 'Permiso de salida del país',
 };
 const DIAS_SEMANA = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
+const LABEL_CONTEO: Record<TipoEvento, (n: number) => string> = {
+  visita: (n) => (n === 1 ? '1 visita' : `${n} visitas`),
+  medica: (n) => (n === 1 ? '1 cita médica' : `${n} citas médicas`),
+  vacaciones: (n) => (n === 1 ? '1 período de vacaciones' : `${n} períodos de vacaciones`),
+  extracurricular: (n) => (n === 1 ? '1 actividad' : `${n} actividades`),
+  salida_pais: (n) => (n === 1 ? '1 salida del país' : `${n} salidas del país`),
+};
 
 function claveMes(d: Date): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
@@ -83,8 +90,9 @@ export default function Calendario() {
           Escritorio (md+): dos columnas — lista a la izquierda, calendario visual a la derecha,
           ambos mostrando el mismo mes. Aprovecha el espacio que antes quedaba vacío. */}
       <div className="mt-4 flex flex-col gap-6 md:grid md:grid-cols-2 md:items-start">
-        <div className="md:order-2">
+        <div className="md:order-2 flex flex-col gap-4">
           <CalendarioMes mesActual={mesActual} eventos={eventos} onDiaClick={abrirModalEnFecha} />
+          <ResumenMes eventos={delMes} />
         </div>
 
         <div className="md:order-1 flex flex-col gap-3">
@@ -167,6 +175,34 @@ function TarjetaEvento({ evento: e }: { evento: Evento }) {
     <button type="button" onClick={abrirDocumento} disabled={abriendo} className="text-left [touch-action:manipulation]">
       <Tarjeta className="flex items-center gap-3">{contenido}</Tarjeta>
     </button>
+  );
+}
+
+/* ── <ResumenMes> — cuántos eventos hay este mes, por tipo (dato real, nunca inventado) —
+   llena el espacio junto al calendario visual sin repetir lo que ya muestra la lista. ── */
+function ResumenMes({ eventos }: { eventos: Evento[] }) {
+  if (eventos.length === 0) return null;
+  const conteo = new Map<TipoEvento, number>();
+  for (const e of eventos) conteo.set(e.tipo, (conteo.get(e.tipo) ?? 0) + 1);
+
+  return (
+    <Tarjeta className="flex flex-col gap-3">
+      <p className="text-[13px] font-semibold text-[var(--text-secondary)]">Este mes</p>
+      <div className="flex flex-wrap gap-2">
+        {Array.from(conteo.entries()).map(([tipo, n]) => {
+          const Icon = ICONO[tipo];
+          return (
+            <span
+              key={tipo}
+              className="flex items-center gap-1.5 rounded-full bg-[color-mix(in_oklab,var(--accent)_10%,transparent)] px-3 py-1.5 text-[12px] font-medium text-[var(--text-primary)]"
+            >
+              <Icon size={13} color="var(--accent)" aria-hidden="true" />
+              {LABEL_CONTEO[tipo](n)}
+            </span>
+          );
+        })}
+      </div>
+    </Tarjeta>
   );
 }
 
