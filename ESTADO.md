@@ -48,9 +48,10 @@ funnel · `<Halo>`/`<Marcador>` implementados en funnel/onboarding/inicio/paywal
 6. **Profundidad de 1 nivel, no de 3.** `--surface-2` (hundido) nunca se usa en la app interna y
    `--shadow-1: 0 1px 2px` es casi invisible → `<Tarjeta>` se lee plana sobre fondo plano.
 
-**Puntajes vigentes del revisor (gate: ≥36/40 y ≥16/20):** landing 34/40·17/20 (solo 1 defecto
-accionable: la card de precio con 3 números) · onboarding 30/40·15/20 · paywall 28/40·14/20 ·
-pantalla-principal 21/40·9/20 (veredicto viejo, 2026-09-07).
+**Puntajes vigentes del revisor (gate: ≥36/40 y ≥16/20):** landing **37/40·17/20·copy 18/20 →
+✅ LISTA (2026-09-10)** · onboarding 30/40·15/20 (NO LISTA, ver Problemas conocidos) · paywall
+33/40·15/20·copy 16/20 (NO LISTA, ver Problemas conocidos) · pantalla-principal 28/40·16/20
+(craft pasa, usabilidad NO — ver Problemas conocidos).
 
 **CAPA 0 (tokens) y CAPA 1 (kit de la app interna): APLICADAS Y VERIFICADAS** (usuario eligió
 "Capa 0 + 1 primero"). `tsc` ✓ · `build` ✓ · vistas renderizadas a 375px en el preview real.
