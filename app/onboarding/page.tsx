@@ -102,14 +102,13 @@ function useSeleccionRetrasada<T>(onElegir: (v: T) => void, ms = 180): { local: 
    dejaban la caja "¿Por qué lo preguntamos?" flotando al fondo, con ~250px de vacío muerto en
    medio (defectos 1 y 2 del revisor-visual). Ahora todas anclan el contenido ARRIBA y la caja de
    contexto va PEGADA a las opciones (mt-6, no al fondo). El aire que queda debajo es "elige una",
-   no "aquí falta algo". `extra` es para la reafirmación que solo el paso de rol necesita. */
+   no "aquí falta algo". */
 function PantallaChips({
   tituloAntes,
   palabraClave,
   tituloDespues = '',
   subtitulo,
   porQue,
-  extra,
   children,
 }: {
   tituloAntes: string;
@@ -117,7 +116,6 @@ function PantallaChips({
   tituloDespues?: string;
   subtitulo?: string;
   porQue: ReactNode;
-  extra?: ReactNode;
   children: ReactNode;
 }) {
   return (
@@ -133,7 +131,6 @@ function PantallaChips({
         {children}
       </div>
       <InfoContextual anclar={false}>{porQue}</InfoContextual>
-      {extra}
     </div>
   );
 }
@@ -245,15 +242,10 @@ function PreguntaRol({ valor, onElegir }: { valor: Rol; onElegir: (v: Rol) => vo
       palabraClave="rol"
       tituloDespues=" hoy?"
       subtitulo="Así adaptamos las preguntas y tu expediente"
-      porQue="¿Por qué lo preguntamos? Quien paga y quien recibe la cuota enfrentan riesgos distintos — así usamos las palabras y ejemplos correctos en tu expediente."
-      extra={
-        <div className="mt-3 flex items-start gap-3 rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--accent)_25%,transparent)] bg-[color-mix(in_oklab,var(--accent)_8%,transparent)] p-4">
-          <ShieldCheck size={18} className="mt-0.5 shrink-0 text-[var(--accent)]" aria-hidden="true" />
-          <p className="text-[13px] leading-[1.5] text-[var(--text-secondary)]">
-            Sin importar tu rol, tu expediente queda blindado aunque el otro padre no use la app.
-          </p>
-        </div>
-      }
+      // Una sola caja, como todas las demás pantallas de opciones. La reafirmación de "expediente
+      // blindado aunque el otro padre no use la app" ya vive en los dos reconocimientos siguientes
+      // — apilarla también aquí, tras solo 2 opciones, era el "dos cajas" que marcó el revisor.
+      porQue="¿Por qué lo preguntamos? Quien paga y quien recibe la cuota enfrentan riesgos distintos — así usamos las palabras y los ejemplos correctos en tu expediente. Y funciona igual: tu expediente queda blindado aunque el otro padre no use la app."
     >
       {opciones.map(({ icon: Icon, label, value }, i) => (
         <Chip
@@ -329,7 +321,10 @@ function PreguntaSituacion({
           ¿Por qué lo preguntamos? Tu situación decide qué evidencia prioriza tu expediente — nunca
           cambia tus derechos, solo el orden. Tus respuestas son privadas.
         </InfoContextual>
-        <div className="mt-auto pt-8">
+        {/* CTA pegado al bloque, no `mt-auto`: con un solo campo, anclarlo al fondo dejaba una
+            banda vacía de ~300px en el centro (defecto del revisor). Mismo criterio top-anclado
+            que las pantallas de opciones. */}
+        <div className="pt-8">
           <CtaFunnel disabled={!texto.trim()} onClick={() => onElegir(texto.trim())}>
             Continuar
           </CtaFunnel>
@@ -479,7 +474,7 @@ function ReconocimientoPreocupacion({
       <motion.span
         initial={{ scale: 0.6, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        transition={{ type: 'spring', bounce: 0.4, duration: reduce ? 0 : 0.5 }}
+        transition={{ type: 'spring', bounce: 0.12, duration: reduce ? 0 : 0.44 }}
         aria-hidden="true"
         className="flex size-16 items-center justify-center rounded-full bg-[color-mix(in_oklab,var(--accent)_12%,transparent)]"
       >
@@ -636,7 +631,7 @@ function ReconocimientoFinal({ respuestas, onContinuar }: { respuestas: Respuest
       <motion.span
         initial={{ scale: 0.6, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        transition={{ type: 'spring', bounce: 0.4, duration: reduce ? 0 : 0.5 }}
+        transition={{ type: 'spring', bounce: 0.12, duration: reduce ? 0 : 0.44 }}
         aria-hidden="true"
         className="flex size-16 items-center justify-center rounded-full bg-[color-mix(in_oklab,var(--accent)_12%,transparent)]"
       >
