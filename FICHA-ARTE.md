@@ -39,6 +39,13 @@
 - 2ª nota: N/A por ahora — se define si hace falta en pantallas de estado (éxito/controversia)
 - Semánticos: éxito #5B93E8 (mismo azul, se usa el ícono de check para distinguir de "info") ·
   error #E85B6B (a confirmar en Sesión 5 con casos reales de controversia) · aviso #E8B95B
+  - ⚠️ CONFIRMADO 2026-09-10: durante el rescate visual se descubrió que los 3 semánticos nunca se
+    habían tematizado en `tokens.css` — eran los de fábrica de Tailwind (`#4ade80`/`#fbbf24`/
+    `#f87171`), o sea la "paleta por default" que el SO marca como huella de diseño genérico, y
+    además contradecían esta ficha. Ya usan los hex de arriba.
+  - Se propuso un verde sereno (#63b58f) para "éxito", argumentando que el acento de marca debe
+    reservarse al CTA y al dato clave (60-30-10). **El usuario decidió MANTENER el contrato**: el
+    azul con ícono de check. Queda registrado para no volver a re-abrirlo.
 - Display: Spectral (pesos 400/700) · Body: IBM Plex Sans (pesos 400-700) ·
   Escala: display 25-42px / title 19-21px / body 13-15px / label 10-12px
 - Radio: card 14px / botón 10px · Profundidad: hairline degradada + sombra tintada suave

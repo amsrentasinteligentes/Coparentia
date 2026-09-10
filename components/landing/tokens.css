@@ -66,7 +66,10 @@
      literal de "paleta por default" que el SO marca como diseño genérico. Además chillaban al
      lado del azul sereno de marca. Ahora: aviso y error son los hex de la ficha; éxito es un
      verde desaturado de la misma temperatura fría (la ficha lo dejó "a confirmar en Sesión 5"). */
-  --status-success: #63b58f;
+  /* Éxito = el MISMO azul de marca, tal como lo fija FICHA-ARTE. Se distingue de "info" por el
+     ícono de check que <Pildora> dibuja en este tono, no por el color. Se probó un verde sereno
+     (#63b58f) y el usuario decidió volver al contrato: la ficha es cosa juzgada. */
+  --status-success: #5b93e8;
   --status-warning: #e8b95b;
   --status-error: #e85b6b;
 }

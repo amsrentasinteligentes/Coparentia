@@ -7,7 +7,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion, useReducedMotion } from 'motion/react';
-import { Home, Wallet, CalendarDays, FolderOpen, CloudOff, type LucideIcon } from 'lucide-react';
+import { Home, Wallet, CalendarDays, FolderOpen, CloudOff, Check, type LucideIcon } from 'lucide-react';
 import { useEffect, useState, type ReactNode } from 'react';
 
 /* Motion signature de FICHA-ARTE.md, en un solo lugar: ease-out suave, 340ms base, sin springs
@@ -275,9 +275,13 @@ export function Pildora({ texto, tono }: { texto: string; tono: TonoPildora }) {
   const t = TONOS[tono];
   return (
     <span
-      className="rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.04em]"
+      className="inline-flex shrink-0 items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.04em]"
       style={{ backgroundColor: t.bg, color: t.texto }}
     >
+      {/* FICHA-ARTE fija "éxito" en el MISMO azul de marca y resuelve la ambigüedad con el ícono,
+          no con el color: sin este check, una píldora de éxito y una informativa serían idénticas
+          y el estado dejaría de leerse de un vistazo (que es toda la función de este componente). */}
+      {tono === 'exito' && <Check size={11} strokeWidth={3} aria-hidden="true" />}
       {texto}
     </span>
   );
