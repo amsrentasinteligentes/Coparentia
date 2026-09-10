@@ -10,6 +10,8 @@ import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { ChevronLeft, X, Check, ShieldCheck, Lock, FileCheck2, HeartHandshake } from 'lucide-react';
 import { BarraProgreso, CtaFunnel, FunnelHeader, Halo, Marcador, usePasoVariants } from '@/components/funnel/ui';
+import { obtenerTRM } from '@/lib/trm';
+import { aproximadoEnPesos } from '@/lib/formato-cop';
 
 /* ── <PrecioContado> — el número héroe cuenta desde 0 hasta su valor (baseline 2 de las 7
    animaciones del SO, que a esta pantalla le faltaba: el precio aparecía estático). Cuenta con
@@ -77,8 +79,8 @@ type Respuestas = {
 // Precios en UN solo lugar y como NÚMEROS: el conteo animado los necesita numéricos, y tenerlos
 // duplicados como texto era la vía directa a que un cambio de precio actualizara una pantalla y
 // no la otra. El costo por día se deriva aquí mismo, nunca se escribe a mano.
-const PLAN_ANUAL = { precioMes: 7.42, totalAnual: 'Se cobra US$89 al año', costoDia: 'US$0.24' };
-const PLAN_MENSUAL = { precioMes: 9.99, totalAnual: 'Serían US$119.88 al año', costoDia: 'US$0.33' };
+const PLAN_ANUAL = { precioMes: 7.42, cobroAnual: 89, totalAnual: 'Se cobra US$89 al año', costoDia: 'US$0.24' };
+const PLAN_MENSUAL = { precioMes: 9.99, cobroAnual: 119.88, totalAnual: 'Serían US$119.88 al año', costoDia: 'US$0.33' };
 
 export default function Paywall() {
   const router = useRouter();
@@ -87,6 +89,7 @@ export default function Paywall() {
   const [plan, setPlan] = useState<'anual' | 'mensual'>('anual');
   const [yendo, setYendo] = useState(false);
   const [falloAlAbrir, setFalloAlAbrir] = useState(false);
+  const [trm, setTrm] = useState<number | null>(null);
   const temporizador = useRef<ReturnType<typeof setTimeout> | null>(null);
   // Sin esto el temporizador seguia vivo tras salir de la pantalla.
   useEffect(() => () => { if (temporizador.current) clearTimeout(temporizador.current); }, []);
@@ -97,6 +100,12 @@ export default function Paywall() {
   const nRespuestas = r
     ? [r.situacion, r.preocupacion, String(r.metaMeses), r.momento, r.atribucion].filter(Boolean).length
     : 0;
+
+  // La TRM oficial se pide una sola vez al abrir. Si falla, `trm` queda en null y la pantalla
+  // simplemente muestra solo dolares: nunca un precio en pesos inventado.
+  useEffect(() => {
+    obtenerTRM().then(setTrm).catch(() => setTrm(null));
+  }, []);
 
   useEffect(() => {
     try {
@@ -178,7 +187,7 @@ export default function Paywall() {
               <ValorYPrueba situacion={r?.situacion} n={nRespuestas} plan={plan} onContinuar={() => setPaso(1)} />
             )}
             {paso === 1 && (
-              <Precio plan={plan} onCambiarPlan={setPlan} onCta={irAlLogin} onAhoraNo={cerrar} yendo={yendo} falloAlAbrir={falloAlAbrir} />
+              <Precio plan={plan} onCambiarPlan={setPlan} onCta={irAlLogin} onAhoraNo={cerrar} yendo={yendo} falloAlAbrir={falloAlAbrir} trm={trm} />
             )}
           </motion.div>
         </AnimatePresence>
@@ -315,6 +324,7 @@ function Precio({
   onAhoraNo,
   yendo,
   falloAlAbrir,
+  trm,
 }: {
   plan: 'anual' | 'mensual';
   onCambiarPlan: (p: 'anual' | 'mensual') => void;
@@ -322,6 +332,7 @@ function Precio({
   onAhoraNo: () => void;
   yendo: boolean;
   falloAlAbrir: boolean;
+  trm: number | null;
 }) {
   const reduce = useReducedMotion();
   // Derivado del precio REAL del plan activo, no un número de marketing: $89/365 = $0.24 ·
@@ -375,7 +386,10 @@ function Precio({
                   <PrecioContado valor={PLAN_ANUAL.precioMes} /><span className="text-[13px] font-normal text-[var(--text-secondary)]">/mes</span>
                 </span>
               </div>
-              <p className="mt-1 text-[13px] text-[var(--text-secondary)]">{PLAN_ANUAL.totalAnual}</p>
+              <p className="mt-1 text-[13px] text-[var(--text-secondary)]">
+                {PLAN_ANUAL.totalAnual}
+                {trm && <span className="text-[var(--text-tertiary)]"> · ≈ {aproximadoEnPesos(PLAN_ANUAL.cobroAnual, trm)} COP</span>}
+              </p>
             </div>
           </div>
         </motion.button>
@@ -405,7 +419,10 @@ function Precio({
             </div>
             {/* Solo la tarjeta Anual mostraba su total, así que el "ahorras US$30.88" no se podía
                 comprobar contra nada: faltaba el término de comparación. */}
-            <p className="mt-1 text-[13px] text-[var(--text-secondary)]">{PLAN_MENSUAL.totalAnual}</p>
+            <p className="mt-1 text-[13px] text-[var(--text-secondary)]">
+              {PLAN_MENSUAL.totalAnual}
+              {trm && <span className="text-[var(--text-tertiary)]"> · ≈ {aproximadoEnPesos(PLAN_MENSUAL.cobroAnual, trm)} COP</span>}
+            </p>
           </div>
         </motion.button>
       </div>
