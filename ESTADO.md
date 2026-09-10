@@ -49,9 +49,9 @@ funnel · `<Halo>`/`<Marcador>` implementados en funnel/onboarding/inicio/paywal
    `--shadow-1: 0 1px 2px` es casi invisible → `<Tarjeta>` se lee plana sobre fondo plano.
 
 **Puntajes vigentes del revisor (gate: ≥36/40 y ≥16/20):** landing **37/40·17/20·copy 18/20 →
-✅ LISTA (2026-09-10)** · onboarding 30/40·15/20 (NO LISTA, ver Problemas conocidos) · paywall
-33/40·15/20·copy 16/20 (NO LISTA, ver Problemas conocidos) · pantalla-principal 28/40·16/20
-(craft pasa, usabilidad NO — ver Problemas conocidos).
+✅ LISTA (2026-09-10)** · onboarding 30/40·**16/20** (craft PASA; usabilidad NO — techo estructural
+CONFIRMADO, ver Problemas conocidos) · paywall 33/40·15/20·copy 16/20 (NO LISTA, ver Problemas
+conocidos) · pantalla-principal 28/40·16/20 (craft pasa, usabilidad NO — ver Problemas conocidos).
 
 **CAPA 0 (tokens) y CAPA 1 (kit de la app interna): APLICADAS Y VERIFICADAS** (usuario eligió
 "Capa 0 + 1 primero"). `tsc` ✓ · `build` ✓ · vistas renderizadas a 375px en el preview real.
@@ -1265,7 +1265,23 @@ FICHA-ARTE.md que la landing.
 
 ## Problemas conocidos
 
-### veredicto onboarding — NO LISTA, techo estructural identificado (6 rondas de revisión)
+### veredicto onboarding — NO LISTA, **techo estructural CONFIRMADO** (9 rondas de revisión)
+> ⚠️ **ACTUALIZADO 2026-09-10.** Estado vigente: **Usabilidad 30/40 · Craft 16/20 (YA PASA) ·
+> Copy N/A · NO LISTA.** El craft alcanzó el gate tras alinear los springs (bounce 0.4→0.12) a la
+> Motion signature de la ficha. La usabilidad sigue 6 puntos bajo el 36 y el revisor lo desglosó
+> así en su última pasada: **los defectos locales están cerrados** (layout unificado en las 6
+> pantallas de opciones con `<PantallaChips>`, glow de acento fuera de los chips, CTA de "Otra
+> cosa" nunca disabled, emoji ⚡ reemplazado por SVG, caja de Rol recortada). **Lo que impide
+> llegar a 36 es composición estructural**: el tercio inferior de una pantalla de 2-4 opciones SIN
+> CTA queda vacío ~35-40% del viewport, y no hay contenido honesto que poner ahí (centrar el
+> bloque recrea el problema de la caja flotante que ya se corrigió). El revisor recomendó
+> explícitamente: **documentar el techo y avanzar.** Cerrar ese último tramo requeriría repensar
+> si esas pantallas llevan un pie funcional (mini-resumen de respuestas, ilustración de serie) —
+> decisión de producto, no de pulido, para otra sesión.
+>
+> El historial de las 6 rondas previas queda abajo por trazabilidad — no como estado vigente.
+
+### (histórico) veredicto onboarding — techo estructural identificado (6 rondas de revisión)
 El revisor-visual independiente evaluó `/onboarding` **6 veces** en esta sesión (más 1 ronda previa
 a esta sesión, para 7 en total). Cada ronda aplicó fixes reales y verificados por el propio
 revisor (escéptico, sin conocer las intenciones de quien construyó la pantalla) — no se repitió

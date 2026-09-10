@@ -2,13 +2,13 @@
 Fecha: 2026-09-10 00:00
 Screenshot: docs/revisiones/onboarding-rol-v2-375.png
 Usabilidad: 30/40
-Craft: 15/20
+Craft: 16/20
 Copy (si vende): N-A
 Fidelidad (si hubo referencia): N-A
 Veredicto: NO LISTA
 Top defectos:
-1. Todas las pantallas de chips + fondo — la sombra de CADA chip (seleccionado o no) lleva glow azul de acento (shadow ...accent 22%). Contradice FICHA-ARTE ("acento SOLO en CTA/dato/anillo/halo/botón activo") y la restricción anti-IA "sin glow regado" → fix: sombra neutra tintada (rgb 6 12 24) en chips no seleccionados; reservar el realce azul solo para el estado seleccionado.
-2. Pantalla "Otra cosa" (texto libre) — banda vacía de ~300px entre la caja de contexto y el CTA anclado al fondo; se lee "aquí falta algo" → fix: subir el CTA justo bajo el helper/caja de contexto (o bajar la caja con mt-auto pegada al CTA) para cerrar el hueco central.
-3. Tercio inferior de las pantallas de 2-4 chips (sobre todo Rol) — ~31% de la pantalla en vacío bajo la última caja; se percibe sin terminar → mitigar: no estirar el contenido sin CTA a min-h-dvh, o añadir pie sutil "Elige una opción para continuar".
-4. Paso Rol — dos cajas de texto apiladas (contexto + blindaje) tras solo 2 opciones: ruido de lectura en el paso más simple → fix: fusionar en una sola caja o mover el blindaje al reconocimiento posterior.
-5. Motion (código) — springs con bounce 0.35-0.4 en los checks de Chip y Reconocimiento contradicen la Motion signature de FICHA-ARTE ("sin springs agresivos, bounce ~0.08") → fix: bajar bounce a ~0.1 y usar --ease-sereno/--dur-base ya definidos en tokens.css.
+1. Tercio inferior vacío estructural (~35-40% del viewport) bajo la caja de contexto en todas las pantallas de chips; peor en "Rol" (2 chips + 1 caja y nada mas) — techo del tipo de pantalla; documentar o rellenar con contenido de apoyo (mini-timeline del expediente / resumen de respuestas / ilustracion de serie).
+2. Pantalla "Otra cosa": el fix anclo el CTA al bloque pero dejo ~600px muertos DEBAJO del boton — se cambio el hueco central por un vacio inferior igual de grande; anclar el CTA con mt-auto en este paso concreto o subir la caja de contexto con contenido.
+3. Pantalla "Otra cosa": el boton "Continuar" va disabled por defecto (pildora gris muerta) — contradice el ancla "CTA nunca disabled por defecto"; habilitar siempre y validar al click con hint inline.
+4. Paso Meta: la linea de feedback usa el emoji ⚡ como icono (app/onboarding/page.tsx L552) — contradice FICHA-ARTE (emojis como iconos prohibidos) y baja identidad; reemplazar por icono SVG Lucide en chip de acento 12%.
+5. Paso Rol: la caja "¿Por que lo preguntamos?" quedo en ~6 lineas (la fusion del texto de la 2a caja la engroso) — supera la guia de 3-4 lineas por bloque; recortar.
