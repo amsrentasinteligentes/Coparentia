@@ -1301,6 +1301,13 @@ FICHA-ARTE.md que la landing.
 
 ## Problemas conocidos
 
+### Estado de los 3 gates de veredicto tras "Consultar acuerdo" en Expediente (2026-09-10)
+Sin cambios en las 3 pantallas de los gates. `veredicto:landing` sigue LISTA — los `.tsx` nuevos
+(`components/app/AcuerdoCuota.tsx`, `app/(app)/expediente/page.tsx`) NO están en el árbol de la
+landing; el gate de frescura solo compara mtime global. `veredicto:onboarding` y `veredicto:paywall`
+siguen NO LISTA por techo estructural ya documentado abajo. Se posponen los 3, igual que en la
+entrada siguiente.
+
 ### Estado de los 3 gates de veredicto tras la sesión de copy "sin ex" + fix del carrusel (2026-09-10)
 Ninguno de los 3 se toca en sustancia en esta sesión; se posponen con la misma justificación ya
 documentada abajo:
