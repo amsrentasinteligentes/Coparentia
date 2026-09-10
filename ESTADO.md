@@ -60,6 +60,32 @@ CAPA 1 — `components/app/ui.tsx`:
 + datos semilla en obtenerPagos). **REVERTIDO por completo y verificado con grep**: `git status`
 solo muestra tokens.css, ui.tsx y ESTADO.md. Nunca se comiteó ni llegó a `.env.example`.
 
+### Ronda posterior (2026-09-10) — Inicio 28/40 · **craft 16/20, YA PASA el gate**
+El PDF del expediente se rehízo por completo (ver commit "el PDF del expediente ahora lleva las
+pruebas adentro"): antes listaba los pagos con el NOMBRE del archivo entre paréntesis pero no
+incluía los comprobantes — un documento que le pedía al abogado confiar en que existía una foto
+llamada así. Ahora lleva resumen, historial con referencia cruzada al anexo, y una página por
+comprobante con la foto real incrustada. Verificado con Playwright: descarga real de 3 páginas con
+2 imágenes, 54 KB, sin errores.
+
+También: estado del mes ("¿voy al día?") con `<Pildora>`, `metaMeses` derivado de la vigencia real
+del título (era un 6 escrito a mano), hairline degradada de FICHA-ARTE (prop `destacada`, solo en
+las 2 protagonistas), aviso de SIN CONEXIÓN en el shell, y **`eliminarPago`**: no existía forma de
+borrar un registro — una foto equivocada quedaba para siempre en el expediente que se lleva al
+juzgado y ahora además se incrusta en el PDF del abogado.
+
+⚠️ **DECISIÓN PENDIENTE DEL USUARIO — color de "éxito"**: FICHA-ARTE (cosa juzgada) declara
+`éxito #5B93E8` ("mismo azul, se usa el ícono de check para distinguir de info"). Al corregir los
+semánticos de Tailwind se puso un verde sereno `#63b58f`, y el revisor lo marcó como desvío del
+contrato. Hay tensión real: usar el acento de marca para "éxito" choca con su rol (CTA/dato clave,
+regla 60-30-10) y con la regla 15 del SO (escala semántica verde/ámbar/rojo). **No se resuelve solo:
+la ficha solo la puede enmendar el usuario.**
+
+Defectos abiertos de Inicio: no hay previsualización ni confirmación ANTES de guardar una foto (el
+`onChange` sube y registra de inmediato); la flecha de Ajustes siempre vuelve a `/expediente`
+aunque se haya entrado desde Inicio; el esqueleto no declara `aria-busy`/`aria-live`;
+`ErrorDeCarga` sin `role="alert"`; si no hay próximo evento la tarjeta desaparece sin decir nada.
+
 **CAPA 2 — INICIO (pantalla principal): craft 9/20 → 15/20; usabilidad 21 → 22/40.** Sigue NO
 LISTA, pero por causas COMPLETAMENTE distintas a las del veredicto viejo: el flujo feliz quedó
 resuelto y ahora el peso está en los estados de fallo.
