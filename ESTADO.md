@@ -1,5 +1,25 @@
 # ESTADO.md — Coparentia (nombre provisional: PensiónClara)
 
+### Checkpoint (2026-09-10) — "Consultar acuerdo" en Expediente (feature nueva, aprobada por el usuario)
+Caja para guardar el documento base que fija la cuota (acta de conciliación o sentencia), en la
+pantalla de Expediente, entre "Reporte en 1 clic" y "Autorizaciones y controversias".
+- **Datos** (`lib/datos.ts`): `Titulo` gana `acuerdoPath` / `acuerdoNombre`; `obtenerTitulo` los
+  mapea; `subirArchivoPrivado` acepta carpeta `'acuerdo'`; nuevas `guardarAcuerdo(archivo)` (sube
+  a `{userId}/acuerdo/`, actualiza la fila del título, borra el archivo viejo al reemplazar) y
+  `quitarAcuerdo()`. `guardarTitulo` NO toca esas columnas (upsert parcial) → editar la cuota en
+  Ajustes conserva el acuerdo.
+- **UI** (`components/app/AcuerdoCuota.tsx` NUEVO): 4 estados (cargando/error/sin guardar/guardado).
+  Foto o PDF hasta 15 MB (`validarArchivoAdjunto`), vista previa antes de guardar, "Consultar"
+  abre foto en el visor propio / PDF en pestaña nueva, "Reemplazar" y "Quitar" (confirmación en
+  2 pasos). Reusa `Portal`+`VisorImagen`+`VistaPreviaArchivo`.
+- **Migración** `supabase/acuerdo-titulo.sql` (NUEVO) — 2 `alter table` sobre `titulos`.
+  ⚠️ **PENDIENTE — el usuario debe correrlo en Supabase → SQL Editor.** Sin eso el botón "Guardar
+  acuerdo" falla (la columna no existe).
+- Pantalla secundaria → medición + checklist (sin ronda de revisor-visual). `tsc` ✓ · `build` ✓ ·
+  render 375px en `docs/revisiones/acuerdo-expediente-375.png` (estado "sin guardar").
+- Eventos nuevos en `event_log`: `acuerdo_guardado`, `acuerdo_eliminado`.
+- Desvío `NEXT_PUBLIC_SCREENSHOT_DEMO` usado y revertido por completo (grep limpio).
+
 ### Checkpoint (2026-09-10) — Copy sin la palabra "ex" (app amigable con ambos padres)
 Pedido del usuario: quitar "ex" (expareja) de TODO el texto visible, aquí y donde aparezca.
 Tabla aprobada y APLICADA (6 puntos + 2 comentarios de código):

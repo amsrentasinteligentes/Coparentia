@@ -10,6 +10,7 @@ import { motion } from 'motion/react';
 import { Download, FileCheck2, Scale, Settings } from 'lucide-react';
 import { ContenedorApp, PageHeader, Tarjeta, IconoCirculo, Pildora, ErrorDeCarga } from '@/components/app/ui';
 import { exportarExpedientePdf } from '@/lib/exportar-expediente';
+import { AcuerdoCuota } from '@/components/app/AcuerdoCuota';
 import { AbogadoDestacado } from '@/components/app/AbogadoDestacado';
 import {
   type Autorizacion,
@@ -134,6 +135,10 @@ export default function Expediente() {
           </p>
         )}
       </Tarjeta>
+
+      {/* Documento base que fija la cuota (acta de conciliación o sentencia) — se guarda aquí,
+          donde el usuario piensa "¿y el papel que dice cuánto me toca?". */}
+      <AcuerdoCuota />
 
       <div className="mt-6 flex items-center justify-between">
         <h2 className="text-[17px] font-semibold text-[var(--text-primary)]">Autorizaciones y controversias</h2>

@@ -14,6 +14,8 @@ export interface Titulo {
   diaPago: number; // día del mes en que se cobra
   indiceReajuste: string;
   fechaInicio: string; // ISO
+  acuerdoPath?: string; // ruta en Storage del acta de conciliación / sentencia que fija la cuota
+  acuerdoNombre?: string; // nombre real del archivo subido
 }
 
 export interface Pago {
@@ -145,6 +147,8 @@ export async function obtenerTitulo(): Promise<Titulo | null> {
     diaPago: data.dia_pago,
     indiceReajuste: data.indice_reajuste,
     fechaInicio: data.fecha_inicio,
+    acuerdoPath: data.acuerdo_path ?? undefined,
+    acuerdoNombre: data.acuerdo_nombre ?? undefined,
   };
 }
 
@@ -162,6 +166,59 @@ export async function guardarTitulo(t: Titulo): Promise<void> {
   );
   if (error) throw error;
   registrarEvento(supabase, userId, 'titulo_guardado');
+}
+
+// ── ACUERDO DE LA CUOTA (acta de conciliación o sentencia) ──────────────────────
+// El documento base que fija la cuota. Se guarda como referencia en la fila del título
+// (una por usuario) + el archivo real en la carpeta "{userId}/acuerdo/" del bucket privado.
+// Al reemplazar, el archivo viejo se borra DESPUÉS de que la fila ya apunta al nuevo, así la
+// referencia nunca queda apuntando a un archivo inexistente.
+export async function guardarAcuerdo(archivo: File): Promise<Pick<Titulo, 'acuerdoPath' | 'acuerdoNombre'>> {
+  const { supabase, userId } = await usuarioActual();
+  const { data: actual } = await supabase
+    .from('titulos')
+    .select('acuerdo_path')
+    .eq('user_id', userId)
+    .maybeSingle();
+
+  const ruta = await subirArchivoPrivado(userId, 'acuerdo', archivo);
+  const { data, error } = await supabase
+    .from('titulos')
+    .update({ acuerdo_path: ruta, acuerdo_nombre: archivo.name })
+    .eq('user_id', userId)
+    .select('id')
+    .maybeSingle();
+
+  if (error || !data) {
+    // Sin fila de título que actualizar, el archivo recién subido quedaría huérfano: se borra.
+    await supabase.storage.from('comprobantes').remove([ruta]);
+    throw error ?? new Error('Primero configura tu cuota en Ajustes para guardar el acuerdo.');
+  }
+
+  if (actual?.acuerdo_path && actual.acuerdo_path !== ruta) {
+    await supabase.storage.from('comprobantes').remove([actual.acuerdo_path]);
+  }
+  registrarEvento(supabase, userId, 'acuerdo_guardado');
+  return { acuerdoPath: ruta, acuerdoNombre: archivo.name };
+}
+
+export async function quitarAcuerdo(): Promise<void> {
+  const { supabase, userId } = await usuarioActual();
+  const { data: actual } = await supabase
+    .from('titulos')
+    .select('acuerdo_path')
+    .eq('user_id', userId)
+    .maybeSingle();
+
+  if (actual?.acuerdo_path) {
+    await supabase.storage.from('comprobantes').remove([actual.acuerdo_path]);
+  }
+  const { error } = await supabase
+    .from('titulos')
+    .update({ acuerdo_path: null, acuerdo_nombre: null })
+    .eq('user_id', userId);
+  if (error) throw error;
+  registrarEvento(supabase, userId, 'acuerdo_eliminado');
 }
 
 export async function obtenerPagos(): Promise<Pago[]> {
@@ -215,7 +272,7 @@ export function validarArchivoAdjunto(archivo: File): string | null {
 // bucket ni otra política. Antes de esto, la app solo guardaba el NOMBRE del archivo — nunca el
 // archivo en sí, así que no había forma de comprobar que el comprobante existiera de verdad
 // (hallazgo real de un usuario probando en su celular).
-async function subirArchivoPrivado(userId: string, carpeta: 'pagos' | 'eventos', archivo: File): Promise<string> {
+async function subirArchivoPrivado(userId: string, carpeta: 'pagos' | 'eventos' | 'acuerdo', archivo: File): Promise<string> {
   const supabase = crearClienteSupabase();
   const nombreSeguro = archivo.name.replace(/[^a-zA-Z0-9._-]/g, '_');
   const ruta = `${userId}/${carpeta}/${Date.now()}_${nombreSeguro}`;
