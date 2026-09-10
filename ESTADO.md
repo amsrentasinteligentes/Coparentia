@@ -23,8 +23,8 @@ pantalla de Expediente, entre "Reporte en 1 clic" y "Autorizaciones y controvers
   abre foto en el visor propio / PDF en pestaña nueva, "Reemplazar" y "Quitar" (confirmación en
   2 pasos). Reusa `Portal`+`VisorImagen`+`VistaPreviaArchivo`.
 - **Migración** `supabase/acuerdo-titulo.sql` (NUEVO) — 2 `alter table` sobre `titulos`.
-  ⚠️ **PENDIENTE — el usuario debe correrlo en Supabase → SQL Editor.** Sin eso el botón "Guardar
-  acuerdo" falla (la columna no existe).
+  ✅ **CORRIDA por el usuario en Supabase (2026-09-10)** — "Success. No rows returned". Las
+  columnas `acuerdo_path` / `acuerdo_nombre` existen; "Consultar acuerdo" queda operativo.
 - Pantalla secundaria → medición + checklist (sin ronda de revisor-visual). `tsc` ✓ · `build` ✓ ·
   render 375px en `docs/revisiones/acuerdo-expediente-375.png` (estado "sin guardar").
 - Eventos nuevos en `event_log`: `acuerdo_guardado`, `acuerdo_eliminado`.
