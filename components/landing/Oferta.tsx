@@ -164,11 +164,14 @@ export function Oferta({
                 </div>
                 <div className="mt-4">
                   <Precio plan={anual} />
-                  {/* El total anual SIEMPRE visible — regla de oro de 02C */}
-                  <p className="mt-1 text-[12px] text-[var(--text-secondary)]">{anual.totalAnual}</p>
-                  {refCopAnual && (
-                    <p className="mt-0.5 text-[12px] text-[var(--text-tertiary)]">{refCopAnual}</p>
-                  )}
+                  {/* Jerarquía: UNA línea en peso semibold responde "¿cuánto pago?" (el cargo anual
+                      real). El resto —cuándo se cobra, la referencia en pesos— va en tertiary, como
+                      contexto que no compite. Antes eran 4 renglones de dinero al mismo nivel y el
+                      ojo apurado no sabía cuál era el número que importa (defecto del revisor). */}
+                  <p className="mt-1 text-[14px] font-semibold text-[var(--text-primary)]">{anual.totalAnual}</p>
+                  <p className="mt-0.5 text-[12px] text-[var(--text-tertiary)]">
+                    Tras los 7 días gratis{refCopAnual ? ` · ${refCopAnual}` : ''}
+                  </p>
                   <p className="mt-2 text-[15px] font-semibold text-[var(--accent)]">{anual.ahorro}</p>
                 </div>
                 <Features items={anual.features} origen="Oferta → anual" />

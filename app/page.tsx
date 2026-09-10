@@ -136,7 +136,7 @@ export default function Home() {
           nombre: 'Anual',
           badge: 'AHORRAS 25%',
           precioMes: 'US$7.42',
-          totalAnual: 'Se cobra US$89 al año, tras los 7 días gratis',
+          totalAnual: 'Se cobra US$89 al año',
           ahorro: '3 meses gratis',
           ctaLabel: 'Empezar mis 7 días gratis',
           ctaHref: CTA_HREF,
@@ -153,11 +153,11 @@ export default function Home() {
           precioMes: 'US$9.99',
           ctaLabel: 'Elegir mensual',
           ctaHref: CTA_HREF,
+          // Antes repetía 4 de los 5 bullets del plan anual y el diferenciador real se diluía.
+          // Ahora dice solo en qué se diferencia: mismas funciones, sin compromiso de 12 meses.
           features: [
-            'Sello de Confianza en cada comprobante',
-            'Expediente exportable en PDF foliado',
-            'Registro de autorizaciones y controversias',
-            'Cancelas cuando quieras',
+            'Todo lo que incluye el plan Anual',
+            'Cancelas cuando quieras, sin permanencia',
             'Garantía del Primer Expediente (15 días)',
           ],
         }}
