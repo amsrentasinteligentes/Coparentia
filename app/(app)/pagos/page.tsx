@@ -5,6 +5,7 @@
 // la lista crece rápido con el uso real). Subir comprobante = 1 acción primaria de la sección.
 
 import { useEffect, useRef, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'motion/react';
 import { Upload, ShieldCheck, FileCheck2, X, ChevronRight, Sparkles } from 'lucide-react';
 import { ContenedorApp, PageHeader, Tarjeta, IconoCirculo, BotonFlotante, ErrorDeCarga } from '@/components/app/ui';
@@ -32,7 +33,10 @@ type Filtro = 'todos' | TipoMovimiento;
 export default function Pagos() {
   const [pagos, setPagos] = useState<Pago[]>([]);
   const [filtro, setFiltro] = useState<Filtro>('todos');
-  const [modalAbierto, setModalAbierto] = useState(false);
+  const parametros = useSearchParams();
+  // Se abre solo cuando se llega desde el boton de Inicio, para no cobrar dos toques por una
+  // sola intencion.
+  const [modalAbierto, setModalAbierto] = useState(parametros.get('registrar') === '1');
   const [abriendo, setAbriendo] = useState<string | null>(null);
   const [urlVisor, setUrlVisor] = useState<string | null>(null);
   const [selloDe, setSelloDe] = useState<string | null>(null);
@@ -40,12 +44,14 @@ export default function Pagos() {
   const [intento, setIntento] = useState(0);
   const [confirmandoBorrado, setConfirmandoBorrado] = useState<string | null>(null);
   const [borrando, setBorrando] = useState<string | null>(null);
-  const [errorBorrado, setErrorBorrado] = useState<string | null>(null);
+  // El error vive en la FILA afectada, no al final de la lista: puesto al final quedaba fuera de
+  // pantalla y la persona no se enteraba de que su accion habia fallado.
+  const [errorFila, setErrorFila] = useState<{ id: string; mensaje: string } | null>(null);
 
   const borrarPago = async (p: Pago): Promise<void> => {
     if (borrando) return;
     setBorrando(p.id);
-    setErrorBorrado(null);
+    setErrorFila(null);
     try {
       await eliminarPago(p);
       // Se quita de la lista SOLO después de que el borrado real terminó bien: adelantarse
@@ -53,7 +59,7 @@ export default function Pagos() {
       setPagos((prev) => prev.filter((x) => x.id !== p.id));
       setConfirmandoBorrado(null);
     } catch {
-      setErrorBorrado('No pudimos borrar el registro. Revisa tu conexión e inténtalo de nuevo.');
+      setErrorFila({ id: p.id, mensaje: 'No pudimos borrar el registro. Revisa tu conexión e inténtalo de nuevo.' });
     } finally {
       setBorrando(null);
     }
@@ -79,7 +85,13 @@ export default function Pagos() {
     setAbriendo(p.id);
     const url = await obtenerUrlArchivo(p.comprobantePath);
     setAbriendo(null);
-    if (!url) return;
+    // Antes era `if (!url) return`: la persona tocaba su comprobante, no pasaba NADA y no sabia
+    // si el archivo se habia perdido o si la app estaba rota. El silencio es el peor error.
+    if (!url) {
+      setErrorFila({ id: p.id, mensaje: "No pudimos abrir este comprobante. Revisa tu conexion e intentalo de nuevo." });
+      return;
+    }
+    setErrorFila(null);
     if (p.comprobanteNombre.toLowerCase().endsWith('.pdf')) {
       window.open(url, '_blank', 'noopener,noreferrer');
     } else {
@@ -94,7 +106,7 @@ export default function Pagos() {
   const totalVisible = visibles.reduce((acc, p) => acc + p.monto, 0);
 
   return (
-    <ContenedorApp>
+    <ContenedorApp conBotonFlotante>
       <PageHeader titulo="Pagos y gastos" subtitulo={`${pagos.length} comprobantes en tu expediente`} />
 
       <div className="flex gap-2">
@@ -124,9 +136,28 @@ export default function Pagos() {
 
       <div className="mt-3 flex flex-col gap-3">
         {falloCarga && <ErrorDeCarga onReintentar={() => setIntento((n) => n + 1)} />}
+        {/* Era una línea gris suelta: no explicaba nada ni ofrecía salida. Un estado vacío tiene
+            que ENSEÑAR qué va a aparecer ahí y cómo llenarlo (regla 7 del SO). */}
         {!falloCarga && visibles.length === 0 && (
-          <Tarjeta className="items-center py-10 text-center">
-            <p className="text-[14px] text-[var(--text-secondary)]">Todavía no tienes registros en esta categoría.</p>
+          <Tarjeta className="flex flex-col items-center py-8 text-center">
+            <IconoCirculo icon={filtro === 'gasto_extra' ? FileCheck2 : ShieldCheck} size={22} />
+            <p className="mt-3 text-[14px] font-medium text-[var(--text-primary)]">
+              {filtro === 'todos'
+                ? 'Todavía no hay comprobantes'
+                : filtro === 'cuota'
+                  ? 'Todavía no hay cuotas registradas'
+                  : 'Todavía no hay gastos extra'}
+            </p>
+            <p className="mt-1 max-w-[32ch] text-[13px] text-[var(--text-secondary)]">
+              Cada foto que registres queda con su fecha y su Sello de Confianza, lista para exportar.
+            </p>
+            <button
+              type="button"
+              onClick={() => setModalAbierto(true)}
+              className="mt-4 flex h-11 items-center rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--accent)_40%,transparent)] px-5 text-[13.5px] font-semibold text-[var(--accent)] [touch-action:manipulation]"
+            >
+              Registrar el primero
+            </button>
           </Tarjeta>
         )}
         {visibles.map((p, i) => {
@@ -195,14 +226,16 @@ export default function Pagos() {
                   Borrar
                 </button>
               )}
+
+              {errorFila?.id === p.id && (
+                <p role="alert" className="text-[12.5px] leading-[1.5] text-[var(--status-error)]">
+                  {errorFila.mensaje}
+                </p>
+              )}
             </Tarjeta>
           );
         })}
       </div>
-
-      {errorBorrado && (
-        <p role="alert" className="mt-3 text-[12.5px] text-[var(--status-error)]">{errorBorrado}</p>
-      )}
 
       <BotonFlotante onClick={() => setModalAbierto(true)}>
         <Upload size={18} aria-hidden="true" />
@@ -291,10 +324,19 @@ function ModalRegistro({ onCerrar, onGuardado }: { onCerrar: () => void; onGuard
         comprobanteNombre: archivo.name,
       },
       archivo
-    ).then((nuevo) => {
-      setProcesando(false);
-      onGuardado(nuevo);
-    });
+    )
+      .then((nuevo) => {
+        setProcesando(false);
+        onGuardado(nuevo);
+      })
+      // El MISMO bug que ya se había corregido en primeros pasos seguía vivo aquí, que es la
+      // puerta principal de registro: sin `.catch`, un fallo al subir dejaba el botón en
+      // "Aplicando el Sello de Confianza…" para siempre, sin un solo mensaje. La persona no sabía
+      // si su comprobante quedó guardado o no — la peor duda posible en esta app.
+      .catch(() => {
+        setProcesando(false);
+        setErrorArchivo('No pudimos guardar el comprobante. Revisa tu conexión e inténtalo de nuevo.');
+      });
   };
 
   return (

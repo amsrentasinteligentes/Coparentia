@@ -61,7 +61,7 @@ export default function Inicio() {
 
   if (fallo) {
     return (
-      <ContenedorApp>
+      <ContenedorApp conBotonFlotante>
         <PageHeader titulo="Tu expediente" palabraClave="expediente" halo />
         <ErrorDeCarga onReintentar={() => setIntento((n) => n + 1)} />
       </ContenedorApp>
@@ -560,6 +560,21 @@ function Dashboard() {
           no solo su primera mitad. */}
       {!falloCarga && !cargando && (
         <>
+      {/* Sin evento próximo la tarjeta simplemente DESAPARECÍA: la pantalla cambiaba de forma sin
+          explicar nada, y se perdía la oportunidad de invitar a usar el calendario. */}
+      {!proximoEvento && (
+        <Link href="/calendario" className="mt-3 block [touch-action:manipulation]">
+          <Tarjeta className="flex items-center gap-3">
+            <IconoCirculo icon={CalendarClock} />
+            <div className="min-w-0 flex-1">
+              <p className="text-[13px] text-[var(--text-secondary)]">Sin eventos próximos</p>
+              <p className="text-[14px] font-medium text-[var(--text-primary)]">Agenda una visita o una cita</p>
+            </div>
+            <ChevronRight size={16} className="shrink-0 text-[var(--text-tertiary)]" aria-hidden="true" />
+          </Tarjeta>
+        </Link>
+      )}
+
       {proximoEvento && (
         <Link href="/calendario" className="mt-3 block [touch-action:manipulation]">
           <Tarjeta className="flex items-center gap-3">
@@ -614,8 +629,10 @@ function Dashboard() {
           rompía el patrón del propio kit — Pagos y Calendario usan <BotonFlotante> ("acción
           primaria de la sección, SIEMPRE visible"). Ahora Inicio se comporta igual que sus
           hermanas y el botón está siempre a la mano. */}
+      {/* Llevaba a /pagos, donde había que tocar OTRO botón idéntico para lo mismo: dos toques
+          para una sola intención. El parámetro abre el formulario directo. */}
       {!falloCarga && !cargando && (
-        <BotonFlotante onClick={() => router.push('/pagos')}>
+        <BotonFlotante onClick={() => router.push('/pagos?registrar=1')}>
           <Upload size={18} aria-hidden="true" />
           Registrar
         </BotonFlotante>

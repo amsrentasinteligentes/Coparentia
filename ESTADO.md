@@ -81,10 +81,18 @@ contrato. Hay tensión real: usar el acento de marca para "éxito" choca con su 
 regla 60-30-10) y con la regla 15 del SO (escala semántica verde/ámbar/rojo). **No se resuelve solo:
 la ficha solo la puede enmendar el usuario.**
 
-Defectos abiertos de Inicio: no hay previsualización ni confirmación ANTES de guardar una foto (el
-`onChange` sube y registra de inmediato); la flecha de Ajustes siempre vuelve a `/expediente`
-aunque se haya entrado desde Inicio; el esqueleto no declara `aria-busy`/`aria-live`;
-`ErrorDeCarga` sin `role="alert"`; si no hay próximo evento la tarjeta desaparece sin decir nada.
+✅ **RESUELTO — ver la foto antes de guardarla.** El input registraba el comprobante en el MISMO
+gesto de elegirlo: una foto borrosa o la del recibo equivocado entraba al expediente que se lleva a
+un juzgado sin que nadie la viera, y ahora además se incrusta en el PDF del abogado. Nuevo
+`<VistaPreviaArchivo>` (muestra la IMAGEN, no un ícono: el error típico es haber elegido LA FOTO
+equivocada, y eso solo se detecta viéndola) + "Guardar" como acto aparte. Aplicado en primeros
+pasos y en el formulario de Pagos. Verificado con Playwright: al entregar un archivo al input, el
+registro NO se dispara solo. También `role="alert"` en `<ErrorDeCarga>` y `aria-busy`/`aria-live`
+en el esqueleto.
+
+Defectos abiertos de Inicio: la flecha de Ajustes siempre vuelve a `/expediente` aunque se haya
+entrado desde Inicio; si no hay próximo evento la tarjeta desaparece sin decir nada; el escalonado
+de entrada no es cascada real (la lista reinicia el índice en 0).
 
 **CAPA 2 — INICIO (pantalla principal): craft 9/20 → 15/20; usabilidad 21 → 22/40.** Sigue NO
 LISTA, pero por causas COMPLETAMENTE distintas a las del veredicto viejo: el flujo feliz quedó

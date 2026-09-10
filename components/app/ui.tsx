@@ -345,9 +345,18 @@ export function ErrorDeCarga({ onReintentar }: { onReintentar: () => void }) {
 }
 
 /* ── <ContenedorApp> — shell de cada pantalla: min-h-dvh, padding lateral, espacio para el nav fijo ── */
-export function ContenedorApp({ children }: { children: ReactNode }) {
+export function ContenedorApp({ children, conBotonFlotante = false }: { children: ReactNode; conBotonFlotante?: boolean }) {
   return (
-    <div className="relative isolate mx-auto min-h-dvh max-w-[520px] px-4 pb-[calc(96px+env(safe-area-inset-bottom))] pt-[max(20px,env(safe-area-inset-top))]">
+    // El colchón inferior tenía 96px, suficiente para el nav fijo pero NO para el botón flotante,
+    // que llega a ~132px: en las pantallas con FAB se montaba encima de la última tarjeta de la
+    // lista y tapaba su contenido. `conBotonFlotante` sube el colchón solo donde hace falta.
+    <div
+      className={`relative isolate mx-auto min-h-dvh max-w-[520px] px-4 pt-[max(20px,env(safe-area-inset-top))] ${
+        conBotonFlotante
+          ? 'pb-[calc(152px+env(safe-area-inset-bottom))]'
+          : 'pb-[calc(96px+env(safe-area-inset-bottom))]'
+      }`}
+    >
       {/* LUZ AMBIENTAL — el fondo de la app interna era un color liso en las cuatro secciones, y
           "profundidad" fue el eje que el revisor bajó una y otra vez. Esto no es decoración: es el
           3er nivel de profundidad que FICHA-ARTE declara (base / elevado / hundido) y que aquí
