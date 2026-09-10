@@ -1,5 +1,22 @@
 # ESTADO.md — Coparentia (nombre provisional: PensiónClara)
 
+### Checkpoint (2026-09-10) — LANDING (página de ventas): ✅ **LISTA / PASA EL GATE**
+Primera de las 4 pantallas del dinero en aprobar el gate del revisor-visual.
+`docs/revisiones/landing-veredicto.md`: **Usabilidad 36/40 · Craft 17/20 · Copy 18/20 · LISTA.**
+El único defecto accionable del veredicto anterior (34/40) era la card de precio con 4 encuadres
+distintos. Corregido:
+- Todos los precios de la landing llevan "US$" (título de sección, stack, ambas cards, FAQ):
+  FICHA-MERCADO dice que Hotmart cobra en USD; un comprador colombiano leía "$89" como pesos.
+- Referencia en pesos del cargo anual con la TRM oficial (`obtenerTRM`): "≈ $275.900 COP al año".
+  Fallback a null si la fuente falla → nunca un número en pesos inventado.
+- Card anual: 4 renglones de dinero al mismo nivel → jerarquía de 3: display US$7.42/mes, línea
+  semibold "Se cobra US$89 al año", contexto en tertiary (cuándo se cobra + COP), acento
+  "3 meses gratis".
+- Card mensual: repetía 4 de 5 bullets del anual → ahora solo el diferenciador.
+Defectos de pulido NO bloqueantes que dejó el revisor (para otra pasada si se retoca): jerarquía
+aún afinable en la card anual · formato "$ 450.000" con espacio en el mock del hero · triple
+formulación del ahorro (badge + "3 meses gratis" + stack tachado).
+
 ### Checkpoint (2026-09-09) — Rescate visual: FASE 1+2 (diagnóstico) hecha, plan ESPERANDO OK
 Pedido del usuario: subir diseño/experiencia a nivel estudio premium, por capas, sin tocar lógica
 ni datos. FICHA-ARTE.md sigue siendo COSA JUZGADA (aprobada 2026-09-07, "me encanta sigamos con
