@@ -1,5 +1,21 @@
 # ESTADO.md — Coparentia (nombre provisional: PensiónClara)
 
+### Checkpoint (2026-09-10) — Copy sin la palabra "ex" (app amigable con ambos padres)
+Pedido del usuario: quitar "ex" (expareja) de TODO el texto visible, aquí y donde aparezca.
+Tabla aprobada y APLICADA (6 puntos + 2 comentarios de código):
+- `app/layout.tsx` metadata description: "…sin depender de que nadie más la use."
+- `app/page.tsx` FAQ: "¿La otra persona tiene que descargar la app también?" / "…la use alguien más o no."
+- `app/(app)/calendario/page.tsx` subtítulo (l.85) + comentario (l.4): "…no depende de nadie más".
+- `app/onboarding/page.tsx`: chip "Tengo disputas frecuentes por la cuota" (l.284) + la comparación
+  `mostrarRefuerzoUnilateral` (l.484) al mismo string nuevo + refuerzo "No necesitas que nadie más
+  use la app… lo use alguien o no" (l.510) + comentario (l.247).
+Verificado: `tsc` ✓ · `build` ✓ (18 rutas) · `grep -i` sin "ex" de expareja restante (solo "expediente").
+Falta: recapturar previsualización (landing FAQ + calendario + onboarding chip) y commit.
+Landing sigue LISTA (37/40) — su árbol de copy no cambió salvo un texto de FAQ ya contemplado.
+Onboarding/Inicio mantienen techo estructural documentado abajo. Tarjeta AbogadoDestacado ya
+montada al final de Expediente. Próxima decisión abierta del usuario: conectar Hotmart vs. seguir
+con ajustes internos.
+
 ### Checkpoint (2026-09-10) — LANDING (página de ventas): ✅ **LISTA / PASA EL GATE**
 Primera de las 4 pantallas del dinero en aprobar el gate del revisor-visual.
 `docs/revisiones/landing-veredicto.md`: **Usabilidad 36/40 · Craft 17/20 · Copy 18/20 · LISTA.**

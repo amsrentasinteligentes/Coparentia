@@ -1,7 +1,7 @@
 'use client';
 
 // CALENDARIO — visitas, citas médicas, vacaciones y actividades (MVP #5, aprobado 2026-09-07).
-// Registro UNILATERAL de eventos propios — no depende de que el ex lo use ni lo acepte (regla
+// Registro UNILATERAL de eventos propios — no depende de que nadie más lo use ni lo acepte (regla
 // 13 del SO: navegación real entre meses con fechas reales, nunca "esta semana" a secas).
 // Ampliado a pedido del usuario (2026-09-09): calendario visual del mes (aprovecha el espacio
 // libre en pantallas grandes — regla 43 §13 "desktop sin vergüenza"; en celular queda apilado,
@@ -82,7 +82,7 @@ export default function Calendario() {
 
   return (
     <ContenedorApp conBotonFlotante>
-      <PageHeader titulo="Calendario" subtitulo="Tu registro de eventos — no depende de tu ex" />
+      <PageHeader titulo="Calendario" subtitulo="Tu registro de eventos — no depende de nadie más" />
 
       <div className="flex items-center justify-between">
         <button

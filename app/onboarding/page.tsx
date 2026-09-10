@@ -245,7 +245,7 @@ function PreguntaRol({ valor, onElegir }: { valor: Rol; onElegir: (v: Rol) => vo
       subtitulo="Así adaptamos las preguntas y tu expediente"
       // UNA caja corta, como todas las demás pantallas de opciones (el revisor marcó como defecto
       // tanto las dos cajas apiladas como una caja de ~6 líneas). La reafirmación de "expediente
-      // blindado aunque el otro padre no use la app" ya vive en los dos reconocimientos siguientes.
+      // blindado aunque nadie más use la app" ya vive en los dos reconocimientos siguientes.
       porQue="¿Por qué lo preguntamos? Quien paga y quien recibe la cuota enfrentan riesgos distintos — así usamos las palabras y los ejemplos correctos en tu expediente."
     >
       {opciones.map(({ icon: Icon, label, value }, i) => (
@@ -281,7 +281,7 @@ function PreguntaSituacion({
   const [faltaTexto, setFaltaTexto] = useState(false);
   const opciones = [
     { icon: FileSearch, label: rol === 'recibe' ? 'Recibo pero sin registro ordenado' : 'Pago pero sin registro ordenado' },
-    { icon: MessageCircleWarning, label: 'Tengo disputas frecuentes con mi ex' },
+    { icon: MessageCircleWarning, label: 'Tengo disputas frecuentes por la cuota' },
     { icon: Scale, label: 'Ya tengo un proceso legal en curso' },
   ];
   // Bug real encontrado por el revisor-visual: este hook estaba DESPUÉS del `if (otra) return`
@@ -481,7 +481,7 @@ function ReconocimientoPreocupacion({
     'Miedo a tener que reclamar y no tener pruebas':
       'Ese miedo baja cuando tienes con qué respaldar tu reclamo. No se trata de "tener razón" — se trata de tener la prueba a la mano.',
   };
-  const mostrarRefuerzoUnilateral = situacion === 'Tengo disputas frecuentes con mi ex';
+  const mostrarRefuerzoUnilateral = situacion === 'Tengo disputas frecuentes por la cuota';
   const reduce = useReducedMotion();
   return (
     <div className="flex flex-1 flex-col items-center text-center">
@@ -507,7 +507,7 @@ function ReconocimientoPreocupacion({
         <div className="mt-6 flex max-w-[36ch] items-start gap-3 rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--accent)_25%,transparent)] bg-[color-mix(in_oklab,var(--accent)_8%,transparent)] p-4 text-left">
           <ShieldCheck size={20} className="mt-0.5 shrink-0 text-[var(--accent)]" aria-hidden="true" />
           <p className="text-[14px] leading-[1.5] text-[var(--text-secondary)]">
-            No necesitas que tu ex también use la app: tu <Marcador>expediente queda blindado</Marcador> igual, la use o no.
+            No necesitas que nadie más use la app: tu <Marcador>expediente queda blindado</Marcador> igual, lo use alguien o no.
           </p>
         </div>
       )}

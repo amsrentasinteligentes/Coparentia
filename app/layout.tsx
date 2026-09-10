@@ -17,7 +17,7 @@ const ibmPlexSans = IBM_Plex_Sans({
 export const metadata: Metadata = {
   title: "Coparentia — Tu expediente, en confianza",
   description:
-    "El expediente digital que convierte tus pagos y comprobantes en pruebas organizadas, sin depender de que tu ex use la app.",
+    "El expediente digital que convierte tus pagos y comprobantes en pruebas organizadas, sin depender de que nadie más la use.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

@@ -174,9 +174,9 @@ export default function Home() {
       <Faq
         items={[
           {
-            pregunta: '¿Mi ex tiene que descargar la app también?',
+            pregunta: '¿La otra persona tiene que descargar la app también?',
             respuestaMarked:
-              'No: Coparentia funciona 100% de forma [b]unilateral[/b] — es tu expediente, se una tu ex o no.',
+              'No: Coparentia funciona 100% de forma [b]unilateral[/b] — es tu expediente, la use alguien más o no.',
           },
           {
             pregunta: '¿Esto tiene validez ante un juez?',
