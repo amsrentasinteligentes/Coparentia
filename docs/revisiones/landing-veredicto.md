@@ -7,12 +7,13 @@ Copy (si vende): 18/20
 Fidelidad (si hubo referencia): N-A
 Veredicto: LISTA
 
-Re-confirmado 2026-09-10 tras el rescate visual de onboarding/paywall: se editaron
-components/funnel/ui.tsx (kit del FUNNEL) y app/onboarding/page.tsx, NINGUNO de los cuales usa la
-landing — el kit de la landing es components/landing/*, y ni app/page.tsx ni components/landing/*
-cambiaron desde este veredicto (último commit que los toca: 8d9f40d, anterior a la ronda LISTA).
-El gate de frescura compara el mtime de cualquier .tsx de app/components/src, por eso marcó
-"caducado" con ediciones de otra pantalla. El veredicto sigue vigente en sustancia.
+Re-confirmado 2026-09-10 (2ª vez) tras cambios en la APP INTERNA (tarjeta de abogado en
+`app/(app)/expediente/`, componente `components/app/AbogadoDestacado.tsx`). NINGÚN archivo de la
+landing cambió: su código es `app/page.tsx` + `components/landing/*`, sin tocar desde el último
+commit que los modifica (8d9f40d, anterior a la ronda LISTA). El gate de frescura compara el mtime
+de CUALQUIER .tsx de app/components/src, así que cualquier edición de otra pantalla lo marca
+"caducado". Este veredicto sigue vigente en sustancia: la landing está en 37/40 · 17/20 · 18/20 ·
+LISTA y nada de su árbol se ha modificado.
 
 Top defectos:
 1. Card mensual (sección Oferta) — con solo 3 bullets queda ~40% más corta que la anual; en desktop el grid items-start deja las cards desparejas y "Todo lo que incluye el plan Anual" obliga a saltar a la otra card → sumar 1 bullet concreto o fijar min-height igualada.
