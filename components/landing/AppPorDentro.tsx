@@ -93,6 +93,10 @@ export function AppPorDentro({
     if (e.pointerType !== 'mouse') return; // touch/pen: dejar el scroll nativo
     const scroller = scrollerRef.current;
     if (!scroller) return;
+    // Sin esto, hacer clic-y-arrastrar SOBRE un <img> del frame dispara el drag&drop
+    // nativo del navegador (imagen fantasma) y se pierde la secuencia de pointer events:
+    // el arrastre del carrusel nunca llega a moverse en desktop.
+    e.preventDefault();
     arrastre.current = { activo: true, x: e.clientX, scrollLeft: scroller.scrollLeft };
     scroller.setPointerCapture(e.pointerId);
     scroller.style.scrollSnapType = 'none'; // libera el snap mientras se arrastra
@@ -132,7 +136,8 @@ export function AppPorDentro({
             onPointerMove={onPointerMove}
             onPointerUp={onPointerUp}
             onPointerLeave={onPointerUp}
-            className="flex snap-x snap-mandatory gap-5 overflow-x-auto px-[max(20px,calc(50%-125px))] pb-2 [scrollbar-width:none] active:cursor-grabbing md:cursor-grab [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)] [&::-webkit-scrollbar]:hidden"
+            onDragStart={(e) => e.preventDefault()}
+            className="flex snap-x snap-mandatory gap-5 overflow-x-auto px-[max(20px,calc(50%-125px))] pb-2 select-none [scrollbar-width:none] active:cursor-grabbing md:cursor-grab [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)] [&::-webkit-scrollbar]:hidden"
           >
             {frames.map((f, i) => (
               <div key={i} className="shrink-0 snap-center">
@@ -151,6 +156,7 @@ export function AppPorDentro({
                       width={250}
                       height={542}
                       loading="lazy"
+                      draggable={false}
                       className="h-full w-full object-cover"
                     />
                   ) : (
