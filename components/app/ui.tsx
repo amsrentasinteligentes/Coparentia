@@ -201,6 +201,7 @@ export function Tarjeta({
   className = '',
   indice = 0,
   destacada = false,
+  role,
 }: {
   children: ReactNode;
   className?: string;
@@ -208,10 +209,13 @@ export function Tarjeta({
   /** Aplica la hairline degradada de FICHA-ARTE. Reservada a 1-3 elementos por pantalla: si todas
    *  las tarjetas la llevan deja de destacar nada y se vuelve ruido. */
   destacada?: boolean;
+  /** Para superficies que deben anunciarse a un lector de pantalla (ej. un error). */
+  role?: string;
 }) {
   const reduce = useReducedMotion();
   return (
     <motion.div
+      role={role}
       initial={reduce ? false : { opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: DUR_BASE, ease: EASE_SERENO, delay: reduce ? 0 : indice * 0.05 }}
@@ -244,7 +248,7 @@ export function TarjetaSkeleton({ filas = 3 }: { filas?: number }) {
   const reduce = useReducedMotion();
   const pulso = reduce ? '' : 'animate-pulse [animation-duration:1.6s]';
   return (
-    <div aria-hidden="true" className="flex flex-col gap-3">
+    <div aria-busy="true" aria-live="polite" aria-label="Cargando tu expediente" className="flex flex-col gap-3">
       {Array.from({ length: filas }).map((_, i) => (
         <div
           key={i}
@@ -318,7 +322,9 @@ export function BotonFlotante({ onClick, children }: { onClick: () => void; chil
    qué-pasó + qué-hacer, nunca un código). ── */
 export function ErrorDeCarga({ onReintentar }: { onReintentar: () => void }) {
   return (
-    <Tarjeta className="flex flex-col items-center py-8 text-center">
+    // `role="alert"`: con lector de pantalla, un fallo de carga tiene que ANUNCIARSE. Sin esto,
+    // alguien ciego se quedaba esperando un contenido que nunca iba a llegar, sin enterarse.
+    <Tarjeta role="alert" className="flex flex-col items-center py-8 text-center">
       <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-[color-mix(in_oklab,var(--status-warning)_16%,transparent)]">
         <CloudOff size={20} color="var(--status-warning)" aria-hidden="true" />
       </span>

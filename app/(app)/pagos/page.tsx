@@ -10,6 +10,7 @@ import { Upload, ShieldCheck, FileCheck2, X, ChevronRight, Sparkles } from 'luci
 import { ContenedorApp, PageHeader, Tarjeta, IconoCirculo, BotonFlotante, ErrorDeCarga } from '@/components/app/ui';
 import { VisorImagen } from '@/components/app/VisorImagen';
 import { SelloConfianza } from '@/components/app/SelloConfianza';
+import { VistaPreviaArchivo } from '@/components/app/VistaPreviaArchivo';
 import {
   type Pago,
   type Titulo,
@@ -379,14 +380,30 @@ function ModalRegistro({ onCerrar, onGuardado }: { onCerrar: () => void; onGuard
             if (f) elegirArchivo(f);
           }}
         />
-        <button
-          type="button"
-          onClick={() => inputRef.current?.click()}
-          className="mt-4 flex h-12 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] border border-dashed border-[color-mix(in_oklab,var(--text-tertiary)_35%,transparent)] text-[14px] text-[var(--text-secondary)] [touch-action:manipulation]"
-        >
-          <Upload size={16} aria-hidden="true" />
-          {archivo ? archivo.name : 'Adjuntar comprobante'}
-        </button>
+        {/* Con archivo elegido se muestra la FOTO, no solo su nombre: el error típico no es haber
+            elegido "un archivo que no era", es haber elegido LA FOTO que no era — y eso solo se
+            detecta viéndola antes de que entre al expediente. */}
+        {archivo ? (
+          <div className="mt-4">
+            <VistaPreviaArchivo archivo={archivo} />
+            <button
+              type="button"
+              onClick={() => inputRef.current?.click()}
+              className="mt-2 text-[12.5px] text-[var(--text-tertiary)] underline-offset-2 hover:underline [touch-action:manipulation]"
+            >
+              Elegir otro archivo
+            </button>
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={() => inputRef.current?.click()}
+            className="mt-4 flex h-12 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] border border-dashed border-[color-mix(in_oklab,var(--text-tertiary)_35%,transparent)] text-[14px] text-[var(--text-secondary)] [touch-action:manipulation]"
+          >
+            <Upload size={16} aria-hidden="true" />
+            Adjuntar comprobante
+          </button>
+        )}
         {errorArchivo ? (
           <p className="mt-1.5 text-[12px] text-[var(--status-error)]">{errorArchivo}</p>
         ) : (

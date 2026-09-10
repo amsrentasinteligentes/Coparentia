@@ -9,6 +9,7 @@ import { useEffect, useRef, useState } from 'react';
 import { motion, useReducedMotion } from 'motion/react';
 import { Upload, Check, CalendarClock, ShieldCheck, ChevronRight, FileCheck2, Globe } from 'lucide-react';
 import { MiniRing } from '@/components/landing/ui';
+import { VistaPreviaArchivo } from '@/components/app/VistaPreviaArchivo';
 import { BarraAtras, Halo } from '@/components/funnel/ui';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -137,6 +138,21 @@ function PrimerosPasos({ onListo }: { onListo: () => void }) {
     }
   };
 
+  // ELEGIR ≠ GUARDAR. Antes, el `onChange` del input subía y REGISTRABA el comprobante en el mismo
+  // gesto de elegirlo: una foto borrosa o la del recibo equivocado entraba directo al expediente
+  // que se lleva a un juzgado, sin que la persona alcanzara a verla. Ahora elegir solo muestra la
+  // vista previa; guardar es un acto aparte y deliberado.
+  const elegirArchivo = (f: File): void => {
+    const errorValidacion = validarArchivoAdjunto(f);
+    if (errorValidacion) {
+      setErrorSubida(errorValidacion);
+      setArchivo(null);
+      return;
+    }
+    setErrorSubida(null);
+    setArchivo(f);
+  };
+
   const subirComprobante = (f: File): void => {
     // Este era el ÚNICO formulario de subida sin validar el archivo: Pagos y Calendario sí lo
     // hacen. Justo aquí —la primera victoria, el momento más frágil— un archivo de 20 MB o un
@@ -148,7 +164,6 @@ function PrimerosPasos({ onListo }: { onListo: () => void }) {
       return;
     }
     setErrorSubida(null);
-    setArchivo(f);
     setProcesando(true);
     agregarPago(
       {
@@ -257,11 +272,40 @@ function PrimerosPasos({ onListo }: { onListo: () => void }) {
             className="hidden"
             onChange={(e) => {
               const f = e.target.files?.[0];
-              if (f) subirComprobante(f);
+              if (f) elegirArchivo(f);
             }}
           />
 
-          {!procesando ? (
+          {/* Vista previa: la persona VE la foto antes de que entre a su expediente. */}
+          {archivo && !procesando && (
+            <div className="mt-6 w-full">
+              <VistaPreviaArchivo archivo={archivo} />
+              <button
+                type="button"
+                onClick={() => inputRef.current?.click()}
+                className="mt-2 text-[12.5px] text-[var(--text-tertiary)] underline-offset-2 hover:underline [touch-action:manipulation]"
+              >
+                Elegir otro archivo
+              </button>
+            </div>
+          )}
+
+          {procesando ? (
+            <div className="mt-6 flex h-14 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--accent)_30%,transparent)] text-[15px] text-[var(--text-secondary)]">
+              <span className="size-2 animate-pulse rounded-full bg-[var(--accent)]" />
+              Aplicando el Sello de Confianza a &quot;{archivo?.name}&quot;…
+            </div>
+          ) : archivo ? (
+            <motion.button
+              type="button"
+              onClick={() => subirComprobante(archivo)}
+              whileTap={{ scale: 0.97 }}
+              className="mt-4 flex h-14 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] bg-[var(--accent)] text-[16px] font-semibold text-[var(--bg)] [touch-action:manipulation]"
+            >
+              <ShieldCheck size={18} aria-hidden="true" />
+              Guardar en mi expediente
+            </motion.button>
+          ) : (
             <motion.button
               type="button"
               onClick={() => inputRef.current?.click()}
@@ -271,11 +315,6 @@ function PrimerosPasos({ onListo }: { onListo: () => void }) {
               <Upload size={18} aria-hidden="true" />
               Elegir archivo
             </motion.button>
-          ) : (
-            <div className="mt-8 flex h-14 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--accent)_30%,transparent)] text-[15px] text-[var(--text-secondary)]">
-              <span className="size-2 animate-pulse rounded-full bg-[var(--accent)]" />
-              Aplicando el Sello de Confianza a &quot;{archivo?.name}&quot;…
-            </div>
           )}
 
           {errorSubida && (
