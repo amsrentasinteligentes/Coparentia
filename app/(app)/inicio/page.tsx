@@ -316,6 +316,16 @@ function Revelacion({ onContinuar }: { onContinuar: () => void }) {
   );
 }
 
+/* Meses transcurridos desde que empezó a regir el título, contando el mes de inicio. Es la base
+   para saber cuántos meses DEBERÍAN estar registrados — antes ese número estaba escrito a mano
+   como `6`, sin ninguna relación con el caso de la persona. */
+function mesesDesde(fechaISO: string): number {
+  const inicio = new Date(`${fechaISO}T00:00:00`);
+  const hoy = new Date();
+  const meses = (hoy.getFullYear() - inicio.getFullYear()) * 12 + (hoy.getMonth() - inicio.getMonth()) + 1;
+  return Math.max(1, meses);
+}
+
 /* ── DASHBOARD — protagonista: el estado del expediente. Datos reales de lib/datos.ts. ── */
 function Dashboard() {
   const [pagos, setPagos] = useState<Pago[]>([]);
@@ -358,8 +368,25 @@ function Dashboard() {
 
   const totalRegistrado = pagos.reduce((acc, p) => acc + p.monto, 0);
   const mesesConRegistro = new Set(pagos.filter((p) => p.tipo === 'cuota').map((p) => p.fecha.slice(0, 7))).size;
-  const metaMeses = 6;
+  // `metaMeses` era un 6 escrito a mano, sin rótulo ni relación con el caso: "3 de 6" no
+  // significaba nada. Ahora es cuántos meses lleva rigiendo el título, así que la cifra responde
+  // algo real ("de los meses que llevas, cuántos tienes probados"). Tope de 12 para que el anillo
+  // siga siendo legible en expedientes de años.
+  const metaMeses = titulo ? Math.min(mesesDesde(titulo.fechaInicio), 12) : 6;
   const progreso = Math.round((Math.min(mesesConRegistro, metaMeses) / metaMeses) * 100);
+
+  // LA PREGUNTA DIARIA: "¿voy al día ESTE mes?". Es para lo que se abre la app, y la pantalla no
+  // la respondía — había que deducirlo mirando la lista. El componente <Pildora> (estado semántico
+  // de un vistazo, regla 15 del SO) ya existía en el kit y no se usaba aquí.
+  const mesActual = new Date().toISOString().slice(0, 7);
+  const cuotaDelMesRegistrada = pagos.some((p) => p.tipo === 'cuota' && p.fecha.slice(0, 7) === mesActual);
+  const diaHoy = new Date().getDate();
+  const yaVencio = titulo ? diaHoy > titulo.diaPago : false;
+  const estadoDelMes: { texto: string; tono: 'exito' | 'pendiente' | 'alerta' } = cuotaDelMesRegistrada
+    ? { texto: 'Al día', tono: 'exito' }
+    : yaVencio
+      ? { texto: 'Sin registrar', tono: 'alerta' }
+      : { texto: 'Por registrar', tono: 'pendiente' };
 
   // La celebración solo vale si el hito es NUEVO. Se guarda en el navegador cuántos meses se
   // habían celebrado ya: si hoy hay más que la última vez, se celebra una sola vez y se actualiza
@@ -419,7 +446,7 @@ function Dashboard() {
         <TarjetaSkeleton filas={3} />
       ) : (
         <>
-          <Tarjeta className="flex items-center gap-4">
+          <Tarjeta destacada className="flex items-center gap-4">
             <span className="relative flex shrink-0">
               {/* CELEBRACIÓN N2 de FICHA-ARTE ("anillo que se completa con luz suave"): un pulso
                   que se expande UNA vez, solo cuando se acaba de sumar un mes nuevo — nunca por
@@ -435,11 +462,18 @@ function Dashboard() {
               )}
               <MiniRing value={progreso} size={64} stroke={6} />
             </span>
-            <div className="flex-1">
-              <p className="text-[13px] text-[var(--text-secondary)]">Meses con registro</p>
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center justify-between gap-2">
+                <p className="text-[13px] text-[var(--text-secondary)]">Meses con registro</p>
+                <Pildora texto={estadoDelMes.texto} tono={estadoDelMes.tono} />
+              </div>
               <p className="text-[22px] font-bold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
                 <NumeroContado valor={Math.min(mesesConRegistro, metaMeses)} />{' '}
                 <span className="text-[15px] font-normal text-[var(--text-secondary)]">de {metaMeses}</span>
+              </p>
+              {/* El "de N" ahora significa algo, así que se explica de dónde sale. */}
+              <p className="mt-0.5 text-[12px] text-[var(--text-tertiary)]">
+                {metaMeses === 12 ? 'de los últimos 12 meses' : 'meses que lleva tu expediente'}
               </p>
             </div>
           </Tarjeta>

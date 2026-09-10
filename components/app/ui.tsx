@@ -200,10 +200,14 @@ export function Tarjeta({
   children,
   className = '',
   indice = 0,
+  destacada = false,
 }: {
   children: ReactNode;
   className?: string;
   indice?: number;
+  /** Aplica la hairline degradada de FICHA-ARTE. Reservada a 1-3 elementos por pantalla: si todas
+   *  las tarjetas la llevan deja de destacar nada y se vuelve ruido. */
+  destacada?: boolean;
 }) {
   const reduce = useReducedMotion();
   return (
@@ -211,8 +215,22 @@ export function Tarjeta({
       initial={reduce ? false : { opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: DUR_BASE, ease: EASE_SERENO, delay: reduce ? 0 : indice * 0.05 }}
-      className={`rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--text-tertiary)_16%,transparent)] bg-[var(--surface)] p-4 shadow-[var(--shadow-1)] ${className}`}
+      className={`relative rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--text-tertiary)_16%,transparent)] bg-[var(--surface)] p-4 shadow-[var(--shadow-1)] ${className}`}
     >
+      {/* HAIRLINE DEGRADADA — FICHA-ARTE.md la declara parte del kit de profundidad ("hairline
+          degradada + sombra tintada suave") y no existía en ninguna pantalla; el revisor lo marcó
+          como desvío del contrato. Va arriba, del ancho de la tarjeta, desvaneciéndose a los lados:
+          es el filo de luz que separa una superficie elevada del fondo. */}
+      {destacada && (
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-4 top-0 h-px"
+          style={{
+            background:
+              'linear-gradient(to right, transparent, color-mix(in oklab, var(--accent) 55%, transparent), transparent)',
+          }}
+        />
+      )}
       {children}
     </motion.div>
   );

@@ -97,7 +97,7 @@ export default function Expediente() {
         }
       />
 
-      <Tarjeta className="items-center text-center">
+      <Tarjeta destacada className="items-center text-center">
         <IconoCirculo icon={FileCheck2} size={24} />
         <p className="mt-3 text-[16px] font-semibold text-[var(--text-primary)]">Reporte en 1 clic</p>
         <p className="mt-1 text-[13px] text-[var(--text-secondary)]">

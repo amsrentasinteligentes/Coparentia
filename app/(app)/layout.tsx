@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { redirect } from 'next/navigation';
 import { BottomNav } from '@/components/app/ui';
+import { AvisoSinConexion } from '@/components/app/AvisoSinConexion';
 import { RegistradorEventos } from '@/components/app/RegistradorEventos';
 import { crearClienteSupabaseServidor } from '@/lib/supabase/server';
 
@@ -21,6 +22,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
 
   return (
     <div className="min-h-dvh bg-[var(--bg)] text-[var(--text-primary)] [font-family:var(--font-body)]">
+      <AvisoSinConexion />
       <RegistradorEventos />
       {children}
       <BottomNav />
