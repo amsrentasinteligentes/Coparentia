@@ -95,7 +95,10 @@ export function Marcador({ children }: { children: ReactNode }) {
         backgroundImage:
           'linear-gradient(color-mix(in oklab, var(--accent) 30%, transparent), color-mix(in oklab, var(--accent) 30%, transparent))',
         backgroundRepeat: 'no-repeat',
-        backgroundPosition: '0 100%',
+        // Anclado al borde inferior de la caja inline (`0 100%`), el trazo quedaba ~6px por debajo
+        // de las letras y se leía como una barra flotante suelta, no como un subrayado. Subirlo
+        // 0.14em lo pega a la base del texto en cualquier tamaño de fuente.
+        backgroundPosition: '0 calc(100% - 0.14em)',
         backgroundSize: '100% 0.22em',
         padding: '0 0.05em',
       }}

@@ -60,7 +60,35 @@ CAPA 1 — `components/app/ui.tsx`:
 + datos semilla en obtenerPagos). **REVERTIDO por completo y verificado con grep**: `git status`
 solo muestra tokens.css, ui.tsx y ESTADO.md. Nunca se comiteó ni llegó a `.env.example`.
 
-**CAPA 2 — PAYWALL: 2 rondas hechas.** Puntajes del revisor independiente: partía de 28/40·14/20;
+**CAPA 2 — PAYWALL: 6 rondas de revisor. 28/40·14/20 → 33/40 · 15/20 · copy 16/20 (copy YA
+PASA el gate; usabilidad y craft aún no: faltan 3 y 1 punto).** Sigue NO LISTA formalmente.
+El revisor confirmó que NO hay techo estructural y recomendó explícitamente PARAR aquí y pasar a
+Inicio (21/40, "sangrado diario", ~15 puntos fáciles), dejando el resto del paywall para después.
+
+Cambios estructurales y de honestidad (además de lo listado más abajo):
+- **De 3 pasos a 2**: recap y timeline fusionados en `<ValorYPrueba>`; el vacío del paso 1 bajó de
+  ~39% a ~10%. Decisión de producto aprobada por el usuario.
+- **Moneda explícita en TODOS los precios** (`US$`): FICHA-MERCADO declara cobro en USD, pero se
+  mostraba "$89" a secas — para un cliente colombiano eso puede leerse como pesos.
+- Ambos planes muestran su total anual, así el ahorro de US$30.88 es comprobable.
+- Garantía recuperó su nombre y ganó mecánica de reclamo; pasarela (Hotmart) nombrada.
+- **2 bugs reales introducidos en rondas previas de esta sesión y corregidos**: el CTA quedaba
+  "Abriendo…" deshabilitado para siempre si fallaba la navegación; y su temporizador no se
+  cancelaba, pudiendo mostrar un error FALSO mientras la navegación seguía en curso.
+- Accesibilidad: `radiogroup`/`aria-checked` en el selector de plan (sin eso un lector de pantalla
+  no anunciaba ningún plan elegido) y foco de teclado visible en el CTA.
+
+⚠️ **PENDIENTE QUE REQUIERE DECISIÓN DEL USUARIO**: FICHA-MERCADO §6 pide comunicar los precios
+"también en referencia COP". NO se implementó a propósito: hardcodear una tasa de cambio la
+convierte en un número obsoleto (y falso) con el tiempo. El revisor lo marca como freno de compra
+real. Opciones: poner "≈ $X COP (aprox.)" con la tasa que el usuario decida y revisarla cada tanto,
+o dejar solo USD. **Requiere que el usuario diga qué tasa/enfoque quiere.**
+
+Defectos abiertos del paywall (para retomar después de Inicio): densidad del tercio inferior del
+paso 2 (6 bloques de 11-14px seguidos); el paso 2 no escalona su entrada como el paso 1; el
+radiogroup no navega con flechas; el aviso de fallo usa `role="status"` en vez de `role="alert"`.
+
+**(Historial de la primera parte de Capa 2 — paywall):** Puntajes del revisor independiente: partía de 28/40·14/20;
 ronda 1 → 24/40·12/20 (el revisor miró más hondo y encontró defectos nuevos, no es que empeorara
 la pantalla); ronda 2 → **28/40 · 13/20 · copy 16/20 · sigue NO LISTA** (gate 36/16).
 

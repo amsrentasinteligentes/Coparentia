@@ -78,7 +78,7 @@ type Respuestas = {
 // duplicados como texto era la vía directa a que un cambio de precio actualizara una pantalla y
 // no la otra. El costo por día se deriva aquí mismo, nunca se escribe a mano.
 const PLAN_ANUAL = { precioMes: 7.42, totalAnual: 'Se cobra US$89 al año', costoDia: 'US$0.24' };
-const PLAN_MENSUAL = { precioMes: 9.99, costoDia: 'US$0.33' };
+const PLAN_MENSUAL = { precioMes: 9.99, totalAnual: 'Serían US$119.88 al año', costoDia: 'US$0.33' };
 
 export default function Paywall() {
   const router = useRouter();
@@ -403,6 +403,9 @@ function Precio({
                 <PrecioContado valor={PLAN_MENSUAL.precioMes} /><span className="text-[13px] font-normal text-[var(--text-secondary)]">/mes</span>
               </span>
             </div>
+            {/* Solo la tarjeta Anual mostraba su total, así que el "ahorras US$30.88" no se podía
+                comprobar contra nada: faltaba el término de comparación. */}
+            <p className="mt-1 text-[13px] text-[var(--text-secondary)]">{PLAN_MENSUAL.totalAnual}</p>
           </div>
         </motion.button>
       </div>
@@ -459,7 +462,7 @@ function Precio({
           </span>
           <span className="flex items-center gap-1.5">
             <Lock size={13} color="var(--accent)" aria-hidden="true" />
-            Pago seguro
+            Pago seguro con Hotmart
           </span>
         </div>
         <p className="mb-3 text-center text-[13px] leading-[1.5] text-[var(--text-secondary)]">

@@ -1,23 +1,56 @@
-# VEREDICTO revisor-visual — paywall (2 pasos)
-Fecha: 2026-09-09 00:00
-Screenshot: docs/revisiones/paywall-valor-prueba-375.png · docs/revisiones/paywall-precio-v7-375.png
-Usabilidad: 30/40
+# VEREDICTO revisor-visual — paywall
+Fecha: 2026-09-10 18:40
+Screenshot: docs/revisiones/paywall-precio-v7-375.png
+Screenshot paso 1: docs/revisiones/paywall-valor-prueba-375.png
+Usabilidad: 33/40
 Craft: 15/20
-Copy (si vende): 15/20
+Copy (si vende): 16/20
 Fidelidad (si hubo referencia): N-A
 Veredicto: NO LISTA
 
-Detalle usabilidad: h1:3 h2:3 h3:3 h4:2 h5:3 h6:4 h7:3 h8:3 h9:3 h10:3
-Detalle craft: jerarquía:3 profundidad:3 identidad:3 movimiento:4 encaje:2
-Detalle copy: idea:3 especificidad:3 emoción:3 oferta:3 acción:3
-Gate de carga cognitiva: 0 fallas de 8.
-CTA héroe vivo: pasa los 4 (contraste 5.99:1 · whileTap 0.97 · nunca disabled por defecto · 56px ancho completo).
-Anclas de conversión: titular con énfasis ✓ · hairline degradé + chips SVG sin emojis ✓ · secciones adyacentes distinguibles: PARCIAL (la hairline sobre la franja de confianza del paso 2 es imperceptible en el render).
-Los 5 defectos de la ronda anterior: 4 atacados con efecto real (garantía nombrada + mecánica, retroceso sin fondo, superficie elevada en paso 1, estado de error del CTA); el de moneda queda incompleto (badge sin US$).
+## Detalle
+Usabilidad — h1:3 h2:3 h3:4 h4:3 h5:4 h6:3 h7:3 h8:3 h9:3 h10:4
+Craft — jerarquía:3 profundidad:3 identidad:3 movimiento:3 encaje:3
+Copy — idea:3 especificidad:3 emoción:3 oferta:3 acción:4
+Gate de carga cognitiva: 0 fallas de 8 (sin sobrecarga).
+CTA héroe vivo: 4/4 (contraste acento sobre base >3:1 · whileTap 0.97 · nunca disabled por
+defecto, solo tras el click · h-14 = 56px, ancho completo).
+Anclas de conversión: titular con énfasis ✓ · hairline degradé en ambos pasos ✓ · chips SVG sin
+emojis ✓ · secciones distinguibles: parcial (el pie del paso 2 vive todo en el mismo plano).
+Sub-checks de copy: garantía nombrada con plazo junto al CTA ✓ · message-match: sin dato de
+creativo de origen (no penaliza).
+
+## Verificación de los 5 fixes declarados
+1. Marcador sobre UNA palabra ("WhatsApp") — VERIFICADO en page.tsx L338 y en el render: trazo
+   entero en un renglón. Queda un desvío vertical (ver defecto 3).
+2. "US$30.88 al año" en el badge — VERIFICADO (L366-368).
+3. Franja de confianza en dos renglones sin "·" colgante, mecánica a 13px/secondary —
+   VERIFICADO (L455-467), sin huérfano en el render.
+4. setTimeout en useRef, limpiado al desmontar y al reintentar, umbral 6s — VERIFICADO
+   (L90-92, L127-131).
+5. Badge a fondo acento 14% + texto acento, sin sombra — VERIFICADO (L366); el acento pleno
+   queda solo en el CTA.
+Los 5 están efectivamente atacados. Lo que baja el puntaje ahora es material nuevo, no lo anterior.
 
 Top defectos:
-1. [Paso 2 · titular] Se ven TRES segmentos de subrayado (bajo "captura de", bajo "WhatsApp" y bajo "nada —") cuando el <Marcador> solo envuelve "captura de WhatsApp": el énfasis resalta palabras que no le tocan y el tercer trazo se lee como una regla suelta → forzar que la frase marcada no cruce 3 líneas (salto controlado o marcador sobre una sola palabra) y re-capturar; si la captura es de un build previo, re-renderizar y re-verificar antes de reclamar el fix.
-2. [Paso 2 · badge de la tarjeta anual] "AHORRAS 3 MESES · $30.88 AL AÑO" es el único precio SIN moneda de toda la pantalla, y está a 40px de "US$7.42" → derivarlo del mismo objeto PLAN_* y escribir "US$30.88 al año" (la ambigüedad de moneda vuelve justo en el claim de ahorro, ante un avatar que desconfía de las cuentas).
-3. [Paso 2 · franja de confianza] Al envolver, el separador "·" queda huérfano al final de la primera línea, y la mecánica de garantía (lo que de verdad tranquiliza) es el texto más apagado de la pantalla: 12px en tertiary centrado → franja en dos renglones propios sin separador colgante y mecánica a 13px/text-secondary.
-4. [Código · irAlLogin, app/paywall/page.tsx:121] El setTimeout fijo de 2.5s no se cancela: en red lenta muestra "No pudimos abrir el siguiente paso" mientras la navegación SÍ está en curso — un error falso en el último paso de la venta → limpiar el timer al desmontar y disparar el mensaje solo ante fallo real (catch/evento de ruta), subiendo el umbral a ~6s.
-5. [Paso 2 · jerarquía de acento] El pill de acento pleno con glow pesa más que el titular y compite con el CTA (acento presente en 8 elementos: titular, badge, borde+fondo de tarjeta, check, 3 chips, iconos de franja, CTA) → badge a fondo acento 12% con texto acento y reservar el acento pleno para el CTA.
+1. [Paso 2 — tercio inferior, de los 3 beneficios a Términos] Seis bloques seguidos entre 11 y
+   14px sin jerarquía: garantía, mecánica, CTA, aviso de renovación, "Ahora no · ¿Dudas?" y la
+   fila legal se leen como un muro de letra chica que entierra el CTA → subir la garantía a
+   15px/600, dejar la mecánica en UNA línea y fusionar "Ahora no · ¿Dudas?" con la fila legal.
+2. [Paso 2 — tarjetas de precio y "Pago seguro"] Precio solo en US$ para un comprador
+   colombiano, contra la propia FICHA-MERCADO ("precios comunicados también en referencia COP"),
+   y la pasarela no se nombra pese a que la objeción 5 del avatar la pide → añadir "≈ $X COP" bajo
+   el total anual y nombrar la pasarela junto al candado.
+3. [Paso 2 — subrayado de "WhatsApp" en el titular] El marcador (dispositivo ownable de la
+   FICHA-ARTE) queda ~6px por debajo de las letras y se lee como una barra flotante, no como un
+   subrayado → anclar el gradiente a la baseline (background-position: 0 calc(100% - 0.14em))
+   en vez del borde inferior de la caja inline.
+4. [Paso 2 — toda la vista salvo las 2 tarjetas de plan] El stagger de entrada solo anima las
+   tarjetas de precio; titular, filas de beneficio, franja de confianza y CTA aparecen de golpe,
+   así que la pantalla se ve medio animada (el paso 1 sí escalona todo) → aplicar el mismo helper
+   `entrada(i)` del paso 1 a los bloques del paso 2.
+5. [Paso 2 — tarjeta Mensual y grupo de planes] La tarjeta Mensual no muestra su total anual
+   (US$119.88), así que el ahorro del badge hay que creerlo en vez de compararlo; y el
+   `role="radiogroup"` no tiene navegación por flechas ni el aviso de fallo usa `role="alert"` →
+   añadir "US$119.88 al año" a la Mensual, onKeyDown con flechas en el radiogroup y subir el
+   error a `role="alert"`.
