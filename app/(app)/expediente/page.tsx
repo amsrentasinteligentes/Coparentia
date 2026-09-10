@@ -10,6 +10,7 @@ import { motion } from 'motion/react';
 import { Download, FileCheck2, Scale, Settings } from 'lucide-react';
 import { ContenedorApp, PageHeader, Tarjeta, IconoCirculo, Pildora, ErrorDeCarga } from '@/components/app/ui';
 import { exportarExpedientePdf } from '@/lib/exportar-expediente';
+import { AbogadoDestacado } from '@/components/app/AbogadoDestacado';
 import {
   type Autorizacion,
   type EstadoAutorizacion,
@@ -168,6 +169,11 @@ export default function Expediente() {
             </Tarjeta>
           ))}
       </div>
+
+      {/* Espacio publicitario para abogados de familia — va al final del Expediente, donde el
+          usuario piensa "¿y ahora a quién le muestro esto?". Segundo ingreso de la app; mientras
+          nadie pague el cupo, muestra un estado honesto (sin abogado inventado). */}
+      <AbogadoDestacado />
     </ContenedorApp>
   );
 }
