@@ -90,9 +90,15 @@ interna.
   la primera victoria, 20 MB o un .docx dejaban el sello girando sin fin.
 - (Propios) celebración falsa en navegador nuevo con datos viejos; CTA cortado tras el nav fijo.
 
-⚠️ **Pendientes de Inicio (para retomar):** la cuota NO se puede editar en ninguna pantalla aunque
-el copy de primeros pasos promete "puedes ajustarlo cuando quieras" — es una promesa incumplida en
-la interfaz, se decide con el usuario si se construye la edición o se corrige el texto · `metaMeses`
+✅ **RESUELTO — edición de la cuota** (el usuario eligió construirla, no bajar la promesa): nuevo
+`<EditorCuota>` en `/ajustes`, que guarda con `guardarTitulo` (la MISMA función del alta, así no
+hay dos caminos que se desincronicen), con esqueleto, error con reintento, validación de rango y un
+botón que solo se habilita si de verdad hay cambios. La `fechaInicio` del título NO se toca al
+editar: es cuándo empezó la obligación, no cuándo se corrigió el dato. Además la cuota en Inicio es
+ahora un enlace a Ajustes — sin ese atajo la edición quedaba escondida tras el engranaje de
+Expediente, donde nadie la buscaría.
+
+⚠️ **Pendientes de Inicio (para retomar):** `metaMeses`
 = 6 está inventado en código, sin rótulo ni relación con el caso · falta píldora de estado del mes
 ("¿voy al día?") · el escalonado no es cascada real (la lista reinicia el índice en 0) · el halo del
 header queda anulado por la luz ambiental (el dispositivo que se lee es el marcador) · FICHA-ARTE

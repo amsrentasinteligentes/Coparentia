@@ -171,7 +171,9 @@ export function PageHeader({
   halo = false,
 }: {
   titulo: string;
-  subtitulo?: string;
+  // ReactNode y no `string`: el subtítulo a veces es un enlace al lugar donde se edita ese dato
+  // (ej. la cuota en Inicio lleva a Ajustes), no solo texto suelto.
+  subtitulo?: ReactNode;
   accion?: ReactNode;
   palabraClave?: string;
   halo?: boolean;

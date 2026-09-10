@@ -5,13 +5,196 @@
 // derecho de eliminación real (no solo una promesa por correo). No vive en el nav inferior fijo
 // (4 destinos ya establecidos) — se llega desde el ícono de engranaje en Expediente.
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { motion } from 'motion/react';
 import { ArrowLeft, LogOut, ExternalLink, Trash2, AlertTriangle } from 'lucide-react';
 import Link from 'next/link';
-import { ContenedorApp, Tarjeta, IconoCirculo } from '@/components/app/ui';
+import { ContenedorApp, Tarjeta, IconoCirculo, TarjetaSkeleton, ErrorDeCarga } from '@/components/app/ui';
+import { type Titulo, obtenerTitulo, guardarTitulo } from '@/lib/datos';
 import { crearClienteSupabase } from '@/lib/supabase/client';
 import { eliminarMiCuenta } from './acciones';
+
+const OPCIONES_REAJUSTE = [
+  'IPC (Índice de Precios al Consumidor)',
+  'Acordado en el acta o sentencia',
+  'Aún no lo sé',
+];
+
+/* ── <EditorCuota> — edita el título del expediente (monto, día de pago, reajuste).
+   Guarda con `guardarTitulo`, la MISMA función que usa el alta, así que no hay dos caminos que
+   puedan desincronizarse. El botón solo se habilita cuando de verdad hay algo distinto que
+   guardar: un "Guardar" siempre activo invita a tocarlo sin haber cambiado nada. ── */
+function EditorCuota() {
+  const [cargando, setCargando] = useState(true);
+  const [fallo, setFallo] = useState(false);
+  const [intento, setIntento] = useState(0);
+  const [original, setOriginal] = useState<Titulo | null>(null);
+  const [monto, setMonto] = useState('');
+  const [dia, setDia] = useState('');
+  const [reajuste, setReajuste] = useState(OPCIONES_REAJUSTE[0]);
+  const [guardando, setGuardando] = useState(false);
+  const [guardado, setGuardado] = useState(false);
+  const [errorGuardar, setErrorGuardar] = useState<string | null>(null);
+
+  useEffect(() => {
+    let vigente = true;
+    setCargando(true);
+    setFallo(false);
+    obtenerTitulo()
+      .then((t) => {
+        if (!vigente) return;
+        if (t) {
+          setOriginal(t);
+          setMonto(String(t.montoMensual));
+          setDia(String(t.diaPago));
+          // Si el valor guardado no está entre las opciones (viene de una versión anterior), se
+          // conserva el que hay en vez de sobrescribirlo en silencio con el primero de la lista.
+          setReajuste(OPCIONES_REAJUSTE.includes(t.indiceReajuste) ? t.indiceReajuste : OPCIONES_REAJUSTE[0]);
+        }
+        setCargando(false);
+      })
+      .catch(() => {
+        if (!vigente) return;
+        setFallo(true);
+        setCargando(false);
+      });
+    return () => {
+      vigente = false;
+    };
+  }, [intento]);
+
+  const diaNumero = Number(dia);
+  const montoNumero = Number(monto);
+  const valido = montoNumero > 0 && diaNumero >= 1 && diaNumero <= 31;
+  const hayCambios =
+    !original ||
+    montoNumero !== original.montoMensual ||
+    diaNumero !== original.diaPago ||
+    reajuste !== original.indiceReajuste;
+
+  const guardar = async (): Promise<void> => {
+    if (guardando || !valido || !hayCambios) return;
+    setGuardando(true);
+    setErrorGuardar(null);
+    setGuardado(false);
+    const t: Titulo = {
+      montoMensual: montoNumero,
+      diaPago: diaNumero,
+      indiceReajuste: reajuste,
+      // La fecha de inicio del título NO se toca al editar: es cuándo empezó la obligación, no
+      // cuándo se corrigió el dato. Si no había título previo, se usa hoy.
+      fechaInicio: original?.fechaInicio ?? new Date().toISOString().slice(0, 10),
+    };
+    try {
+      await guardarTitulo(t);
+      setOriginal(t);
+      setGuardado(true);
+    } catch {
+      setErrorGuardar('No pudimos guardar el cambio. Revisa tu conexión e inténtalo de nuevo.');
+    } finally {
+      setGuardando(false);
+    }
+  };
+
+  if (fallo) {
+    return (
+      <div className="mt-3">
+        <ErrorDeCarga onReintentar={() => setIntento((n) => n + 1)} />
+      </div>
+    );
+  }
+
+  if (cargando) {
+    return (
+      <div className="mt-3">
+        <TarjetaSkeleton filas={1} />
+      </div>
+    );
+  }
+
+  const claseCampo =
+    'mt-2 h-12 w-full rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--bg)] px-4 text-[15px] text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)]';
+
+  return (
+    <Tarjeta className="mt-3">
+      <label htmlFor="cuota-monto" className="text-[13px] font-medium text-[var(--text-secondary)]">
+        Monto mensual (COP)
+      </label>
+      <input
+        id="cuota-monto"
+        type="number"
+        inputMode="numeric"
+        value={monto}
+        onChange={(e) => {
+          setMonto(e.target.value);
+          setGuardado(false);
+        }}
+        className={`${claseCampo} tabular-nums`}
+      />
+
+      <label htmlFor="cuota-dia" className="mt-4 block text-[13px] font-medium text-[var(--text-secondary)]">
+        Día de pago de cada mes
+      </label>
+      <input
+        id="cuota-dia"
+        type="number"
+        inputMode="numeric"
+        min={1}
+        max={31}
+        value={dia}
+        onChange={(e) => {
+          setDia(e.target.value);
+          setGuardado(false);
+        }}
+        className={`${claseCampo} tabular-nums`}
+      />
+
+      <label htmlFor="cuota-reajuste" className="mt-4 block text-[13px] font-medium text-[var(--text-secondary)]">
+        Reajuste anual
+      </label>
+      <select
+        id="cuota-reajuste"
+        value={reajuste}
+        onChange={(e) => {
+          setReajuste(e.target.value);
+          setGuardado(false);
+        }}
+        className={claseCampo}
+      >
+        {OPCIONES_REAJUSTE.map((o) => (
+          <option key={o}>{o}</option>
+        ))}
+      </select>
+
+      {!valido && (
+        <p className="mt-3 text-[12.5px] text-[var(--status-error)]">
+          Revisa los datos: el monto debe ser mayor que cero y el día, entre 1 y 31.
+        </p>
+      )}
+      {errorGuardar && (
+        <p role="alert" className="mt-3 text-[12.5px] leading-[1.5] text-[var(--status-error)]">
+          {errorGuardar}
+        </p>
+      )}
+
+      <motion.button
+        type="button"
+        onClick={guardar}
+        disabled={guardando || !valido || !hayCambios}
+        whileTap={{ scale: 0.98 }}
+        className="mt-4 flex h-12 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] bg-[var(--accent)] text-[15px] font-semibold text-[var(--bg)] transition-opacity disabled:opacity-40 [touch-action:manipulation]"
+      >
+        {guardando ? 'Guardando…' : guardado && !hayCambios ? 'Guardado' : 'Guardar cambios'}
+      </motion.button>
+
+      <p className="mt-3 text-[12.5px] leading-[1.5] text-[var(--text-tertiary)]">
+        Cambiar esto no altera los comprobantes que ya registraste: solo actualiza el título de tu
+        expediente de aquí en adelante.
+      </p>
+    </Tarjeta>
+  );
+}
 
 export default function Ajustes() {
   const router = useRouter();
@@ -50,7 +233,14 @@ export default function Ajustes() {
         <h1 className="text-[22px] font-bold text-[var(--text-primary)] [font-family:var(--font-display)]">Ajustes</h1>
       </div>
 
-      <h2 className="text-[13px] font-semibold uppercase tracking-[0.06em] text-[var(--text-tertiary)]">Tu suscripción</h2>
+      {/* EDICIÓN DE LA CUOTA. Primeros pasos promete "puedes ajustarlo cuando quieras", pero hasta
+          ahora `guardarTitulo` solo se llamaba una vez, durante el alta: la cuota quedaba
+          congelada y la promesa era falsa en la interfaz. Va de PRIMERA en Ajustes porque es el
+          dato del producto (la suscripción y la cuenta son administración). */}
+      <h2 className="text-[13px] font-semibold uppercase tracking-[0.06em] text-[var(--text-tertiary)]">Tu cuota alimentaria</h2>
+      <EditorCuota />
+
+      <h2 className="mt-8 text-[13px] font-semibold uppercase tracking-[0.06em] text-[var(--text-tertiary)]">Tu suscripción</h2>
       <Tarjeta className="mt-3">
         <p className="text-[14px] font-medium text-[var(--text-primary)]">Cómo cancelar</p>
         <p className="mt-1.5 text-[13.5px] leading-[1.5] text-[var(--text-secondary)]">

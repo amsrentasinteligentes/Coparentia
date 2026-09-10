@@ -396,11 +396,21 @@ function Dashboard() {
     <ContenedorApp>
       {/* El <Marcador> de marca no existía en NINGUNA pantalla de la app interna, solo en el
           funnel: aquí el sello de identidad entra sobre la palabra que da nombre al producto. */}
+      {/* La cuota ahora SE PUEDE editar (Ajustes), así que el dato lleva a donde se cambia: sin
+          este atajo, la pantalla muestra un número que parece fijo y la edición queda escondida
+          detrás del engranaje de Expediente, donde nadie la buscaría. */}
       <PageHeader
         titulo="Tu expediente"
         palabraClave="expediente"
         halo
-        subtitulo={titulo ? `Cuota de ${formatoCOP(titulo.montoMensual)} · día ${titulo.diaPago}` : undefined}
+        subtitulo={
+          titulo ? (
+            <Link href="/ajustes" className="inline-flex items-center gap-1 [touch-action:manipulation]">
+              Cuota de {formatoCOP(titulo.montoMensual)} · día {titulo.diaPago}
+              <ChevronRight size={14} className="text-[var(--text-tertiary)]" aria-hidden="true" />
+            </Link>
+          ) : undefined
+        }
       />
 
       {falloCarga ? (
