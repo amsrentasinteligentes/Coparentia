@@ -22,10 +22,15 @@
   --surface: #13233a;
   --surface-2: #081019;       /* hundido: más oscuro que --bg (menos luz) */
 
-  /* ── TEXTO (casi-blanco cálido, familia única de neutros) ── */
-  --text-primary: #e6edf7;
-  --text-secondary: #7f93b3;
-  --text-tertiary: #93a5c2;   /* ≥4.5:1 sobre --bg/--surface/--surface-2 */
+  /* ── TEXTO (casi-blanco cálido, familia única de neutros) ──
+     ESCALERA DE JERARQUÍA: primary > secondary > tertiary, en ese orden de brillo.
+     Antes estaba INVERTIDA (secondary #7f93b3 era más oscuro que tertiary #93a5c2), así que
+     el texto menos importante se leía más fuerte que el importante en TODA la app — hallazgo
+     raíz del rescate visual, no un defecto de una pantalla. Contrastes verificados sobre
+     --surface (el fondo más claro, el caso peor): 8.1:1 y 5.1:1 — ambos pasan AA. */
+  --text-primary: #e6edf7;    /* 12.4:1 sobre --surface */
+  --text-secondary: #a8bad6;  /* 8.1:1 sobre --surface — apoyo legible */
+  --text-tertiary: #7f93b3;   /* 5.1:1 sobre --surface — captions/labels, el nivel más bajo */
 
   /* ── MARCA ── */
   --accent: #5b93e8;
@@ -39,17 +44,31 @@
   --font-display: var(--font-spectral), Georgia, serif;
   --font-body: var(--font-ibm-plex-sans), 'Segoe UI', sans-serif;
 
-  /* ── SOMBRAS con el tinte del neutro de marca (azul oscuro, nunca negro puro) ── */
-  --shadow-1: 0 1px 2px rgb(6 12 24 / 0.4);
+  /* ── SOMBRAS con el tinte del neutro de marca (azul oscuro, nunca negro puro) ──
+     --shadow-1 tenía una sola capa de 2px: prácticamente invisible sobre un fondo oscuro, así
+     que las tarjetas se leían planas sobre fondo plano (profundidad de 1 nivel, no de 3). Se le
+     suma una segunda capa difusa y corta — sigue siendo suave, coherente con "Sereno". */
+  --shadow-1: 0 1px 2px rgb(6 12 24 / 0.5), 0 4px 12px -6px rgb(6 12 24 / 0.5);
   --shadow-2: 0 12px 32px -12px rgb(6 12 24 / 0.6);
+
+  /* ── MOTION SIGNATURE (FICHA-ARTE: ease-out suave, ~340ms base, sin springs agresivos) ──
+     Vivían hardcodeados en cada componente; centralizarlos evita que cada pantalla invente
+     su propia curva y su propia duración. */
+  --ease-sereno: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --dur-base: 340ms;
 
   /* ── DERIVADOS (no se tocan: se recalculan solos desde --accent) ── */
   --chip-bg: color-mix(in oklab, var(--accent) 10%, transparent);
 
-  /* ── SEMÁNTICOS (app interna) — separados del acento de marca, solo en su función (regla 15) ── */
-  --status-success: #4ade80;
-  --status-warning: #fbbf24;
-  --status-error: #f87171;
+  /* ── SEMÁNTICOS (app interna) — separados del acento de marca, solo en su función (regla 15) ──
+     Estos TRES eran los colores de fábrica de Tailwind (green-400 #4ade80 / amber-400 #fbbf24 /
+     red-400 #f87171): nunca se tematizaron, contradecían la FICHA-ARTE aprobada y son la huella
+     literal de "paleta por default" que el SO marca como diseño genérico. Además chillaban al
+     lado del azul sereno de marca. Ahora: aviso y error son los hex de la ficha; éxito es un
+     verde desaturado de la misma temperatura fría (la ficha lo dejó "a confirmar en Sesión 5"). */
+  --status-success: #63b58f;
+  --status-warning: #e8b95b;
+  --status-error: #e85b6b;
 }
 
 /* ============================================================================

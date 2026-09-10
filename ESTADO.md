@@ -1,5 +1,70 @@
 # ESTADO.md — Coparentia (nombre provisional: PensiónClara)
 
+### Checkpoint (2026-09-09) — Rescate visual: FASE 1+2 (diagnóstico) hecha, plan ESPERANDO OK
+Pedido del usuario: subir diseño/experiencia a nivel estudio premium, por capas, sin tocar lógica
+ni datos. FICHA-ARTE.md sigue siendo COSA JUZGADA (aprobada 2026-09-07, "me encanta sigamos con
+este estilo") → NO se re-deriva paleta/tipografía/modo; el rescate es EJECUTAR el contrato que
+hoy está a medio implementar.
+
+**Craft que YA existe:** `whileTap` en 8 archivos (funnel/landing/inicio/paywall/admin) ·
+`prefers-reduced-motion` en landing/funnel/onboarding/paywall/inicio · stagger y count-up en el
+funnel · `<Halo>`/`<Marcador>` implementados en funnel/onboarding/inicio/paywall.
+
+**Craft que FALTA (hallazgos raíz de esta fase):**
+1. **El dispositivo ownable no existe en la app interna.** `<Halo>`/`<Marcador>` aparecen 0 veces
+   en `components/app/ui.tsx`, pagos, calendario, expediente y ajustes — justo donde vive a diario
+   el cliente que paga. (Coincide con veredicto pantalla-principal defecto #3.)
+2. **Jerarquía de texto INVERTIDA en los tokens.** `--text-secondary: #7f93b3` (5.1:1 sobre
+   surface) es MÁS OSCURO que `--text-tertiary: #93a5c2` (6.4:1) — el texto "menos importante"
+   se ve más brillante que el "más importante", en TODA la app. Bug de raíz, no de pantalla.
+3. **Los colores semánticos son Tailwind de fábrica y contradicen la ficha.** tokens.css tiene
+   `#4ade80 / #fbbf24 / #f87171` (green-400/amber-400/red-400 stock) cuando FICHA-ARTE aprobó
+   aviso `#E8B95B` y error `#E85B6B`. Usados en 15 lugares reales (pagos, calendario, ajustes,
+   admin). Es literalmente la "paleta por default" que el SO marca como huella de diseño genérico.
+4. **Vacío muerto estructural CONFIRMADO en vivo** (screenshot a 375px del paywall paso 1): ~31%
+   de la pantalla es fondo plano vacío entre la última tarjeta y el CTA. Mismo defecto que el
+   revisor marcó en onboarding (#1) y pantalla-principal (#4).
+5. **La app interna no tiene las animaciones baseline del SO:** cero stagger de entrada, cero
+   skeletons (solo 2 puntitos `animate-pulse`), `whileTap` solo en `<BotonFlotante>` (1 de ~20
+   elementos tocables), nav sin transición real (solo `transition-colors`), y
+   `components/app/ui.tsx` no usa `useReducedMotion`.
+6. **Profundidad de 1 nivel, no de 3.** `--surface-2` (hundido) nunca se usa en la app interna y
+   `--shadow-1: 0 1px 2px` es casi invisible → `<Tarjeta>` se lee plana sobre fondo plano.
+
+**Puntajes vigentes del revisor (gate: ≥36/40 y ≥16/20):** landing 34/40·17/20 (solo 1 defecto
+accionable: la card de precio con 3 números) · onboarding 30/40·15/20 · paywall 28/40·14/20 ·
+pantalla-principal 21/40·9/20 (veredicto viejo, 2026-09-07).
+
+**CAPA 0 (tokens) y CAPA 1 (kit de la app interna): APLICADAS Y VERIFICADAS** (usuario eligió
+"Capa 0 + 1 primero"). `tsc` ✓ · `build` ✓ · vistas renderizadas a 375px en el preview real.
+
+CAPA 0 — `components/landing/tokens.css`:
+- `--text-secondary` #7f93b3 → **#a8bad6** (8.1:1 sobre surface) · `--text-tertiary` #93a5c2 →
+  **#7f93b3** (5.1:1) → escalera primary > secondary > tertiary restaurada, ambos siguen AA.
+- Semánticos, que eran Tailwind de fábrica: success #4ade80 → **#63b58f** · warning #fbbf24 →
+  **#e8b95b** (ficha) · error #f87171 → **#e85b6b** (ficha).
+- `--shadow-1` gana 2ª capa `0 4px 12px -6px rgb(6 12 24/.5)` (antes casi invisible → tarjetas planas).
+- Nuevos `--ease-sereno: cubic-bezier(.22,.61,.36,1)` y `--dur-base: 340ms` (motion signature).
+
+CAPA 1 — `components/app/ui.tsx`:
+- `<Halo>` NUEVO (radial 320×200px al 26%, blur 28px) y `<Marcador>` NUEVO (corte 62%, acento 34%)
+  → el dispositivo ownable por fin existe en el kit de la app interna. **Aún NO cableado en las
+  pantallas: eso es Capa 2.**
+- `<PageHeader>` acepta `palabraClave` (marcador) y `halo` — ambos opcionales, nada cambia solo.
+- `<Tarjeta>` ahora entra con opacidad+8px de subida, 340ms, ease sereno, `indice` para escalonado
+  de 50ms; respeta `useReducedMotion`.
+- `<BottomNav>`: píldora activa que se DESLIZA (`layoutId`, spring 220/26) en vez de solo cambiar color.
+- `<TarjetaSkeleton>` NUEVO (silueta real de la tarjeta, pulso 1.6s) — la app no tenía skeletons.
+
+⚠️ Verificación visual hecha con el desvío temporal `NEXT_PUBLIC_SCREENSHOT_DEMO` (gate de sesión
++ datos semilla en obtenerPagos). **REVERTIDO por completo y verificado con grep**: `git status`
+solo muestra tokens.css, ui.tsx y ESTADO.md. Nunca se comiteó ni llegó a `.env.example`.
+
+⏸️ **CAPA 2 (pantalla por pantalla) — NO iniciada, esperando OK del usuario.** Orden acordado:
+paywall (28/40) → inicio (21/40) → app interna (pagos/calendario/expediente) → onboarding (30/40)
+→ landing (34/40, solo la card de precio). La ronda formal de `revisor-visual` corresponde a
+Capa 2, cuando las pantallas cambien de verdad.
+
 ### Checkpoint (2026-09-09) — Segunda auditoría de seguridad (formato guiado del usuario), Etapa 2 aplicada
 Auditoría pedida por el usuario con reglas propias (no tocar el flujo de enlace mágico, no
 mostrar secretos, explicar en simple, no inventar). Etapa 1 (solo lectura) reportada y aprobada;

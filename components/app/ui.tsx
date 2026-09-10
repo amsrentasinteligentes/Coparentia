@@ -6,9 +6,14 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { motion } from 'motion/react';
+import { motion, useReducedMotion } from 'motion/react';
 import { Home, Wallet, CalendarDays, FolderOpen, type LucideIcon } from 'lucide-react';
 import type { ReactNode } from 'react';
+
+/* Motion signature de FICHA-ARTE.md, en un solo lugar: ease-out suave, 340ms base, sin springs
+   agresivos (coherente con "Sereno"). Antes cada componente inventaba su curva y su duración. */
+const EASE_SERENO = [0.22, 0.61, 0.36, 1] as const;
+const DUR_BASE = 0.34;
 
 const DESTINOS: { href: string; label: string; icon: LucideIcon }[] = [
   { href: '/inicio', label: 'Inicio', icon: Home },
@@ -17,10 +22,58 @@ const DESTINOS: { href: string; label: string; icon: LucideIcon }[] = [
   { href: '/expediente', label: 'Expediente', icon: FolderOpen },
 ];
 
+/* ── <Halo> — DISPOSITIVO OWNABLE de FICHA-ARTE.md (mitad 1 de 2): mancha radial azul detrás del
+   elemento héroe. Estaba implementado en el funnel pero NO en la app interna, y en el paywall el
+   revisor lo declaró "casi imperceptible" al 16% sobre 220×140px → aquí va al 26% sobre 320×200px.
+   USO: el contenedor padre necesita `relative isolate` para que el -z-10 quede detrás del
+   contenido pero delante del fondo de la pantalla. ── */
+export function Halo({ className = '' }: { className?: string }) {
+  return (
+    <span
+      aria-hidden="true"
+      className={`pointer-events-none absolute left-1/2 top-1/2 -z-10 h-[200px] w-[320px] -translate-x-1/2 -translate-y-1/2 ${className}`}
+      style={{
+        background: 'radial-gradient(ellipse at center, color-mix(in oklab, var(--accent) 26%, transparent) 0%, transparent 70%)',
+        filter: 'blur(28px)',
+      }}
+    />
+  );
+}
+
+/* ── <Marcador> — DISPOSITIVO OWNABLE (mitad 2 de 2): subrayado tipo resaltador sobre la palabra
+   clave del titular. El corte al 62% y el 34% de acento son los valores que quedaron tras las
+   rondas previas de revisión (28%→38%→30% fueron rechazados por pálidos o por pesados). ── */
+export function Marcador({ children }: { children: ReactNode }) {
+  return (
+    <span
+      className="[padding:0_2px]"
+      style={{ background: 'linear-gradient(transparent 62%, color-mix(in oklab, var(--accent) 34%, transparent) 62%)' }}
+    >
+      {children}
+    </span>
+  );
+}
+
+/* Envuelve `palabra` dentro de `titulo` con el <Marcador>. Si no se pasa palabra (o no aparece
+   en el título), devuelve el texto tal cual — así ninguna pantalla existente cambia sola. */
+function conMarcador(titulo: string, palabra?: string): ReactNode {
+  if (!palabra) return titulo;
+  const i = titulo.indexOf(palabra);
+  if (i === -1) return titulo;
+  return (
+    <>
+      {titulo.slice(0, i)}
+      <Marcador>{palabra}</Marcador>
+      {titulo.slice(i + palabra.length)}
+    </>
+  );
+}
+
 /* ── <BottomNav> — nav fija al fondo, 4 destinos, ícono activo con fondo propio (nunca del
    mismo color que su contenedor — regla anti-slop de tapar el ícono) ── */
 export function BottomNav() {
   const pathname = usePathname();
+  const reduce = useReducedMotion();
   return (
     <nav
       aria-label="Navegación principal"
@@ -36,12 +89,24 @@ export function BottomNav() {
               className="flex min-w-[64px] flex-1 flex-col items-center gap-1 py-2.5 text-[11px] font-medium [touch-action:manipulation]"
               aria-current={activo ? 'page' : undefined}
             >
-              <span
-                className={`flex size-9 items-center justify-center rounded-full transition-colors ${
-                  activo ? 'bg-[color-mix(in_oklab,var(--accent)_16%,transparent)]' : ''
-                }`}
-              >
-                <Icon size={20} strokeWidth={activo ? 2.4 : 2} color={activo ? 'var(--accent)' : 'var(--text-tertiary)'} aria-hidden="true" />
+              {/* La píldora activa se DESLIZA entre destinos (layoutId) en vez de aparecer y
+                  desaparecer: es la baseline "transición entre tabs" del SO, que faltaba — antes
+                  solo había un `transition-colors`. Spring 220/26 = el compilado de FICHA-ARTE. */}
+              <span className="relative flex size-9 items-center justify-center">
+                {activo && (
+                  <motion.span
+                    layoutId="nav-pildora-activa"
+                    transition={reduce ? { duration: 0 } : { type: 'spring', stiffness: 220, damping: 26 }}
+                    className="absolute inset-0 rounded-full bg-[color-mix(in_oklab,var(--accent)_16%,transparent)]"
+                  />
+                )}
+                <Icon
+                  size={20}
+                  strokeWidth={activo ? 2.4 : 2}
+                  color={activo ? 'var(--accent)' : 'var(--text-tertiary)'}
+                  className="relative"
+                  aria-hidden="true"
+                />
               </span>
               <span className={activo ? 'text-[var(--accent)]' : 'text-[var(--text-tertiary)]'}>{label}</span>
             </Link>
@@ -52,12 +117,29 @@ export function BottomNav() {
   );
 }
 
-/* ── <PageHeader> — título de sección, mismo patrón en las 4 secciones (consistencia h4) ── */
-export function PageHeader({ titulo, subtitulo, accion }: { titulo: string; subtitulo?: string; accion?: ReactNode }) {
+/* ── <PageHeader> — título de sección, mismo patrón en las 4 secciones (consistencia h4).
+   `palabraClave` aplica el <Marcador> de marca sobre esa palabra del título; `halo` enciende la
+   mancha radial detrás. Ambos OPCIONALES: sin ellos el header se comporta igual que antes. ── */
+export function PageHeader({
+  titulo,
+  subtitulo,
+  accion,
+  palabraClave,
+  halo = false,
+}: {
+  titulo: string;
+  subtitulo?: string;
+  accion?: ReactNode;
+  palabraClave?: string;
+  halo?: boolean;
+}) {
   return (
-    <div className="flex items-start justify-between gap-3 pb-6 pt-2">
+    <div className={`flex items-start justify-between gap-3 pb-6 pt-2 ${halo ? 'relative isolate' : ''}`}>
+      {halo && <Halo className="!left-0 !top-4 !translate-x-0" />}
       <div>
-        <h1 className="text-[26px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)]">{titulo}</h1>
+        <h1 className="text-[26px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)]">
+          {conMarcador(titulo, palabraClave)}
+        </h1>
         {subtitulo && <p className="mt-1 text-[14px] text-[var(--text-secondary)]">{subtitulo}</p>}
       </div>
       {accion}
@@ -65,11 +147,53 @@ export function PageHeader({ titulo, subtitulo, accion }: { titulo: string; subt
   );
 }
 
-/* ── <Tarjeta> — superficie elevada base, usada por listas e info-cards en toda la app ── */
-export function Tarjeta({ children, className = '' }: { children: ReactNode; className?: string }) {
+/* ── <Tarjeta> — superficie elevada base, usada por listas e info-cards en toda la app.
+   Ahora entra con la baseline de movimiento del SO (opacidad + 8px de subida, 340ms, ease sereno)
+   y admite `indice` para el escalonado de 50ms en listas. Sin `indice` el retraso es 0, así que
+   ninguna pantalla existente cambia su comportamiento. Respeta prefers-reduced-motion. ── */
+export function Tarjeta({
+  children,
+  className = '',
+  indice = 0,
+}: {
+  children: ReactNode;
+  className?: string;
+  indice?: number;
+}) {
+  const reduce = useReducedMotion();
   return (
-    <div className={`rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--text-tertiary)_16%,transparent)] bg-[var(--surface)] p-4 shadow-[var(--shadow-1)] ${className}`}>
+    <motion.div
+      initial={reduce ? false : { opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: DUR_BASE, ease: EASE_SERENO, delay: reduce ? 0 : indice * 0.05 }}
+      className={`rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--text-tertiary)_16%,transparent)] bg-[var(--surface)] p-4 shadow-[var(--shadow-1)] ${className}`}
+    >
       {children}
+    </motion.div>
+  );
+}
+
+/* ── <TarjetaSkeleton> — esqueleto con la FORMA de la tarjeta real mientras cargan los datos.
+   La app interna no tenía ninguno (solo dos puntitos pulsando): al abrir Pagos o Calendario se
+   veía el vacío y de golpe aparecía todo. Regla del SO: spinner genérico prohibido, skeleton con
+   la silueta del contenido — baja la espera percibida y deja el layout quieto (CLS 0). ── */
+export function TarjetaSkeleton({ filas = 3 }: { filas?: number }) {
+  const reduce = useReducedMotion();
+  const pulso = reduce ? '' : 'animate-pulse [animation-duration:1.6s]';
+  return (
+    <div aria-hidden="true" className="flex flex-col gap-3">
+      {Array.from({ length: filas }).map((_, i) => (
+        <div
+          key={i}
+          className={`flex items-center gap-3 rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--text-tertiary)_16%,transparent)] bg-[var(--surface)] p-4 ${pulso}`}
+        >
+          <div className="size-10 shrink-0 rounded-full bg-[color-mix(in_oklab,var(--text-tertiary)_16%,transparent)]" />
+          <div className="min-w-0 flex-1">
+            <div className="h-3 w-1/3 rounded-full bg-[color-mix(in_oklab,var(--text-tertiary)_16%,transparent)]" />
+            <div className="mt-2 h-4 w-2/3 rounded-full bg-[color-mix(in_oklab,var(--text-tertiary)_16%,transparent)]" />
+          </div>
+        </div>
+      ))}
     </div>
   );
 }
