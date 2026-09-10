@@ -1281,6 +1281,21 @@ FICHA-ARTE.md que la landing.
 
 ## Problemas conocidos
 
+### Estado de los 3 gates de veredicto tras la sesión de copy "sin ex" + fix del carrusel (2026-09-10)
+Ninguno de los 3 se toca en sustancia en esta sesión; se posponen con la misma justificación ya
+documentada abajo:
+- **veredicto:landing** — sigue LISTA (37/40 · 17/20 · 18/20). El gate lo marca "caducado" solo
+  porque el mtime de cualquier `.tsx` (aquí `app/page.tsx` con una FAQ reformulada de una línea y
+  `components/landing/AppPorDentro.tsx` con un fix de arrastre de mouse) es más nuevo que el
+  archivo de veredicto. Ningún cambio visual/estructural; re-sellado 4ª vez en
+  `docs/revisiones/landing-veredicto.md` con el detalle. No amerita re-lanzar el revisor (~85k
+  tokens) por una palabra de copy y un `draggable={false}`.
+- **veredicto:onboarding** — NO LISTA por techo estructural CONFIRMADO (ver entrada siguiente). Los
+  edits de esta sesión son 3 strings de copy (quitar "ex"), sin cambio de layout. No mueven el
+  puntaje.
+- **veredicto:paywall** — NO LISTA, sin cambios en esta sesión (ver su entrada abajo). Sigue en la
+  cola de pulido opcional.
+
 ### veredicto onboarding — NO LISTA, **techo estructural CONFIRMADO** (9 rondas de revisión)
 > ⚠️ **ACTUALIZADO 2026-09-10.** Estado vigente: **Usabilidad 30/40 · Craft 16/20 (YA PASA) ·
 > Copy N/A · NO LISTA.** El craft alcanzó el gate tras alinear los springs (bounce 0.4→0.12) a la

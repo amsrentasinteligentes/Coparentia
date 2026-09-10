@@ -14,6 +14,14 @@ del árbol de la landing —`app/page.tsx` + `components/landing/*`— ha cambia
 commit que los modifica (8d9f40d, anterior a la ronda LISTA). El veredicto sigue vigente en
 sustancia: landing 37/40 · 17/20 · 18/20 · LISTA.
 
+Re-confirmado 2026-09-10 (4ª vez). Cambios en el árbol de la landing desde entonces, ninguno
+visual/estructural: (a) `app/page.tsx` — una pregunta de FAQ reformulada para no usar la palabra
+"ex" ("¿La otra persona tiene que descargar la app también?"), mismo largo, misma jerarquía, mismo
+componente `<Faq>`; (b) `components/landing/AppPorDentro.tsx` — fix de comportamiento: el carrusel
+ahora se arrastra con el mouse en desktop (`draggable={false}` en el `<img>` + `preventDefault`),
+sin cambio de layout, tamaños ni tokens. Ambos verificados a 375px en preview. El veredicto de
+usabilidad/craft/copy NO cambia: landing 37/40 · 17/20 · 18/20 · LISTA.
+
 Top defectos:
 1. Card mensual (sección Oferta) — con solo 3 bullets queda ~40% más corta que la anual; en desktop el grid items-start deja las cards desparejas y "Todo lo que incluye el plan Anual" obliga a saltar a la otra card → sumar 1 bullet concreto o fijar min-height igualada.
 2. Card anual (bajo el precio) — "Se cobra US$89 al año" (semibold) + "3 meses gratis" (accent) siguen siendo dos focos que compiten bajo el display; el ojo apurado salta entre ambos → mover "3 meses gratis" al badge superior o bajarlo a peso normal.
