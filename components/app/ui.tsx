@@ -8,7 +8,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion, useReducedMotion } from 'motion/react';
 import { Home, Wallet, CalendarDays, FolderOpen, type LucideIcon } from 'lucide-react';
-import type { ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 
 /* Motion signature de FICHA-ARTE.md, en un solo lugar: ease-out suave, 340ms base, sin springs
    agresivos (coherente con "Sereno"). Antes cada componente inventaba su curva y su duración. */
@@ -21,6 +21,36 @@ const DESTINOS: { href: string; label: string; icon: LucideIcon }[] = [
   { href: '/calendario', label: 'Calendario', icon: CalendarDays },
   { href: '/expediente', label: 'Expediente', icon: FolderOpen },
 ];
+
+/* ── <NumeroContado> — un número héroe cuenta desde 0 hasta su valor al aparecer (baseline 2 de
+   las 7 animaciones del SO). La app interna no tenía ninguno: los datos del expediente aparecían
+   de golpe, que es justo el momento en que deberían sentirse "logrados". `formato` permite pasar
+   el formateador de moneda para que el conteo se vea con separadores de mil desde el primer frame.
+   Respeta prefers-reduced-motion: con esa preferencia activa muestra el valor final sin animar. ── */
+export function NumeroContado({ valor, formato }: { valor: number; formato?: (n: number) => string }) {
+  const reduce = useReducedMotion();
+  const [mostrado, setMostrado] = useState(reduce ? valor : 0);
+
+  useEffect(() => {
+    if (reduce) {
+      setMostrado(valor);
+      return;
+    }
+    const DURACION = 700;
+    const inicio = performance.now();
+    let frame = 0;
+    const paso = (ahora: number) => {
+      const t = Math.min(1, (ahora - inicio) / DURACION);
+      const suavizado = 1 - Math.pow(1 - t, 3); // ease-out cúbico, coherente con "Sereno"
+      setMostrado(valor * suavizado);
+      if (t < 1) frame = requestAnimationFrame(paso);
+    };
+    frame = requestAnimationFrame(paso);
+    return () => cancelAnimationFrame(frame);
+  }, [valor, reduce]);
+
+  return <>{formato ? formato(Math.round(mostrado)) : Math.round(mostrado)}</>;
+}
 
 /* ── <Halo> — DISPOSITIVO OWNABLE de FICHA-ARTE.md (mitad 1 de 2): mancha radial azul detrás del
    elemento héroe. Estaba implementado en el funnel pero NO en la app interna, y en el paywall el
@@ -47,8 +77,20 @@ export function Halo({ className = '' }: { className?: string }) {
 export function Marcador({ children }: { children: ReactNode }) {
   return (
     <span
-      className="[padding:0_2px]"
-      style={{ background: 'linear-gradient(transparent 62%, color-mix(in oklab, var(--accent) 34%, transparent) 62%)' }}
+      className="[box-decoration-break:clone] [-webkit-box-decoration-break:clone]"
+      style={{
+        // MISMO bug que ya se corrigió en el kit del funnel, que aquí había quedado sin arreglar:
+        // con un gradiente por PORCENTAJE del alto de la caja (62%), el trazo crecía junto con la
+        // caja de línea — y con Spectral el bloque de tinta es más alto que el interlineado, así
+        // que en el titular de 26px se veía como un rectángulo grueso tapando media palabra en vez
+        // de un subrayado. En unidades `em` el grosor no depende de cuánto se infle la caja.
+        backgroundImage:
+          'linear-gradient(color-mix(in oklab, var(--accent) 30%, transparent), color-mix(in oklab, var(--accent) 30%, transparent))',
+        backgroundRepeat: 'no-repeat',
+        backgroundPosition: '0 calc(100% - 0.14em)',
+        backgroundSize: '100% 0.22em',
+        padding: '0 0.05em',
+      }}
     >
       {children}
     </span>
@@ -136,7 +178,7 @@ export function PageHeader({
 }) {
   return (
     <div className={`flex items-start justify-between gap-3 pb-6 pt-2 ${halo ? 'relative isolate' : ''}`}>
-      {halo && <Halo className="!left-0 !top-4 !translate-x-0" />}
+      {halo && <Halo />}
       <div>
         <h1 className="text-[26px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)]">
           {conMarcador(titulo, palabraClave)}

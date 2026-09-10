@@ -10,7 +10,8 @@ import { motion, useReducedMotion } from 'motion/react';
 import { Upload, Check, CalendarClock, ShieldCheck, ChevronRight, FileCheck2, Globe } from 'lucide-react';
 import { MiniRing } from '@/components/landing/ui';
 import { BarraAtras, Halo } from '@/components/funnel/ui';
-import { ContenedorApp, PageHeader, Tarjeta, IconoCirculo, Pildora } from '@/components/app/ui';
+import Link from 'next/link';
+import { ContenedorApp, PageHeader, Tarjeta, IconoCirculo, Pildora, TarjetaSkeleton, NumeroContado } from '@/components/app/ui';
 import {
   type Titulo,
   type Pago,
@@ -40,7 +41,19 @@ export default function Inicio() {
     });
   }, []);
 
-  if (!listo) return null;
+  // Mientras se resuelve si la persona ya pasó los primeros pasos, esto devolvía `null`: una
+  // pantalla EN BLANCO durante el arranque, que en un celular lento se lee como "la app no cargó".
+  // Ahora se muestra la silueta de lo que viene (regla del SO: nunca spinner, nunca vacío).
+  if (!listo) {
+    return (
+      <ContenedorApp>
+        <div className="pb-6 pt-2">
+          <div className="h-8 w-2/3 animate-pulse rounded-full bg-[color-mix(in_oklab,var(--text-tertiary)_16%,transparent)] [animation-duration:1.6s]" />
+        </div>
+        <TarjetaSkeleton filas={3} />
+      </ContenedorApp>
+    );
+  }
   if (!completo) return <PrimerosPasos onListo={() => setCompleto(true)} />;
   return <Dashboard />;
 }
@@ -263,11 +276,19 @@ function Dashboard() {
   const [pagos, setPagos] = useState<Pago[]>([]);
   const [eventos, setEventos] = useState<Evento[]>([]);
   const [titulo, setTitulo] = useState<Titulo | null>(null);
+  // Sin esto el dashboard pintaba primero TODO en cero (0 comprobantes, $0, anillo vacío) y un
+  // instante después saltaba a los datos reales: durante ese parpadeo la app le dice a la persona
+  // que su expediente está vacío, que es exactamente su miedo.
+  const [cargando, setCargando] = useState(true);
 
   useEffect(() => {
-    obtenerTitulo().then(setTitulo);
-    obtenerPagos().then(setPagos);
-    obtenerEventos().then(setEventos);
+    Promise.all([obtenerTitulo(), obtenerPagos(), obtenerEventos()])
+      .then(([t, p, e]) => {
+        setTitulo(t);
+        setPagos(p);
+        setEventos(e);
+      })
+      .finally(() => setCargando(false));
   }, []);
 
   const totalRegistrado = pagos.reduce((acc, p) => acc + p.monto, 0);
@@ -281,33 +302,49 @@ function Dashboard() {
 
   return (
     <ContenedorApp>
-      <PageHeader titulo="Tu expediente" subtitulo={titulo ? `Cuota de ${formatoCOP(titulo.montoMensual)} · día ${titulo.diaPago}` : undefined} />
+      {/* El <Marcador> de marca no existía en NINGUNA pantalla de la app interna, solo en el
+          funnel: aquí el sello de identidad entra sobre la palabra que da nombre al producto. */}
+      <PageHeader
+        titulo="Tu expediente"
+        palabraClave="expediente"
+        halo
+        subtitulo={titulo ? `Cuota de ${formatoCOP(titulo.montoMensual)} · día ${titulo.diaPago}` : undefined}
+      />
 
-      <Tarjeta className="flex items-center gap-4">
-        <MiniRing value={progreso} size={64} stroke={6} />
-        <div className="flex-1">
-          <p className="text-[13px] text-[var(--text-secondary)]">Meses con registro</p>
-          <p className="text-[22px] font-bold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
-            {Math.min(mesesConRegistro, metaMeses)} <span className="text-[15px] font-normal text-[var(--text-secondary)]">de {metaMeses}</span>
-          </p>
-        </div>
-      </Tarjeta>
+      {cargando ? (
+        <TarjetaSkeleton filas={3} />
+      ) : (
+        <>
+          <Tarjeta className="flex items-center gap-4">
+            <MiniRing value={progreso} size={64} stroke={6} />
+            <div className="flex-1">
+              <p className="text-[13px] text-[var(--text-secondary)]">Meses con registro</p>
+              <p className="text-[22px] font-bold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
+                <NumeroContado valor={Math.min(mesesConRegistro, metaMeses)} />{' '}
+                <span className="text-[15px] font-normal text-[var(--text-secondary)]">de {metaMeses}</span>
+              </p>
+            </div>
+          </Tarjeta>
 
-      <div className="mt-3 grid grid-cols-2 gap-3">
-        <Tarjeta>
-          <p className="text-[13px] text-[var(--text-secondary)]">Total registrado</p>
-          <p className="mt-1 text-[19px] font-bold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
-            {formatoCOP(totalRegistrado)}
-          </p>
-        </Tarjeta>
-        <Tarjeta>
-          <p className="text-[13px] text-[var(--text-secondary)]">Comprobantes</p>
-          <p className="mt-1 text-[19px] font-bold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">{pagos.length}</p>
-        </Tarjeta>
-      </div>
+          <div className="mt-3 grid grid-cols-2 gap-3">
+            <Tarjeta indice={1}>
+              <p className="text-[13px] text-[var(--text-secondary)]">Total registrado</p>
+              <p className="mt-1 text-[19px] font-bold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
+                <NumeroContado valor={totalRegistrado} formato={formatoCOP} />
+              </p>
+            </Tarjeta>
+            <Tarjeta indice={2}>
+              <p className="text-[13px] text-[var(--text-secondary)]">Comprobantes</p>
+              <p className="mt-1 text-[19px] font-bold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
+                <NumeroContado valor={pagos.length} />
+              </p>
+            </Tarjeta>
+          </div>
+        </>
+      )}
 
       {proximoEvento && (
-        <a href="/calendario" className="mt-3 block [touch-action:manipulation]">
+        <Link href="/calendario" className="mt-3 block [touch-action:manipulation]">
           <Tarjeta className="flex items-center gap-3">
             <IconoCirculo icon={ICONO_EVENTO[proximoEvento.tipo]} />
             <div className="flex-1">
@@ -319,35 +356,47 @@ function Dashboard() {
               <ChevronRight size={16} className="ml-auto mt-1 text-[var(--text-tertiary)]" aria-hidden="true" />
             </div>
           </Tarjeta>
-        </a>
+        </Link>
       )}
 
       <div className="mt-6 flex items-center justify-between">
         <h2 className="text-[17px] font-semibold text-[var(--text-primary)]">Últimos movimientos</h2>
-        <a href="/pagos" className="text-[13px] font-medium text-[var(--accent)] [touch-action:manipulation]">
+        <Link href="/pagos" className="text-[13px] font-medium text-[var(--accent)] [touch-action:manipulation]">
           Ver todos
-        </a>
+        </Link>
       </div>
       <div className="mt-3 flex flex-col gap-3">
-        {ultimosPagos.map((p) => (
-          <Tarjeta key={p.id} className="flex items-center gap-3">
-            <IconoCirculo icon={p.tipo === 'cuota' ? ShieldCheck : FileCheck2} />
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-[14px] font-medium text-[var(--text-primary)]">{p.concepto}</p>
-              <p className="truncate text-[12px] text-[var(--text-tertiary)]">{formatoFechaLarga(p.fecha)}</p>
-            </div>
-            <p className="shrink-0 text-[14px] font-semibold tabular-nums text-[var(--text-primary)]">{formatoCOP(p.monto)}</p>
+        {/* Faltaba el estado vacío: sin registros, el título "Últimos movimientos" quedaba solo,
+            colgando sobre la nada, sin decir qué hacer (regla 7 del SO). */}
+        {ultimosPagos.length === 0 ? (
+          <Tarjeta className="flex flex-col items-center py-8 text-center">
+            <IconoCirculo icon={FileCheck2} size={22} />
+            <p className="mt-3 text-[14px] font-medium text-[var(--text-primary)]">Todavía no hay movimientos</p>
+            <p className="mt-1 max-w-[30ch] text-[13px] text-[var(--text-secondary)]">
+              Cada comprobante que subas queda fechado aquí, listo para mostrar cuando lo necesites.
+            </p>
           </Tarjeta>
-        ))}
+        ) : (
+          ultimosPagos.map((p, i) => (
+            <Tarjeta key={p.id} indice={i} className="flex items-center gap-3">
+              <IconoCirculo icon={p.tipo === 'cuota' ? ShieldCheck : FileCheck2} />
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-[14px] font-medium text-[var(--text-primary)]">{p.concepto}</p>
+                <p className="truncate text-[12px] text-[var(--text-tertiary)]">{formatoFechaLarga(p.fecha)}</p>
+              </div>
+              <p className="shrink-0 text-[14px] font-semibold tabular-nums text-[var(--text-primary)]">{formatoCOP(p.monto)}</p>
+            </Tarjeta>
+          ))
+        )}
       </div>
 
-      <a
+      <Link
         href="/pagos"
         className="mt-8 flex h-14 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] bg-[var(--accent)] text-[16px] font-semibold text-[var(--bg)] [touch-action:manipulation]"
       >
         <Upload size={18} aria-hidden="true" />
         Subir un comprobante
-      </a>
+      </Link>
     </ContenedorApp>
   );
 }
