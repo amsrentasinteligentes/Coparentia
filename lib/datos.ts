@@ -179,6 +179,24 @@ export async function obtenerPagos(): Promise<Pago[]> {
   return (data ?? []).map(mapPago);
 }
 
+// Elimina un movimiento y SU ARCHIVO. No existía ninguna forma de borrar: una foto equivocada
+// —la del recibo del vecino, una captura mal tomada, un duplicado— quedaba para siempre dentro del
+// expediente que se va a llevar a un juzgado, y ahora además se incrusta en el PDF que se le
+// entrega al abogado. Un registro que no se puede corregir no es un expediente confiable.
+// El archivo de Storage se borra ANTES que la fila: si se borrara después y algo fallara en el
+// medio, quedaría un archivo huérfano sin ninguna fila que lo referencie, imposible de encontrar.
+export async function eliminarPago(pago: Pago): Promise<void> {
+  const { supabase, userId } = await usuarioActual();
+
+  if (pago.comprobantePath) {
+    await supabase.storage.from('comprobantes').remove([pago.comprobantePath]);
+  }
+
+  const { error } = await supabase.from('pagos').delete().eq('id', pago.id).eq('user_id', userId);
+  if (error) throw error;
+  registrarEvento(supabase, userId, 'pago_eliminado');
+}
+
 // Valida tamaño/tipo ANTES de subir — mismo tope que se aplica del lado del servidor en el bucket
 // (supabase/fix-limites-storage.sql), para que el usuario vea un mensaje claro al elegir el
 // archivo en vez de un error de red genérico cuando Supabase lo rechace en el servidor.

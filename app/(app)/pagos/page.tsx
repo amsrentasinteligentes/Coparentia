@@ -16,6 +16,7 @@ import {
   type TipoMovimiento,
   obtenerPagos,
   agregarPago,
+  eliminarPago,
   obtenerTitulo,
   obtenerUrlArchivo,
   formatoCOP,
@@ -36,6 +37,26 @@ export default function Pagos() {
   const [selloDe, setSelloDe] = useState<string | null>(null);
   const [falloCarga, setFalloCarga] = useState(false);
   const [intento, setIntento] = useState(0);
+  const [confirmandoBorrado, setConfirmandoBorrado] = useState<string | null>(null);
+  const [borrando, setBorrando] = useState<string | null>(null);
+  const [errorBorrado, setErrorBorrado] = useState<string | null>(null);
+
+  const borrarPago = async (p: Pago): Promise<void> => {
+    if (borrando) return;
+    setBorrando(p.id);
+    setErrorBorrado(null);
+    try {
+      await eliminarPago(p);
+      // Se quita de la lista SOLO después de que el borrado real terminó bien: adelantarse
+      // mostraría como eliminado algo que sigue en el expediente.
+      setPagos((prev) => prev.filter((x) => x.id !== p.id));
+      setConfirmandoBorrado(null);
+    } catch {
+      setErrorBorrado('No pudimos borrar el registro. Revisa tu conexión e inténtalo de nuevo.');
+    } finally {
+      setBorrando(null);
+    }
+  };
 
   // Un fallo de red mostraba la lista VACIA, indistinguible de "no tienes comprobantes".
   useEffect(() => {
@@ -107,7 +128,7 @@ export default function Pagos() {
             <p className="text-[14px] text-[var(--text-secondary)]">Todavía no tienes registros en esta categoría.</p>
           </Tarjeta>
         )}
-        {visibles.map((p) => {
+        {visibles.map((p, i) => {
           const contenido = (
             <>
               <IconoCirculo icon={p.tipo === 'cuota' ? ShieldCheck : FileCheck2} />
@@ -121,26 +142,66 @@ export default function Pagos() {
               )}
             </>
           );
-          if (!p.comprobantePath) {
-            return (
-              <Tarjeta key={p.id} className="flex items-center gap-3">
-                {contenido}
-              </Tarjeta>
-            );
-          }
+
           return (
-            <button
-              key={p.id}
-              type="button"
-              onClick={() => verComprobante(p)}
-              disabled={abriendo === p.id}
-              className="text-left [touch-action:manipulation]"
-            >
-              <Tarjeta className="flex items-center gap-3">{contenido}</Tarjeta>
-            </button>
+            <Tarjeta key={p.id} indice={i} className="flex flex-col gap-2">
+              {p.comprobantePath ? (
+                <button
+                  type="button"
+                  onClick={() => verComprobante(p)}
+                  disabled={abriendo === p.id}
+                  className="flex items-center gap-3 text-left [touch-action:manipulation]"
+                >
+                  {contenido}
+                </button>
+              ) : (
+                <div className="flex items-center gap-3">{contenido}</div>
+              )}
+
+              {/* BORRAR — no existía ninguna forma de corregir un registro. Una foto equivocada
+                  quedaba para siempre en el expediente que se lleva a un juzgado, y ahora además
+                  se incrusta en el PDF que recibe el abogado. Confirmación en dos pasos porque es
+                  irreversible (regla 8 del SO: confirmar solo lo que no se puede deshacer). */}
+              {confirmandoBorrado === p.id ? (
+                <div className="flex items-center gap-2 border-t border-[color-mix(in_oklab,var(--text-tertiary)_14%,transparent)] pt-2">
+                  <p className="flex-1 text-[12.5px] text-[var(--text-secondary)]">
+                    ¿Borrar este registro y su comprobante?
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setConfirmandoBorrado(null)}
+                    disabled={borrando === p.id}
+                    className="h-9 rounded-[var(--radius-button)] px-3 text-[12.5px] font-medium text-[var(--text-secondary)] [touch-action:manipulation]"
+                  >
+                    No
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => borrarPago(p)}
+                    disabled={borrando === p.id}
+                    className="h-9 rounded-[var(--radius-button)] bg-[var(--status-error)] px-3 text-[12.5px] font-semibold text-white transition-opacity disabled:opacity-60 [touch-action:manipulation]"
+                  >
+                    {borrando === p.id ? 'Borrando…' : 'Sí, borrar'}
+                  </button>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setConfirmandoBorrado(p.id)}
+                  aria-label={`Borrar ${p.concepto}`}
+                  className="self-end text-[12px] text-[var(--text-tertiary)] underline-offset-2 hover:underline [touch-action:manipulation]"
+                >
+                  Borrar
+                </button>
+              )}
+            </Tarjeta>
           );
         })}
       </div>
+
+      {errorBorrado && (
+        <p role="alert" className="mt-3 text-[12.5px] text-[var(--status-error)]">{errorBorrado}</p>
+      )}
 
       <BotonFlotante onClick={() => setModalAbierto(true)}>
         <Upload size={18} aria-hidden="true" />

@@ -11,7 +11,8 @@ import { Upload, Check, CalendarClock, ShieldCheck, ChevronRight, FileCheck2, Gl
 import { MiniRing } from '@/components/landing/ui';
 import { BarraAtras, Halo } from '@/components/funnel/ui';
 import Link from 'next/link';
-import { ContenedorApp, PageHeader, Tarjeta, IconoCirculo, Pildora, TarjetaSkeleton, NumeroContado, ErrorDeCarga } from '@/components/app/ui';
+import { useRouter } from 'next/navigation';
+import { ContenedorApp, PageHeader, Tarjeta, IconoCirculo, Pildora, TarjetaSkeleton, NumeroContado, ErrorDeCarga, BotonFlotante } from '@/components/app/ui';
 import {
   type Titulo,
   type Pago,
@@ -102,20 +103,38 @@ function PrimerosPasos({ onListo }: { onListo: () => void }) {
   // se retoma en el paso del comprobante — nunca se vuelve a pedir la cuota ni se salta al
   // dashboard con datos que no son del usuario.
   useEffect(() => {
-    obtenerTitulo().then((t) => {
-      if (t) setPaso('comprobante');
-    });
+    // Con `.catch`: sin él, un fallo aquí quedaba como rechazo sin manejar en la consola y la
+    // persona se quedaba en el paso 1 sin entender por qué (o repitiendo un título ya guardado).
+    obtenerTitulo()
+      .then((t) => {
+        if (t) setPaso('comprobante');
+      })
+      .catch(() => {
+        // Se queda en el paso 1: es el estado seguro. Si el título ya existía, `guardarTitulo`
+        // hace upsert, así que reintentarlo no duplica nada.
+      });
   }, []);
 
+  // Mismo rango que valida el editor de Ajustes. Sin esto se podía guardar "día 45" o monto 0 y el
+  // encabezado de Inicio lo mostraba tal cual: dos puertas al mismo dato con reglas distintas.
+  const montoNumero = Number(monto);
+  const diaNumero = Number(dia);
+  const tituloValido = montoNumero > 0 && diaNumero >= 1 && diaNumero <= 31;
+
   const confirmarTitulo = async (): Promise<void> => {
+    if (!tituloValido) return;
     const t: Titulo = {
-      montoMensual: Number(monto) || 0,
-      diaPago: Number(dia) || 1,
+      montoMensual: montoNumero,
+      diaPago: diaNumero,
       indiceReajuste: reajuste,
       fechaInicio: new Date().toISOString().slice(0, 10),
     };
-    await guardarTitulo(t);
-    setPaso('comprobante');
+    try {
+      await guardarTitulo(t);
+      setPaso('comprobante');
+    } catch {
+      setErrorSubida('No pudimos guardar tu cuota. Revisa tu conexión e inténtalo de nuevo.');
+    }
   };
 
   const subirComprobante = (f: File): void => {
@@ -210,7 +229,7 @@ function PrimerosPasos({ onListo }: { onListo: () => void }) {
 
           <motion.button
             type="button"
-            disabled={!monto || !dia}
+            disabled={!tituloValido}
             onClick={confirmarTitulo}
             whileTap={{ scale: 0.97 }}
             className="mt-8 flex h-14 w-full items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-[16px] font-semibold text-[var(--bg)] transition-opacity disabled:opacity-40 [touch-action:manipulation]"
@@ -328,6 +347,7 @@ function mesesDesde(fechaISO: string): number {
 
 /* ── DASHBOARD — protagonista: el estado del expediente. Datos reales de lib/datos.ts. ── */
 function Dashboard() {
+  const router = useRouter();
   const [pagos, setPagos] = useState<Pago[]>([]);
   const [eventos, setEventos] = useState<Evento[]>([]);
   const [titulo, setTitulo] = useState<Titulo | null>(null);
@@ -495,6 +515,12 @@ function Dashboard() {
         </>
       )}
 
+      {/* TODO lo que sigue depende de los mismos datos: si la carga falló, mostrarlo sería volver
+          a decir la mentira que <ErrorDeCarga> acaba de desmentir arriba ("Todavía no hay
+          movimientos" cuando en realidad no se pudieron traer). El error tapa el dashboard entero,
+          no solo su primera mitad. */}
+      {!falloCarga && !cargando && (
+        <>
       {proximoEvento && (
         <Link href="/calendario" className="mt-3 block [touch-action:manipulation]">
           <Tarjeta className="flex items-center gap-3">
@@ -542,17 +568,19 @@ function Dashboard() {
         )}
       </div>
 
-      {/* Era la única acción primaria de la pantalla y quedaba cortada detrás del nav fijo en la
-          primera vista, además de ser el único botón del flujo SIN respuesta al toque. */}
-      <motion.div whileTap={{ scale: 0.98 }} className="mt-8">
-        <Link
-          href="/pagos"
-          className="flex h-14 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] bg-[var(--accent)] text-[16px] font-semibold text-[var(--bg)] [touch-action:manipulation]"
-        >
+        </>
+      )}
+
+      {/* La acción primaria vivía al final del scroll: dejaba de verse apenas la lista crecía, y
+          rompía el patrón del propio kit — Pagos y Calendario usan <BotonFlotante> ("acción
+          primaria de la sección, SIEMPRE visible"). Ahora Inicio se comporta igual que sus
+          hermanas y el botón está siempre a la mano. */}
+      {!falloCarga && !cargando && (
+        <BotonFlotante onClick={() => router.push('/pagos')}>
           <Upload size={18} aria-hidden="true" />
-          Subir un comprobante
-        </Link>
-      </motion.div>
+          Registrar
+        </BotonFlotante>
+      )}
     </ContenedorApp>
   );
 }
