@@ -10,6 +10,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Upload, ShieldCheck, FileCheck2, X, ChevronRight, Sparkles } from 'lucide-react';
 import { ContenedorApp, PageHeader, Tarjeta, IconoCirculo, BotonFlotante, ErrorDeCarga } from '@/components/app/ui';
 import { VisorImagen } from '@/components/app/VisorImagen';
+import { Portal } from '@/components/app/Portal';
 import { SelloConfianza } from '@/components/app/SelloConfianza';
 import { VistaPreviaArchivo } from '@/components/app/VistaPreviaArchivo';
 import {
@@ -88,7 +89,7 @@ export default function Pagos() {
     // Antes era `if (!url) return`: la persona tocaba su comprobante, no pasaba NADA y no sabia
     // si el archivo se habia perdido o si la app estaba rota. El silencio es el peor error.
     if (!url) {
-      setErrorFila({ id: p.id, mensaje: "No pudimos abrir este comprobante. Revisa tu conexion e intentalo de nuevo." });
+      setErrorFila({ id: p.id, mensaje: 'No pudimos abrir este comprobante. Revisa tu conexión e inténtalo de nuevo.' });
       return;
     }
     setErrorFila(null);
@@ -242,6 +243,7 @@ export default function Pagos() {
         Registrar
       </BotonFlotante>
 
+      <Portal>
       <AnimatePresence>
         {modalAbierto && (
           <ModalRegistro
@@ -256,12 +258,17 @@ export default function Pagos() {
           />
         )}
       </AnimatePresence>
+      </Portal>
 
+      <Portal>
       <AnimatePresence>
         {selloDe && <SelloConfianza fecha={formatoFechaLarga(selloDe)} onTerminar={() => setSelloDe(null)} />}
       </AnimatePresence>
+      </Portal>
 
-      <VisorImagen url={urlVisor} onCerrar={() => setUrlVisor(null)} />
+      <Portal>
+        <VisorImagen url={urlVisor} onCerrar={() => setUrlVisor(null)} />
+      </Portal>
     </ContenedorApp>
   );
 }
@@ -278,9 +285,13 @@ function ModalRegistro({ onCerrar, onGuardado }: { onCerrar: () => void; onGuard
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    obtenerTitulo().then((t: Titulo | null) => {
-      if (t) setMonto(String(t.montoMensual));
-    });
+    // Con .catch: si falla, el campo queda vacio para escribir a mano en vez de dejar un rechazo
+    // sin manejar en la consola.
+    obtenerTitulo()
+      .then((t: Titulo | null) => {
+        if (t) setMonto(String(t.montoMensual));
+      })
+      .catch(() => {});
   }, []);
 
   // Lector automático de recibos: al elegir la foto, se le pide a la IA que lea el monto y se
@@ -312,8 +323,25 @@ function ModalRegistro({ onCerrar, onGuardado }: { onCerrar: () => void; onGuard
     }
   };
 
+  // Qué falta para poder guardar, dicho en palabras. Se calcula solo al INTENTAR guardar (no
+  // mientras se escribe): regañar antes de que la persona termine de llenar es hostil.
+  const [faltante, setFaltante] = useState<string | null>(null);
+
   const guardar = (): void => {
-    if (!archivo || !monto || !concepto.trim()) return;
+    if (procesando) return;
+    if (!concepto.trim()) {
+      setFaltante('Falta el concepto: escribe de qué es este pago.');
+      return;
+    }
+    if (!monto) {
+      setFaltante('Falta el monto.');
+      return;
+    }
+    if (!archivo) {
+      setFaltante('Falta el comprobante: adjunta la foto o el PDF.');
+      return;
+    }
+    setFaltante(null);
     setProcesando(true);
     agregarPago(
       {
@@ -447,14 +475,22 @@ function ModalRegistro({ onCerrar, onGuardado }: { onCerrar: () => void; onGuard
           </button>
         )}
         {errorArchivo ? (
-          <p className="mt-1.5 text-[12px] text-[var(--status-error)]">{errorArchivo}</p>
+          <p role="alert" className="mt-1.5 text-[12px] text-[var(--status-error)]">{errorArchivo}</p>
         ) : (
           <p className="mt-1.5 text-[12px] text-[var(--text-tertiary)]">Con una foto, el monto se completa solo — revísalo antes de guardar.</p>
         )}
 
+        {/* El botón estaba muerto al 40% sin decir qué faltaba: había que adivinar cuál de los tres
+            campos estaba incompleto. Ahora se ve activo, y al tocarlo dice exactamente qué falta —
+            que es como funciona el editor de Ajustes. Solo se deshabilita mientras guarda. */}
+        {faltante && (
+          <p role="alert" className="mt-3 text-center text-[12.5px] text-[var(--status-error)]">
+            {faltante}
+          </p>
+        )}
         <button
           type="button"
-          disabled={!archivo || !monto || !concepto.trim() || procesando}
+          disabled={procesando}
           onClick={guardar}
           className="mt-5 flex h-14 w-full items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-[16px] font-semibold text-[var(--bg)] transition-opacity disabled:opacity-40 [touch-action:manipulation]"
         >

@@ -13,6 +13,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { ChevronLeft, ChevronRight, Plus, X, Users, HeartPulse, Plane, Trophy, Globe, Paperclip } from 'lucide-react';
 import { ContenedorApp, PageHeader, Tarjeta, IconoCirculo, BotonFlotante, ErrorDeCarga } from '@/components/app/ui';
 import { VisorImagen } from '@/components/app/VisorImagen';
+import { Portal } from '@/components/app/Portal';
 import { type Evento, type TipoEvento, obtenerEventos, agregarEvento, obtenerUrlArchivo, formatoFechaLarga, validarArchivoAdjunto } from '@/lib/datos';
 
 const ICONO: Record<TipoEvento, typeof Users> = { visita: Users, medica: HeartPulse, vacaciones: Plane, extracurricular: Trophy, salida_pais: Globe };
@@ -135,6 +136,7 @@ export default function Calendario() {
         Evento
       </BotonFlotante>
 
+      <Portal>
       <AnimatePresence>
         {modalAbierto && (
           <ModalEvento
@@ -147,6 +149,7 @@ export default function Calendario() {
           />
         )}
       </AnimatePresence>
+      </Portal>
     </ContenedorApp>
   );
 }
@@ -202,7 +205,9 @@ function TarjetaEvento({ evento: e }: { evento: Evento }) {
       <button type="button" onClick={abrirDocumento} disabled={abriendo} className="text-left [touch-action:manipulation]">
         <Tarjeta className="flex items-center gap-3">{contenido}</Tarjeta>
       </button>
-      <VisorImagen url={urlVisor} onCerrar={() => setUrlVisor(null)} />
+      <Portal>
+        <VisorImagen url={urlVisor} onCerrar={() => setUrlVisor(null)} />
+      </Portal>
     </>
   );
 }

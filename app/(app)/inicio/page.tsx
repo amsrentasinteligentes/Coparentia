@@ -61,7 +61,7 @@ export default function Inicio() {
 
   if (fallo) {
     return (
-      <ContenedorApp conBotonFlotante>
+      <ContenedorApp>
         <PageHeader titulo="Tu expediente" palabraClave="expediente" halo />
         <ErrorDeCarga onReintentar={() => setIntento((n) => n + 1)} />
       </ContenedorApp>
@@ -479,7 +479,7 @@ function Dashboard() {
   const ultimosPagos = [...pagos].sort((a, b) => b.fecha.localeCompare(a.fecha)).slice(0, 3);
 
   return (
-    <ContenedorApp>
+    <ContenedorApp conBotonFlotante>
       {/* El <Marcador> de marca no existía en NINGUNA pantalla de la app interna, solo en el
           funnel: aquí el sello de identidad entra sobre la palabra que da nombre al producto. */}
       {/* La cuota ahora SE PUEDE editar (Ajustes), así que el dato lleva a donde se cambia: sin

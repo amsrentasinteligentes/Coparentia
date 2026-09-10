@@ -1,33 +1,14 @@
-# VEREDICTO revisor-visual — pantalla principal (Inicio)
-Fecha: 2026-09-10 18:40
+# VEREDICTO revisor-visual — Pantalla principal (Inicio)
+Fecha: 2026-09-10 00:00
 Screenshot: docs/revisiones/inicio-375.png
 Usabilidad: 28/40
-Craft: 15/20
+Craft: 14/20
 Copy (si vende): N-A
 Fidelidad (si hubo referencia): N-A
 Veredicto: NO LISTA
-
-Detalle usabilidad: h1:3 h2:3 h3:3 h4:3 h5:3 h6:3 h7:3 h8:3 h9:2 h10:2
-Detalle craft: jerarquía:3 profundidad:3 identidad:3 movimiento:4 encaje:2
-Capturas revisadas: docs/revisiones/inicio-375.png · docs/revisiones/inicio-vista-previa-375.png · docs/revisiones/app-pagos-375.png
-Código verificado: app/(app)/inicio/page.tsx · app/(app)/pagos/page.tsx · app/(app)/ajustes/page.tsx · components/app/ui.tsx · components/app/VistaPreviaArchivo.tsx · components/funnel/ui.tsx · components/landing/ui.tsx · lib/datos.ts · FICHA-ARTE.md
-
-Defectos 1-5 de la ronda anterior: VERIFICADOS COMO CORREGIDOS en código
-(error que tapa el dashboard entero · eliminarPago + confirmación de dos pasos · VistaPreviaArchivo
-elegir≠guardar · validación 1-31 y monto>0 en ambas puertas · Pildora éxito en #5B93E8 con ícono de
-check, conforme a FICHA-ARTE). No alcanzan el gate: los puntos que faltaban no vivían ahí.
-
 Top defectos:
-1. [Pagos → modal "Nuevo registro", guardar()] `agregarPago(...).then(...)` sin `.catch` (page.tsx ~L294): si falla la red, el botón queda en "Aplicando el Sello de Confianza…" para siempre y NO aparece ningún error — el mismo bug que se corrigió en primeros pasos sigue vivo en la puerta principal de registro → agregar `.catch` que apague `procesando` y muestre qué pasó + qué hacer.
-2. [Inicio → último ítem de "Últimos movimientos"] el `<BotonFlotante>` se monta sobre la última tarjeta: `ContenedorApp` tiene `pb-[calc(96px+safe)]` y el FAB llega a ~132px → subir el colchón inferior a `calc(150px+env(safe-area-inset-bottom))` en las pantallas con FAB.
-3. [Pagos → tocar un comprobante / borrar] `verComprobante` hace `if (!url) return` (fallo silencioso, sin spinner ni mensaje) y `errorBorrado` se pinta al final de la lista, fuera de pantalla con 4+ tarjetas → indicador de carga en la fila y mensaje de error DENTRO de la tarjeta que se intentó borrar.
-4. [Inicio → franja del próximo evento · Pagos → lista vacía] sin evento la tarjeta desaparece sin decir nada, y el vacío de Pagos es una línea gris sin ícono ni CTA (pantalla muda) → tarjeta "Sin eventos próximos · Agendar" y empty state de Pagos con el mismo patrón que el de Inicio.
-5. [Inicio → FAB "Registrar" y primeros pasos → "Guardar y continuar"] el FAB solo navega a /pagos, donde hay otro FAB idéntico que hay que volver a tocar; y el botón del alta se apaga al 40% sin decir por qué mientras Ajustes sí lo explica → abrir el modal de registro desde Inicio y mostrar el mismo hint de validación en ambas puertas.
-
-Pendientes menores confirmados: la flecha de Ajustes vuelve siempre a /expediente aunque se entre
-desde Inicio · el escalonado no es cascada real (la tarjeta del anillo no lleva `indice` y la lista
-reinicia el contador en 0) · en primeros pasos el monto del comprobante se toma del título sin que
-la persona pueda revisarlo antes de que entre al expediente · el modal de registro no cierra con Esc
-ni atrapa el foco · discrepancia de evidencia: en app-pagos-375.png "Borrar" aparece alineado a la
-IZQUIERDA cuando el código lo declara `self-end` (captura desactualizada o clase sobrescrita) —
-en ambos casos cada tarjeta arrastra una banda vacía de ~40px.
+1. Modal "Nuevo registro" (el formulario que abre el botón de Inicio) — el nav inferior TAPA el CTA "Guardar registro": `ContenedorApp` usa `relative isolate` (components/app/ui.tsx:354) y crea un contexto de apilamiento, así que el z-30 del modal, el z-40 de `VisorImagen` y el z-40 de `SelloConfianza` quedan por debajo del `<BottomNav>` z-20 del layout → fix: montar modal/visor/sello con `createPortal(document.body)` (o quitar `isolate` y aislar solo el halo).
+2. Inicio — el `<BotonFlotante>` SIGUE montado sobre la tercera tarjeta: `Dashboard()` renderiza `<ContenedorApp>` sin la prop nueva (app/(app)/inicio/page.tsx:482); `conBotonFlotante` solo se pasa en la rama de error (línea 64), que no tiene FAB → fix: `<ContenedorApp conBotonFlotante>` en `Dashboard`.
+3. Modal de registro — CTA muerto por defecto (`disabled={!archivo || !monto || !concepto.trim()}`, pagos/page.tsx:457) al 40% de opacidad y sin decir qué falta → fix: habilitado siempre, validar al click con hint bajo el campo incompleto.
+4. Pagos, error de fila — texto sin tildes ("conexion", "intentalo", pagos/page.tsx:91) frente al resto de la app con tildes; `errorArchivo` sin `role="alert"` (línea 450) y `obtenerTitulo()` del modal sin `.catch` (línea 281) → fix: corregir el copy, añadir role y catch.
+5. Inicio — el vacío de "Últimos movimientos" enseña pero no ofrece salida (sin CTA, inicio/page.tsx:604) y el escalonado no es cascada (índices 0,1,2 en las stats y otra vez 0,1,2 en la lista); la flecha de Ajustes vuelve siempre a /expediente → fix: CTA en el vacío, índice continuo, y back que respete el origen.
