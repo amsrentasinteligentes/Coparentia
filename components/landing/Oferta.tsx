@@ -41,6 +41,10 @@ export interface OfertaProps {
     badge?: string;
   };
   mensual: PlanOferta;
+  /** Referencia en COP del cargo anual ("≈ $275.900 COP"), calculada con la TRM oficial.
+   *  El cobro real de Hotmart es en USD; sin esta línea un comprador colombiano lee "$89" como
+   *  pesos y se lleva un susto en el checkout (misma corrección que ya está en el paywall). */
+  refCopAnual?: string;
   /** Stack de valor Hormozi opcional — total TACHADO del stack, jamás precio falso. */
   stack?: {
     lineas: { resultado: string; valor: string }[];
@@ -98,6 +102,7 @@ export function Oferta({
   anual,
   mensual,
   stack,
+  refCopAnual,
   id = 'oferta',
 }: OfertaProps) {
   warnCopy('Oferta → título', tituloMarked, 8);
@@ -161,6 +166,9 @@ export function Oferta({
                   <Precio plan={anual} />
                   {/* El total anual SIEMPRE visible — regla de oro de 02C */}
                   <p className="mt-1 text-[12px] text-[var(--text-secondary)]">{anual.totalAnual}</p>
+                  {refCopAnual && (
+                    <p className="mt-0.5 text-[12px] text-[var(--text-tertiary)]">{refCopAnual}</p>
+                  )}
                   <p className="mt-2 text-[15px] font-semibold text-[var(--accent)]">{anual.ahorro}</p>
                 </div>
                 <Features items={anual.features} origen="Oferta → anual" />

@@ -4,7 +4,10 @@
 // kit de components/landing/. Copy trazado a FICHA-AVATAR.md, tokens a FICHA-ARTE.md.
 // Copy fuente: docs/copy/landing.md.
 
+import { useEffect, useState } from 'react';
 import { MessageCircleWarning, ReceiptText, ShieldAlert, CalendarClock, CalendarDays, Home as HomeIcon, ListChecks, CreditCard, Upload } from 'lucide-react';
+import { obtenerTRM } from '@/lib/trm';
+import { aproximadoEnPesos } from '@/lib/formato-cop';
 import { Hero } from '@/components/landing/Hero';
 import { Problema } from '@/components/landing/Problema';
 import { Agitacion } from '@/components/landing/Agitacion';
@@ -23,7 +26,21 @@ import { StickyCtaMobile } from '@/components/landing/ui';
 const CTA_HREF = '/onboarding';
 const CTA_LABEL = 'Crear mi expediente gratis';
 
+// Cobro anual real en USD (FICHA-MERCADO: Hotmart internacional cobra en dólares).
+const COBRO_ANUAL_USD = 89;
+
 export default function Home() {
+  // Referencia en pesos del cargo anual, con la TRM oficial. Si la fuente falla, `refCop` queda
+  // vacío y la landing muestra solo dólares — nunca un número en pesos inventado.
+  const [refCop, setRefCop] = useState<string | null>(null);
+  useEffect(() => {
+    obtenerTRM()
+      .then((trm) => {
+        if (trm) setRefCop(`≈ ${aproximadoEnPesos(COBRO_ANUAL_USD, trm)} COP al año`);
+      })
+      .catch(() => setRefCop(null));
+  }, []);
+
   return (
     <div id="main" className="min-h-dvh bg-[var(--bg)] text-[var(--text-primary)] [font-family:var(--font-body)]">
       {/* 1. HERO */}
@@ -103,24 +120,24 @@ export default function Home() {
 
       {/* 6. OFERTA */}
       <Oferta
-        tituloMarked="Empieza gratis. Sigue por [acento]menos de $0.25/día[/acento]"
+        tituloMarked="Empieza gratis. Sigue por [acento]menos de US$0.25/día[/acento]"
         trialDias={7}
+        refCopAnual={refCop ?? undefined}
         stack={{
           lineas: [
-            { resultado: 'Coparentia Pro con el Sello de Confianza (12 meses)', valor: '$120' },
-            { resultado: 'Plantilla de autorización de gastos extraordinarios', valor: '$19' },
-            { resultado: 'Guía "Tu primer expediente en 10 minutos"', valor: '$15' },
+            { resultado: 'Coparentia Pro con el Sello de Confianza (12 meses)', valor: 'US$120' },
+            { resultado: 'Plantilla de autorización de gastos extraordinarios', valor: 'US$19' },
+            { resultado: 'Guía "Tu primer expediente en 10 minutos"', valor: 'US$15' },
           ],
-          totalTachado: '$154',
-          nota: 'Hoy: $7.42/mes (se cobra $89/año)',
+          totalTachado: 'US$154',
+          nota: 'Hoy no pagas nada. Después: US$89 al año (US$7.42/mes)',
         }}
         anual={{
           nombre: 'Anual',
           badge: 'AHORRAS 25%',
-          precioMes: '$7.42',
-          totalAnual: 'Se cobra $89/año',
+          precioMes: 'US$7.42',
+          totalAnual: 'Se cobra US$89 al año, tras los 7 días gratis',
           ahorro: '3 meses gratis',
-          descomposicionDia: 'menos de $0.25 al día',
           ctaLabel: 'Empezar mis 7 días gratis',
           ctaHref: CTA_HREF,
           features: [
@@ -133,7 +150,7 @@ export default function Home() {
         }}
         mensual={{
           nombre: 'Mensual',
-          precioMes: '$9.99',
+          precioMes: 'US$9.99',
           ctaLabel: 'Elegir mensual',
           ctaHref: CTA_HREF,
           features: [
@@ -174,7 +191,7 @@ export default function Home() {
           {
             pregunta: '¿Es muy cara la suscripción?',
             respuestaMarked:
-              'Menos de $0.25 al día con el plan anual — comparado con los $100 que cobra un abogado por cada correo de aclaración, [b]se paga solo[/b].',
+              'Menos de US$0.25 al día con el plan anual — comparado con lo que cobra un abogado por cada correo de aclaración, [b]se paga solo[/b].',
           },
           {
             pregunta: '¿Mis datos financieros están seguros?',
