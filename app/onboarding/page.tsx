@@ -31,6 +31,7 @@ import {
   Sparkles,
   Users,
   HelpCircle,
+  Zap,
 } from 'lucide-react';
 import {
   BarraAtras,
@@ -242,10 +243,10 @@ function PreguntaRol({ valor, onElegir }: { valor: Rol; onElegir: (v: Rol) => vo
       palabraClave="rol"
       tituloDespues=" hoy?"
       subtitulo="Así adaptamos las preguntas y tu expediente"
-      // Una sola caja, como todas las demás pantallas de opciones. La reafirmación de "expediente
-      // blindado aunque el otro padre no use la app" ya vive en los dos reconocimientos siguientes
-      // — apilarla también aquí, tras solo 2 opciones, era el "dos cajas" que marcó el revisor.
-      porQue="¿Por qué lo preguntamos? Quien paga y quien recibe la cuota enfrentan riesgos distintos — así usamos las palabras y los ejemplos correctos en tu expediente. Y funciona igual: tu expediente queda blindado aunque el otro padre no use la app."
+      // UNA caja corta, como todas las demás pantallas de opciones (el revisor marcó como defecto
+      // tanto las dos cajas apiladas como una caja de ~6 líneas). La reafirmación de "expediente
+      // blindado aunque el otro padre no use la app" ya vive en los dos reconocimientos siguientes.
+      porQue="¿Por qué lo preguntamos? Quien paga y quien recibe la cuota enfrentan riesgos distintos — así usamos las palabras y los ejemplos correctos en tu expediente."
     >
       {opciones.map(({ icon: Icon, label, value }, i) => (
         <Chip
@@ -277,6 +278,7 @@ function PreguntaSituacion({
 }) {
   const [otra, setOtra] = useState(false);
   const [texto, setTexto] = useState('');
+  const [faltaTexto, setFaltaTexto] = useState(false);
   const opciones = [
     { icon: FileSearch, label: rol === 'recibe' ? 'Recibo pero sin registro ordenado' : 'Pago pero sin registro ordenado' },
     { icon: MessageCircleWarning, label: 'Tengo disputas frecuentes con mi ex' },
@@ -312,22 +314,34 @@ function PreguntaSituacion({
           placeholder="Tu situación..."
           className="mt-6 h-14 w-full rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--surface)] px-4 text-[16px] text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)]"
         />
-        {/* El texto de ayuda va PEGADO al input (helper text), no flotando en medio del vacío
-            como antes (defecto 4 del revisor). La caja de contexto —la misma que ven las demás
-            pantallas de situación— da sustancia real a un paso que si no sería un solo campo
-            perdido en negro. El CTA se ancla al fondo, el patrón esperado de un paso de funnel. */}
+        {/* Helper pegado al input + la caja de contexto de sus hermanas (sustancia real en un
+            paso que si no sería un campo perdido en negro). El CTA sí se ancla al fondo con
+            `mt-auto`: este paso ES un formulario con envío, y ahí el CTA abajo es el patrón
+            esperado (login, no una pregunta de quiz). */}
         <p className="mt-2 text-[13px] text-[var(--text-tertiary)]">Escribe al menos unas palabras para continuar.</p>
         <InfoContextual anclar={false}>
           ¿Por qué lo preguntamos? Tu situación decide qué evidencia prioriza tu expediente — nunca
           cambia tus derechos, solo el orden. Tus respuestas son privadas.
         </InfoContextual>
-        {/* CTA pegado al bloque, no `mt-auto`: con un solo campo, anclarlo al fondo dejaba una
-            banda vacía de ~300px en el centro (defecto del revisor). Mismo criterio top-anclado
-            que las pantallas de opciones. */}
-        <div className="pt-8">
-          <CtaFunnel disabled={!texto.trim()} onClick={() => onElegir(texto.trim())}>
+        <div className="mt-auto pt-8">
+          {/* Nunca `disabled` por defecto (ancla del SO): una píldora gris muerta esperando el
+              input desanima. Se ve activo; si está vacío al tocarlo, avisa qué falta. */}
+          <CtaFunnel
+            onClick={() => {
+              if (!texto.trim()) {
+                setFaltaTexto(true);
+                return;
+              }
+              onElegir(texto.trim());
+            }}
+          >
             Continuar
           </CtaFunnel>
+          {faltaTexto && !texto.trim() && (
+            <p role="alert" className="mt-2 text-center text-[13px] text-[var(--status-error)]">
+              Escribe unas palabras sobre tu situación para continuar.
+            </p>
+          )}
         </div>
       </div>
     );
@@ -549,7 +563,13 @@ function PreguntaMeta({ valor, onFijar }: { valor: number; onFijar: (v: number) 
           <span>1</span>
           <span>12</span>
         </div>
-        <p className="mt-6 text-[14px] font-medium text-[var(--accent)]">⚡ {feedback}</p>
+        {/* Emoji como ícono → prohibido por FICHA-ARTE. SVG de librería en chip de acento. */}
+        <p className="mt-6 flex items-center gap-2 text-[14px] font-medium text-[var(--accent)]">
+          <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-[color-mix(in_oklab,var(--accent)_12%,transparent)]">
+            <Zap size={13} strokeWidth={2.4} aria-hidden="true" />
+          </span>
+          {feedback}
+        </p>
       </div>
       <div className="mt-auto pt-8">
         <CtaFunnel onClick={() => onFijar(n)}>Fijar mi meta</CtaFunnel>
