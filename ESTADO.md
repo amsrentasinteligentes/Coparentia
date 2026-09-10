@@ -60,6 +60,39 @@ CAPA 1 — `components/app/ui.tsx`:
 + datos semilla en obtenerPagos). **REVERTIDO por completo y verificado con grep**: `git status`
 solo muestra tokens.css, ui.tsx y ESTADO.md. Nunca se comiteó ni llegó a `.env.example`.
 
+### Rondas 3 y 4 de Inicio (2026-09-10) — estancado en 28/40; craft 16 → 15 → 14
+⚠️ **PATRÓN A TENER EN CUENTA ANTES DE GASTAR OTRA RONDA AQUÍ:** el puntaje de Inicio lleva TRES
+rondas clavado en 28/40. Cada ronda arregla defectos reales y verificados —incluidos dos bugs que
+habrían llegado a clientes— pero el revisor encuentra siempre una capa nueva al mirar más hondo, y
+el craft bajó por regresiones introducidas al arreglar lo anterior. El propio revisor confirma que
+lo que falta es alcanzable con ediciones locales (nada depende de backend ni de servicios
+externos), pero **el rendimiento por ronda está decreciendo**. Recomendación registrada: pasar a la
+landing (34/40, la más cerca del gate de toda la app) y volver a Inicio con ojos frescos.
+
+**Bug REAL y grave corregido (regresión propia, invisible al compilar):** al agregar la luz
+ambiental, `ContenedorApp` pasó a llevar `relative isolate`. `isolate` crea un CONTEXTO DE
+APILAMIENTO, y dentro de él los z-index solo compiten entre hermanos — no contra el resto de la
+página. El modal de registro (z-30), el visor (z-40) y el Sello (z-40) quedaron atrapados y se
+pintaban DEBAJO del nav (z-20, que vive fuera en el layout): **el nav tapaba "Guardar registro", la
+acción primaria de todo el flujo de registro.** Subir el z-index NO lo arregla. Solución: nuevo
+`components/app/Portal.tsx`, que monta modal/visor/sello directo en `<body>`.
+→ Lección: cualquier `isolate`/`transform`/`filter` en un contenedor atrapa a sus hijos flotantes.
+
+**Lección de método:** la primera verificación de ese fix dio un FALSO POSITIVO porque medía
+superposición geométrica en vez de qué elemento queda encima (una hoja modal se superpone al nav a
+propósito). La medición correcta es `document.elementFromPoint()` en el centro del elemento.
+
+También corregido: la prop `conBotonFlotante` había quedado en la rama de ERROR de Inicio (que ni
+tiene botón) en vez del Dashboard · el botón "Guardar registro" estaba muerto al 40% sin decir cuál
+de los tres campos faltaba · `.catch` en el modal de Pagos (el mismo bug ya corregido en primeros
+pasos seguía vivo en la puerta principal) · fallo mudo al abrir un comprobante · error de borrado
+que se pintaba fuera de pantalla · dos estados vacíos que no enseñaban · doble toque para registrar
+desde Inicio.
+
+Defectos abiertos de Inicio: el escalonado de entrada no es cascada real (la lista reinicia el
+índice en 0) · la flecha de Ajustes vuelve siempre a `/expediente` aunque se entre desde Inicio ·
+el vacío de "Últimos movimientos" explica pero no ofrece salida (sin CTA).
+
 ### Ronda posterior (2026-09-10) — Inicio 28/40 · **craft 16/20, YA PASA el gate**
 El PDF del expediente se rehízo por completo (ver commit "el PDF del expediente ahora lleva las
 pruebas adentro"): antes listaba los pagos con el NOMBRE del archivo entre paréntesis pero no
