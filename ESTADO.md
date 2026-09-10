@@ -60,6 +60,44 @@ CAPA 1 — `components/app/ui.tsx`:
 + datos semilla en obtenerPagos). **REVERTIDO por completo y verificado con grep**: `git status`
 solo muestra tokens.css, ui.tsx y ESTADO.md. Nunca se comiteó ni llegó a `.env.example`.
 
+**CAPA 2 — INICIO (pantalla principal): craft 9/20 → 15/20; usabilidad 21 → 22/40.** Sigue NO
+LISTA, pero por causas COMPLETAMENTE distintas a las del veredicto viejo: el flujo feliz quedó
+resuelto y ahora el peso está en los estados de fallo.
+
+Aplicado: esqueleto de carga al abrir (devolvía `null` = pantalla en blanco) y mientras cargan los
+datos (pintaba TODO en cero y saltaba, diciéndole a la persona que su expediente está vacío) ·
+`<NumeroContado>` nuevo en el kit (baseline 2 del SO, ausente en toda la app interna) · tarjetas
+escalonadas · estado vacío real en "Últimos movimientos" · `Link` en vez de `<a href>` (recargaba
+la página entera en cada toque) · halo y `<Marcador>` de marca, que no existían en NINGUNA pantalla
+interna.
+
+**LAS 4 MEJORAS DE FLUIDEZ pedidas por el usuario (todas aplicadas):**
+1. `app/(app)/template.tsx` NUEVO — transición entre secciones; antes el cambio era un corte seco.
+2. `components/app/SelloConfianza.tsx` NUEVO — el mecanismo BAUTIZADO del producto era invisible
+   dentro de la app (subir un comprobante solo agregaba una fila). Ahora se estampa con la fecha
+   real, 1.6s, se va solo. Celebración N3 de la ficha: sin fanfarria.
+3. Luz ambiental al 9% en `ContenedorApp` — el fondo era un color liso en las 4 secciones y
+   "profundidad" fue el eje que el revisor bajó una y otra vez.
+4. Pulso de celebración en el anillo, solo ante un hito NUEVO (comparado contra lo ya celebrado).
+
+**Bugs REALES encontrados por el revisor y corregidos (no cosméticos):**
+- `lib/datos.ts` ignoraba el `error` de Supabase y devolvía `[]`: ante un fallo de red o sesión
+  vencida la app mostraba el expediente VACÍO, indistinguible de "no tienes nada guardado" — una
+  mentira alarmante justo para quien teme perder sus pruebas. Ahora se propaga y hay
+  `<ErrorDeCarga>` con reintento en Inicio, Pagos y Calendario.
+- Inicio sin `.catch`: el esqueleto podía pulsar PARA SIEMPRE.
+- Primeros pasos era el ÚNICO formulario de subida sin validar el archivo ni atrapar el fallo: en
+  la primera victoria, 20 MB o un .docx dejaban el sello girando sin fin.
+- (Propios) celebración falsa en navegador nuevo con datos viejos; CTA cortado tras el nav fijo.
+
+⚠️ **Pendientes de Inicio (para retomar):** la cuota NO se puede editar en ninguna pantalla aunque
+el copy de primeros pasos promete "puedes ajustarlo cuando quieras" — es una promesa incumplida en
+la interfaz, se decide con el usuario si se construye la edición o se corrige el texto · `metaMeses`
+= 6 está inventado en código, sin rótulo ni relación con el caso · falta píldora de estado del mes
+("¿voy al día?") · el escalonado no es cascada real (la lista reinicia el índice en 0) · el halo del
+header queda anulado por la luz ambiental (el dispositivo que se lee es el marcador) · FICHA-ARTE
+declara "hairline degradada" y `Tarjeta` usa borde sólido · `--surface-2` sigue sin usarse.
+
 **CAPA 2 — PAYWALL: 6 rondas de revisor. 28/40·14/20 → 33/40 · 15/20 · copy 16/20 (copy YA
 PASA el gate; usabilidad y craft aún no: faltan 3 y 1 punto).** Sigue NO LISTA formalmente.
 El revisor confirmó que NO hay techo estructural y recomendó explícitamente PARAR aquí y pasar a
