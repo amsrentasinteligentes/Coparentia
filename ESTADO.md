@@ -1307,7 +1307,18 @@ visualmente; el vacío estructural queda documentado como no bloqueante, igual q
 Screenshot vigente: `docs/revisiones/onboarding-momento-375.png` (paso 7/10, con el bug de
 Marcador ya corregido) — reemplaza al de paso 1/10 como referencia principal de esta ronda.
 
-### veredicto pantalla-principal (Inicio) — NO LISTA, ronda 1 (bug real encontrado y corregido)
+### veredicto pantalla-principal (Inicio) — NO LISTA (22/40 · 15/20)
+> ⚠️ **ACTUALIZADO 2026-09-10.** El diagnóstico viejo de más abajo (21/40 · 9/20) ya no describe
+> esta pantalla: sus defectos 1, 2 y 5 estaban corregidos desde antes, y el rescate visual atendió
+> el resto. **Craft subió de 9/20 a 15/20** — el mayor salto de la sesión. La usabilidad casi no se
+> movió (21→22) pero por una razón distinta: cerrado el flujo feliz, el peso pasó a los estados de
+> FALLO, que no existían en toda la app (ver el checkpoint del rescate visual al inicio del
+> archivo: un error de red mostraba el expediente VACÍO, indistinguible de haberlo perdido todo).
+> Eso ya está corregido con `<ErrorDeCarga>` en Inicio, Pagos y Calendario.
+>
+> Historial conservado abajo por trazabilidad — no como estado vigente.
+
+### (histórico) veredicto pantalla-principal (Inicio) — ronda 1 (bug real encontrado y corregido)
 El revisor-visual independiente evaluó `/inicio` por primera vez (primera pantalla de este tipo
 de plantilla — app interna, no landing/onboarding/paywall). Resultado
 (`docs/revisiones/pantalla-principal-veredicto.md`): **Usabilidad 21/40 · Craft 9/20 · Copy N/A ·
@@ -1347,7 +1358,20 @@ revisor, con Playwright). Screenshot vigente: `docs/revisiones/inicio-375.png` (
 "primeros pasos") — desactualizado tras estos fixes; ver `docs/revisiones/inicio-dashboard-375.png`
 y `docs/revisiones/verificacion-bug-tras-reload.png` para el estado real actual.
 
-### veredicto paywall — NO LISTA, techo estructural identificado (3 rondas de revisión)
+### veredicto paywall — NO LISTA (33/40 · 15/20 · copy 16/20), SIN techo estructural
+> ⚠️ **ACTUALIZADO 2026-09-10.** Lo que sigue debajo de este bloque es el diagnóstico VIEJO, que
+> concluía "techo estructural". **Ese diagnóstico quedó refutado**: en la sesión de rescate visual
+> el revisor evaluó la pantalla 6 veces y afirmó explícitamente que **no hay techo estructural** —
+> los defectos restantes son ediciones locales, no una pantalla que haya que rehacer. El vacío del
+> ~39% que se creía estructural se cerró fusionando recap+timeline en un solo paso (aprobado por el
+> usuario): bajó a ~10%. Puntaje actual **33/40 · 15/20 · copy 16/20** (el copy YA pasa el gate).
+> Faltan 3 puntos de usabilidad y 1 de craft. El propio revisor recomendó PARAR aquí y atender
+> primero Inicio, que sangra a diario. Detalle completo y defectos abiertos: ver el checkpoint
+> "Segunda auditoría / rescate visual" al inicio de este archivo.
+>
+> Historial conservado abajo por trazabilidad — no como estado vigente.
+
+### (histórico) veredicto paywall — NO LISTA, techo estructural identificado (3 rondas de revisión)
 El revisor-visual independiente evaluó `/paywall` **3 veces** en esta sesión. Última pasada
 (`docs/revisiones/paywall-veredicto.md`): **Usabilidad 26/40 · Craft 12/20 · Copy 16/20 (con eje
 "emoción" en 2/4, viola la regla "ningún eje ≤2" — copy NO pasa aunque el total sí) · Veredicto
