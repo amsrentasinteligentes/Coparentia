@@ -9,7 +9,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { ChevronLeft, X, Check, ShieldCheck, Lock, FileCheck2, HeartHandshake } from 'lucide-react';
-import { BarraProgreso, CtaFunnel, FunnelHeader, Marcador, usePasoVariants } from '@/components/funnel/ui';
+import { BarraProgreso, CtaFunnel, FunnelHeader, Halo, Marcador, usePasoVariants } from '@/components/funnel/ui';
 
 /* ── <CheckPlan> — check circular animado del plan activo, mismo device que <Chip> ── */
 function CheckPlan({ activo }: { activo: boolean }) {
@@ -54,10 +54,14 @@ export default function Paywall() {
   const [paso, setPaso] = useState(0);
   const [r, setR] = useState<Respuestas | null>(null);
   const [plan, setPlan] = useState<'anual' | 'mensual'>('anual');
+  const [yendo, setYendo] = useState(false);
   const variants = usePasoVariants();
+  // Antes esto caía a 5 cuando NO había respuestas guardadas: quien entrara directo a /paywall
+  // leía "Hecho con tus 5 respuestas" sin haber contestado ninguna — personalización falsa, justo
+  // el tipo de detalle que este avatar (que desconfía de las cuentas que no cuadran) castiga.
   const nRespuestas = r
     ? [r.situacion, r.preocupacion, String(r.metaMeses), r.momento, r.atribucion].filter(Boolean).length
-    : 5;
+    : 0;
 
   useEffect(() => {
     try {
@@ -67,7 +71,12 @@ export default function Paywall() {
   }, []);
 
   const cerrar = (): void => router.push('/');
+  // `yendo` bloquea el doble tap en la acción crítica del funnel y deja el botón en estado de
+  // espera: sin esto, un tap nervioso en una red lenta dispara dos navegaciones (regla del SO
+  // "prevenir doble-click en acciones críticas" — el revisor lo marcó como faltante).
   const irAlLogin = (): void => {
+    if (yendo) return;
+    setYendo(true);
     try {
       sessionStorage.setItem('coparentia_plan_elegido', plan);
     } catch {}
@@ -111,9 +120,9 @@ export default function Paywall() {
         <AnimatePresence mode="wait" initial={false}>
           <motion.div key={paso} variants={variants} initial="enter" animate="center" exit="exit" className="flex flex-1 flex-col">
             {paso === 0 && <Recap situacion={r?.situacion} n={nRespuestas} onContinuar={() => setPaso(1)} />}
-            {paso === 1 && <TimelineTrial onContinuar={() => setPaso(2)} />}
+            {paso === 1 && <TimelineTrial plan={plan} onContinuar={() => setPaso(2)} />}
             {paso === 2 && (
-              <Precio plan={plan} onCambiarPlan={setPlan} onCta={irAlLogin} onAhoraNo={cerrar} />
+              <Precio plan={plan} onCambiarPlan={setPlan} onCta={irAlLogin} onAhoraNo={cerrar} yendo={yendo} />
             )}
           </motion.div>
         </AnimatePresence>
@@ -124,34 +133,48 @@ export default function Paywall() {
 
 /* ── Pantalla 1: RECAP del valor personalizado + inversión visible (costo hundido) ── */
 function Recap({ situacion, n, onContinuar }: { situacion?: string; n: number; onContinuar: () => void }) {
+  const reduce = useReducedMotion();
   return (
     <div className="flex flex-1 flex-col">
-      <h1 className="text-balance text-[30px] font-bold leading-[1.12] text-[var(--text-primary)] [font-family:var(--font-display)]">
+      {/* El halo de marca faltaba en esta pantalla (solo estaba en Precio), así que el primer
+          paso del paywall se veía sobre fondo plano. Mismos valores que el resto del sistema. */}
+      <h1 className="relative text-balance text-[30px] font-bold leading-[1.12] text-[var(--text-primary)] [font-family:var(--font-display)]">
+        <Halo />
         Tu expediente está <span className="text-[var(--accent)]">listo para empezar</span>
       </h1>
       <p className="mt-2 text-[14px] text-[var(--text-secondary)]">
-        Hecho con tus {n} respuestas{situacion ? ` · "${situacion}"` : ''}
+        {n > 0 ? (
+          <>Hecho con tus {n} respuestas{situacion ? ` · "${situacion}"` : ''}</>
+        ) : (
+          <>Así funciona tu expediente desde el primer día</>
+        )}
       </p>
 
-      <div className="mt-8 flex flex-col gap-3">
+      {/* `flex-1 justify-center`: antes el bloque quedaba pegado arriba y ~31% de la pantalla
+          era fondo plano muerto entre la última tarjeta y el CTA (medido a 375px). Ahora el aire
+          sobrante se reparte arriba y abajo del contenido en vez de acumularse en un hueco. */}
+      <div className="mt-8 flex flex-1 flex-col justify-center gap-3">
         {[
           'El Sello de Confianza en cada comprobante',
           'Expediente exportable en PDF foliado',
           'Alertas en el momento que elegiste',
-        ].map((f) => (
-          <div
+        ].map((f, i) => (
+          <motion.div
             key={f}
-            className="flex items-center gap-3 rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--text-tertiary)_20%,transparent)] bg-[var(--surface)] p-4"
+            initial={reduce ? false : { opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.34, ease: [0.22, 0.61, 0.36, 1], delay: reduce ? 0 : i * 0.05 }}
+            className="flex items-center gap-3 rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--text-tertiary)_20%,transparent)] bg-[var(--surface)] p-4 shadow-[var(--shadow-1)]"
           >
             <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-[color-mix(in_oklab,var(--accent)_14%,transparent)]">
               <Check size={13} strokeWidth={2.8} color="var(--accent)" />
             </span>
             <span className="text-[15px] text-[var(--text-primary)]">{f}</span>
-          </div>
+          </motion.div>
         ))}
       </div>
 
-      <div className="mt-auto pt-8">
+      <div className="pt-8">
         <CtaFunnel onClick={onContinuar}>Ver cómo funciona mi prueba</CtaFunnel>
       </div>
     </div>
@@ -159,20 +182,36 @@ function Recap({ situacion, n, onContinuar }: { situacion?: string; n: number; o
 }
 
 /* ── Pantalla 2: TIMELINE del trial (C4, patrón Blinkist) — responde "¿puedo cancelar?" ── */
-function TimelineTrial({ onContinuar }: { onContinuar: () => void }) {
+function TimelineTrial({ plan, onContinuar }: { plan: 'anual' | 'mensual'; onContinuar: () => void }) {
+  const reduce = useReducedMotion();
+  // El cobro del día 7 mostraba "$89/año" fijo: si alguien volvía atrás con el plan Mensual
+  // elegido, el timeline le prometía un precio que no era el suyo (defecto menor del revisor).
+  const cobro = plan === 'anual' ? '$89/año' : '$9.99/mes';
   const nodos = [
     { titulo: 'Hoy — acceso completo', detalle: 'Todo tu expediente, sin límites', activo: true },
     { titulo: 'Día 5 — te avisamos', detalle: 'Correo antes de cualquier cobro', activo: true },
-    { titulo: 'Día 7 — primer cobro: $89/año', detalle: 'Cancela antes sin costo', activo: false },
+    { titulo: `Día 7 — primer cobro: ${cobro}`, detalle: 'Cancela antes sin costo', activo: false },
   ];
   return (
     <div className="flex flex-1 flex-col">
-      <h1 className="text-balance text-[26px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)]">
+      {/* Era la única vista del recorrido sin el halo de marca: se leía plana al lado de las otras dos. */}
+      <h1 className="relative text-balance text-[26px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)]">
+        <Halo />
         7 días gratis, sin sorpresas
       </h1>
-      <div className="mt-8 flex flex-col">
+      {/* Mismo criterio que Recap: el aire sobrante se reparte, no se acumula bajo el timeline. */}
+      <div className="mt-8 flex flex-1 flex-col justify-center">
+        {/* Entraban los 3 nodos de golpe y estáticos. Ahora se revelan escalonados (50ms) y la
+            línea que los une se DIBUJA de arriba abajo — la baseline de movimiento del SO que a
+            esta pantalla le faltaba por completo. */}
         {nodos.map((n, i) => (
-          <div key={i} className="flex gap-4">
+          <motion.div
+            key={i}
+            initial={reduce ? false : { opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.34, ease: [0.22, 0.61, 0.36, 1], delay: reduce ? 0 : i * 0.05 }}
+            className="flex gap-4"
+          >
             <div className="flex flex-col items-center">
               <span
                 className={`flex size-3 shrink-0 rounded-full ${
@@ -180,18 +219,28 @@ function TimelineTrial({ onContinuar }: { onContinuar: () => void }) {
                 }`}
               />
               {i < nodos.length - 1 && (
-                <span className="mt-1 w-[2px] flex-1 bg-[color-mix(in_oklab,var(--accent)_35%,transparent)]" />
+                <motion.span
+                  initial={reduce ? false : { scaleY: 0 }}
+                  animate={{ scaleY: 1 }}
+                  transition={{ duration: 0.4, ease: [0.22, 0.61, 0.36, 1], delay: reduce ? 0 : 0.2 + i * 0.05 }}
+                  className="mt-1 w-[2px] flex-1 origin-top bg-[color-mix(in_oklab,var(--accent)_35%,transparent)]"
+                />
               )}
             </div>
             <div className="pb-8">
               <p className="text-[15px] font-semibold text-[var(--text-primary)]">{n.titulo}</p>
               <p className="mt-0.5 text-[13px] text-[var(--text-secondary)]">{n.detalle}</p>
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
-      <p className="text-[13px] text-[var(--text-tertiary)]">¿Te avisamos también por notificación además del correo? Puedes ajustarlo luego.</p>
-      <div className="mt-auto pt-8">
+      {/* Antes esto era una PREGUNTA ("¿Te avisamos también por notificación…?") sin ningún control
+          para responderla — un elemento que parece interactivo y no hace nada (anti-patrón del SO,
+          regla 11). Reescrita como lo que realmente es: una afirmación tranquilizadora. */}
+      <p className="text-[13px] text-[var(--text-tertiary)]">
+        El aviso del día 5 llega por correo. Podrás sumar notificaciones desde Ajustes cuando entres.
+      </p>
+      <div className="pt-8">
         <CtaFunnel onClick={onContinuar}>Ver mi plan y precio</CtaFunnel>
       </div>
     </div>
@@ -204,24 +253,19 @@ function Precio({
   onCambiarPlan,
   onCta,
   onAhoraNo,
+  yendo,
 }: {
   plan: 'anual' | 'mensual';
   onCambiarPlan: (p: 'anual' | 'mensual') => void;
   onCta: () => void;
   onAhoraNo: () => void;
+  yendo: boolean;
 }) {
   const reduce = useReducedMotion();
   return (
     <div className="flex flex-1 flex-col">
       <h1 className="relative text-balance text-[26px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)]">
-        <span
-          aria-hidden="true"
-          className="pointer-events-none absolute -inset-x-6 -inset-y-8 -z-10"
-          style={{
-            background:
-              'radial-gradient(220px 140px at 20% 30%, color-mix(in oklab, var(--accent) 20%, transparent) 0%, transparent 65%)',
-          }}
-        />
+        <Halo />
         Una <Marcador>captura de WhatsApp</Marcador> no prueba nada —<span className="text-[var(--accent)]"> tu expediente sí</span>
       </h1>
 
@@ -233,24 +277,32 @@ function Precio({
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: reduce ? 0 : 0.25, delay: reduce ? 0 : 0, ease: [0.16, 1, 0.3, 1] }}
-          className={`relative flex items-start gap-3 rounded-[var(--radius-button)] border p-4 text-left transition-colors [touch-action:manipulation] ${
+          className={`flex flex-col rounded-[var(--radius-button)] border p-4 text-left transition-colors [touch-action:manipulation] ${
             plan === 'anual'
               ? 'border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_7%,transparent)] shadow-[0_6px_20px_color-mix(in_oklab,var(--accent)_18%,transparent)]'
               : 'border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] bg-[var(--surface)] shadow-[var(--shadow-1)]'
           }`}
         >
-          <span className="absolute -top-3 left-4 rounded-full bg-[var(--accent)] px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.06em] text-[var(--bg)] shadow-[0_2px_8px_color-mix(in_oklab,var(--accent)_35%,transparent)]">
-            Más popular · ahorra 3 meses
+          {/* El badge estaba `absolute -top-3`: quedaba montado justo sobre el borde, ni dentro ni
+              fuera de la tarjeta (defecto del revisor). Ahora vive DENTRO, en el flujo normal —
+              sin superposición posible y sin depender de un padding-top mágico. */}
+          {/* Decía "Más popular": prueba social FABRICADA — la app todavía no tiene ni un cliente,
+              así que no hay ningún plan que sea "el más popular". Sustituido por el único dato
+              verificable y comprobable con la calculadora: $9.99×12 = $119.88 vs $89 = $30.88. */}
+          <span className="mb-3 self-start rounded-full bg-[var(--accent)] px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.06em] text-[var(--bg)] shadow-[0_2px_8px_color-mix(in_oklab,var(--accent)_35%,transparent)]">
+            Ahorras 3 meses · $30.88 al año
           </span>
-          <CheckPlan activo={plan === 'anual'} />
-          <div className="mt-1.5 flex-1">
-            <div className="flex items-baseline justify-between">
-              <span className="text-[15px] font-semibold text-[var(--text-primary)]">Anual</span>
-              <span className="text-[24px] font-bold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
-                {PLAN_ANUAL.precioMes}<span className="text-[13px] font-normal text-[var(--text-secondary)]">/mes</span>
-              </span>
+          <div className="flex w-full items-start gap-3">
+            <CheckPlan activo={plan === 'anual'} />
+            <div className="flex-1">
+              <div className="flex items-baseline justify-between">
+                <span className="text-[15px] font-semibold text-[var(--text-primary)]">Anual</span>
+                <span className="text-[24px] font-bold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
+                  {PLAN_ANUAL.precioMes}<span className="text-[13px] font-normal text-[var(--text-secondary)]">/mes</span>
+                </span>
+              </div>
+              <p className="mt-1 text-[13px] text-[var(--text-secondary)]">{PLAN_ANUAL.totalAnual}</p>
             </div>
-            <p className="mt-1 text-[13px] text-[var(--text-secondary)]">{PLAN_ANUAL.totalAnual}</p>
           </div>
         </motion.button>
 
@@ -298,31 +350,43 @@ function Precio({
         ))}
       </div>
 
+      {/* PIE REORDENADO. Antes: 4 líneas apiladas con separaciones de 4px (mt-1) que se leían como
+          un bloque legal denso, con 5 elementos tocables al borde de la sobrecarga (defectos 1 y 5
+          del revisor). Ahora hay 3 grupos con jerarquía y separación mínima de 8px:
+          (a) señales de confianza JUNTAS sobre el CTA — garantía y pago seguro son lo mismo;
+          (b) el CTA con su aviso de renovación (obligatorio, no se toca);
+          (c) la salida y la letra chica, separadas 16px del resto para que no compitan. */}
       <div className="mt-auto pt-6">
-        <div className="mb-3 flex items-center justify-center gap-1.5 text-[13px] font-medium text-[var(--text-secondary)]">
-          <ShieldCheck size={14} color="var(--accent)" aria-hidden="true" />
-          Garantía del Primer Expediente · 15 días
+        <div className="mb-3 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-[13px] font-medium text-[var(--text-secondary)]">
+          <span className="flex items-center gap-1.5">
+            <ShieldCheck size={14} color="var(--accent)" aria-hidden="true" />
+            Garantía de 15 días
+          </span>
+          <span aria-hidden="true" className="text-[var(--text-tertiary)]">·</span>
+          <span className="flex items-center gap-1.5">
+            <Lock size={13} color="var(--accent)" aria-hidden="true" />
+            Pago seguro
+          </span>
         </div>
-        <CtaFunnel onClick={onCta}>Empezar mis 7 días gratis</CtaFunnel>
+        <CtaFunnel onClick={onCta} disabled={yendo}>
+          {yendo ? 'Abriendo…' : 'Empezar mis 7 días gratis'}
+        </CtaFunnel>
         <p className="mt-2 text-center text-[13px] text-[var(--text-secondary)]">
           Hoy no pagas nada · Se renueva automáticamente tras el día 7, cancela cuando quieras
         </p>
       </div>
 
-      <div className="mt-3 flex items-center justify-center gap-3 text-[13px] text-[var(--text-tertiary)]">
+      <div className="mt-4 flex items-center justify-center gap-3 text-[13px] text-[var(--text-secondary)]">
         <button type="button" onClick={onAhoraNo} className="py-2 [touch-action:manipulation]">
           Ahora no
         </button>
-        <span aria-hidden="true">·</span>
+        <span aria-hidden="true" className="text-[var(--text-tertiary)]">·</span>
         <a href="mailto:soporte@coparentia.app" className="py-2 underline-offset-2 hover:underline [touch-action:manipulation]">
           ¿Dudas? Escríbenos
         </a>
       </div>
 
-      <div className="mt-1 flex items-center justify-center gap-2 text-[11px] text-[var(--text-tertiary)]">
-        <Lock size={12} aria-hidden="true" />
-        Pago seguro
-        <span aria-hidden="true">·</span>
+      <div className="mt-2 flex items-center justify-center gap-2 text-[11px] text-[var(--text-tertiary)]">
         <a href="/terminos" className="underline-offset-2 hover:underline">Términos</a>
         <span aria-hidden="true">·</span>
         <a href="/privacidad" className="underline-offset-2 hover:underline">Privacidad</a>

@@ -111,10 +111,16 @@ export function Halo() {
   return (
     <span
       aria-hidden="true"
-      className="pointer-events-none absolute -inset-x-6 -inset-y-8 -z-10"
+      className="pointer-events-none absolute -left-8 -right-8 -top-16 -bottom-24 -z-10"
       style={{
+        // DOS bugs corregidos aquí, y este componente alimenta TODO el onboarding:
+        // (a) `220px 140px` son RADIOS, o sea una elipse de 440×280 dentro de una caja de ~190px:
+        //     se recortaba y dejaba un rectángulo con borde horizontal duro. Sin radios, el
+        //     degradado se dimensiona contra su caja y siempre termina de desvanecerse dentro.
+        // (b) al 16% el revisor lo declaró imperceptible: no cumplía su función de dar
+        //     profundidad ni identidad. Subido al 26%, el valor único del sistema.
         background:
-          'radial-gradient(220px 140px at 15% 20%, color-mix(in oklab, var(--accent) 16%, transparent) 0%, transparent 65%)',
+          'radial-gradient(ellipse at 22% 34%, color-mix(in oklab, var(--accent) 26%, transparent) 0%, transparent 62%)',
       }}
     />
   );
@@ -184,7 +190,10 @@ export function CtaFunnel({
       onClick={onClick}
       disabled={disabled}
       whileTap={disabled ? undefined : { scale: 0.97 }}
-      className="flex h-14 w-full items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-[16px] font-semibold text-[var(--bg)] shadow-[0_8px_30px_color-mix(in_oklab,var(--accent)_28%,transparent)] transition-opacity duration-150 disabled:opacity-40 [touch-action:manipulation]"
+      // El foco de teclado global (globals/tokens.css) dibuja un anillo del color de ACENTO — y
+      // este botón ya ES de color acento, así que el anillo se perdía sobre su propio relleno.
+      // Aquí se fuerza un anillo de alto contraste para que navegar con teclado se vea.
+      className="flex h-14 w-full items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-[16px] font-semibold text-[var(--bg)] shadow-[0_8px_30px_color-mix(in_oklab,var(--accent)_28%,transparent)] transition-opacity duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--text-primary)] disabled:opacity-40 [touch-action:manipulation]"
     >
       {children}
     </motion.button>

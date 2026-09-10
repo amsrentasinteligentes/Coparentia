@@ -60,7 +60,38 @@ CAPA 1 — `components/app/ui.tsx`:
 + datos semilla en obtenerPagos). **REVERTIDO por completo y verificado con grep**: `git status`
 solo muestra tokens.css, ui.tsx y ESTADO.md. Nunca se comiteó ni llegó a `.env.example`.
 
-⏸️ **CAPA 2 (pantalla por pantalla) — NO iniciada, esperando OK del usuario.** Orden acordado:
+**CAPA 2 — PAYWALL: 2 rondas hechas.** Puntajes del revisor independiente: partía de 28/40·14/20;
+ronda 1 → 24/40·12/20 (el revisor miró más hondo y encontró defectos nuevos, no es que empeorara
+la pantalla); ronda 2 → **28/40 · 13/20 · copy 16/20 · sigue NO LISTA** (gate 36/16).
+
+Arreglado y CONFIRMADO EN CÓDIGO por el revisor:
+- Badge del plan anual ya no queda montado sobre el borde (vive dentro de la tarjeta).
+- Pie reordenado en 3 grupos con separación ≥8px (antes 4 líneas apiladas a 4px).
+- **Bug real del halo**: `radial-gradient(220px 140px …)` define RADIOS → elipse de 440×280 dentro
+  de una caja de ~190px → se recortaba y dejaba un RECTÁNGULO con borde duro. Corregido sin radios
+  explícitos en los 3 sitios: `components/funnel/ui.tsx` (alimenta TODO el onboarding),
+  `components/app/ui.tsx` y el paywall, que ahora reusa el `<Halo>` del kit en vez de 3 copias.
+- **"MÁS POPULAR" era prueba social FABRICADA** (cero clientes) → "Ahorras 3 meses · $30.88 al año",
+  dato verificable ($9.99×12 = $119.88 − $89 = $30.88).
+- **Personalización falsa**: `nRespuestas` caía a 5 sin respuestas → ahora cae a 0 y el subtítulo
+  cambia a un texto honesto.
+- Paso 2: tenía el único titular sin halo, cero movimiento y el cobro "$89/año" fijo aunque el plan
+  elegido fuera Mensual. Ahora halo + nodos escalonados + línea que se dibuja + cobro derivado.
+- La "pregunta" del paso 2 que nadie podía responder → reescrita como afirmación (regla 11 del SO).
+- CTA: `focus-visible` de alto contraste (el anillo global era acento sobre botón acento, invisible)
+  y bloqueo de doble tap con estado "Abriendo…".
+
+⚠️ **Lo que impide llegar a 36/40 es ESTRUCTURAL, no de estilo**: los pasos 1 y 2 tienen ~39% de
+fondo vacío porque su contenido real son 3 líneas. Centrarlo repartió el aire, no lo llenó. El
+revisor propone FUSIONAR recap+timeline en una sola vista o llenarlas con valor real (mini-demo del
+Sello, la respuesta del onboarding, el ancla de costo). **Eso cambia la estructura del funnel de
+venta → decisión del usuario, no se hace por cuenta propia.**
+
+Pendiente menor registrado: conteo animado del $7.42; ancla "$0.33/día vs $100 por correo del
+abogado" (objeción 4 de FICHA-AVATAR); hairlines degradé que FICHA-ARTE declara y no existen;
+radios 10px vs 14px entre tarjetas de plan y de recap.
+
+⏸️ **Resto de CAPA 2 — NO iniciado.** Orden acordado:
 paywall (28/40) → inicio (21/40) → app interna (pagos/calendario/expediente) → onboarding (30/40)
 → landing (34/40, solo la card de precio). La ronda formal de `revisor-visual` corresponde a
 Capa 2, cuando las pantallas cambien de verdad.

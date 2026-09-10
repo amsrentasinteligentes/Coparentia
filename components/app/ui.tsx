@@ -31,10 +31,11 @@ export function Halo({ className = '' }: { className?: string }) {
   return (
     <span
       aria-hidden="true"
-      className={`pointer-events-none absolute left-1/2 top-1/2 -z-10 h-[200px] w-[320px] -translate-x-1/2 -translate-y-1/2 ${className}`}
+      className={`pointer-events-none absolute -left-8 -right-8 -top-16 -bottom-24 -z-10 ${className}`}
       style={{
-        background: 'radial-gradient(ellipse at center, color-mix(in oklab, var(--accent) 26%, transparent) 0%, transparent 70%)',
-        filter: 'blur(28px)',
+        // Sin radios en px y dimensionado por su propia caja: así el degradado SIEMPRE termina de
+        // desvanecerse dentro y nunca deja el borde recto que el revisor detectó en el paywall.
+        background: 'radial-gradient(ellipse at 22% 34%, color-mix(in oklab, var(--accent) 26%, transparent) 0%, transparent 62%)',
       }}
     />
   );
