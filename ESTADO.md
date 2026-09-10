@@ -1,5 +1,15 @@
 # ESTADO.md — Coparentia (nombre provisional: PensiónClara)
 
+### Checkpoint (2026-09-10) — ANTHROPIC_API_KEY rotada (clave vieja quedó en el log de una sesión)
+Al listar `.env.local` en el chat, el valor de `ANTHROPIC_API_KEY` (terminaba en `9QAA`) quedó
+impreso en el registro de la conversación. Rotación completa hecha por el usuario:
+- Clave nueva generada en console.anthropic.com (termina en `nQAA`).
+- Reemplazada en `.env.local` (verificado: 1 línea, `sk-ant-`, sin comillas, 108 chars) y en
+  Vercel → Environment Variables (Production, "Updated just now") + Redeploy a Production → Ready.
+- Prueba real en producción: el lector de recibos leyó el monto con la clave nueva. ✅
+- Clave vieja (`…9QAA`) **eliminada** en console.anthropic.com → API Keys.
+Lección: nunca volcar `.env*` completo a stdout — usar un chequeo que solo reporte forma/prefijo.
+
 ### Checkpoint (2026-09-10) — "Consultar acuerdo" en Expediente (feature nueva, aprobada por el usuario)
 Caja para guardar el documento base que fija la cuota (acta de conciliación o sentencia), en la
 pantalla de Expediente, entre "Reporte en 1 clic" y "Autorizaciones y controversias".
