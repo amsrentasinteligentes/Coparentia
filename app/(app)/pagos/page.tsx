@@ -19,6 +19,7 @@ import {
   obtenerUrlArchivo,
   formatoCOP,
   formatoFechaLarga,
+  validarArchivoAdjunto,
 } from '@/lib/datos';
 import { leerMontoDeRecibo } from '@/lib/ocr-recibo';
 import { comprimirParaLectura } from '@/lib/comprimir-imagen';
@@ -160,6 +161,7 @@ function ModalRegistro({ onCerrar, onGuardado }: { onCerrar: () => void; onGuard
   const [procesando, setProcesando] = useState(false);
   const [leyendoRecibo, setLeyendoRecibo] = useState(false);
   const [montoDetectado, setMontoDetectado] = useState(false);
+  const [errorArchivo, setErrorArchivo] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -172,6 +174,12 @@ function ModalRegistro({ onCerrar, onGuardado }: { onCerrar: () => void; onGuard
   // pre-llena el campo — el usuario SIEMPRE ve el número y puede corregirlo antes de guardar
   // (nunca se confía a ciegas en la lectura). Solo funciona con fotos, no con PDF.
   const elegirArchivo = async (f: File): Promise<void> => {
+    const error = validarArchivoAdjunto(f);
+    if (error) {
+      setErrorArchivo(error);
+      return;
+    }
+    setErrorArchivo(null);
     setArchivo(f);
     setMontoDetectado(false);
     if (!f.type.startsWith('image/')) return;
@@ -300,7 +308,11 @@ function ModalRegistro({ onCerrar, onGuardado }: { onCerrar: () => void; onGuard
           <Upload size={16} aria-hidden="true" />
           {archivo ? archivo.name : 'Adjuntar comprobante'}
         </button>
-        <p className="mt-1.5 text-[12px] text-[var(--text-tertiary)]">Con una foto, el monto se completa solo — revísalo antes de guardar.</p>
+        {errorArchivo ? (
+          <p className="mt-1.5 text-[12px] text-[var(--status-error)]">{errorArchivo}</p>
+        ) : (
+          <p className="mt-1.5 text-[12px] text-[var(--text-tertiary)]">Con una foto, el monto se completa solo — revísalo antes de guardar.</p>
+        )}
 
         <button
           type="button"

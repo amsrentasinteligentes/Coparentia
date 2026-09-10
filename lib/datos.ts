@@ -174,6 +174,18 @@ export async function obtenerPagos(): Promise<Pago[]> {
   return (data ?? []).map(mapPago);
 }
 
+// Valida tamaño/tipo ANTES de subir — mismo tope que se aplica del lado del servidor en el bucket
+// (supabase/fix-limites-storage.sql), para que el usuario vea un mensaje claro al elegir el
+// archivo en vez de un error de red genérico cuando Supabase lo rechace en el servidor.
+const TIPOS_ADJUNTO_PERMITIDOS = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif', 'application/pdf'];
+const TAMANO_MAXIMO_ADJUNTO = 15 * 1024 * 1024; // 15 MB
+
+export function validarArchivoAdjunto(archivo: File): string | null {
+  if (archivo.size > TAMANO_MAXIMO_ADJUNTO) return 'El archivo pesa más de 15 MB. Elige uno más liviano.';
+  if (archivo.type && !TIPOS_ADJUNTO_PERMITIDOS.includes(archivo.type)) return 'Ese tipo de archivo no se puede adjuntar. Usa una foto o un PDF.';
+  return null;
+}
+
 // Sube el archivo REAL (foto/PDF) al bucket privado "comprobantes" — cada usuario tiene su
 // propia carpeta (`{userId}/...`), reforzada por las políticas de supabase/storage.sql; `carpeta`
 // separa por tipo (pagos/eventos) dentro de esa misma carpeta del usuario, sin necesitar otro

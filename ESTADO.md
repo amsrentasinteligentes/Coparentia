@@ -1,5 +1,41 @@
 # ESTADO.md — Coparentia (nombre provisional: PensiónClara)
 
+### Checkpoint (2026-09-09) — Segunda auditoría de seguridad (formato guiado del usuario), Etapa 2 aplicada
+Auditoría pedida por el usuario con reglas propias (no tocar el flujo de enlace mágico, no
+mostrar secretos, explicar en simple, no inventar). Etapa 1 (solo lectura) reportada y aprobada;
+el usuario pidió aplicar TODO lo posible de 🟠 Importante y 🟡 Recomendado por mi cuenta.
+
+**Aplicado y verificado (`tsc` ✓, `build` ✓, `npm audit` → 0 vulnerabilidades):**
+1. 🟠 El bucket de Storage `comprobantes` no tenía tope de tamaño ni de tipo de archivo — cualquier
+   cuenta podía subir cualquier archivo de cualquier peso a su propia carpeta. Creado
+   `supabase/fix-limites-storage.sql` (15 MB, solo imagen/PDF) — **pendiente de que el usuario lo
+   corra en Supabase → SQL Editor** (no lo pude ejecutar yo).
+2. 🟠 Como acompañamiento (no reemplazo) de ese fix: agregado `validarArchivoAdjunto()` en
+   `lib/datos.ts` y usado en los dos formularios de adjuntar archivo (`app/(app)/pagos/page.tsx`,
+   `app/(app)/calendario/page.tsx`) — mismo tope, para que el usuario vea un mensaje claro al
+   elegir el archivo en vez de un error de red genérico si Supabase lo rechaza en el servidor.
+3. 🟡 Revisado: sin configuración de CORS personalizada en la app (nada que corregir). `npm audit`
+   sin vulnerabilidades. Sin errores de servidor filtrando detalles internos al usuario.
+
+**Evaluado y NO aplicado (con motivo):**
+- 🟡 CSP con nonce: requeriría middleware nuevo generando nonce por request y tocar cómo cargan
+  estilos/scripts — riesgo real de romper el login (Regla 1: "el flujo de enlace mágico no se
+  toca") sin poder probarlo a fondo en esta sesión. Queda para una sesión dedicada solo a eso.
+- 🟠 Límite de intentos del enlace mágico (rate limit): **no se puede arreglar con código** — vive
+  en el panel de Supabase (Authentication → Rate Limits), no en el proyecto. Ver pendientes abajo.
+- 🟡 Monitoreo de errores tipo Sentry: requiere que el usuario cree una cuenta externa primero: no
+  se puede avanzar sin esa decisión/cuenta suya.
+- 🔴 CRÍTICO (sin enforcement real de prueba/suscripción): depende por completo de conectar
+  Hotmart (18-VENTA-HOTMART.md), que sigue pendiente — ver checkpoint más abajo.
+
+⚠️ **Pendiente — solo el usuario puede hacerlo:**
+- Correr `supabase/fix-limites-storage.sql` en el SQL Editor de Supabase (2 minutos).
+- Entrar al panel de Supabase → Authentication → Rate Limits y confirmar que el límite de envíos
+  de enlace mágico por correo/IP esté activado (viene activado por defecto, pero solo el dueño de
+  la cuenta lo puede ver/ajustar — yo no tengo acceso a ese panel).
+- Decidir si se conecta Hotmart ahora — es el único arreglo real para que la prueba gratis/
+  suscripción se controle de verdad en el servidor, no solo en la pantalla.
+
 ### Checkpoint (2026-09-09) — Auditoría legal completa (47-LEGAL-FISCAL-Y-PRIVACIDAD.md)
 Pedido del usuario: dejar la capa legal completa, profesional y coherente con lo que la app hace
 de verdad. Datos del responsable (dados por el usuario): **Alejandro Muñoz, persona natural,

@@ -13,7 +13,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { ChevronLeft, ChevronRight, Plus, X, Users, HeartPulse, Plane, Trophy, Globe, Paperclip } from 'lucide-react';
 import { ContenedorApp, PageHeader, Tarjeta, IconoCirculo, BotonFlotante } from '@/components/app/ui';
 import { VisorImagen } from '@/components/app/VisorImagen';
-import { type Evento, type TipoEvento, obtenerEventos, agregarEvento, obtenerUrlArchivo, formatoFechaLarga } from '@/lib/datos';
+import { type Evento, type TipoEvento, obtenerEventos, agregarEvento, obtenerUrlArchivo, formatoFechaLarga, validarArchivoAdjunto } from '@/lib/datos';
 
 const ICONO: Record<TipoEvento, typeof Users> = { visita: Users, medica: HeartPulse, vacaciones: Plane, extracurricular: Trophy, salida_pais: Globe };
 const LABEL: Record<TipoEvento, string> = { visita: 'Visita', medica: 'Cita médica', vacaciones: 'Vacaciones', extracurricular: 'Actividad', salida_pais: 'Salida del país' };
@@ -306,6 +306,7 @@ function ModalEvento({
   const [fecha, setFecha] = useState(fechaInicial ?? new Date().toISOString().slice(0, 10));
   const [documento, setDocumento] = useState<File | null>(null);
   const [guardando, setGuardando] = useState(false);
+  const [errorArchivo, setErrorArchivo] = useState<string | null>(null);
   const inputDocRef = useRef<HTMLInputElement>(null);
   const esSalidaPais = tipo === 'salida_pais';
 
@@ -390,7 +391,18 @@ function ModalEvento({
           type="file"
           accept="image/*,application/pdf"
           className="hidden"
-          onChange={(e) => setDocumento(e.target.files?.[0] ?? null)}
+          onChange={(e) => {
+            const f = e.target.files?.[0] ?? null;
+            if (f) {
+              const error = validarArchivoAdjunto(f);
+              if (error) {
+                setErrorArchivo(error);
+                return;
+              }
+            }
+            setErrorArchivo(null);
+            setDocumento(f);
+          }}
         />
         <button
           type="button"
@@ -400,11 +412,15 @@ function ModalEvento({
           <Paperclip size={16} aria-hidden="true" />
           {documento ? documento.name : esSalidaPais ? 'Adjuntar permiso notariado' : 'Adjuntar archivo'}
         </button>
-        <p className="mt-1.5 text-[12px] text-[var(--text-tertiary)]">
-          {esSalidaPais
-            ? 'Opcional aquí, pero queda guardado en tu expediente para cuando lo necesites mostrar.'
-            : 'Queda guardado de verdad en tu expediente — foto o PDF, listo para mostrar después.'}
-        </p>
+        {errorArchivo ? (
+          <p className="mt-1.5 text-[12px] text-[var(--status-error)]">{errorArchivo}</p>
+        ) : (
+          <p className="mt-1.5 text-[12px] text-[var(--text-tertiary)]">
+            {esSalidaPais
+              ? 'Opcional aquí, pero queda guardado en tu expediente para cuando lo necesites mostrar.'
+              : 'Queda guardado de verdad en tu expediente — foto o PDF, listo para mostrar después.'}
+          </p>
+        )}
 
         <button
           type="button"
