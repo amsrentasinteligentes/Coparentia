@@ -11,7 +11,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ChevronLeft, ChevronRight, Plus, X, Users, HeartPulse, Plane, Trophy, Globe, Paperclip } from 'lucide-react';
-import { ContenedorApp, PageHeader, Tarjeta, IconoCirculo, BotonFlotante } from '@/components/app/ui';
+import { ContenedorApp, PageHeader, Tarjeta, IconoCirculo, BotonFlotante, ErrorDeCarga } from '@/components/app/ui';
 import { VisorImagen } from '@/components/app/VisorImagen';
 import { type Evento, type TipoEvento, obtenerEventos, agregarEvento, obtenerUrlArchivo, formatoFechaLarga, validarArchivoAdjunto } from '@/lib/datos';
 
@@ -50,9 +50,25 @@ export default function Calendario() {
   const [modalAbierto, setModalAbierto] = useState(false);
   const [fechaModal, setFechaModal] = useState<string | undefined>(undefined);
 
+  // Igual que en Inicio y Pagos: un fallo de red mostraba el mes VACÍO, indistinguible de
+  // "no tienes eventos registrados".
+  const [falloCarga, setFalloCarga] = useState(false);
+  const [intento, setIntento] = useState(0);
+
   useEffect(() => {
-    obtenerEventos().then(setEventos);
-  }, []);
+    let vigente = true;
+    setFalloCarga(false);
+    obtenerEventos()
+      .then((r) => {
+        if (vigente) setEventos(r);
+      })
+      .catch(() => {
+        if (vigente) setFalloCarga(true);
+      });
+    return () => {
+      vigente = false;
+    };
+  }, [intento]);
 
   const delMes = eventos
     .filter((e) => e.fecha.slice(0, 7) === claveMes(mesActual))
@@ -97,7 +113,8 @@ export default function Calendario() {
         </div>
 
         <div className="md:order-1 flex flex-col gap-3">
-          {delMes.length === 0 && (
+          {falloCarga && <ErrorDeCarga onReintentar={() => setIntento((n) => n + 1)} />}
+          {!falloCarga && delMes.length === 0 && (
             <Tarjeta className="items-center py-10 text-center">
               <p className="text-[14px] text-[var(--text-secondary)]">Sin eventos este mes todavía.</p>
             </Tarjeta>

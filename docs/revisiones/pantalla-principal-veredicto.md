@@ -1,14 +1,24 @@
-# VEREDICTO revisor-visual — pantalla-principal
-Fecha: 2026-09-07 00:00
+# VEREDICTO revisor-visual — Pantalla principal (Inicio)
+Fecha: 2026-09-10 12:00
 Screenshot: docs/revisiones/inicio-375.png
-Usabilidad: 21/40
-Craft: 9/20
+Usabilidad: 22/40
+Craft: 15/20
 Copy (si vende): N-A
 Fidelidad (si hubo referencia): N-A
 Veredicto: NO LISTA
+
+Detalle usabilidad: h1:2 h2:3 h3:2 h4:3 h5:2 h6:2 h7:2 h8:3 h9:1 h10:2
+Detalle craft: jerarquía:3 profundidad:3 identidad:3 movimiento:3 encaje:3
+Gate: ≥36/40 y ≥16/20 — falla ambos.
+
 Top defectos:
-1. [Primeros pasos, pasos "comprobante" y "revelación" — app/(app)/inicio/page.tsx L142-227] Sin botón Atrás ni indicador de progreso (1/2); la única salida es la nav inferior, sin señalizar → agregar header con flecha atrás + "Paso X de 2".
-2. [app/(app)/inicio/page.tsx L35-41, L56-65] tieneOnboardingCompleto() se vuelve true apenas se guarda el título (paso 1), no al terminar el flujo completo: si el usuario recarga entre el paso 1 y 2, la app salta al Dashboard con datos SEMILLA falsos (agregarPago nunca corrió), mostrando "4 de 6 meses" y comprobantes que nunca subió → usar una clave de "primeros pasos completos" separada de "título guardado" para reanudar en el paso correcto.
-3. [components/landing/ui.tsx MiniRing L152-190; inicio/page.tsx L254; FICHA-ARTE.md dispositivo ownable] El halo azul radial detrás del anillo/dato héroe y el subrayado marcador en el titular, documentados en FICHA-ARTE.md como el dispositivo diferenciador de marca, no están implementados en ningún título ni en el anillo de esta pantalla → aplicar el halo detrás de <MiniRing> y el subrayado en la palabra clave de "Configura tu cuota alimentaria" / "Tu expediente".
-4. [inicio-primerospasos-2-comprobante-375.png e inicio-primerospasos-3-revelacion-375.png] ~45-50% de la altura queda en fondo plano vacío debajo del CTA — la misma tensión de "vacío muerto" ya vista en onboarding/paywall reaparece aquí → añadir apoyo visual (ilustración ligera, tip) o centrar verticalmente el bloque.
-5. [inicio/page.tsx: botones L131, L164, L218] Los 3 CTA primarios del flujo son `<button>` planos sin `whileTap`/motion, a diferencia de `<BotonFlotante>` del mismo kit que sí lo tiene → migrar a `motion.button` con `whileTap={{scale:0.97}}` para cumplir la baseline de feedback de tap del SO.
+1. [Dashboard — carga de datos, `app/(app)/inicio/page.tsx:37-42` y `:286-294`] Ni un solo `.catch`: si Supabase falla, la red se cae o la sesión expiró, o el esqueleto pulsa para SIEMPRE (nunca se pone `listo`), o el expediente se pinta vacío ($0 · 0 comprobantes · "Todavía no hay movimientos") como si la persona no tuviera nada guardado — el miedo exacto del usuario. `obtenerPagos/obtenerEventos` además se tragan el `error` y devuelven `[]`, así que el estado vacío MIENTE. → Añadir estado de error con "Reintentar" + timeout en el arranque; nunca renderizar el vacío cuando la carga falló.
+2. [Primeros pasos — "Elegir archivo", `page.tsx:95-113`] Sube sin `validarArchivoAdjunto` (que SÍ usan Pagos y Calendario) y sin `.catch`: una foto de 20 MB o un .docx deja "Aplicando el Sello de Confianza a…" girando indefinidamente justo en la primera victoria. → Validar tamaño/tipo antes de subir y mostrar el fallo con qué hacer.
+3. [Encabezado — "Cuota de $ 850.000 · día 5"] La cuota no se puede editar en NINGUNA pantalla de la app (`guardarTitulo` solo se invoca en primeros pasos), pero el copy del paso 1 promete "puedes ajustarlo cuando quieras". → Hacer el subtítulo tocable hacia una hoja de edición del título.
+4. [CTA "Subir un comprobante", pie de pantalla] La única acción primaria queda cortada detrás de la nav fija en la primera vista y es un `<Link>` sin `whileTap` ni `:active` — los botones idénticos del flujo sí responden al tap. → Fijarlo sobre la nav (`sticky bottom-[calc(76px+env(safe-area-inset-bottom))]`) y darle feedback de tap.
+5. [Tarjeta del anillo — "Meses con registro 3 de 6"] El "6" es una meta inventada en código (`metaMeses = 6`), sin rótulo ni relación con el caso del usuario; y la pantalla no responde la pregunta diaria ("¿voy al día este mes?") — la `Pildora` semántica del kit no se usa en Inicio. → Explicar/derivar la meta y agregar píldora de estado del mes en curso.
+
+Notas de verificación (lo declarado por quien construyó):
+- CONFIRMADO: `BarraAtras` con "Paso X de 2"; `tieneOnboardingCompleto` derivado de datos reales (título + ≥1 pago); `PageHeader` con `palabraClave`+`halo` (el marcador sobre "expediente" se ve claramente en el render); esqueleto de arranque y de carga; `NumeroContado` en los 3 números; `Tarjeta` con `indice` (escalonado); estado vacío real en "Últimos movimientos"; navegación con `Link`; luz ambiental al 9%; pulso de celebración condicionado a hito nuevo; `prefers-reduced-motion` respetado en todo (Tarjeta, NumeroContado, template, nav, celebración, skeleton).
+- MATIZADO: el escalonado no es una cascada coherente — la tarjeta del anillo y la de "Próximo" van con `indice` 0 y la lista de movimientos reinicia en 0, así que las tarjetas de abajo entran antes que las de arriba. El halo del header queda tapado por la luz ambiental (ambos aclaran la misma zona superior): el dispositivo ownable que se lee es el marcador, no el halo. La celebración se dispara en falso la primera vez que se abre la app en un navegador nuevo con datos ya existentes (la marca en localStorage arranca en 0).
+- DESVÍO DE FICHA-ARTE: la ficha declara "hairline degradada" como parte de la profundidad; `Tarjeta` usa un borde sólido plano. El tercer nivel de superficie (`--surface-2`, "hundido") existe en tokens y no se usa en esta pantalla.

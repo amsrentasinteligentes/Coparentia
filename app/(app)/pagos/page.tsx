@@ -7,7 +7,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Upload, ShieldCheck, FileCheck2, X, ChevronRight, Sparkles } from 'lucide-react';
-import { ContenedorApp, PageHeader, Tarjeta, IconoCirculo, BotonFlotante } from '@/components/app/ui';
+import { ContenedorApp, PageHeader, Tarjeta, IconoCirculo, BotonFlotante, ErrorDeCarga } from '@/components/app/ui';
 import { VisorImagen } from '@/components/app/VisorImagen';
 import { SelloConfianza } from '@/components/app/SelloConfianza';
 import {
@@ -34,10 +34,18 @@ export default function Pagos() {
   const [abriendo, setAbriendo] = useState<string | null>(null);
   const [urlVisor, setUrlVisor] = useState<string | null>(null);
   const [selloDe, setSelloDe] = useState<string | null>(null);
+  const [falloCarga, setFalloCarga] = useState(false);
+  const [intento, setIntento] = useState(0);
 
+  // Un fallo de red mostraba la lista VACIA, indistinguible de "no tienes comprobantes".
   useEffect(() => {
-    obtenerPagos().then(setPagos);
-  }, []);
+    let vigente = true;
+    setFalloCarga(false);
+    obtenerPagos()
+      .then((r) => { if (vigente) setPagos(r); })
+      .catch(() => { if (vigente) setFalloCarga(true); });
+    return () => { vigente = false; };
+  }, [intento]);
 
   // Abre el archivo REAL del comprobante (URL firmada, temporal — el bucket es privado). Las
   // fotos se ven en el visor propio de la app (encaja a pantalla + pellizco para acercar — antes
@@ -93,7 +101,8 @@ export default function Pagos() {
       </p>
 
       <div className="mt-3 flex flex-col gap-3">
-        {visibles.length === 0 && (
+        {falloCarga && <ErrorDeCarga onReintentar={() => setIntento((n) => n + 1)} />}
+        {!falloCarga && visibles.length === 0 && (
           <Tarjeta className="items-center py-10 text-center">
             <p className="text-[14px] text-[var(--text-secondary)]">Todavía no tienes registros en esta categoría.</p>
           </Tarjeta>

@@ -11,7 +11,7 @@ import { Upload, Check, CalendarClock, ShieldCheck, ChevronRight, FileCheck2, Gl
 import { MiniRing } from '@/components/landing/ui';
 import { BarraAtras, Halo } from '@/components/funnel/ui';
 import Link from 'next/link';
-import { ContenedorApp, PageHeader, Tarjeta, IconoCirculo, Pildora, TarjetaSkeleton, NumeroContado } from '@/components/app/ui';
+import { ContenedorApp, PageHeader, Tarjeta, IconoCirculo, Pildora, TarjetaSkeleton, NumeroContado, ErrorDeCarga } from '@/components/app/ui';
 import {
   type Titulo,
   type Pago,
@@ -25,6 +25,7 @@ import {
   formatoCOP,
   formatoFechaCorta,
   formatoFechaLarga,
+  validarArchivoAdjunto,
 } from '@/lib/datos';
 
 const ICONO_EVENTO = { visita: CalendarClock, medica: ShieldCheck, vacaciones: CalendarClock, extracurricular: CalendarClock, salida_pais: Globe } as const;
@@ -33,13 +34,37 @@ const LABEL_EVENTO = { visita: 'Visita', medica: 'Cita médica', vacaciones: 'Va
 export default function Inicio() {
   const [listo, setListo] = useState(false);
   const [completo, setCompleto] = useState(false);
+  // Sin este estado, un fallo aquí dejaba el esqueleto pulsando PARA SIEMPRE: la promesa (`then`)
+  // nunca se cumplía y `listo` nunca pasaba a true, así que la app se quedaba cargando sin fin.
+  const [fallo, setFallo] = useState(false);
+  const [intento, setIntento] = useState(0);
 
   useEffect(() => {
-    tieneOnboardingCompleto().then((c) => {
-      setCompleto(c);
-      setListo(true);
-    });
-  }, []);
+    let vigente = true;
+    setFallo(false);
+    setListo(false);
+    tieneOnboardingCompleto()
+      .then((c) => {
+        if (!vigente) return;
+        setCompleto(c);
+        setListo(true);
+      })
+      .catch(() => {
+        if (vigente) setFallo(true);
+      });
+    return () => {
+      vigente = false;
+    };
+  }, [intento]);
+
+  if (fallo) {
+    return (
+      <ContenedorApp>
+        <PageHeader titulo="Tu expediente" palabraClave="expediente" halo />
+        <ErrorDeCarga onReintentar={() => setIntento((n) => n + 1)} />
+      </ContenedorApp>
+    );
+  }
 
   // Mientras se resuelve si la persona ya pasó los primeros pasos, esto devolvía `null`: una
   // pantalla EN BLANCO durante el arranque, que en un celular lento se lee como "la app no cargó".
@@ -70,6 +95,7 @@ function PrimerosPasos({ onListo }: { onListo: () => void }) {
   const [reajuste, setReajuste] = useState('IPC (Índice de Precios al Consumidor)');
   const [archivo, setArchivo] = useState<File | null>(null);
   const [procesando, setProcesando] = useState(false);
+  const [errorSubida, setErrorSubida] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Si el título ya se guardó en un intento anterior (ej. recargó la página a mitad de camino),
@@ -93,10 +119,18 @@ function PrimerosPasos({ onListo }: { onListo: () => void }) {
   };
 
   const subirComprobante = (f: File): void => {
+    // Este era el ÚNICO formulario de subida sin validar el archivo: Pagos y Calendario sí lo
+    // hacen. Justo aquí —la primera victoria, el momento más frágil— un archivo de 20 MB o un
+    // .docx dejaba "Aplicando el Sello de Confianza…" girando para siempre, porque tampoco había
+    // `.catch`. Se valida antes y se atrapa el fallo, con un mensaje que dice qué hacer.
+    const errorValidacion = validarArchivoAdjunto(f);
+    if (errorValidacion) {
+      setErrorSubida(errorValidacion);
+      return;
+    }
+    setErrorSubida(null);
     setArchivo(f);
     setProcesando(true);
-    // Sello de Confianza: fecha + asocia el comprobante — mock honesto (sin OCR real todavía,
-    // Sesión 6), pero el NOMBRE del archivo es real (lo eligió el usuario, no se inventa).
     agregarPago(
       {
         fecha: new Date().toISOString().slice(0, 10),
@@ -106,10 +140,15 @@ function PrimerosPasos({ onListo }: { onListo: () => void }) {
         comprobanteNombre: f.name,
       },
       f
-    ).then(() => {
-      setProcesando(false);
-      setPaso('revelacion');
-    });
+    )
+      .then(() => {
+        setProcesando(false);
+        setPaso('revelacion');
+      })
+      .catch(() => {
+        setProcesando(false);
+        setErrorSubida('No pudimos guardar el comprobante. Revisa tu conexión e inténtalo de nuevo.');
+      });
   };
 
   return (
@@ -219,6 +258,12 @@ function PrimerosPasos({ onListo }: { onListo: () => void }) {
               Aplicando el Sello de Confianza a &quot;{archivo?.name}&quot;…
             </div>
           )}
+
+          {errorSubida && (
+            <p role="alert" className="mt-3 max-w-[34ch] text-[13px] leading-[1.5] text-[var(--status-error)]">
+              {errorSubida}
+            </p>
+          )}
         </motion.div>
       )}
 
@@ -283,15 +328,33 @@ function Dashboard() {
   const [celebrar, setCelebrar] = useState(false);
   const reduce = useReducedMotion();
 
+  // `falloCarga` distingue "no tienes nada" de "no pudimos traer lo que tienes". Sin esa
+  // distinción, un error de red pintaba el expediente vacío y le decía a la persona, en la
+  // pantalla que abre a diario, que sus pruebas no están — el peor mensaje posible para esta app.
+  const [falloCarga, setFalloCarga] = useState(false);
+  const [intentoDatos, setIntentoDatos] = useState(0);
+
   useEffect(() => {
+    let vigente = true;
+    setCargando(true);
+    setFalloCarga(false);
     Promise.all([obtenerTitulo(), obtenerPagos(), obtenerEventos()])
       .then(([t, p, e]) => {
+        if (!vigente) return;
         setTitulo(t);
         setPagos(p);
         setEventos(e);
+        setCargando(false);
       })
-      .finally(() => setCargando(false));
-  }, []);
+      .catch(() => {
+        if (!vigente) return;
+        setFalloCarga(true);
+        setCargando(false);
+      });
+    return () => {
+      vigente = false;
+    };
+  }, [intentoDatos]);
 
   const totalRegistrado = pagos.reduce((acc, p) => acc + p.monto, 0);
   const mesesConRegistro = new Set(pagos.filter((p) => p.tipo === 'cuota').map((p) => p.fecha.slice(0, 7))).size;
@@ -305,17 +368,25 @@ function Dashboard() {
   const CLAVE_HITO = 'coparentia_meses_celebrados';
   const mesesLogrados = Math.min(mesesConRegistro, metaMeses);
   useEffect(() => {
-    if (cargando || mesesLogrados === 0) return;
+    if (cargando || falloCarga || mesesLogrados === 0) return;
     try {
-      const previos = Number(localStorage.getItem(CLAVE_HITO) ?? '0');
-      if (mesesLogrados > previos) {
+      const guardado = localStorage.getItem(CLAVE_HITO);
+      // La PRIMERA vez en un navegador nuevo no hay marca guardada. Antes eso se leía como "0" y
+      // se celebraba de inmediato, aunque la persona solo estuviera abriendo la app en otro
+      // teléfono con meses que ya tenía: una felicitación por un logro viejo se siente falsa. Sin
+      // marca previa se sincroniza en silencio y se celebra a partir del SIGUIENTE mes real.
+      if (guardado === null) {
+        localStorage.setItem(CLAVE_HITO, String(mesesLogrados));
+        return;
+      }
+      if (mesesLogrados > Number(guardado)) {
         setCelebrar(true);
         localStorage.setItem(CLAVE_HITO, String(mesesLogrados));
       }
     } catch {
       // Navegador sin almacenamiento (modo privado): simplemente no se celebra. Nunca se rompe.
     }
-  }, [cargando, mesesLogrados]);
+  }, [cargando, falloCarga, mesesLogrados]);
 
   const hoy = new Date().toISOString().slice(0, 10);
   const proximoEvento = eventos.filter((e) => e.fecha >= hoy).sort((a, b) => a.fecha.localeCompare(b.fecha))[0];
@@ -332,7 +403,9 @@ function Dashboard() {
         subtitulo={titulo ? `Cuota de ${formatoCOP(titulo.montoMensual)} · día ${titulo.diaPago}` : undefined}
       />
 
-      {cargando ? (
+      {falloCarga ? (
+        <ErrorDeCarga onReintentar={() => setIntentoDatos((n) => n + 1)} />
+      ) : cargando ? (
         <TarjetaSkeleton filas={3} />
       ) : (
         <>
@@ -425,13 +498,17 @@ function Dashboard() {
         )}
       </div>
 
-      <Link
-        href="/pagos"
-        className="mt-8 flex h-14 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] bg-[var(--accent)] text-[16px] font-semibold text-[var(--bg)] [touch-action:manipulation]"
-      >
-        <Upload size={18} aria-hidden="true" />
-        Subir un comprobante
-      </Link>
+      {/* Era la única acción primaria de la pantalla y quedaba cortada detrás del nav fijo en la
+          primera vista, además de ser el único botón del flujo SIN respuesta al toque. */}
+      <motion.div whileTap={{ scale: 0.98 }} className="mt-8">
+        <Link
+          href="/pagos"
+          className="flex h-14 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] bg-[var(--accent)] text-[16px] font-semibold text-[var(--bg)] [touch-action:manipulation]"
+        >
+          <Upload size={18} aria-hidden="true" />
+          Subir un comprobante
+        </Link>
+      </motion.div>
     </ContenedorApp>
   );
 }

@@ -166,11 +166,16 @@ export async function guardarTitulo(t: Titulo): Promise<void> {
 
 export async function obtenerPagos(): Promise<Pago[]> {
   const { supabase, userId } = await usuarioActual();
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from('pagos')
     .select('*')
     .eq('user_id', userId)
     .order('fecha', { ascending: false });
+  // Antes se ignoraba `error` y se devolvía `[]`: si la consulta fallaba (red caída, sesión
+  // vencida), la app mostraba el expediente VACÍO — indistinguible de "no tienes nada guardado".
+  // En una app cuya promesa entera es "tus pruebas están a salvo", ese vacío es una MENTIRA
+  // alarmante. Ahora el fallo se propaga para que la pantalla muestre un error con reintento.
+  if (error) throw error;
   return (data ?? []).map(mapPago);
 }
 
@@ -262,11 +267,13 @@ export async function agregarAutorizacion(auth: Omit<Autorizacion, 'id'>): Promi
 
 export async function obtenerEventos(): Promise<Evento[]> {
   const { supabase, userId } = await usuarioActual();
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from('eventos')
     .select('*')
     .eq('user_id', userId)
     .order('fecha', { ascending: true });
+  // Mismo criterio que en obtenerPagos: un fallo NUNCA se disfraza de "no hay nada".
+  if (error) throw error;
   return (data ?? []).map(mapEvento);
 }
 

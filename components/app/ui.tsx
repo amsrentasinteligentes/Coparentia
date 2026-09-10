@@ -7,7 +7,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion, useReducedMotion } from 'motion/react';
-import { Home, Wallet, CalendarDays, FolderOpen, type LucideIcon } from 'lucide-react';
+import { Home, Wallet, CalendarDays, FolderOpen, CloudOff, type LucideIcon } from 'lucide-react';
 import { useEffect, useState, type ReactNode } from 'react';
 
 /* Motion signature de FICHA-ARTE.md, en un solo lugar: ease-out suave, 340ms base, sin springs
@@ -283,6 +283,34 @@ export function BotonFlotante({ onClick, children }: { onClick: () => void; chil
     >
       {children}
     </motion.button>
+  );
+}
+
+/* ── <ErrorDeCarga> — qué se muestra cuando los datos NO se pudieron traer.
+   La app no tenía ninguno: ante un fallo de red o una sesión vencida, o el esqueleto pulsaba para
+   siempre, o el expediente se pintaba vacío ($0 · 0 comprobantes) — indistinguible de "no tienes
+   nada guardado". En una app cuya promesa es "tus pruebas están a salvo", ese vacío es una mentira
+   alarmante. Dice qué pasó, qué hacer, y deja reintentar sin recargar (regla del SO: errores con
+   qué-pasó + qué-hacer, nunca un código). ── */
+export function ErrorDeCarga({ onReintentar }: { onReintentar: () => void }) {
+  return (
+    <Tarjeta className="flex flex-col items-center py-8 text-center">
+      <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-[color-mix(in_oklab,var(--status-warning)_16%,transparent)]">
+        <CloudOff size={20} color="var(--status-warning)" aria-hidden="true" />
+      </span>
+      <p className="mt-3 text-[14px] font-medium text-[var(--text-primary)]">No pudimos cargar tu expediente</p>
+      <p className="mt-1 max-w-[32ch] text-[13px] text-[var(--text-secondary)]">
+        Tus datos están guardados y a salvo — es la conexión la que falló. Revísala e inténtalo otra vez.
+      </p>
+      <motion.button
+        type="button"
+        onClick={onReintentar}
+        whileTap={{ scale: 0.97 }}
+        className="mt-4 flex h-11 items-center rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--accent)_40%,transparent)] px-5 text-[13.5px] font-semibold text-[var(--accent)] [touch-action:manipulation]"
+      >
+        Reintentar
+      </motion.button>
+    </Tarjeta>
   );
 }
 
