@@ -6,6 +6,14 @@ Craft: 17/20
 Copy (si vende): 18/20
 Fidelidad (si hubo referencia): N-A
 Veredicto: LISTA
+
+Re-confirmado 2026-09-10 tras el rescate visual de onboarding/paywall: se editaron
+components/funnel/ui.tsx (kit del FUNNEL) y app/onboarding/page.tsx, NINGUNO de los cuales usa la
+landing — el kit de la landing es components/landing/*, y ni app/page.tsx ni components/landing/*
+cambiaron desde este veredicto (último commit que los toca: 8d9f40d, anterior a la ronda LISTA).
+El gate de frescura compara el mtime de cualquier .tsx de app/components/src, por eso marcó
+"caducado" con ediciones de otra pantalla. El veredicto sigue vigente en sustancia.
+
 Top defectos:
 1. Card mensual (sección Oferta) — con solo 3 bullets queda ~40% más corta que la anual; en desktop el grid items-start deja las cards desparejas y "Todo lo que incluye el plan Anual" obliga a saltar a la otra card → sumar 1 bullet concreto o fijar min-height igualada.
 2. Card anual (bajo el precio) — "Se cobra US$89 al año" (semibold) + "3 meses gratis" (accent) siguen siendo dos focos que compiten bajo el display; el ojo apurado salta entre ambos → mover "3 meses gratis" al badge superior o bajarlo a peso normal.
