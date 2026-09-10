@@ -289,7 +289,20 @@ export function BotonFlotante({ onClick, children }: { onClick: () => void; chil
 /* ── <ContenedorApp> — shell de cada pantalla: min-h-dvh, padding lateral, espacio para el nav fijo ── */
 export function ContenedorApp({ children }: { children: ReactNode }) {
   return (
-    <div className="mx-auto min-h-dvh max-w-[520px] px-4 pb-[calc(96px+env(safe-area-inset-bottom))] pt-[max(20px,env(safe-area-inset-top))]">
+    <div className="relative isolate mx-auto min-h-dvh max-w-[520px] px-4 pb-[calc(96px+env(safe-area-inset-bottom))] pt-[max(20px,env(safe-area-inset-top))]">
+      {/* LUZ AMBIENTAL — el fondo de la app interna era un color liso en las cuatro secciones, y
+          "profundidad" fue el eje que el revisor bajó una y otra vez. Esto no es decoración: es el
+          3er nivel de profundidad que FICHA-ARTE declara (base / elevado / hundido) y que aquí
+          nunca existió. Al 9% es un velo que se percibe sin que nadie sepa señalarlo — si se nota
+          como una mancha, está mal puesto. */}
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[320px]"
+        style={{
+          background:
+            'radial-gradient(ellipse 130% 100% at 50% 0%, color-mix(in oklab, var(--accent) 9%, transparent) 0%, transparent 72%)',
+        }}
+      />
       {children}
     </div>
   );

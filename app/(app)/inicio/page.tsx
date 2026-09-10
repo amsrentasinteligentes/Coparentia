@@ -280,6 +280,8 @@ function Dashboard() {
   // instante después saltaba a los datos reales: durante ese parpadeo la app le dice a la persona
   // que su expediente está vacío, que es exactamente su miedo.
   const [cargando, setCargando] = useState(true);
+  const [celebrar, setCelebrar] = useState(false);
+  const reduce = useReducedMotion();
 
   useEffect(() => {
     Promise.all([obtenerTitulo(), obtenerPagos(), obtenerEventos()])
@@ -295,6 +297,25 @@ function Dashboard() {
   const mesesConRegistro = new Set(pagos.filter((p) => p.tipo === 'cuota').map((p) => p.fecha.slice(0, 7))).size;
   const metaMeses = 6;
   const progreso = Math.round((Math.min(mesesConRegistro, metaMeses) / metaMeses) * 100);
+
+  // La celebración solo vale si el hito es NUEVO. Se guarda en el navegador cuántos meses se
+  // habían celebrado ya: si hoy hay más que la última vez, se celebra una sola vez y se actualiza
+  // la marca. Sin esta comparación, el anillo festejaría en CADA apertura de la app — y algo que
+  // celebra siempre deja de significar nada (regla del SO: solo hitos reales).
+  const CLAVE_HITO = 'coparentia_meses_celebrados';
+  const mesesLogrados = Math.min(mesesConRegistro, metaMeses);
+  useEffect(() => {
+    if (cargando || mesesLogrados === 0) return;
+    try {
+      const previos = Number(localStorage.getItem(CLAVE_HITO) ?? '0');
+      if (mesesLogrados > previos) {
+        setCelebrar(true);
+        localStorage.setItem(CLAVE_HITO, String(mesesLogrados));
+      }
+    } catch {
+      // Navegador sin almacenamiento (modo privado): simplemente no se celebra. Nunca se rompe.
+    }
+  }, [cargando, mesesLogrados]);
 
   const hoy = new Date().toISOString().slice(0, 10);
   const proximoEvento = eventos.filter((e) => e.fecha >= hoy).sort((a, b) => a.fecha.localeCompare(b.fecha))[0];
@@ -316,7 +337,21 @@ function Dashboard() {
       ) : (
         <>
           <Tarjeta className="flex items-center gap-4">
-            <MiniRing value={progreso} size={64} stroke={6} />
+            <span className="relative flex shrink-0">
+              {/* CELEBRACIÓN N2 de FICHA-ARTE ("anillo que se completa con luz suave"): un pulso
+                  que se expande UNA vez, solo cuando se acaba de sumar un mes nuevo — nunca por
+                  abrir la app. Sin esto, alcanzar un mes más no producía ninguna señal. */}
+              {celebrar && !reduce && (
+                <motion.span
+                  aria-hidden="true"
+                  initial={{ scale: 0.8, opacity: 0.6 }}
+                  animate={{ scale: 1.7, opacity: 0 }}
+                  transition={{ duration: 1.2, ease: [0.22, 0.61, 0.36, 1] }}
+                  className="absolute inset-0 rounded-full border-2 border-[var(--accent)]"
+                />
+              )}
+              <MiniRing value={progreso} size={64} stroke={6} />
+            </span>
             <div className="flex-1">
               <p className="text-[13px] text-[var(--text-secondary)]">Meses con registro</p>
               <p className="text-[22px] font-bold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">

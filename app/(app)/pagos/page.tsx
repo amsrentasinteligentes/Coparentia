@@ -9,6 +9,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Upload, ShieldCheck, FileCheck2, X, ChevronRight, Sparkles } from 'lucide-react';
 import { ContenedorApp, PageHeader, Tarjeta, IconoCirculo, BotonFlotante } from '@/components/app/ui';
 import { VisorImagen } from '@/components/app/VisorImagen';
+import { SelloConfianza } from '@/components/app/SelloConfianza';
 import {
   type Pago,
   type Titulo,
@@ -32,6 +33,7 @@ export default function Pagos() {
   const [modalAbierto, setModalAbierto] = useState(false);
   const [abriendo, setAbriendo] = useState<string | null>(null);
   const [urlVisor, setUrlVisor] = useState<string | null>(null);
+  const [selloDe, setSelloDe] = useState<string | null>(null);
 
   useEffect(() => {
     obtenerPagos().then(setPagos);
@@ -143,9 +145,16 @@ export default function Pagos() {
             onGuardado={(nuevo) => {
               setPagos((prev) => [nuevo, ...prev]);
               setModalAbierto(false);
+              // El comprobante queda guardado ANTES de mostrar el sello: la celebración refleja
+              // algo que ya pasó de verdad, nunca la promesa de algo que todavía puede fallar.
+              setSelloDe(nuevo.fecha);
             }}
           />
         )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {selloDe && <SelloConfianza fecha={formatoFechaLarga(selloDe)} onTerminar={() => setSelloDe(null)} />}
       </AnimatePresence>
 
       <VisorImagen url={urlVisor} onCerrar={() => setUrlVisor(null)} />
