@@ -1523,6 +1523,13 @@ FICHA-ARTE.md que la landing.
 
 ## Problemas conocidos
 
+### Estado de los 3 gates de veredicto tras conectar el webhook de Hotmart (2026-09-11)
+Sesión de BACKEND puro: base de datos nueva, un endpoint nuevo (`app/api/webhooks/hotmart/route.ts`,
+sin interfaz visual) y el candado de `app/(app)/layout.tsx` (redirige, no cambia cómo se ve nada).
+Ninguno de los 3 archivos de landing/onboarding/paywall se tocó. Se posponen los 3 con la misma
+justificación de las entradas anteriores — landing sigue LISTA (37/40), onboarding y paywall NO
+LISTA por el mismo techo estructural ya documentado, sin cambios en esta sesión.
+
 ### Estado de los 3 gates de veredicto tras conectar el paywall a Hotmart (2026-09-11)
 Esta vez SÍ se tocó `app/paywall/page.tsx`, pero el cambio es de PLOMERÍA (a qué URL navega el
 CTA), no de diseño: mismo layout, mismo texto, mismo CTA, mismas 2 pantallas — solo cambió
