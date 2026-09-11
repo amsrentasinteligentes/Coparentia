@@ -1435,6 +1435,15 @@ Regla 7 (no es una de las 4 del dinero), así que basta medición + checklist: v
 captura real en `docs/revisiones/fix-login-reenvio-375.png` y probada end-to-end. **Sin revisor
 (pantalla secundaria).**
 
+**Ampliación (mismo día, arreglo del visor de comprobantes):** se tocó
+`components/app/VisorImagen.tsx` (estados de carga y fallo). Lo usan Pagos y Calendario, ambas
+pantallas SECUNDARIAS; no aparece en landing, onboarding ni paywall. Los 3 gates de **veredicto**
+(landing, onboarding, paywall) siguen pospuestos por lo dicho arriba: ninguna de esas tres pantallas
+cambió. El visor se verificó de forma programática (estado de carga con hilandera y aviso durante
+una espera provocada de 2 s; estado de fallo con URL rota), no con captura: el momento de carga no
+se deja fotografiar de forma fiable y una captura tomada un instante tarde sería evidencia falsa.
+**Sin revisor (componente de pantalla secundaria).**
+
 ### Estado de los 3 gates de veredicto tras "Consultar acuerdo" en Expediente (2026-09-10)
 Sin cambios en las 3 pantallas de los gates. `veredicto:landing` sigue LISTA — los `.tsx` nuevos
 (`components/app/AcuerdoCuota.tsx`, `app/(app)/expediente/page.tsx`) NO están en el árbol de la
