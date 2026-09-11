@@ -1,5 +1,80 @@
 # ESTADO.md — Coparentia (nombre provisional: PensiónClara)
 
+### Checkpoint (2026-09-11) — Webhook de Hotmart CONSTRUIDO (falta 1 paso del usuario para activarlo)
+Sigue `docs/sistema/18-VENTA-HOTMART.md` — implementación REAL (las 4 defensas: autenticidad,
+frescura, idempotencia, autorización/FSM), no el ejemplo didáctico.
+
+**Construido:**
+- `supabase/suscripciones-hotmart.sql` (NUEVO, el usuario debe correrlo) — tabla `suscripciones`
+  (identificada por CORREO, no por `user_id`: el aviso de Hotmart puede llegar antes de que la
+  cuenta exista, y `profiles.id` es una llave fija hacia `auth.users` que no se puede dejar vacía)
+  + `hotmart_eventos_procesados` (idempotencia) + `hotmart_webhook_log` (auditoría) + la función
+  `aplicar_evento_hotmart` (atómica, `security definer`, revocada a anon/authenticated).
+- `lib/membership-fsm.ts` (NUEVO) — la máquina de estados compartida entre el webhook y el candado
+  de la app: `trialing`/`active` dan acceso completo, `cancelled` conserva acceso hasta
+  `access_until`, `past_due` hasta `grace_ends_at`, `refunded`/`chargeback` son terminales (un
+  aviso viejo reentregado nunca los resucita). `esInicioDePrueba` decide trial vs. cobro real por
+  el MONTO (0 vs. >0), no solo por el nombre del evento — Hotmart puede mandar el mismo evento de
+  aprobación en ambos casos.
+- `lib/hotmart-verify.ts` (NUEVO) — verifica el hottok en TIEMPO CONSTANTE
+  (`crypto.timingSafeEqual`, nunca `===`) contra `HOTMART_HOTTOK`. Acepta el hottok por encabezado
+  O por campo del cuerpo (`hottok`), porque no está confirmado cuál usa esta cuenta.
+  ⚠️ **Bug real encontrado y corregido durante la construcción**: la primera versión leía la clave
+  al CARGAR el archivo y explotaba si faltaba — correcto en teoría, pero en Next.js esa lectura
+  ocurre durante `next build`, y sin la variable configurada (el caso del día 1, porque hace falta
+  la URL de este mismo endpoint para pedirla en Hotmart) **tumbaba la publicación de TODA la app**,
+  no solo la del webhook. Verificado con `npm run build` real antes y después del fix. Ahora la
+  clave se lee DENTRO de cada petición; sin ella, el webhook responde 401 a todo pero el resto de
+  la app publica normal.
+- `app/api/webhooks/hotmart/route.ts` (NUEVO) — el endpoint: raw body → autenticidad → frescura
+  (ventana de 5 min) → parseo → mapeo de evento → llamada atómica a `aplicar_evento_hotmart` →
+  registro en `hotmart_webhook_log` → 200 siempre que se tomó una decisión (incluido
+  duplicado/ilegal), 5xx solo en fallo real (para que Hotmart reintente). **Probado end-to-end en
+  local** (5 casos): sin clave → 401 · clave incorrecta → 401 · JSON roto → 400 · evento que no
+  cambia el acceso (`SWITCH_PLAN`) → 200 reconocido sin tocar nada · pago real con clave correcta →
+  500 controlado (porque la tabla de Supabase aún no existe — desaparece en cuanto el usuario corra
+  el SQL).
+- `app/(app)/layout.tsx` — el CANDADO real: antes de esto, cualquiera con sesión iniciada entraba
+  completo a la app para siempre sin haber pagado nunca (hallazgo crítico de la auditoría del
+  2026-09-11, sin ninguna verificación de trial/plan en todo el código). Ahora, tras el chequeo de
+  sesión, revisa `suscripciones` por el correo de la cuenta; sin fila o sin acceso vivo, manda a
+  `/paywall`. Las cuentas `role='admin'` o `creado_manualmente=true` se saltan el candado a
+  propósito (el dueño y las altas de soporte nunca pasan por Hotmart). **NO se tocó el flujo del
+  enlace mágico en sí** (cómo se manda o se valida el correo) — el candado corre DESPUÉS de que ya
+  existe sesión válida.
+- **Verificado con la base real (solo lectura, correos parcialmente ocultos) que NADIE queda
+  bloqueado al publicar**: hoy solo existe la cuenta admin del dueño.
+
+**Decisión deliberada — SIN Resend todavía:** no hace falta un correo de bienvenida propio para que
+el flujo funcione: la app YA tiene login passwordless self-serve en `/entrar` (crea la cuenta sola
+al primer inicio de sesión), y la clase del área de miembros de Hotmart (texto ya escrito, ver
+checkpoint de la clase de acceso) le dice a quien compra que entre ahí con el mismo correo. Cuando
+haga login, el webhook ya habrá creado su fila en `suscripciones` y el candado lo deja pasar. Se
+deja Resend para cuando exista el dominio propio (sin dominio verificado, los correos de Resend
+caerían en spam — sería peor que no tenerlo).
+
+⚠️ **PENDIENTE — el usuario debe hacer 2 cosas antes de que esto funcione en producción:**
+1. Correr `supabase/suscripciones-hotmart.sql` en Supabase → SQL Editor → Run.
+2. En Hotmart → Herramientas → Webhook: registrar `https://coparentia.vercel.app/api/webhooks/hotmart`,
+   elegir los eventos (aprobada/completa/reembolso/contracargo/cancelación/cambio de plan/atrasada
+   — los nombres exactos que ofrezca ESTE panel, no asumidos) y copiar el HOTTOK a
+   `HOTMART_HOTTOK` en Vercel → Settings → Environment Variables (nunca en el chat).
+
+⚠️ **PLACEHOLDERS A CONFIRMAR con una compra de prueba real (antes de anunciar la venta)** —
+documentado también en 18-VENTA-HOTMART.md, mismo principio ahí para el evento de trial:
+- Los NOMBRES exactos de los eventos (`PURCHASE_APPROVED` etc. en `lib/membership-fsm.ts`) son los
+  que documenta Hotmart en general — verificar contra la lista real que ofrezca el panel de ESTA
+  cuenta al configurar el webhook.
+- La fecha de "hasta cuándo dura el acceso tras cancelar" (`access_until`) se intenta leer del
+  aviso; si Hotmart no la manda en el evento de cancelación, se usa un resguardo de 30 días —
+  ajustar en cuanto se vea el aviso REAL de una cancelación de prueba.
+- Si esta cuenta manda una FIRMA además del hottok (poco común, pero posible): no está implementada
+  — hoy se verifica solo el hottok en tiempo constante, que es "el camino principal y, en la
+  mayoría de cuentas, el único" según la doctrina.
+
+`tsc`/`build` limpios (incluido el caso sin `HOTMART_HOTTOK` configurada, que era justo el bug que
+se encontró y corrigió). Sin cambios visuales — ninguna pantalla nueva que revisar con el revisor.
+
 ### Checkpoint (2026-09-11) — Paywall conectado al checkout REAL de Hotmart
 El usuario creó el producto en Hotmart y dio los 2 enlaces de pago (mensual y anual). El CTA final
 de `/paywall` ya NO lleva a `/entrar` (mock) — lleva al checkout real, uno por plan:
