@@ -1534,6 +1534,11 @@ FICHA-ARTE.md que la landing.
 
 ## Problemas conocidos
 
+### Estado de los 3 gates de veredicto tras corregir la ventana anti-repetición (2026-09-11)
+Un solo archivo tocado: `app/api/webhooks/hotmart/route.ts` (una constante, sin interfaz visual —
+es un endpoint, no una pantalla). Se posponen los 3 con la misma justificación de siempre: sin
+cambios en landing/onboarding/paywall.
+
 ### Estado de los 3 gates de veredicto tras conectar el webhook de Hotmart (2026-09-11)
 Sesión de BACKEND puro: base de datos nueva, un endpoint nuevo (`app/api/webhooks/hotmart/route.ts`,
 sin interfaz visual) y el candado de `app/(app)/layout.tsx` (redirige, no cambia cómo se ve nada).
