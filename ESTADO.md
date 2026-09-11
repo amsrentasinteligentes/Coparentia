@@ -17,12 +17,18 @@ alta a mano en `/admin` con el correo que usó al pagar. **Esto convierte la con
 lo más urgente de todo lo que queda pendiente** (ya lo era; ahora hay dinero real entrando sin
 nadie atendiendo del otro lado).
 
-⚠️ **SIN VERIFICAR — el usuario debe confirmarlo en el panel de Hotmart antes de anunciar la venta:**
-el paywall promete "Hoy no pagas nada · Se renueva automáticamente tras el día 7" (prueba de 7 días
-sin cobro inmediato). Esto SOLO es cierto si el producto en Hotmart tiene configurada una prueba
-gratis de 7 días antes del primer cobro. Si Hotmart está configurado para cobrar de inmediato, la
-app le estaría prometiendo algo falso a quien paga — un gate de integridad de dinero (61). No se
-pudo verificar desde aquí (vive en el panel de Hotmart, fuera del alcance del código).
+✅ **RESUELTO — el panel de Hotmart ya coincide con lo que promete la app** (confirmado por el
+usuario con capturas reales del panel, 2026-09-11):
+- Días de prueba: **7** en Plan 1 Mensual y en Plan 2 Anual (coincide con "Hoy no pagas nada · Se
+  renueva automáticamente tras el día 7" del paywall).
+- Plazo para solicitar el reembolso: **15 días** (coincide con "Garantía del Primer Expediente ·
+  15 días"). Estaba en 7 — hallazgo real de esta auditoría, corregido por el usuario en el panel
+  (Fijación de precios → Modificar). Se recomendó explícitamente NO bajar la garantía de la app a 7
+  para igualarla a Hotmart: si el plazo de reembolso se cuenta desde el registro y no desde el
+  primer cobro, igualar ambos a 7 dejaría a quien recién pagó (día 7) con CERO días reales para
+  reclamar — el riesgo que sustenta la regla dura de 18-VENTA-HOTMART.md (garantía > prueba).
+- Precio principal: Mensual US$9.99, Anual US$89.00 — coinciden con `PLAN_MENSUAL`/`PLAN_ANUAL` de
+  `app/paywall/page.tsx` y con `app/page.tsx` (landing).
 
 ### Checkpoint (2026-09-11) — "no puedo ver la foto del comprobante" (hallazgo real del usuario)
 El usuario probó el lector de recibos en producción: **leyó el monto bien** (confirma que el freno
