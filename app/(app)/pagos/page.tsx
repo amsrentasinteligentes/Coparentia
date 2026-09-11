@@ -26,6 +26,7 @@ import {
   formatoFechaLarga,
   validarArchivoAdjunto,
 } from '@/lib/datos';
+import { hoyEnColombia } from '@/lib/fecha';
 import { leerMontoDeRecibo } from '@/lib/ocr-recibo';
 import { comprimirParaLectura } from '@/lib/comprimir-imagen';
 
@@ -345,7 +346,7 @@ function ModalRegistro({ onCerrar, onGuardado }: { onCerrar: () => void; onGuard
     setProcesando(true);
     agregarPago(
       {
-        fecha: new Date().toISOString().slice(0, 10),
+        fecha: hoyEnColombia(),
         monto: Number(monto),
         concepto: concepto.trim(),
         tipo,

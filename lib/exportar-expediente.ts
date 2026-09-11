@@ -33,6 +33,7 @@ import {
   formatoCOP,
   formatoFechaLarga,
 } from '@/lib/datos';
+import { hoyEnColombia } from '@/lib/fecha';
 
 const ETIQUETA_ESTADO: Record<EstadoAutorizacion, string> = {
   aprobada: 'Aprobada',
@@ -187,6 +188,12 @@ export async function exportarExpedientePdf(
       ['Día de pago', `${titulo.diaPago} de cada mes`],
       ['Reajuste anual', titulo.indiceReajuste],
       ['Vigente desde', formatoFechaLarga(titulo.fechaInicio)],
+      // El acta de conciliación o la sentencia es el documento que DA ORIGEN a todo lo demás:
+      // quien recibe el expediente necesita saber de entrada si está o no (auditoría 2026-09-11).
+      [
+        'Documento que la fija',
+        titulo.acuerdoNombre ? `${titulo.acuerdoNombre} (ver Anexo A)` : 'No cargado en la aplicación',
+      ],
     ];
     filas.forEach(([etiqueta, valor]) => {
       salto(16);
@@ -273,6 +280,58 @@ export async function exportarExpedientePdf(
   let incluidos = 0;
   let fallidos = 0;
 
+  /* ANEXO A — el acuerdo (acta de conciliación o sentencia). Va PRIMERO y con letra en vez de
+     número: es el documento que fija la obligación, no una prueba de pago más. Se numera aparte
+     para que agregar o quitar comprobantes no le cambie el nombre al acuerdo dentro del PDF. */
+  if (titulo?.acuerdoPath && titulo.acuerdoNombre) {
+    onProgreso?.('Anexando el acuerdo…');
+    doc.addPage();
+    y = MARGEN;
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(12);
+    doc.setTextColor(20);
+    doc.text('Anexo A — Acuerdo que fija la cuota', MARGEN, y);
+    y += 18;
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9);
+    doc.setTextColor(140);
+    doc.text(`Archivo original: ${titulo.acuerdoNombre}`, MARGEN, y);
+    y += 18;
+    doc.setFontSize(10);
+
+    const esPdf = titulo.acuerdoNombre.toLowerCase().endsWith('.pdf');
+    const urlAcuerdo = await obtenerUrlArchivo(titulo.acuerdoPath);
+    const imagenAcuerdo = !esPdf && urlAcuerdo ? await imagenParaAnexo(urlAcuerdo) : null;
+
+    if (imagenAcuerdo) {
+      const disponible = LIMITE_Y - y;
+      const escalaAcuerdo = Math.min(ANCHO_UTIL / imagenAcuerdo.ancho, disponible / imagenAcuerdo.alto);
+      doc.addImage(
+        imagenAcuerdo.datos,
+        'JPEG',
+        MARGEN,
+        y,
+        imagenAcuerdo.ancho * escalaAcuerdo,
+        imagenAcuerdo.alto * escalaAcuerdo
+      );
+      incluidos += 1;
+    } else {
+      // Un PDF no se puede incrustar en otro PDF con esta librería. Se DECLARA, igual que los
+      // comprobantes en PDF: mejor decir "va aparte" que dar a entender que está adentro.
+      doc.setTextColor(150);
+      doc.text(
+        esPdf
+          ? 'El acuerdo está en PDF y se entrega como archivo aparte, no incrustado aquí.'
+          : 'No se pudo incluir la imagen del acuerdo en la exportación.',
+        MARGEN,
+        y
+      );
+      doc.text('El archivo original sigue guardado en la aplicación.', MARGEN, y + 14);
+      if (!esPdf) fallidos += 1;
+    }
+  }
+
   for (let i = 0; i < conFoto.length; i++) {
     const p = conFoto[i];
     onProgreso?.(`Anexando comprobante ${i + 1} de ${conFoto.length}…`);
@@ -327,7 +386,7 @@ export async function exportarExpedientePdf(
   }
 
   onProgreso?.('Preparando la descarga…');
-  doc.save(`expediente-coparentia-${new Date().toISOString().slice(0, 10)}.pdf`);
+  doc.save(`expediente-coparentia-${hoyEnColombia()}.pdf`);
 
   return { ok: true, anexosIncluidos: incluidos, anexosFallidos: fallidos };
 }

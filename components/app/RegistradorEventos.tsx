@@ -7,12 +7,13 @@
 
 import { useEffect } from 'react';
 import { crearClienteSupabase } from '@/lib/supabase/client';
+import { hoyEnColombia } from '@/lib/fecha';
 
 const CLAVE_STORAGE = 'coparentia_ultima_sesion_registrada';
 
 export function RegistradorEventos() {
   useEffect(() => {
-    const hoy = new Date().toISOString().slice(0, 10);
+    const hoy = hoyEnColombia();
     let yaRegistradoHoy = false;
     try {
       yaRegistradoHoy = localStorage.getItem(CLAVE_STORAGE) === hoy;

@@ -2,6 +2,17 @@
 -- Pégalo completo en Supabase → SQL Editor → New query → Run.
 -- Sigue 25-BASE-DE-DATOS.md: uuid, numeric para dinero, timestamptz, RLS con
 -- (select auth.uid()) = user_id, índice en toda foreign key.
+--
+-- ⚠️ ESTE ARCHIVO ES LA VERDAD COMPLETA DEL ESQUEMA BASE. Las columnas que se agregaron después
+-- por parches sueltos (`acuerdo-titulo.sql`, `eventos-adjuntos.sql`) ya están incorporadas aquí,
+-- para que una instalación desde cero quede idéntica a la que está en producción. Estuvieron
+-- desincronizadas hasta la auditoría del 2026-09-11: recrear la base con este archivo habría
+-- dejado la app rota. Si vuelves a agregar una columna por parche, agrégala TAMBIÉN aquí.
+-- (Los parches se siguen conservando para bases que ya existen; `if not exists` los hace
+--  inofensivos si se corren dos veces.)
+--
+-- ORDEN DE INSTALACIÓN DESDE CERO: schema.sql → storage.sql → admin.sql → ai.sql →
+-- freno-gasto-ia.sql → fix-limites-storage.sql → fix-privilegios-profiles.sql
 
 -- ── TÍTULO (la cuota alimentaria) — uno por usuario ──────────────────────────
 create table if not exists public.titulos (
@@ -11,6 +22,10 @@ create table if not exists public.titulos (
   dia_pago         int not null check (dia_pago between 1 and 31),
   indice_reajuste  text not null default 'IPC (Índice de Precios al Consumidor)',
   fecha_inicio     date not null default current_date,
+  -- Acta de conciliación o sentencia que fija la cuota ("Consultar acuerdo", pantalla Expediente).
+  -- El archivo vive en Storage, en {user_id}/acuerdo/... ; aquí solo su referencia.
+  acuerdo_path     text,
+  acuerdo_nombre   text,
   created_at       timestamptz not null default now(),
   updated_at       timestamptz not null default now()
 );
@@ -52,8 +67,9 @@ create table if not exists public.eventos (
   tipo                 text not null check (tipo in ('visita', 'medica', 'vacaciones', 'extracurricular', 'salida_pais')),
   titulo               text not null check (length(titulo) between 1 and 200),
   nota                 text,
-  documento_adjunto    text, -- nombre del permiso de salida del país (o ruta en Storage después)
-  created_at           timestamptz not null default now()
+  documento_adjunto        text, -- nombre real del archivo adjunto (fórmula médica, permiso, etc.)
+  documento_adjunto_path   text, -- ruta real en Storage, bucket "comprobantes"
+  created_at               timestamptz not null default now()
 );
 create index if not exists eventos_user_id_idx on public.eventos(user_id);
 create index if not exists eventos_user_fecha_idx on public.eventos(user_id, fecha);

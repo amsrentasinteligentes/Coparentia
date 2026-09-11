@@ -6,6 +6,7 @@
 
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { crearClienteSupabaseServidor } from '@/lib/supabase/server';
+import { fechaEnColombia, hoyEnColombia, inicioDelDiaColombiaUTC, inicioDelMesColombiaUTC } from '@/lib/fecha';
 
 export interface PerfilAdmin {
   id: string;
@@ -41,7 +42,9 @@ export interface ResumenUsuarios {
 export async function obtenerResumenUsuarios(supabase: SupabaseClient): Promise<ResumenUsuarios> {
   const hace7d = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
   const hace30d = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
-  const hoy = new Date().toISOString().slice(0, 10);
+  // "Hoy" empieza a medianoche EN COLOMBIA. Con la medianoche universal, el panel mostraba
+  // 0 activos todas las tardes a partir de las 7 p. m. (ya estaba contando el día siguiente).
+  const desdeHoy = inicioDelDiaColombiaUTC();
 
   const [{ count: total }, { count: nuevos7d }, { count: nuevos30d }, { data: sesionesHoy }] = await Promise.all([
     supabase.from('profiles').select('id', { count: 'exact', head: true }),
@@ -51,7 +54,7 @@ export async function obtenerResumenUsuarios(supabase: SupabaseClient): Promise<
       .from('event_log')
       .select('user_id')
       .eq('nombre', 'sesion_iniciada')
-      .gte('created_at', `${hoy}T00:00:00.000Z`),
+      .gte('created_at', desdeHoy),
   ]);
 
   const activosHoy = new Set((sesionesHoy ?? []).map((r: { user_id: string | null }) => r.user_id)).size;
@@ -90,18 +93,19 @@ export interface ResumenIA {
 // Costo real de IA desde ai_calls (31-EVALS-OBSERVABILIDAD-OPERACION.md) — cero si nunca se llamó,
 // nunca inventado. Vacío hasta que el usuario corra supabase/ai.sql (tabla nueva).
 export async function obtenerResumenIA(supabase: SupabaseClient): Promise<ResumenIA | null> {
-  const hoy = new Date().toISOString().slice(0, 10);
-  const inicioMes = `${hoy.slice(0, 7)}-01`;
+  const hoy = hoyEnColombia();
 
   const { data, error } = await supabase
     .from('ai_calls')
     .select('cost_usd, status, created_at')
-    .gte('created_at', `${inicioMes}T00:00:00.000Z`);
+    .gte('created_at', inicioDelMesColombiaUTC());
 
   if (error) return null; // la tabla todavía no existe en esta base — sección "sin conectar"
 
   const filas = (data ?? []) as { cost_usd: number | null; status: string; created_at: string }[];
-  const deHoy = filas.filter((f) => f.created_at.slice(0, 10) === hoy);
+  // `created_at` viene en hora universal: hay que traducirlo al día colombiano antes de comparar,
+  // no cortar la cadena (eso dejaba fuera todo lo ocurrido después de las 7 p. m.).
+  const deHoy = filas.filter((f) => fechaEnColombia(new Date(f.created_at)) === hoy);
 
   return {
     llamadasHoy: deHoy.length,

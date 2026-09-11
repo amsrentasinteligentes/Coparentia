@@ -6,7 +6,7 @@
 // "eliminar TODOS los datos" del usuario.
 
 import { crearClienteSupabaseServidor } from '@/lib/supabase/server';
-import { crearClienteSupabaseAdmin } from '@/lib/supabase/admin';
+import { crearClienteSupabaseAdmin, borrarArchivosDelUsuario } from '@/lib/supabase/admin';
 
 interface ResultadoAccion {
   ok: boolean;
@@ -37,19 +37,13 @@ export async function eliminarMiCuenta(): Promise<ResultadoAccion> {
     };
   }
 
-  // Borra los archivos reales del usuario en el bucket privado (fotos/PDF de comprobantes y
-  // documentos adjuntos) — las filas de titulos/pagos/autorizaciones/eventos/profiles se borran
+  // Borra los archivos reales del usuario en el bucket privado (comprobantes, documentos de
+  // eventos y el acuerdo) — las filas de titulos/pagos/autorizaciones/eventos/profiles se borran
   // solas por `on delete cascade` al borrar la cuenta de auth, pero los archivos de Storage no
-  // están ligados a esa cascada y quedarían huérfanos sin este paso. `limit: 1000` porque el
-  // límite por defecto de `.list()` es 100 — con más comprobantes de los esperados, se habrían
-  // quedado archivos sin borrar (hallazgo real, misma revisión).
-  for (const carpeta of ['pagos', 'eventos']) {
-    const { data: archivos } = await admin.storage.from('comprobantes').list(`${user.id}/${carpeta}`, { limit: 1000 });
-    if (archivos && archivos.length > 0) {
-      const rutas = archivos.map((a) => `${user.id}/${carpeta}/${a.name}`);
-      await admin.storage.from('comprobantes').remove(rutas);
-    }
-  }
+  // están ligados a esa cascada y quedarían huérfanos sin este paso. La lista de carpetas vive en
+  // un solo lugar (lib/supabase/admin.ts): tenerla escrita a mano aquí fue exactamente lo que dejó
+  // el acuerdo sin borrar cuando se agregó esa carpeta (auditoría 2026-09-11).
+  await borrarArchivosDelUsuario(admin, user.id);
 
   const { error } = await admin.auth.admin.deleteUser(user.id);
   if (error) {

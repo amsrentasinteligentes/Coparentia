@@ -29,6 +29,7 @@ function EntrarInterno() {
   const [email, setEmail] = useState('');
   const [estado, setEstado] = useState<Estado>('idle');
   const [countdown, setCountdown] = useState(0);
+  const [reenvio, setReenvio] = useState<'idle' | 'enviando' | 'ok' | 'error'>('idle');
   // Autorización previa expresa (Ley 1581 de 2012, Colombia): checkbox NUNCA premarcado, en el
   // mismo punto donde se recoge el correo — este login también crea la cuenta la primera vez.
   const [acepta, setAcepta] = useState(false);
@@ -37,30 +38,46 @@ function EntrarInterno() {
     if (params.get('error') === 'enlace_invalido') setEstado('error');
   }, [params]);
 
-  const enviar = async (e: React.FormEvent): Promise<void> => {
-    e.preventDefault();
-    if (!email.includes('@') || !acepta || estado === 'enviando') return;
-    setEstado('enviando');
+  // El contador vive en un efecto con su propia limpieza. Antes era un `setInterval` suelto dentro
+  // del envío: si la persona salía de la pantalla antes de que llegara a cero, el temporizador
+  // seguía corriendo y escribiendo estado sobre un componente que ya no existía.
+  useEffect(() => {
+    if (countdown <= 0) return;
+    const t = setTimeout(() => setCountdown((c) => c - 1), 1000);
+    return () => clearTimeout(t);
+  }, [countdown]);
+
+  // Un solo camino de envío para el formulario Y para "Reenviar": antes el botón de reenviar solo
+  // devolvía al formulario sin mandar NADA, pese a decir "Reenviar enlace" (auditoría 2026-09-11).
+  // En la pantalla donde alguien ya está trabado porque no le llegó el correo, un botón que promete
+  // reenviar y no reenvía es el peor sitio posible para perder la confianza.
+  const enviarEnlace = async (): Promise<boolean> => {
     const supabase = crearClienteSupabase();
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
     });
-    if (error) {
+    return !error;
+  };
+
+  const enviar = async (e: React.FormEvent): Promise<void> => {
+    e.preventDefault();
+    if (!email.includes('@') || !acepta || estado === 'enviando') return;
+    setEstado('enviando');
+    if (!(await enviarEnlace())) {
       setEstado('error');
       return;
     }
     setEstado('enviado');
     setCountdown(60);
-    const tick = setInterval(() => {
-      setCountdown((c) => {
-        if (c <= 1) {
-          clearInterval(tick);
-          return 0;
-        }
-        return c - 1;
-      });
-    }, 1000);
+  };
+
+  const reenviar = async (): Promise<void> => {
+    if (countdown > 0 || reenvio === 'enviando') return;
+    setReenvio('enviando');
+    const ok = await enviarEnlace();
+    setReenvio(ok ? 'ok' : 'error');
+    if (ok) setCountdown(60);
   };
 
   return (
@@ -147,13 +164,39 @@ function EntrarInterno() {
             </p>
             <button
               type="button"
-              disabled={countdown > 0}
-              onClick={() => {
-                setEstado('idle');
-              }}
+              disabled={countdown > 0 || reenvio === 'enviando'}
+              onClick={reenviar}
               className="mt-6 text-[14px] font-medium text-[var(--accent)] disabled:text-[var(--text-tertiary)] [touch-action:manipulation]"
             >
-              {countdown > 0 ? `Reenviar en ${countdown}s` : 'Reenviar enlace'}
+              {reenvio === 'enviando'
+                ? 'Reenviando…'
+                : countdown > 0
+                  ? `Reenviar en ${countdown}s`
+                  : 'Reenviar enlace'}
+            </button>
+
+            {reenvio === 'ok' && (
+              <p role="status" className="mt-2 text-[13px] text-[var(--text-secondary)]">
+                Listo, te lo enviamos otra vez. Revisa también la carpeta de spam.
+              </p>
+            )}
+            {reenvio === 'error' && (
+              <p role="alert" className="mt-2 text-[13px] text-[var(--status-error)]">
+                No pudimos reenviarlo. Espera un momento e inténtalo de nuevo.
+              </p>
+            )}
+
+            {/* Salida real si el correo quedó mal escrito: sin esto había que recargar la página. */}
+            <button
+              type="button"
+              onClick={() => {
+                setEstado('idle');
+                setReenvio('idle');
+                setCountdown(0);
+              }}
+              className="mt-4 text-[13px] text-[var(--text-tertiary)] underline-offset-2 hover:underline [touch-action:manipulation]"
+            >
+              Usar otro correo
             </button>
           </div>
         )}

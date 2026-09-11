@@ -1,5 +1,86 @@
 # ESTADO.md — Coparentia (nombre provisional: PensiónClara)
 
+### Checkpoint (2026-09-11) — Tercera auditoría (exploración libre) — 9 de 10 hallazgos CORREGIDOS
+Pedido del usuario: explorar toda la app con ojos frescos buscando lo que las dos auditorías
+anteriores no vieron, y arreglar TODO lo que esté al alcance. Reporte presentado y aprobado.
+
+**🔴 1. LA APP CALCULABA "HOY" EN UTC, NO EN COLOMBIA — el hallazgo grave de esta sesión.**
+`new Date().toISOString().slice(0,10)` estaba en 11 lugares. UTC va 5 horas adelante de Colombia:
+desde las 7 p. m. hora local, esa expresión ya devuelve el día SIGUIENTE. Comprobado con números:
+un pago hecho el **5 de septiembre a las 7 p. m. se guardaba con fecha 6 de septiembre**. En una app
+cuyo producto ES la prueba fechada de que se pagó a tiempo, eso fabrica justo la acusación que la
+app existe para desmentir. Además el 30 a las 8 p. m. el mes ya decía "octubre" (falso "no
+registraste la cuota de este mes") y el panel mostraba 0 activos todas las tardes.
+Había incoherencia DENTRO de la misma pantalla: en Inicio el día salía en hora del teléfono y el
+mes en hora universal — dos números del mismo cálculo contradiciéndose.
+→ Nuevo `lib/fecha.ts` como fuente única (`hoyEnColombia`, `mesEnColombia`, `diaDelMesEnColombia`,
+  `fechaEnColombia`, `inicioDelDiaColombiaUTC`, `inicioDelMesColombiaUTC`), anclado a
+  `America/Bogota` con `Intl.formatToParts` (el orden día/mes/año no se puede asumir por locale).
+  **Decisión de producto:** la fecha se ancla a COLOMBIA, no al reloj del dispositivo — la
+  obligación alimentaria se juzga con el calendario colombiano y quien paga desde el exterior
+  necesita que su expediente hable en fechas de Colombia. Reemplazados los 11 usos; `grep` confirma
+  cero `toISOString().slice` restantes fuera del propio `lib/fecha.ts`.
+
+**🟠 2. Al eliminar la cuenta, el ACUERDO no se borraba.** El borrado recorría una lista escrita a
+mano `['pagos','eventos']`; al agregar "Consultar acuerdo" (2026-09-10) nadie sumó esa carpeta, así
+que el acta de conciliación —el documento más sensible del expediente— **seguía en el servidor
+después de que la persona pidió borrar todo**, incumpliendo la Política de Privacidad.
+→ La lista vive ahora en UN solo sitio (`CARPETAS_DE_ARCHIVOS` + `borrarArchivosDelUsuario` en
+  `lib/supabase/admin.ts`), usada por el borrado de cuenta Y por el panel.
+
+**🟠 3. El freno de gasto de IA no frenaba a nadie.** `dentroDelPresupuestoDiario` sumaba `ai_calls`
+con la sesión del propio usuario, pero la RLS de esa tabla solo deja leerla al dueño: para cualquier
+usuario normal devolvía CERO FILAS → gasto del día = $0 → nunca cortaba. El tope de US$1/día era
+decorativo salvo para la cuenta de administrador.
+→ Nueva función `presupuesto_ia_disponible` (`security definer`, `supabase/freno-gasto-ia.sql`) que
+  suma del lado del servidor y devuelve solo un sí/no; el tope vive en SQL, no en el cliente.
+  **Ahora FALLA CERRADA**: si la función no existe o la consulta falla, no se llama a la IA (la
+  persona escribe el monto a mano, que siempre fue la salida prevista).
+  ⚠️ **El usuario debe correr `supabase/freno-gasto-ia.sql`** — hasta entonces el lector automático
+  de recibos queda apagado a propósito.
+
+**🟠 4. "Reenviar enlace" del login no reenviaba nada.** El botón solo devolvía al formulario. En la
+pantalla donde alguien ya está trabado porque no le llegó el correo, un botón que promete reenviar
+y no reenvía es el peor sitio para perder la confianza.
+→ Un solo camino de envío para el formulario y para reenviar, con confirmación en pantalla, estado
+  "Reenviando…", y salida nueva "Usar otro correo" (antes había que recargar la página).
+  **Verificado en vivo** interceptando la petición (sin mandar correos reales): 1 envío → reenvío →
+  2 envíos, con el mensaje de confirmación.
+
+**🟡 5. El PDF del abogado no incluía el acuerdo.** Se agregó la fila "Documento que la fija" en el
+resumen del título y un **Anexo A — Acuerdo que fija la cuota** como primera página de anexos
+(con letra, no número, para que agregar comprobantes no le cambie el nombre). Un acuerdo en PDF se
+DECLARA como archivo aparte en vez de fingir que va incrustado. **Verificado sobre el PDF generado
+de verdad**: 2 páginas, y el texto contiene "Anexo A", "Acuerdo que fija la cuota", "Documento que
+la fija" y el nombre del archivo.
+
+**🟡 6. `schema.sql` estaba desincronizado** (le faltaban `titulos.acuerdo_path`,
+`titulos.acuerdo_nombre` y `eventos.documento_adjunto_path`, agregadas después por parches sueltos):
+recrear la base desde ese archivo dejaba la app rota. Incorporadas, con nota y orden de instalación.
+
+**🟡 7. Quitar una cuenta desde el panel dejaba sus archivos huérfanos** en el bucket, sin fila que
+los referenciara. Ahora borra los archivos ANTES de borrar la cuenta.
+
+**🟢 8.** Dependencias fijadas a versión exacta (7 tenían `^`: una reinstalación podía traer una
+versión nueva sola y romper algo sin que nadie tocara el código).
+**🟢 9.** El contador de "Reenviar en 60s" quedaba corriendo tras salir de la pantalla — movido a un
+efecto con limpieza.
+
+**🔴 NO corregible aún — 10. Sin control de prueba/suscripción.** Confirmado con `grep`: no existe
+NI UNA verificación de trial o plan en todo el código. Quien tenga un enlace de acceso usa la app
+completa, gratis, para siempre. Solo se cierra conectando Hotmart (sigue siendo el bloqueante #1).
+
+**Revisado y CONFIRMADO SIN PROBLEMAS en esta pasada:** RLS por usuario en las 4 tablas · carpetas
+privadas de Storage por `user_id` · el panel revalida permiso en cada Server Action (no solo al
+entrar) · enlace mágico sin open-redirect · `service_role` nunca sale al navegador · `.env*` fuera
+de Git · `npm audit` 0 vulnerabilidades · el login no revela si un correo existe · la IA nunca
+guarda un monto sin confirmación humana · avisos de desarrollo apagados en producción ·
+`ai_calls` sin políticas de update/delete (registro inmutable).
+
+Verificado: `tsc` ✓ · `build` ✓ (18 rutas) · Inicio renderizado a 375px con datos semilla
+("2 de 3 meses", píldora "AL DÍA" — cálculo de fechas correcto) · PDF real inspeccionado ·
+reenvío del login probado end-to-end · desvío de captura retirado y confirmado con `grep`.
+
 ### Checkpoint (2026-09-10) — ANTHROPIC_API_KEY rotada (clave vieja quedó en el log de una sesión)
 Al listar `.env.local` en el chat, el valor de `ANTHROPIC_API_KEY` (terminaba en `9QAA`) quedó
 impreso en el registro de la conversación. Rotación completa hecha por el usuario:

@@ -18,3 +18,26 @@ export function crearClienteSupabaseAdmin() {
     auth: { autoRefreshToken: false, persistSession: false },
   });
 }
+
+// TODAS las carpetas donde la app guarda archivos de una persona, dentro de su propia carpeta del
+// bucket privado. Vive aquí, en un solo sitio, porque el bug que motivó esto fue justamente tener
+// la lista escrita a mano en el borrado de cuenta: al agregar "Consultar acuerdo" nadie se acordó
+// de sumarla ahí, y el acta de conciliación —el documento más sensible del expediente— seguía en
+// el servidor DESPUÉS de que la persona pidió borrar todo (auditoría 2026-09-11).
+// ⚠️ Si algún día se agrega otra carpeta en `subirArchivoPrivado` (lib/datos.ts), va aquí también.
+export const CARPETAS_DE_ARCHIVOS = ['pagos', 'eventos', 'acuerdo'] as const;
+
+type ClienteAdmin = ReturnType<typeof crearClienteSupabaseAdmin>;
+
+// Borra TODOS los archivos de una persona en el bucket privado. `limit: 1000` porque el tope por
+// defecto de `.list()` es 100 — con más comprobantes de los esperados quedarían archivos sin borrar.
+export async function borrarArchivosDelUsuario(admin: ClienteAdmin, userId: string): Promise<void> {
+  for (const carpeta of CARPETAS_DE_ARCHIVOS) {
+    const { data: archivos } = await admin.storage
+      .from('comprobantes')
+      .list(`${userId}/${carpeta}`, { limit: 1000 });
+    if (archivos && archivos.length > 0) {
+      await admin.storage.from('comprobantes').remove(archivos.map((a) => `${userId}/${carpeta}/${a.name}`));
+    }
+  }
+}

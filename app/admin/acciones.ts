@@ -7,7 +7,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { usuarioAdminActual } from '@/lib/admin-datos';
-import { crearClienteSupabaseAdmin } from '@/lib/supabase/admin';
+import { crearClienteSupabaseAdmin, borrarArchivosDelUsuario } from '@/lib/supabase/admin';
 
 interface ResultadoAccion {
   ok: boolean;
@@ -85,6 +85,12 @@ export async function quitarUsuarioManual(userId: string): Promise<ResultadoAcci
   if (!perfil?.creado_manualmente) {
     return { ok: false, mensaje: 'Esta cuenta no se agregó a mano desde aquí — no se puede quitar desde este botón.' };
   }
+
+  // Los archivos de Storage no están ligados al `on delete cascade` de la cuenta: sin este paso
+  // quedaban huérfanos en el bucket para siempre, invisibles y sin fila que los referenciara
+  // (auditoría 2026-09-11). Va ANTES del borrado: si fallara después, ya no habría forma de saber
+  // de quién eran.
+  await borrarArchivosDelUsuario(admin, userId);
 
   const { error } = await admin.auth.admin.deleteUser(userId);
   if (error) {

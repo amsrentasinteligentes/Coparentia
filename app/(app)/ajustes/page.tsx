@@ -12,6 +12,7 @@ import { ArrowLeft, LogOut, ExternalLink, Trash2, AlertTriangle } from 'lucide-r
 import Link from 'next/link';
 import { ContenedorApp, Tarjeta, IconoCirculo, TarjetaSkeleton, ErrorDeCarga } from '@/components/app/ui';
 import { type Titulo, obtenerTitulo, guardarTitulo } from '@/lib/datos';
+import { hoyEnColombia } from '@/lib/fecha';
 import { crearClienteSupabase } from '@/lib/supabase/client';
 import { eliminarMiCuenta } from './acciones';
 
@@ -84,7 +85,7 @@ function EditorCuota() {
       indiceReajuste: reajuste,
       // La fecha de inicio del título NO se toca al editar: es cuándo empezó la obligación, no
       // cuándo se corrigió el dato. Si no había título previo, se usa hoy.
-      fechaInicio: original?.fechaInicio ?? new Date().toISOString().slice(0, 10),
+      fechaInicio: original?.fechaInicio ?? hoyEnColombia(),
     };
     try {
       await guardarTitulo(t);

@@ -28,7 +28,12 @@ const PRECIO_SALIDA_POR_1M = 5;
 
 // Kill-switch de gasto — tope conservador y muy por encima del uso esperado de una app de este
 // tamaño (300 recibos/mes ≈ $0.60 USD/mes); protege contra un bug en loop, no contra el uso normal.
-const LIMITE_DIARIO_USD = 1;
+//
+// ⚠️ EL TOPE YA NO VIVE AQUÍ: vive en la función `presupuesto_ia_disponible` de
+// supabase/freno-gasto-ia.sql. Antes se comprobaba desde este archivo leyendo `ai_calls` con la
+// sesión del usuario, pero la política de seguridad de esa tabla solo deja leerla al dueño: para
+// cualquier usuario normal la suma daba 0 y el freno NUNCA cortaba (auditoría 2026-09-11).
+// Ponerlo en el servidor también impide que el tope se pueda alterar desde el cliente.
 
 const EsquemaMonto = z.object({
   monto: z.number().positive().nullable(),
@@ -139,15 +144,17 @@ function calcularCostoUsd(tokensIn: number, tokensOut: number): number {
 
 type SupabaseServidor = Awaited<ReturnType<typeof crearClienteSupabaseServidor>>;
 
+// Le pregunta al servidor si todavía hay presupuesto del día. La función de la base suma TODAS las
+// llamadas (cosa que este usuario no puede hacer por su cuenta) y devuelve solo un sí/no.
+//
+// FALLA CERRADA A PROPÓSITO: si la función no existe todavía o la consulta falla, se responde
+// "no hay presupuesto" y la lectura automática se apaga. Un freno de gasto que se abre solo cuando
+// algo se rompe no es un freno (09-SEGURIDAD.md: nada de defaults inseguros). La persona no queda
+// bloqueada: escribe el monto a mano, que es la salida que esta pantalla siempre tuvo.
 async function dentroDelPresupuestoDiario(supabase: SupabaseServidor): Promise<boolean> {
-  const hoy = new Date().toISOString().slice(0, 10);
-  const { data } = await supabase
-    .from('ai_calls')
-    .select('cost_usd')
-    .eq('feature', FEATURE)
-    .gte('created_at', `${hoy}T00:00:00.000Z`);
-  const gastoHoy = (data ?? []).reduce((s: number, r: { cost_usd: number | null }) => s + (r.cost_usd ?? 0), 0);
-  return gastoHoy < LIMITE_DIARIO_USD;
+  const { data, error } = await supabase.rpc('presupuesto_ia_disponible', { p_feature: FEATURE });
+  if (error || typeof data !== 'boolean') return false;
+  return data;
 }
 
 async function registrarLlamada(

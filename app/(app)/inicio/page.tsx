@@ -29,6 +29,7 @@ import {
   formatoFechaLarga,
   validarArchivoAdjunto,
 } from '@/lib/datos';
+import { hoyEnColombia, mesEnColombia, diaDelMesEnColombia } from '@/lib/fecha';
 
 const ICONO_EVENTO = { visita: CalendarClock, medica: ShieldCheck, vacaciones: CalendarClock, extracurricular: CalendarClock, salida_pais: Globe } as const;
 const LABEL_EVENTO = { visita: 'Visita', medica: 'Cita médica', vacaciones: 'Vacaciones', extracurricular: 'Actividad', salida_pais: 'Salida del país' } as const;
@@ -128,7 +129,7 @@ function PrimerosPasos({ onListo }: { onListo: () => void }) {
       montoMensual: montoNumero,
       diaPago: diaNumero,
       indiceReajuste: reajuste,
-      fechaInicio: new Date().toISOString().slice(0, 10),
+      fechaInicio: hoyEnColombia(),
     };
     try {
       await guardarTitulo(t);
@@ -167,7 +168,7 @@ function PrimerosPasos({ onListo }: { onListo: () => void }) {
     setProcesando(true);
     agregarPago(
       {
-        fecha: new Date().toISOString().slice(0, 10),
+        fecha: hoyEnColombia(),
         monto: Number(monto) || 0,
         concepto: 'Primer comprobante registrado',
         tipo: 'cuota',
@@ -378,9 +379,11 @@ function Revelacion({ onContinuar }: { onContinuar: () => void }) {
    para saber cuántos meses DEBERÍAN estar registrados — antes ese número estaba escrito a mano
    como `6`, sin ninguna relación con el caso de la persona. */
 function mesesDesde(fechaISO: string): number {
-  const inicio = new Date(`${fechaISO}T00:00:00`);
-  const hoy = new Date();
-  const meses = (hoy.getFullYear() - inicio.getFullYear()) * 12 + (hoy.getMonth() - inicio.getMonth()) + 1;
+  // Se comparan cadenas "AAAA-MM" del calendario COLOMBIANO, no objetos Date del dispositivo:
+  // con la hora del teléfono, alguien que paga desde otro huso veía un mes de más o de menos.
+  const [anioInicio, mesInicio] = fechaISO.slice(0, 7).split('-').map(Number);
+  const [anioHoy, mesHoy] = mesEnColombia().split('-').map(Number);
+  const meses = (anioHoy - anioInicio) * 12 + (mesHoy - mesInicio) + 1;
   return Math.max(1, meses);
 }
 
@@ -437,9 +440,12 @@ function Dashboard() {
   // LA PREGUNTA DIARIA: "¿voy al día ESTE mes?". Es para lo que se abre la app, y la pantalla no
   // la respondía — había que deducirlo mirando la lista. El componente <Pildora> (estado semántico
   // de un vistazo, regla 15 del SO) ya existía en el kit y no se usaba aquí.
-  const mesActual = new Date().toISOString().slice(0, 7);
+  // Mes y día salen de la MISMA fuente (el calendario colombiano). Antes el mes se sacaba en hora
+  // universal y el día en hora del teléfono: el 30 a las 8 p. m. el mes ya decía "octubre" mientras
+  // el día seguía diciendo 30 — dos números del mismo cálculo contradiciéndose.
+  const mesActual = mesEnColombia();
   const cuotaDelMesRegistrada = pagos.some((p) => p.tipo === 'cuota' && p.fecha.slice(0, 7) === mesActual);
-  const diaHoy = new Date().getDate();
+  const diaHoy = diaDelMesEnColombia();
   const yaVencio = titulo ? diaHoy > titulo.diaPago : false;
   const estadoDelMes: { texto: string; tono: 'exito' | 'pendiente' | 'alerta' } = cuotaDelMesRegistrada
     ? { texto: 'Al día', tono: 'exito' }
@@ -474,7 +480,7 @@ function Dashboard() {
     }
   }, [cargando, falloCarga, mesesLogrados]);
 
-  const hoy = new Date().toISOString().slice(0, 10);
+  const hoy = hoyEnColombia();
   const proximoEvento = eventos.filter((e) => e.fecha >= hoy).sort((a, b) => a.fecha.localeCompare(b.fecha))[0];
   const ultimosPagos = [...pagos].sort((a, b) => b.fecha.localeCompare(a.fecha)).slice(0, 3);
 

@@ -15,6 +15,7 @@ import { ContenedorApp, PageHeader, Tarjeta, IconoCirculo, BotonFlotante, ErrorD
 import { VisorImagen } from '@/components/app/VisorImagen';
 import { Portal } from '@/components/app/Portal';
 import { type Evento, type TipoEvento, obtenerEventos, agregarEvento, obtenerUrlArchivo, formatoFechaLarga, validarArchivoAdjunto } from '@/lib/datos';
+import { hoyEnColombia } from '@/lib/fecha';
 
 const ICONO: Record<TipoEvento, typeof Users> = { visita: Users, medica: HeartPulse, vacaciones: Plane, extracurricular: Trophy, salida_pais: Globe };
 const LABEL: Record<TipoEvento, string> = { visita: 'Visita', medica: 'Cita médica', vacaciones: 'Vacaciones', extracurricular: 'Actividad', salida_pais: 'Salida del país' };
@@ -258,7 +259,7 @@ function CalendarioMes({
   // getDay(): 0=domingo..6=sábado → lo convertimos a 0=lunes..6=domingo para la rejilla L→D.
   const offsetInicio = (primerDia.getDay() + 6) % 7;
   const diasEnMes = new Date(año, mes + 1, 0).getDate();
-  const hoyISO = fechaISO(new Date());
+  const hoyISO = hoyEnColombia();
 
   const eventosPorDia = new Map<number, TipoEvento[]>();
   for (const e of eventos) {
@@ -325,7 +326,7 @@ function ModalEvento({
 }) {
   const [tipo, setTipo] = useState<TipoEvento>('visita');
   const [titulo, setTitulo] = useState('');
-  const [fecha, setFecha] = useState(fechaInicial ?? new Date().toISOString().slice(0, 10));
+  const [fecha, setFecha] = useState(fechaInicial ?? hoyEnColombia());
   const [documento, setDocumento] = useState<File | null>(null);
   const [guardando, setGuardando] = useState(false);
   const [errorArchivo, setErrorArchivo] = useState<string | null>(null);
