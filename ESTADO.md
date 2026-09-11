@@ -1442,6 +1442,15 @@ FICHA-ARTE.md que la landing.
 
 ## Problemas conocidos
 
+### Estado de los 3 gates de veredicto tras conectar el paywall a Hotmart (2026-09-11)
+Esta vez SÍ se tocó `app/paywall/page.tsx`, pero el cambio es de PLOMERÍA (a qué URL navega el
+CTA), no de diseño: mismo layout, mismo texto, mismo CTA, mismas 2 pantallas — solo cambió
+`router.push('/entrar')` por `window.location.href` a la URL de Hotmart del plan elegido. Nada que
+el revisor-visual pueda puntuar distinto (evalúa jerarquía/craft/copy de lo que se VE, y lo que se
+ve no cambió un píxel). Sigue **NO LISTA** por el mismo techo estructural ya documentado (28/40 tras
+6 rondas) — se pospone la 7ª ronda por el mismo motivo de rendimiento decreciente ya razonado abajo.
+`landing` y `onboarding`: sin cambios, mismo razonamiento de las entradas anteriores.
+
 ### Estado de los 3 gates de veredicto tras la tercera auditoría (2026-09-11)
 Sesión de CORRECCIÓN DE FONDO (fechas, borrado, freno de IA, PDF, login), no de rediseño. Se
 posponen los 3 con la misma justificación ya documentada abajo:
