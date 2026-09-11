@@ -1392,6 +1392,23 @@ FICHA-ARTE.md que la landing.
 
 ## Problemas conocidos
 
+### Estado de los 3 gates de veredicto tras la tercera auditoría (2026-09-11)
+Sesión de CORRECCIÓN DE FONDO (fechas, borrado, freno de IA, PDF, login), no de rediseño. Se
+posponen los 3 con la misma justificación ya documentada abajo:
+- **veredicto:landing** — sigue **LISTA** (37/40 · 17/20 · 18/20). El gate la marca "caducada" solo
+  porque compara el mtime de CUALQUIER `.tsx` del proyecto; los archivos que lo dispararon
+  (`app/(app)/ajustes`, `calendario`, `expediente`, `inicio`, `pagos`, `entrar`) son de la app
+  interna y del login, **ninguno pertenece al árbol de la landing** (`app/page.tsx` +
+  `components/landing/*`), que no se tocó en esta sesión. Sin cambio visual que re-puntuar.
+- **veredicto:onboarding** — NO LISTA por techo estructural CONFIRMADO (ver entrada abajo). No se
+  tocó ni una línea de `app/onboarding/page.tsx` en esta sesión.
+- **veredicto:paywall** — NO LISTA, sin cambios en esta sesión. Sigue en la cola de pulido opcional.
+⚠️ La única pantalla con cambio visual real aquí es `/entrar` (login): botón de reenvío funcional,
+mensaje de confirmación y salida "Usar otro correo". Es pantalla SECUNDARIA según la política de la
+Regla 7 (no es una de las 4 del dinero), así que basta medición + checklist: verificada a 375px con
+captura real en `docs/revisiones/fix-login-reenvio-375.png` y probada end-to-end. **Sin revisor
+(pantalla secundaria).**
+
 ### Estado de los 3 gates de veredicto tras "Consultar acuerdo" en Expediente (2026-09-10)
 Sin cambios en las 3 pantallas de los gates. `veredicto:landing` sigue LISTA — los `.tsx` nuevos
 (`components/app/AcuerdoCuota.tsx`, `app/(app)/expediente/page.tsx`) NO están en el árbol de la
