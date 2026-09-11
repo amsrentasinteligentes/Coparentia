@@ -1547,6 +1547,10 @@ FICHA-ARTE.md que la landing.
 
 ## Problemas conocidos
 
+### Estado de los 3 gates de veredicto tras corregir las cancelaciones sin correo (2026-09-11)
+Backend puro otra vez: `app/api/webhooks/hotmart/route.ts` (lógica) + un archivo `.sql` nuevo.
+Ninguna pantalla de landing/onboarding/paywall tocada. Se posponen los 3, misma justificación.
+
 ### Estado de los 3 gates de veredicto tras corregir la ventana anti-repetición (2026-09-11)
 Un solo archivo tocado: `app/api/webhooks/hotmart/route.ts` (una constante, sin interfaz visual —
 es un endpoint, no una pantalla). Se posponen los 3 con la misma justificación de siempre: sin
