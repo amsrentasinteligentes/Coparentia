@@ -2,8 +2,14 @@
 
 // PAYWALL DE SECUENCIA (C0-C4 de 50-DISENO-ONBOARDING-PAYWALL.md): recap del valor
 // personalizado → timeline del trial → precio. +37% de conversión vs una sola página
-// (Superwall 2026). Sin Hotmart conectado todavía (Sesión 6): el CTA final lleva a
-// /entrar como mock honesto — NUNCA un checkout falso que simule un cobro real (C3ter).
+// (Superwall 2026). El CTA final lleva al checkout REAL de Hotmart (2026-09-11) — cada plan
+// a su propio enlace de pago, nunca un checkout falso que simule un cobro real (C3ter).
+//
+// ⚠️ PENDIENTE (no lo resuelve esta pantalla): el webhook de Hotmart todavía no está conectado
+// (18-VENTA-HOTMART.md). Hoy, quien paga aquí llega al checkout real y Hotmart le cobra de
+// verdad, pero la app AÚN NO se entera de ese pago — nadie crea su cuenta ni le manda el enlace
+// de acceso en automático. Mientras tanto, el alta debe hacerse a mano desde el panel de
+// administración con el correo que la persona usó al pagar.
 
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -82,6 +88,13 @@ type Respuestas = {
 const PLAN_ANUAL = { precioMes: 7.42, cobroAnual: 89, totalAnual: 'Se cobra US$89 al año', costoDia: 'US$0.24' };
 const PLAN_MENSUAL = { precioMes: 9.99, cobroAnual: 119.88, totalAnual: 'Serían US$119.88 al año', costoDia: 'US$0.33' };
 
+// Enlaces REALES del checkout de Hotmart, uno por plan — el producto ya existe en Hotmart
+// (creado 2026-09-11). Si el precio o el plan cambian ahí, hay que traer el enlace nuevo aquí.
+const CHECKOUT_HOTMART = {
+  anual: 'https://pay.hotmart.com/E107570580Y?off=96283g07',
+  mensual: 'https://pay.hotmart.com/E107570580Y?off=56bomp71',
+} as const;
+
 export default function Paywall() {
   const router = useRouter();
   const [paso, setPaso] = useState(0);
@@ -118,18 +131,22 @@ export default function Paywall() {
   // `yendo` bloquea el doble tap en la acción crítica del funnel y deja el botón en estado de
   // espera: sin esto, un tap nervioso en una red lenta dispara dos navegaciones (regla del SO
   // "prevenir doble-click en acciones críticas" — el revisor lo marcó como faltante).
-  const irAlLogin = (): void => {
+  const irAlPago = (): void => {
     if (yendo) return;
     setFalloAlAbrir(false);
     setYendo(true);
+    // Se guarda el plan elegido ANTES de salir de la app: útil el día que exista una pantalla de
+    // "vuelve aquí tras pagar" que necesite saber cuál era, ya que Hotmart no lo devuelve solo.
     try {
       sessionStorage.setItem('coparentia_plan_elegido', plan);
     } catch {}
-    router.push('/entrar');
-    // Red de seguridad: si la navegación no ocurre (red caída, ruta que falla), sin esto el botón
-    // se quedaba en "Abriendo…" y DESHABILITADO para siempre, dejando a la persona encerrada en el
-    // último paso de la venta. Y liberarlo en silencio tampoco basta: sin explicación, quien lo ve
-    // volver solo asume que la app se rompió.
+    // Checkout REAL en Hotmart — es un sitio externo, así que es una navegación de navegador
+    // (`window.location`), no una ruta interna de Next (`router.push`).
+    window.location.href = CHECKOUT_HOTMART[plan];
+    // Red de seguridad: si la navegación no ocurre (red caída, el enlace no abre), sin esto el
+    // botón se quedaba en "Abriendo…" y DESHABILITADO para siempre, dejando a la persona encerrada
+    // en el último paso de la venta. Y liberarlo en silencio tampoco basta: sin explicación, quien
+    // lo ve volver solo asume que la app se rompió.
     // 6s (no 2.5s): en una red lenta de LATAM la navegación puede tardar más que eso, y avisar de
     // un fallo que NO ocurrió es peor que no avisar. El timer se guarda para poder cancelarlo al
     // desmontar — si no, seguía corriendo tras salir de la pantalla.
@@ -187,7 +204,7 @@ export default function Paywall() {
               <ValorYPrueba situacion={r?.situacion} n={nRespuestas} plan={plan} onContinuar={() => setPaso(1)} />
             )}
             {paso === 1 && (
-              <Precio plan={plan} onCambiarPlan={setPlan} onCta={irAlLogin} onAhoraNo={cerrar} yendo={yendo} falloAlAbrir={falloAlAbrir} trm={trm} />
+              <Precio plan={plan} onCambiarPlan={setPlan} onCta={irAlPago} onAhoraNo={cerrar} yendo={yendo} falloAlAbrir={falloAlAbrir} trm={trm} />
             )}
           </motion.div>
         </AnimatePresence>

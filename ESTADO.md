@@ -1,5 +1,29 @@
 # ESTADO.md — Coparentia (nombre provisional: PensiónClara)
 
+### Checkpoint (2026-09-11) — Paywall conectado al checkout REAL de Hotmart
+El usuario creó el producto en Hotmart y dio los 2 enlaces de pago (mensual y anual). El CTA final
+de `/paywall` ya NO lleva a `/entrar` (mock) — lleva al checkout real, uno por plan:
+`CHECKOUT_HOTMART` en `app/paywall/page.tsx`, navegación con `window.location.href` (es un sitio
+externo, no una ruta interna de Next). **Verificado EN VIVO** (no solo leyendo el código): se
+disparó el clic real de cada plan y el navegador llegó de verdad a
+`pay.hotmart.com/E107570580Y?off=56bomp71` (Mensual) y `?off=96283g07` (Anual) — sin completar
+ningún dato de pago. `tsc`/`build` limpios.
+
+⚠️ **CRÍTICO — GAP QUE ESTO ABRE Y QUE EL USUARIO DEBE SABER:** a partir de ahora, quien llegue al
+final del paywall **paga de verdad**. Pero el webhook de Hotmart (18-VENTA-HOTMART.md) sigue sin
+conectar: la app **no tiene forma de enterarse de ese pago**. Nadie le crea la cuenta ni le manda
+el enlace de acceso en automático — quien pague hoy no puede entrar a la app hasta que TÚ lo des de
+alta a mano en `/admin` con el correo que usó al pagar. **Esto convierte la conexión del webhook en
+lo más urgente de todo lo que queda pendiente** (ya lo era; ahora hay dinero real entrando sin
+nadie atendiendo del otro lado).
+
+⚠️ **SIN VERIFICAR — el usuario debe confirmarlo en el panel de Hotmart antes de anunciar la venta:**
+el paywall promete "Hoy no pagas nada · Se renueva automáticamente tras el día 7" (prueba de 7 días
+sin cobro inmediato). Esto SOLO es cierto si el producto en Hotmart tiene configurada una prueba
+gratis de 7 días antes del primer cobro. Si Hotmart está configurado para cobrar de inmediato, la
+app le estaría prometiendo algo falso a quien paga — un gate de integridad de dinero (61). No se
+pudo verificar desde aquí (vive en el panel de Hotmart, fuera del alcance del código).
+
 ### Checkpoint (2026-09-11) — "no puedo ver la foto del comprobante" (hallazgo real del usuario)
 El usuario probó el lector de recibos en producción: **leyó el monto bien** (confirma que el freno
 de gasto de IA quedó operativo), pero al abrir el comprobante guardado no veía nada.
