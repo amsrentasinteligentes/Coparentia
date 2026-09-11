@@ -71,6 +71,19 @@ para perder un aviso de pago real. Corregido: la ventana pasa a **48 horas** (si
 caso que de verdad importa — un aviso capturado y reenviado semanas después — sin descartar
 reintentos legítimos tardíos). `tsc`/`build` limpios, republicado.
 
+✅ **SEGUNDO BUG REAL encontrado con el mismo test de Hotmart**: "Cancelación de Suscripción" llegó
+sin `data.buyer.email` (solo con el código de suscriptor) y, con la versión anterior del código,
+se tomaba el camino de "evento sin correo → se ignora en silencio" — Hotmart veía 200 igual, pero
+**nada quedaba guardado**. Es el aviso que menos se puede perder (le quita el acceso a quien
+cancela). Corregido en dos capas: `app/api/webhooks/hotmart/route.ts` ahora sigue adelante con
+SOLO el código de suscriptor (antes exigía correo sí o sí) y prueba rutas alternativas de correo
+(`data.subscriber.email`, `data.subscription.subscriber.email`); `supabase/fix-suscripciones-
+sin-correo.sql` (NUEVO, el usuario debe correrlo) hace que `aplicar_evento_hotmart` busque la fila
+existente por código de suscriptor cuando no hay correo, y reconozca honestamente el caso sin
+precedente (`no_match`) en vez de fallar o inventar un correo. **Lección de método**: un 200 de
+Hotmart NO prueba que algo se guardó — solo se confirmó comparando contra `hotmart_webhook_log`
+directamente en la base, no contra el panel de Hotmart.
+
 ⚠️ **PLACEHOLDERS A CONFIRMAR con una compra de prueba real (antes de anunciar la venta)** —
 documentado también en 18-VENTA-HOTMART.md, mismo principio ahí para el evento de trial:
 - Los NOMBRES exactos de los eventos (`PURCHASE_APPROVED` etc. en `lib/membership-fsm.ts`) son los

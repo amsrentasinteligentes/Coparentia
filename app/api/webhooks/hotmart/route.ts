@@ -72,18 +72,22 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ error: 'stale' }, { status: 400 });
   }
 
-  // 4. Datos del evento.
+  // 4. Datos del evento. El correo NO siempre viene en `data.buyer.email`: comprobado con un
+  //    aviso real de "Cancelación de Suscripción" que solo trae el código de suscriptor — se
+  //    prueban varias rutas plausibles del comprador antes de darlo por ausente.
   const evento = String(cuerpo.event ?? '');
-  const email: string | undefined = data.buyer?.email;
+  const email: string | undefined = data.buyer?.email ?? data.subscriber?.email ?? data.subscription?.subscriber?.email;
   const subscriberCode: string | undefined = data.subscription?.subscriber?.code;
   const montoPagado: number | null = data.purchase?.price?.value ?? null;
   const eventId: string =
-    String(cuerpo.id ?? data.purchase?.transaction ?? `${evento}:${email ?? 'sin-correo'}:${tsCandidato ?? Date.now()}`);
+    String(cuerpo.id ?? data.purchase?.transaction ?? `${evento}:${email ?? subscriberCode ?? 'sin-identificar'}:${tsCandidato ?? Date.now()}`);
 
   const nuevoEstado = estadoParaEvento(evento, montoPagado);
-  if (!nuevoEstado || !email) {
-    // Evento que no cambia el acceso (SWITCH_PLAN, uno aún no mapeado) o sin correo identificable:
-    // se reconoce con 200 (Hotmart deja de reintentar), nunca se ignora en silencio.
+  if (!nuevoEstado || (!email && !subscriberCode)) {
+    // Evento que no cambia el acceso (SWITCH_PLAN, uno aún no mapeado) o sin ninguna forma de
+    // identificar a quién aplica: se reconoce con 200 (Hotmart deja de reintentar), nunca se
+    // ignora en silencio. Con SOLO el código de suscriptor (sin correo) sí se sigue adelante: la
+    // función de la base busca la fila existente por ese código — ver aplicar_evento_hotmart.
     return NextResponse.json({ received: true, ignorado: evento || 'desconocido' });
   }
 
@@ -111,7 +115,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     p_event_id: eventId,
     p_event_type: evento,
     p_payload_hash: payloadHash,
-    p_email: email,
+    p_email: email ?? null,
     p_subscriber_code: subscriberCode ?? null,
     p_new_status: nuevoEstado,
     p_trial_ends_at: trialEndsAt,
@@ -127,7 +131,8 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   }
 
   const estadoRpc = (resultadoRpc as { status?: string } | null)?.status;
-  const resultado = estadoRpc === 'applied' ? 'applied' : estadoRpc === 'duplicate' ? 'duplicate' : 'illegal';
+  const resultado =
+    estadoRpc === 'applied' ? 'applied' : estadoRpc === 'duplicate' ? 'duplicate' : estadoRpc === 'no_match' ? 'no_match' : 'illegal';
   await registrar(eventId, evento, resultado);
 
   // 7. 200 SIEMPRE que la decisión ya se tomó (incluidos duplicado/ilegal): Hotmart deja de
