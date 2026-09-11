@@ -30,5 +30,13 @@ as $$
 $$;
 
 -- Nadie más que un usuario con sesión puede preguntarle a la función, y solo eso: preguntar.
+--
+-- ⚠️ `from public` NO ALCANZA en Supabase: el proyecto trae privilegios por defecto que conceden
+-- EXECUTE a los roles `anon` y `authenticated` sobre toda función nueva del esquema público. Ese
+-- permiso es explícito, así que revocarle a PUBLIC no lo toca — comprobado en vivo: la función
+-- seguía respondiendo a peticiones sin sesión. Por eso se revoca a `anon` por su nombre.
+-- Importa menos por lo que devuelve (un simple sí/no) que por el principio: es una función
+-- `security definer`, y esas corren con privilegios elevados y se saltan la RLS.
 revoke all on function public.presupuesto_ia_disponible(text) from public;
+revoke all on function public.presupuesto_ia_disponible(text) from anon;
 grant execute on function public.presupuesto_ia_disponible(text) to authenticated;
