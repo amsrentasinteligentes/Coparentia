@@ -60,6 +60,17 @@ caerían en spam — sería peor que no tenerlo).
    — los nombres exactos que ofrezca ESTE panel, no asumidos) y copiar el HOTTOK a
    `HOTMART_HOTTOK` en Vercel → Settings → Environment Variables (nunca en el chat).
 
+✅ **BUG REAL encontrado y corregido con el test de Hotmart (2026-09-11)**: la ventana anti-repetición
+estaba en 5 minutos. Al reenviar los 7 avisos de prueba desde el panel de Hotmart, el que se
+reenvió a los ~4½ minutos pasó (`applied`); los otros 5, reenviados a los ~5½-6 minutos, fueron
+rechazados como "viejos" (`error`, no `unauthorized` — la clave sí era correcta). Se confirmó que
+**los reintentos de Hotmart reutilizan la fecha ORIGINAL del aviso, no la del reintento** — con 5
+minutos de ventana, cualquier reintento real más allá de ese margen (el propio servidor lento,
+Hotmart insistiendo un rato) se habría rechazado como si fuera un ataque, justo el peor momento
+para perder un aviso de pago real. Corregido: la ventana pasa a **48 horas** (sigue cortando el
+caso que de verdad importa — un aviso capturado y reenviado semanas después — sin descartar
+reintentos legítimos tardíos). `tsc`/`build` limpios, republicado.
+
 ⚠️ **PLACEHOLDERS A CONFIRMAR con una compra de prueba real (antes de anunciar la venta)** —
 documentado también en 18-VENTA-HOTMART.md, mismo principio ahí para el evento de trial:
 - Los NOMBRES exactos de los eventos (`PURCHASE_APPROVED` etc. en `lib/membership-fsm.ts`) son los

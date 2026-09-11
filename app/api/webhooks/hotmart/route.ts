@@ -17,7 +17,14 @@ const admin = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SU
   auth: { autoRefreshToken: false, persistSession: false },
 });
 
-const VENTANA_REPLAY_MS = 5 * 60 * 1000; // anti-repetición: rechaza avisos con fecha de más de 5 min
+// Anti-repetición — rechaza avisos con una fecha demasiado vieja, por si alguien captura un aviso
+// real y lo reenvía después para intentar colarse. NO son 5 minutos: se comprobó con un test real
+// de Hotmart (2026-09-11) que sus REINTENTOS legítimos reutilizan la fecha ORIGINAL del aviso, no
+// la del reintento — con una ventana de 5 min, un reintento de Hotmart a los 6 minutos (tu propio
+// servidor lento, o Hotmart insistiendo un rato) se habría rechazado como si fuera un ataque,
+// justo cuando más importa no perder ese aviso. 48h da margen real a reintentos tardíos legítimos
+// y sigue cortando el caso que de verdad importa: un aviso capturado y reenviado semanas después.
+const VENTANA_REPLAY_MS = 48 * 60 * 60 * 1000;
 const DIAS_PRUEBA = 7; // FICHA-MERCADO §4 — mismo plazo que promete el paywall
 
 /** Registra un intento (éxito o no) — es lo único que permite ver después si algo se rompió. */
