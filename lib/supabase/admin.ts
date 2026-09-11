@@ -31,13 +31,26 @@ type ClienteAdmin = ReturnType<typeof crearClienteSupabaseAdmin>;
 
 // Borra TODOS los archivos de una persona en el bucket privado. `limit: 1000` porque el tope por
 // defecto de `.list()` es 100 — con más comprobantes de los esperados quedarían archivos sin borrar.
+//
+// Barre TAMBIÉN la raíz de la carpeta del usuario: los comprobantes subidos antes de que
+// existieran las subcarpetas quedaron en `{userId}/archivo.jpg`, un nivel más arriba, y se
+// habrían salvado del borrado (comprobado sobre los archivos reales, 2026-09-11). En la raíz hay
+// que distinguir archivos de subcarpetas: Supabase devuelve las subcarpetas como entradas sin
+// `metadata`, y pedir el borrado de una carpeta no hace nada.
 export async function borrarArchivosDelUsuario(admin: ClienteAdmin, userId: string): Promise<void> {
+  const rutas: string[] = [];
+
   for (const carpeta of CARPETAS_DE_ARCHIVOS) {
-    const { data: archivos } = await admin.storage
-      .from('comprobantes')
-      .list(`${userId}/${carpeta}`, { limit: 1000 });
-    if (archivos && archivos.length > 0) {
-      await admin.storage.from('comprobantes').remove(archivos.map((a) => `${userId}/${carpeta}/${a.name}`));
-    }
+    const { data } = await admin.storage.from('comprobantes').list(`${userId}/${carpeta}`, { limit: 1000 });
+    for (const a of data ?? []) rutas.push(`${userId}/${carpeta}/${a.name}`);
+  }
+
+  const { data: raiz } = await admin.storage.from('comprobantes').list(userId, { limit: 1000 });
+  for (const a of raiz ?? []) {
+    if (a.metadata) rutas.push(`${userId}/${a.name}`); // con metadata = es un archivo, no una carpeta
+  }
+
+  if (rutas.length > 0) {
+    await admin.storage.from('comprobantes').remove(rutas);
   }
 }

@@ -1,5 +1,31 @@
 # ESTADO.md — Coparentia (nombre provisional: PensiónClara)
 
+### Checkpoint (2026-09-11) — "no puedo ver la foto del comprobante" (hallazgo real del usuario)
+El usuario probó el lector de recibos en producción: **leyó el monto bien** (confirma que el freno
+de gasto de IA quedó operativo), pero al abrir el comprobante guardado no veía nada.
+
+**Diagnóstico con los archivos REALES** (inspección con la service_role, solo metadatos): el
+archivo NO tenía nada malo — JPEG válido, `image/jpeg`, la URL firmada respondía HTTP 200. El
+problema era el visor: las fotos de cámara pesan **4,6 MB** y `VisorImagen` abría un rectángulo
+NEGRO sin hilandera, sin texto y sin manejo de error mientras la imagen viajaba. En un celular con
+datos móviles son varios segundos mirando el vacío — que cualquiera lee como "la app está rota".
+Y si la carga fallaba de verdad, se veía exactamente igual.
+→ `components/app/VisorImagen.tsx`: estado de CARGA (hilandera + "Cargando tu comprobante…" +
+  explicación de por qué tarda) y estado de FALLO (`onError`: mensaje que tranquiliza —"tu
+  comprobante sigue guardado y a salvo"— + botón "Abrirla aparte" como salida real). La imagen
+  entra con transición de opacidad cuando termina de cargar.
+  **Verificado en vivo** con una ruta de prueba que tarda 2 s a propósito: durante la espera
+  aparecen hilandera y aviso; al llegar la imagen el aviso desaparece y la foto se muestra. El
+  estado de fallo se probó con una URL rota: muestra el mensaje y la salida. Archivos de prueba
+  eliminados (`grep` confirma que no queda rastro).
+
+**Hallazgo extra encontrado al inspeccionar el almacenamiento real:** los comprobantes subidos
+antes de que existieran las subcarpetas quedaron en `{userId}/archivo.jpg`, un nivel MÁS ARRIBA de
+`{userId}/pagos/`. El `borrarArchivosDelUsuario` que se escribió esta misma mañana solo barría las
+subcarpetas, así que **esos archivos antiguos habrían sobrevivido al borrado de cuenta**. Corregido:
+ahora también barre la raíz de la carpeta del usuario, distinguiendo archivos de subcarpetas (las
+subcarpetas llegan sin `metadata` y pedir su borrado no hace nada).
+
 ### Checkpoint (2026-09-11) — Tercera auditoría (exploración libre) — 9 de 10 hallazgos CORREGIDOS
 Pedido del usuario: explorar toda la app con ojos frescos buscando lo que las dos auditorías
 anteriores no vieron, y arreglar TODO lo que esté al alcance. Reporte presentado y aprobado.
