@@ -1578,6 +1578,10 @@ FICHA-ARTE.md que la landing.
 
 ## Problemas conocidos
 
+### Estado de los 3 gates de veredicto tras el hallazgo crítico de permisos (2026-09-14)
+Backend/seguridad puro: un archivo `.sql` nuevo (`fix-permiso-publico-hotmart.sql`), cero cambios
+en pantallas. Se posponen los 3, misma justificación que las entradas anteriores.
+
 ### Estado de los 3 gates de veredicto tras corregir las cancelaciones sin correo (2026-09-11)
 Backend puro otra vez: `app/api/webhooks/hotmart/route.ts` (lógica) + un archivo `.sql` nuevo.
 Ninguna pantalla de landing/onboarding/paywall tocada. Se posponen los 3, misma justificación.
