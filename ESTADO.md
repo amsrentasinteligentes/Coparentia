@@ -1,5 +1,36 @@
 # ESTADO.md — Coparentia (nombre provisional: PensiónClara)
 
+### Checkpoint (2026-09-14) — 🔴 CRÍTICO encontrado y corregido: `aplicar_evento_hotmart` era llamable sin sesión
+El usuario pidió una repasada completa antes de gastar una compra real de prueba. Al probar si la
+función del webhook se podía invocar SIN pasar por el endpoint (con la clave `anon`, la misma que
+usa cualquier visitante sin sesión), **sí se pudo** — creó una fila real `active` en `suscripciones`
+para un correo inventado, sin tocar el HOTTOK ni la app en absoluto. Cualquiera en internet podía,
+con una sola petición directa a Supabase, darse una suscripción activa gratis.
+
+**Causa raíz**: en PostgreSQL, toda función nueva concede EXECUTE a **PUBLIC** por defecto — un rol
+del que todo el mundo es miembro, incluido `anon`. Tanto `supabase/suscripciones-hotmart.sql` como
+`supabase/fix-suscripciones-sin-correo.sql` solo tenían `revoke execute ... from anon, authenticated`
+— **nunca revocaron de PUBLIC**. El grant por defecto vivía ahí, así que `anon` lo seguía heredando
+aunque su grant directo estuviera "revocado". **Mismo patrón exacto** que ya había aparecido el
+2026-09-11 con `presupuesto_ia_disponible` (el freno de gasto de IA) — esa sí quedó bien cerrada en
+su momento porque el fix de ese día SÍ incluyó `revoke ... from public`. Esta función nueva se creó
+sin aplicar la misma lección todavía fresca — queda anotado aquí para no repetirlo una tercera vez
+en la próxima función `security definer` que se cree.
+
+→ `supabase/fix-permiso-publico-hotmart.sql` (NUEVO, el usuario debe correrlo YA, antes de
+  cualquier compra de prueba) — revoca de PUBLIC además de anon/authenticated, y borra la fila de
+  prueba que se coló (`atacante@test.com`, sin daño real: la creó esta misma comprobación).
+
+**Revisado el resto de la base por el mismo patrón** (grep de todas las `security definer` en
+`supabase/*.sql`): `es_admin()` no tiene revoke explícito pero es de solo lectura y únicamente
+puede revelar si EL PROPIO llamador es admin (no hay escalada posible); `gestionar_nuevo_usuario()`
+es una función de TRIGGER (`returns trigger`) — Postgres bloquea por sí solo llamarla fuera de un
+trigger. Ninguna de las dos necesita corrección.
+
+⚠️ **BLOQUEANTE — correr `supabase/fix-permiso-publico-hotmart.sql` antes de la compra de prueba
+real.** Sin este parche, la prueba de compra real sería técnicamente válida pero el hueco de
+seguridad seguiría abierto para cualquier otra persona mientras tanto.
+
 ### Checkpoint (2026-09-11) — Webhook de Hotmart CONSTRUIDO (falta 1 paso del usuario para activarlo)
 Sigue `docs/sistema/18-VENTA-HOTMART.md` — implementación REAL (las 4 defensas: autenticidad,
 frescura, idempotencia, autorización/FSM), no el ejemplo didáctico.
