@@ -1599,6 +1599,14 @@ FICHA-ARTE.md que la landing.
 
 ## Problemas conocidos
 
+### Estado de los 3 gates de veredicto tras el cambio de dominio .app → .co (2026-09-15)
+`app/page.tsx` (landing) y `app/paywall/page.tsx` SÍ cambiaron esta vez, pero solo en el texto de
+un correo de contacto (`soporte@`/`alianzas@coparentia.co` en vez de `.app`) — mismo patrón que la
+palabra "ex" quitada el 2026-09-10: cero cambio visual o estructural. Se posponen los 3 gates, con
+la misma justificación de siempre para la landing (37/40·17/20·18/20, re-sellar si el gate vuelve a
+marcarla caducada); onboarding/paywall siguen con su techo estructural ya documentado, sin tocar en
+esta sesión.
+
 ### Estado de los 3 gates de veredicto tras el hallazgo crítico de permisos (2026-09-14)
 Backend/seguridad puro: un archivo `.sql` nuevo (`fix-permiso-publico-hotmart.sql`), cero cambios
 en pantallas. Se posponen los 3, misma justificación que las entradas anteriores.
