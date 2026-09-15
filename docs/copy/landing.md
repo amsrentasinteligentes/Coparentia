@@ -86,5 +86,5 @@ sin pelear por WhatsApp.
   Primer Expediente de 15 días."
 
 ## 10. FOOTER LEGAL
-- Email de soporte: soporte@coparentia.app (placeholder — confirmar con el usuario en Sesión 6)
+- Email de soporte: soporte@coparentia.co (dominio comprado 2026-09-15)
 - Enlaces: Privacidad · Términos y Condiciones · Reembolsos · Aviso de IA

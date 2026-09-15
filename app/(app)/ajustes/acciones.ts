@@ -47,7 +47,7 @@ export async function eliminarMiCuenta(): Promise<ResultadoAccion> {
 
   const { error } = await admin.auth.admin.deleteUser(user.id);
   if (error) {
-    return { ok: false, mensaje: 'No se pudo eliminar tu cuenta. Intenta de nuevo o escríbenos a soporte@coparentia.app.' };
+    return { ok: false, mensaje: 'No se pudo eliminar tu cuenta. Intenta de nuevo o escríbenos a soporte@coparentia.co.' };
   }
 
   return { ok: true, mensaje: 'Tu cuenta y todos tus datos fueron eliminados.' };

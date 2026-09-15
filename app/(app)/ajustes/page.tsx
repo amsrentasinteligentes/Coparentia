@@ -343,8 +343,8 @@ export default function Ajustes() {
           Política de Privacidad
         </Link>
         . ¿Dudas? Escríbenos a{' '}
-        <a href="mailto:soporte@coparentia.app" className="text-[var(--accent)] underline">
-          soporte@coparentia.app
+        <a href="mailto:soporte@coparentia.co" className="text-[var(--accent)] underline">
+          soporte@coparentia.co
         </a>
         .
       </p>

@@ -35,7 +35,7 @@ export interface AbogadoDestacado {
 const ABOGADO_ACTUAL: AbogadoDestacado | null = null;
 
 // Email al que escriben los abogados interesados (mismo que la sección de la landing).
-const CONTACTO_ALIANZAS = 'alianzas@coparentia.app';
+const CONTACTO_ALIANZAS = 'alianzas@coparentia.co';
 
 export function AbogadoDestacado({ abogado = ABOGADO_ACTUAL }: { abogado?: AbogadoDestacado | null }) {
   if (!abogado) {

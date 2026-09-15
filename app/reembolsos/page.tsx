@@ -21,8 +21,8 @@ export default function Reembolsos() {
           <p>
             Si dentro de tus primeros 15 días de suscripción no logras tener tu primer comprobante
             organizado y listo para exportar, escríbenos a{' '}
-            <a href="mailto:soporte@coparentia.app" className="text-[var(--accent)] underline">
-              soporte@coparentia.app
+            <a href="mailto:soporte@coparentia.co" className="text-[var(--accent)] underline">
+              soporte@coparentia.co
             </a>{' '}
             y te devolvemos el 100% de tu pago. Sin preguntas, sin formularios. (Nota: la prueba
             gratuita dura 7 días — la garantía de devolución, 15, para que siempre tengas margen
@@ -46,7 +46,7 @@ export default function Reembolsos() {
 
           <p className="text-sm text-[var(--text-tertiary)] pt-4 border-t border-[var(--surface-2)]">
             ¿Preguntas? Escríbenos a{' '}
-            <a href="mailto:soporte@coparentia.app" className="underline">soporte@coparentia.app</a>.
+            <a href="mailto:soporte@coparentia.co" className="underline">soporte@coparentia.co</a>.
           </p>
         </div>
       </div>

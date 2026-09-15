@@ -213,13 +213,13 @@ export default function Home() {
 
       {/* SECCIÓN EXTRA (fuera de la estructura canónica de 19, pedida por el usuario):
           audiencia distinta — abogados de familia que quieren anunciarse en la app. */}
-      <AnuncioAbogados contactoEmail="alianzas@coparentia.app" />
+      <AnuncioAbogados contactoEmail="alianzas@coparentia.co" />
 
       {/* 10. FOOTER LEGAL */}
       <FooterLegal
         appName="Coparentia"
         logo={<img src="/logo-isotipo.png" alt="" aria-hidden="true" className="size-5 object-contain" />}
-        soporteEmail="soporte@coparentia.app"
+        soporteEmail="soporte@coparentia.co"
         enlaces={[
           { label: 'Privacidad', href: '/privacidad' },
           { label: 'Términos y Condiciones', href: '/terminos' },

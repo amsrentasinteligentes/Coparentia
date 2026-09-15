@@ -1,5 +1,26 @@
 # ESTADO.md — Coparentia (nombre provisional: PensiónClara)
 
+### Checkpoint (2026-09-15) — Dominio comprado: `coparentia.co` (NO `.co` — confirmar en cada mención vieja)
+El usuario compró **`coparentia.co`**, a propósito (se le preguntó explícitamente porque todo el
+código tenía escrito `coparentia.app`). Reemplazado en los 9 archivos que lo mencionaban:
+`app/(app)/ajustes/acciones.ts`, `app/(app)/ajustes/page.tsx`, `app/aviso-ia/page.tsx`,
+`app/page.tsx`, `app/paywall/page.tsx`, `app/privacidad/page.tsx`, `app/reembolsos/page.tsx`,
+`app/terminos/page.tsx`, `components/app/AbogadoDestacado.tsx` — todos eran `soporte@`/
+`alianzas@coparentia.app` → ahora `.co`. También `docs/copy/landing.md`. `tsc`/`build` limpios.
+
+⚠️ Las menciones de `coparentia.app` en checkpoints VIEJOS de este mismo archivo (antes de esta
+fecha) se dejan tal cual — son historial de lo que se decidió/estaba pendiente EN SU MOMENTO, no
+se reescribe el pasado. Si alguna vuelve a citarse para una acción nueva, usar `.co`.
+
+⚠️ **PENDIENTE — conectar el dominio** (guía dada en el chat, paso a paso): Vercel → Domains →
+agregar `coparentia.co` → copiar los DNS records → pegarlos en el panel del registrador donde se
+compró → esperar propagación. Cuando esté conectado y con HTTPS activo, falta además: (1) activar
+`soporte@coparentia.co`/`alianzas@coparentia.co` de verdad (hoy no reciben nada — son promesas en
+el texto), (2) verificar el dominio en Resend cuando se conecte (SPF/DKIM) para que los correos
+transaccionales no cave en spam, (3) decidir si el webhook de Hotmart se muda de
+`coparentia.vercel.app/api/webhooks/hotmart` al dominio nuevo (opcional, no urgente — si se muda,
+hay que actualizar la URL en el panel de Hotmart también).
+
 ### Checkpoint (2026-09-14) — 🔴 CRÍTICO encontrado y corregido: `aplicar_evento_hotmart` era llamable sin sesión
 El usuario pidió una repasada completa antes de gastar una compra real de prueba. Al probar si la
 función del webhook se podía invocar SIN pasar por el endpoint (con la clave `anon`, la misma que

@@ -520,7 +520,7 @@ function Precio({
           Ahora no
         </button>
         <span aria-hidden="true" className="text-[var(--text-tertiary)]">·</span>
-        <a href="mailto:soporte@coparentia.app" className="py-2 underline-offset-2 hover:underline [touch-action:manipulation]">
+        <a href="mailto:soporte@coparentia.co" className="py-2 underline-offset-2 hover:underline [touch-action:manipulation]">
           ¿Dudas? Escríbenos
         </a>
       </div>

@@ -89,8 +89,8 @@ export default function Privacidad() {
             es entrar a <strong>Expediente → Ajustes → Eliminar mi cuenta</strong> dentro de la app:
             borra tu cuenta, tus registros y tus archivos de inmediato, sin necesidad de escribirnos.
             También puedes escribir a{' '}
-            <a href="mailto:soporte@coparentia.app" className="text-[var(--accent)] underline">
-              soporte@coparentia.app
+            <a href="mailto:soporte@coparentia.co" className="text-[var(--accent)] underline">
+              soporte@coparentia.co
             </a>{' '}
             para ejercer estos derechos o resolver cualquier duda.
           </p>
@@ -104,7 +104,7 @@ export default function Privacidad() {
 
           <p className="text-sm text-[var(--text-tertiary)] pt-4 border-t border-[var(--surface-2)]">
             ¿Preguntas sobre tus datos? Escríbenos a{' '}
-            <a href="mailto:soporte@coparentia.app" className="underline">soporte@coparentia.app</a>.
+            <a href="mailto:soporte@coparentia.co" className="underline">soporte@coparentia.co</a>.
           </p>
         </div>
       </div>

@@ -49,7 +49,7 @@ export default function AvisoIA() {
 
           <p className="text-sm text-[var(--text-tertiary)] pt-4 border-t border-[var(--surface-2)]">
             ¿Preguntas? Escríbenos a{' '}
-            <a href="mailto:soporte@coparentia.app" className="underline">soporte@coparentia.app</a>.
+            <a href="mailto:soporte@coparentia.co" className="underline">soporte@coparentia.co</a>.
           </p>
         </div>
       </div>
