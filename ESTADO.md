@@ -12,9 +12,17 @@ código tenía escrito `coparentia.app`). Reemplazado en los 9 archivos que lo m
 fecha) se dejan tal cual — son historial de lo que se decidió/estaba pendiente EN SU MOMENTO, no
 se reescribe el pasado. Si alguna vuelve a citarse para una acción nueva, usar `.co`.
 
-⚠️ **PENDIENTE — conectar el dominio** (guía dada en el chat, paso a paso): Vercel → Domains →
-agregar `coparentia.co` → copiar los DNS records → pegarlos en el panel del registrador donde se
-compró → esperar propagación. Cuando esté conectado y con HTTPS activo, falta además: (1) activar
+⚠️ **PENDIENTE — conectar el dominio (EN CURSO, 2026-09-15)**: dominio comprado en **Namecheap**.
+`coparentia.co` ya está agregado en Vercel (Project Settings → Environments → Production →
+Domains, con el ✓ azul). Se optó por delegar el DNS completo a Vercel (más simple para lo que
+sigue: Resend después) — en Namecheap → Domain List → Manage → Nameservers → Custom DNS →
+`ns1.vercel-dns.com` / `ns2.vercel-dns.com`, ya guardado por el usuario. **Falta la propagación**
+(15 min - 24h, normal): al comprobar, el dominio seguía devolviendo los nameservers viejos de
+Namecheap (`dns1/dns2.registrar-servers.com`) y `https://coparentia.co` no respondía todavía
+(timeout). Retomar: volver a resolver el DNS y probar la URL; cuando los nameservers ya sean los
+de Vercel, HTTPS se activa solo (Vercel lo emite automático, sin acción del usuario).
+
+Cuando esté conectado y con HTTPS activo, falta además: (1) activar
 `soporte@coparentia.co`/`alianzas@coparentia.co` de verdad (hoy no reciben nada — son promesas en
 el texto), (2) verificar el dominio en Resend cuando se conecte (SPF/DKIM) para que los correos
 transaccionales no cave en spam, (3) decidir si el webhook de Hotmart se muda de
