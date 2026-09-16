@@ -1667,6 +1667,10 @@ FICHA-ARTE.md que la landing.
 
 ## Problemas conocidos
 
+### Estado de los 3 gates de veredicto tras conectar Resend (2026-09-16)
+Backend puro: `lib/email.ts`, `app/api/webhooks/hotmart/route.ts`, un `.sql` nuevo. Ninguna
+pantalla de landing/onboarding/paywall tocada. Se posponen los 3, misma justificación de siempre.
+
 ### Estado de los 3 gates de veredicto tras el cambio de dominio .app → .co (2026-09-15)
 `app/page.tsx` (landing) y `app/paywall/page.tsx` SÍ cambiaron esta vez, pero solo en el texto de
 un correo de contacto (`soporte@`/`alianzas@coparentia.co` en vez de `.app`) — mismo patrón que la
