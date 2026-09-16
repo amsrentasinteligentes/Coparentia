@@ -1,5 +1,17 @@
 # ESTADO.md — Coparentia (nombre provisional: PensiónClara)
 
+### Checkpoint (2026-09-16) — ✅ Copy de los 3 correos CONFIRMADO por el usuario
+Se generaron previsualizaciones reales (HTML) de los 5 casos con el código exacto de `lib/email.ts`
+(sin tocar Resend/Supabase — enlace de ejemplo en vez del mágico real) y se mandaron al usuario
+para revisión visual directa. Encontró 2 problemas más de honestidad, ambos corregidos:
+- "te avisamos antes" → **"te avisaremos antes"** (tiempo verbal, bienvenida en prueba).
+- "no se te cobrará **de nuevo**" en el correo de cancelación daba a entender que YA hubo un
+  cobro previo — falso si cancela DURANTE la prueba gratis. Ahora la frase inicial también
+  distingue: "no te cobraremos nada" (viene de prueba) vs "no se te cobrará de nuevo" (viene de
+  pago real).
+Con esto, el copy de los 3 correos queda **confirmado por el usuario**, no solo revisado por mí.
+`tsc`/`build` limpios en cada fix.
+
 ### Checkpoint (2026-09-16) — Repasada de los 3 correos: 4 problemas reales corregidos
 El usuario pidió revisar los correos de `lib/email.ts` con ojos críticos, no solo ortografía.
 Encontrados y corregidos:
