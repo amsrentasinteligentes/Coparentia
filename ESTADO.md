@@ -1723,6 +1723,11 @@ FICHA-ARTE.md que la landing.
 
 ## Problemas conocidos
 
+### Estado de los 3 gates de veredicto tras corregir el copy de los correos (2026-09-16)
+Backend puro otra vez: `lib/email.ts` (texto de correos, no UI de la app) + `app/api/webhooks/
+hotmart/route.ts`. Ninguna pantalla de landing/onboarding/paywall tocada. Se posponen los 3, misma
+justificación de siempre.
+
 ### Estado de los 3 gates de veredicto tras conectar Resend (2026-09-16)
 Backend puro: `lib/email.ts`, `app/api/webhooks/hotmart/route.ts`, un `.sql` nuevo. Ninguna
 pantalla de landing/onboarding/paywall tocada. Se posponen los 3, misma justificación de siempre.
