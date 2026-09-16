@@ -1,5 +1,75 @@
 # ESTADO.md — Coparentia (nombre provisional: PensiónClara)
 
+### Checkpoint (2026-09-17) — Prueba de compra real: pago OK, login por enlace fallaba en celular → agregado código de 6 dígitos como salida permanente
+El usuario hizo la primera compra de prueba REAL en Hotmart (correo `ivonnereyes.abogada@gmail.com`).
+
+**Lo que SÍ funcionó de punta a punta, verificado en la base real:** el aviso de Hotmart llegó,
+se creó la fila en `suscripciones` con `status: 'trialing'` y la fecha de fin de prueba correcta.
+
+**Lo que falló: el enlace de acceso no dejaba entrar.** Dos causas reales, ya corregidas:
+1. Supabase seguía con la "Site URL" apuntando al dominio viejo de Vercel y le faltaba
+   `https://coparentia.co/auth/callback` en la lista blanca de "Redirect URLs" — Supabase, cuando
+   el destino pedido no está en esa lista, en vez de avisar el error manda calladamente al Site URL
+   configurado. Corregido: ambos campos actualizados en Supabase → Authentication → URL
+   Configuration.
+2. El correo del enlace mágico (el que manda Supabase, NO los de `lib/email.ts`) usa una
+   configuración de envío APARTE (Authentication → Emails → SMTP Settings). Apuntaba bien a Resend,
+   pero el remitente seguía siendo `onboarding@resend.dev` — una dirección de pruebas de Resend que
+   SOLO puede mandarle correo al dueño de la cuenta de Resend. Por eso el correo real nunca llegaba
+   a nadie más. Corregido: remitente cambiado a `hola@coparentia.co` (ya verificado). Confirmado con
+   los "Auth Logs" de Supabase, que mostraban el error 550 exacto antes del cambio.
+
+**Un tercer problema, real y más de fondo, encontrado después de corregir los dos anteriores:** con
+ambos arreglos, el correo YA llegaba y el enlace YA se verificaba bien del lado de Supabase — pero
+la persona igual terminaba de vuelta en la pantalla de "no pudimos entrar". Causa: pidió el enlace
+desde Chrome en un iPhone, pero lo abrió tocándolo DENTRO de la app de Gmail — Gmail en iPhone a
+veces abre los enlaces en su propio navegador interno, que no comparte con el Chrome real la "llave
+temporal" que se guarda al pedir el enlace. El enlace mágico por sí solo SIEMPRE va a tener este
+punto ciego en celulares (no es un bug de esta app — le pasa a cualquiera que use este método).
+
+→ **Arreglo real y permanente (no un parche para este usuario, sirve para todos)**: agregado un
+segundo camino de entrada que NO depende de en qué navegador se abre nada — un **código de 6
+dígitos** que llega en el MISMO correo del enlace, y se escribe a mano en la misma pantalla donde
+se pidió (`app/entrar/page.tsx`). Como se verifica ahí mismo, sin saltar de navegador, nunca choca
+con este problema. Sigue el patrón que ya recomendaba `docs/sistema/26-AUTH-MODERNO.md` para
+exactamente este caso ("el fallo #1 del enlace solo… el código se escribe donde el usuario EMPEZÓ").
+**El enlace mágico original NO se tocó ni se debilitó** — sigue siendo el camino principal; el
+código es una salida adicional para cuando el enlace no abre la app.
+- `app/entrar/page.tsx`: en la pantalla "Revisa tu correo" ahora hay un campo de 6 dígitos visible
+  (no escondido) + botón "Confirmar código", que llama a `supabase.auth.verifyOtp({ email, token,
+  type: 'email' })` directo desde el navegador — sin redirección, sin depender de ninguna cookie.
+  Verificado en vivo (con datos reales, no mock): el envío del correo real funcionó, el campo
+  valida solo dígitos y máximo 6, el botón se activa recién con los 6, y un código equivocado
+  muestra el aviso de error correcto sin romper nada. `tsc`/`build` limpios.
+
+✅ **HECHO por el usuario (mismo día)**: agregada la línea `<p>O escribe este código en la app:
+<strong>{{ .Token }}</strong></p>` a la plantilla "Magic Link" en Supabase → Authentication →
+Emails → Templates, y guardado con "Save changes". El correo de acceso ahora manda el botón/enlace
+Y el código de 6 dígitos en el mismo mensaje — el combo completo queda operativo.
+
+⚠️ **Sigue pendiente, sin tocar en esta sesión**: terminar la prueba de compra real de punta a
+punta (confirmar que `ivonnereyes.abogada@gmail.com` ya puede entrar con el enlace corregido o con
+el código nuevo; verificar que el correo de bienvenida llegue "Delivered"; probar una cancelación/
+reembolso real). El cambio de diseño que el usuario pidió dejar para después tampoco se tocó.
+
+**Bug real encontrado por el usuario probando en su propio celular, mismo día**: el código que de
+verdad manda Supabase en `{{ .Token }}` tiene **8 dígitos**, no 6 (confirmado con una captura de un
+correo real: `06028823`). La pantalla de `/entrar` había quedado armada para aceptar solo 6 (límite
+del campo, validación del botón, y el texto que se lo decía al usuario) — así que el código real
+NUNCA se podía escribir completo, dejando la salida nueva tan rota como el problema que debía
+resolver. Corregido con una sola constante `LARGO_CODIGO = 8` que gobierna el límite del campo, la
+validación y el texto visible (`app/entrar/page.tsx`), para no repetir el número suelto en 4 sitios.
+
+**Segundo hallazgo, mismo reporte del usuario**: al intentar el enlace y fallar (el problema de
+fondo, cross-navegador), la pantalla mostraba el mensaje "No pudimos enviar el enlace" — texto
+pensado para cuando el ENVÍO falla, no para cuando el enlace YA SE ABRIÓ y falló al verificarse. Le
+decía al usuario algo falso (que el correo no salió) justo en el caso donde SÍ salió. Separado en
+un estado nuevo (`'enlace_invalido'`) con su propio texto: explica que el enlace venció o se abrió
+en otra app, y ahora SÍ apunta a la salida real (el código de 8 dígitos) en vez de solo sugerir
+reintentar el mismo enlace que ya se sabe que falla en ese celular.
+Verificado en vivo (con el correo real del usuario, con el estado de enlace inválido forzado por
+URL, y con la pantalla del código mostrando ya el límite de 8): `tsc`/`build` limpios.
+
 ### Checkpoint (2026-09-17) — `favicon.ico` era el logo de Vercel, nunca se había reemplazado
 El usuario notó el ícono equivocado en la pestaña del navegador al abrir `coparentia.co`
 (triángulo negro en círculo). `app/icon.png` SÍ tenía el isotipo correcto (las manos con el bebé,
@@ -1779,6 +1849,29 @@ FICHA-ARTE.md que la landing.
   presupuesto; queda anotado para antes de declarar el funnel "vendible" de verdad.
 
 ## Problemas conocidos
+
+### Estado de los 3 gates de veredicto tras corregir el largo del código en /entrar (2026-09-17)
+Mismo archivo secundario de la entrada de abajo (`app/entrar/page.tsx`), esta vez arreglando un bug
+real que el usuario encontró probando en su celular (el código de Supabase tiene 8 dígitos, no 6) —
+sigue siendo la pantalla de login, no landing/onboarding/paywall. Se posponen los 3 con la misma
+justificación: **veredicto:landing** sigue LISTA (37/40·17/20·18/20), el gate solo marca "caducado"
+por comparar mtime de CUALQUIER `.tsx` del proyecto; **veredicto:onboarding** y **veredicto:paywall**
+siguen NO LISTA por el techo estructural ya documentado, sin tocar en esta sesión.
+
+### Estado de los 3 gates de veredicto tras el código de 6 dígitos en /entrar (2026-09-17)
+Se tocó `app/entrar/page.tsx` (login), pantalla SECUNDARIA (no es una de las 4 del dinero) — basta
+medición + checklist, sin ronda de revisor-visual. Verificado en vivo a 375px, con un envío real de
+correo: campo de código visible, valida solo dígitos, botón se activa con los 6, error correcto con
+código equivocado. **Sin revisor (pantalla secundaria).**
+- **veredicto:landing** — el gate lo marca "caducado" porque compara el mtime de CUALQUIER `.tsx`
+  del proyecto (esta vez señala `ajustes/page.tsx`, `calendario/page.tsx`, `expediente/page.tsx` —
+  archivos de la app interna, staleness ya arrastrada de sesiones previas, ninguno del árbol de la
+  landing `app/page.tsx` + `components/landing/*`, que sigue sin tocarse). Sigue **LISTA** (37/40 ·
+  17/20 · 18/20), sin cambio visual que re-puntuar.
+- **veredicto:onboarding** y **veredicto:paywall** — NO LISTA por el techo estructural ya
+  documentado en las entradas de abajo (rondas 2026-09-09/11, rendimiento decreciente). Ninguna
+  línea de `app/onboarding/page.tsx` ni `app/paywall/page.tsx` se tocó en esta sesión. Sigue en la
+  cola de pulido opcional, sin prioridad sobre terminar la prueba de compra real (ver checkpoint).
 
 ### Estado de los 3 gates de veredicto tras el fix del favicon + soporte@ (2026-09-16/17)
 Sin cambios de contenido/estructura en ninguna pantalla: `app/favicon.ico` (asset binario, no JSX)

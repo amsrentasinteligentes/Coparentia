@@ -7,14 +7,19 @@
 // servidor cuando exista el cobro real; este camino ya es honesto sin él.
 
 import { Suspense, useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'motion/react';
 import { Lock, Mail } from 'lucide-react';
 import { ContenedorFunnel, CtaFunnel, FunnelHeader } from '@/components/funnel/ui';
 import { crearClienteSupabase } from '@/lib/supabase/client';
 
-type Estado = 'idle' | 'enviando' | 'enviado' | 'error';
+type Estado = 'idle' | 'enviando' | 'enviado' | 'error' | 'enlace_invalido';
+type EstadoCodigo = 'idle' | 'verificando' | 'error';
+
+// El código que de verdad manda Supabase en `{{ .Token }}` tiene 8 dígitos (confirmado con un
+// correo real, 2026-09-17) — no 6 como sugiere la doctrina genérica de 26-AUTH-MODERNO.md.
+const LARGO_CODIGO = 8;
 
 export default function Entrar() {
   return (
@@ -25,6 +30,7 @@ export default function Entrar() {
 }
 
 function EntrarInterno() {
+  const router = useRouter();
   const params = useSearchParams();
   const [email, setEmail] = useState('');
   const [estado, setEstado] = useState<Estado>('idle');
@@ -33,9 +39,15 @@ function EntrarInterno() {
   // Autorización previa expresa (Ley 1581 de 2012, Colombia): checkbox NUNCA premarcado, en el
   // mismo punto donde se recoge el correo — este login también crea la cuenta la primera vez.
   const [acepta, setAcepta] = useState(false);
+  // Código de acceso: la salida real cuando el enlace falla porque el correo se abrió en OTRO
+  // navegador (celular con Gmail/Outlook abriendo su navegador interno en vez del que pidió el
+  // enlace — 26-AUTH-MODERNO.md). El código se verifica en ESTA MISMA pestaña, sin depender de
+  // ninguna cookie que haya quedado en otro navegador.
+  const [codigo, setCodigo] = useState('');
+  const [estadoCodigo, setEstadoCodigo] = useState<EstadoCodigo>('idle');
 
   useEffect(() => {
-    if (params.get('error') === 'enlace_invalido') setEstado('error');
+    if (params.get('error') === 'enlace_invalido') setEstado('enlace_invalido');
   }, [params]);
 
   // El contador vive en un efecto con su propia limpieza. Antes era un `setInterval` suelto dentro
@@ -78,6 +90,21 @@ function EntrarInterno() {
     const ok = await enviarEnlace();
     setReenvio(ok ? 'ok' : 'error');
     if (ok) setCountdown(60);
+  };
+
+  // Verificación directa del código: sin redirección ni intercambio de cookies entre pestañas —
+  // por eso funciona aunque el enlace se haya abierto en otro navegador.
+  const confirmarCodigo = async (e: React.FormEvent): Promise<void> => {
+    e.preventDefault();
+    if (codigo.length !== LARGO_CODIGO || estadoCodigo === 'verificando') return;
+    setEstadoCodigo('verificando');
+    const supabase = crearClienteSupabase();
+    const { error } = await supabase.auth.verifyOtp({ email, token: codigo, type: 'email' });
+    if (error) {
+      setEstadoCodigo('error');
+      return;
+    }
+    router.push('/inicio');
   };
 
   return (
@@ -131,6 +158,12 @@ function EntrarInterno() {
                   No pudimos enviar el enlace. Revisa el correo e intenta de nuevo.
                 </p>
               )}
+              {estado === 'enlace_invalido' && (
+                <p className="text-[13px] text-[var(--text-secondary)]">
+                  Ese enlace ya no sirve (venció o se abrió en otra app) — pide uno nuevo aquí abajo.
+                  Si vuelve a pasar, usa el código de 8 dígitos que llega en el mismo correo.
+                </p>
+              )}
             </form>
 
             <button
@@ -162,6 +195,37 @@ function EntrarInterno() {
             <p className="mt-3 max-w-[36ch] text-[15px] leading-relaxed text-[var(--text-secondary)]">
               Te enviamos el enlace a <span className="font-semibold text-[var(--text-primary)]">{email}</span>
             </p>
+
+            {/* Si el enlace se abre en otro navegador (celular con Gmail/Outlook abriendo su
+                navegador interno) nunca entra — el código se verifica aquí mismo, sin depender de
+                dónde se abrió el correo (26-AUTH-MODERNO.md, "el fallo #1 del enlace solo"). */}
+            <form onSubmit={confirmarCodigo} className="mt-6 flex w-full max-w-[320px] flex-col gap-3">
+              <p className="text-[13px] text-[var(--text-tertiary)]">
+                ¿El enlace no te abrió la app? Escribe el código de {LARGO_CODIGO} dígitos que va en el mismo correo
+              </p>
+              <input
+                type="text"
+                inputMode="numeric"
+                autoComplete="one-time-code"
+                maxLength={LARGO_CODIGO}
+                value={codigo}
+                onChange={(e) => {
+                  setCodigo(e.target.value.replace(/\D/g, '').slice(0, LARGO_CODIGO));
+                  if (estadoCodigo === 'error') setEstadoCodigo('idle');
+                }}
+                placeholder="00000000"
+                className="h-14 w-full rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--surface)] px-4 text-center text-[20px] tracking-[0.3em] text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)]"
+              />
+              <CtaFunnel type="submit" disabled={codigo.length !== LARGO_CODIGO || estadoCodigo === 'verificando'}>
+                {estadoCodigo === 'verificando' ? 'Verificando…' : 'Confirmar código'}
+              </CtaFunnel>
+              {estadoCodigo === 'error' && (
+                <p role="alert" className="text-[13px] text-[var(--status-error)]">
+                  Ese código no es válido o ya venció. Pide uno nuevo con &quot;Reenviar enlace&quot;.
+                </p>
+              )}
+            </form>
+
             <button
               type="button"
               disabled={countdown > 0 || reenvio === 'enviando'}
