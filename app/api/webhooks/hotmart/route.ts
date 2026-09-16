@@ -9,7 +9,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'node:crypto';
 import { createClient } from '@supabase/supabase-js';
 import { verificarHotmart } from '@/lib/hotmart-verify';
-import { estadoParaEvento } from '@/lib/membership-fsm';
+import { estadoParaEvento, tieneAccesoCompleto, type Status } from '@/lib/membership-fsm';
+import { enviarCorreoBienvenida, enviarCorreoCancelacion, enviarCorreoPagoFallido } from '@/lib/email';
 
 export const runtime = 'nodejs'; // node:crypto y raw body — no corre en Edge
 
@@ -77,6 +78,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   //    prueban varias rutas plausibles del comprador antes de darlo por ausente.
   const evento = String(cuerpo.event ?? '');
   const email: string | undefined = data.buyer?.email ?? data.subscriber?.email ?? data.subscription?.subscriber?.email;
+  const nombre: string | undefined = data.buyer?.name;
   const subscriberCode: string | undefined = data.subscription?.subscriber?.code;
   const montoPagado: number | null = data.purchase?.price?.value ?? null;
   const eventId: string =
@@ -130,12 +132,36 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ error: 'processing failed' }, { status: 500 }); // 5xx → Hotmart reintenta
   }
 
-  const estadoRpc = (resultadoRpc as { status?: string } | null)?.status;
+  type RespuestaRpc = { status?: string; previous_status?: Status | null; email?: string | null };
+  const respuestaRpc = resultadoRpc as RespuestaRpc | null;
+  const estadoRpc = respuestaRpc?.status;
   const resultado =
     estadoRpc === 'applied' ? 'applied' : estadoRpc === 'duplicate' ? 'duplicate' : estadoRpc === 'no_match' ? 'no_match' : 'illegal';
   await registrar(eventId, evento, resultado);
 
-  // 7. 200 SIEMPRE que la decisión ya se tomó (incluidos duplicado/ilegal): Hotmart deja de
+  // 8. CORREOS — solo cuando el aviso de verdad se APLICÓ (nunca en duplicados: Hotmart reenvía
+  //    "aprobada" y "completa" para la MISMA compra, y sin este filtro se mandarían 2 bienvenidas).
+  //    SE ESPERA (`await`), a propósito: en Vercel, una función serverless puede congelarse justo
+  //    después de devolver la respuesta — un "disparar y olvidar" (`void enviarCorreo(...)` sin
+  //    await) arriesgaba perder el correo en silencio. El estado de la suscripción ya quedó
+  //    guardado antes de este bloque (lo que de verdad importa); si el correo en sí falla, cada
+  //    función de lib/email.ts atrapa su propio error y sigue sin romper la respuesta a Hotmart.
+  if (resultado === 'applied') {
+    const correoDestino = respuestaRpc?.email ?? email;
+    const anterior = respuestaRpc?.previous_status ?? null;
+    const teniaAccesoAntes = anterior === 'trialing' || anterior === 'active';
+    const tieneAccesoAhora = nuevoEstado === 'trialing' || nuevoEstado === 'active';
+
+    if (correoDestino && tieneAccesoAhora && !teniaAccesoAntes) {
+      await enviarCorreoBienvenida(correoDestino, nombre);
+    } else if (correoDestino && nuevoEstado === 'cancelled') {
+      await enviarCorreoCancelacion(correoDestino, accessUntil);
+    } else if (correoDestino && nuevoEstado === 'past_due') {
+      await enviarCorreoPagoFallido(correoDestino, graceEndsAt);
+    }
+  }
+
+  // 9. 200 SIEMPRE que la decisión ya se tomó (incluidos duplicado/ilegal): Hotmart deja de
   //    reintentar. Solo un 5xx real (arriba) le pide que reintente.
   return NextResponse.json({ received: true, resultado: estadoRpc ?? 'ok' });
 }

@@ -1,5 +1,47 @@
 # ESTADO.md — Coparentia (nombre provisional: PensiónClara)
 
+### Checkpoint (2026-09-16) — Resend conectado en código (falta la cuenta/dominio/clave del usuario)
+Sigue `18-VENTA-HOTMART.md` § "EMAILS CON RESEND". Construido:
+
+- `lib/email.ts` (NUEVO): `enviarCorreoBienvenida` (con enlace mágico de Supabase incrustado —
+  `admin.auth.admin.generateLink`, con resguardo a `/entrar` si falla), `enviarCorreoCancelacion`
+  (con la fecha hasta la que sigue el acceso ya pagado) y `enviarCorreoPagoFallido` (con los días
+  de gracia). Remitente `Coparentia <hola@coparentia.co>` (decisión técnica — el mismo dominio ya
+  conectado). **Sin `RESEND_API_KEY` configurada, cada función se salta el envío en silencio** (log,
+  no excepción) — la suscripción queda guardada igual, nunca se pierde el estado por un correo
+  que no pudo salir.
+- `supabase/fix-devuelve-estado-anterior.sql` (NUEVO, el usuario debe correrlo) — `aplicar_evento_
+  hotmart` ahora devuelve también `previous_status` y `email` (el correo resuelto, útil cuando el
+  aviso solo traía el código de suscriptor). Sin esto, el endpoint no podía distinguir "primera vez
+  que esta persona tiene acceso" (manda bienvenida) de "Hotmart reenvió 'aprobada' y 'completa' para
+  la MISMA compra" (NO manda una segunda bienvenida).
+- `app/api/webhooks/hotmart/route.ts` — decide qué correo mandar según la transición real:
+  bienvenida solo si pasa a `trialing`/`active` viniendo de un estado SIN acceso completo; despedida
+  al pasar a `cancelled`; aviso de pago al pasar a `past_due`. **Se `await`ea el envío a propósito**
+  (bug real encontrado y corregido antes de publicar: la primera versión usaba `void correo(...)`
+  sin esperar — en Vercel una función serverless puede congelarse justo después de responder, y un
+  "disparar y olvidar" arriesgaba perder el correo en silencio).
+- `package.json` — `resend` agregado, versión fijada (6.28.1, igual que el resto de dependencias
+  del proyecto).
+
+**Verificado en local** (con un aviso simulado, clave de prueba temporal, sin tocar producción):
+el webhook procesó el pago (`applied`, 200) y el log del servidor confirmó que SÍ intentó mandar
+el correo de bienvenida y se saltó el envío correctamente por faltar `RESEND_API_KEY` — el camino
+completo funciona, solo falta la cuenta real. `tsc`/`build` limpios (incluido el caso sin la clave,
+que no rompe el build — mismo cuidado que con `HOTMART_HOTTOK`).
+
+⚠️ **PENDIENTE — 3 cosas que solo el usuario puede hacer:**
+1. Correr `supabase/fix-devuelve-estado-anterior.sql` en Supabase.
+2. Crear cuenta en resend.com → verificar el dominio `coparentia.co` (Resend da registros DNS que
+   hay que pegar en Vercel → Domains → coparentia.co, ya que el DNS vive ahí ahora) → esperar la
+   verificación (usualmente minutos, ya con el DNS funcionando bien esta vez).
+3. Copiar la API key de Resend → pegarla en Vercel → Environment Variables → `RESEND_API_KEY`
+   (nunca en el chat) → Redeploy.
+
+Hasta entonces, los correos siguen sin salir (se registra en los logs, no rompe nada) y el flujo de
+acceso sigue funcionando igual que antes: Hotmart manda su propio correo con el instructivo, la
+persona entra a `/entrar` con el mismo correo y pide su enlace ahí.
+
 ### Checkpoint (2026-09-16) — ✅ RESUELTO — `coparentia.co` CONECTADO, con HTTPS activo
 La propagación de nameservers terminó (tardó desde el 2026-09-15 hasta el 2026-09-16 — más lento
 de lo típico, dentro del rango normal de hasta 24-48h). Un primer intento quedó en
