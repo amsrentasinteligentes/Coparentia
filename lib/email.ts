@@ -8,11 +8,16 @@
 // dominio — hoy vive en Vercel, ver ESTADO.md). Sin `RESEND_API_KEY` configurada, cada función
 // se salta el envío en silencio (log, no excepción) — degradación elegante, igual que el resto
 // de integraciones externas de esta app (30-INTEGRACION-IA.md).
+//
+// ⚠️ Todas las fechas que se muestran van ancladas a `America/Bogota` (lib/fecha.ts) — mismo
+// cuidado que el resto de la app: sin esto, cerca de la medianoche el correo puede mostrar un día
+// distinto al que de verdad rige en Colombia (auditoría 2026-09-11, mismo tipo de bug).
 
 import { Resend } from 'resend';
 import { crearClienteSupabaseAdmin } from '@/lib/supabase/admin';
 
 const REMITENTE = 'Coparentia <hola@coparentia.co>';
+const RESPONDER_A = 'soporte@coparentia.co'; // a donde llegan las respuestas, no al remitente
 const URL_APP = 'https://coparentia.co';
 
 function clienteResend(): Resend | null {
@@ -43,25 +48,55 @@ async function enlaceDeAcceso(email: string): Promise<string> {
   }
 }
 
+/** Fecha en formato largo, SIEMPRE en el calendario de Colombia (nunca en la hora del servidor). */
+function fechaLargaColombia(fecha: Date): string {
+  return fecha.toLocaleDateString('es-CO', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'America/Bogota' });
+}
+
+/** Solo el primer nombre — "¡Hola Juan Camilo Restrepo Uribe!" suena a plantilla, no a bienvenida. */
+function primerNombre(nombre?: string): string | null {
+  const limpio = nombre?.trim();
+  return limpio ? limpio.split(/\s+/)[0] : null;
+}
+
 const ESTILO_BOTON =
   'background:#5b93e8;color:#ffffff;padding:14px 28px;border-radius:12px;text-decoration:none;font-weight:600;display:inline-block';
 
-/** Se manda al confirmarse el ACCESO por primera vez (inicio de prueba o cobro directo). */
-export async function enviarCorreoBienvenida(email: string, nombre?: string): Promise<void> {
+/**
+ * Se manda al confirmarse el ACCESO por primera vez. `esPrueba` distingue las DOS situaciones
+ * reales que disparan este correo — decirlas mal es una promesa de dinero incumplida:
+ *   - true  → empieza la prueba gratis (nadie ha pagado nada todavía, `trialEndsAt` = cuándo sería
+ *             el primer cobro real). NUNCA decir "tu compra se confirmó" aquí.
+ *   - false → hubo un cobro real directo (sin prueba, o la prueba ya se convirtió en pago).
+ */
+export async function enviarCorreoBienvenida(
+  email: string,
+  nombre: string | undefined,
+  esPrueba: boolean,
+  trialEndsAt?: Date | null
+): Promise<void> {
   const resend = clienteResend();
   if (!resend) return;
   const enlace = await enlaceDeAcceso(email);
-  const saludo = nombre?.trim() ? `¡Hola ${nombre.trim()}!` : '¡Hola!';
+  const primero = primerNombre(nombre);
+  const saludo = primero ? `¡Hola ${primero}!` : '¡Hola!';
+  const fechaCobro = esPrueba && trialEndsAt ? fechaLargaColombia(trialEndsAt) : null;
+
+  const parrafoEstado = esPrueba
+    ? `Tu prueba gratis de Coparentia ya está activa — <strong>hoy no se te cobró nada</strong>.` +
+      (fechaCobro ? ` Si sigues, el primer cobro sería el <strong>${fechaCobro}</strong> — te avisamos antes.` : '')
+    : `Tu compra se confirmó y tu expediente en Coparentia ya está activo.`;
 
   try {
     await resend.emails.send({
       from: REMITENTE,
       to: email,
+      replyTo: RESPONDER_A,
       subject: 'Tu acceso a Coparentia ya está listo',
       html: `
         <h1 style="font-family:sans-serif;color:#111827;">${saludo} 👋</h1>
         <p style="font-family:sans-serif;color:#374151;font-size:15px;line-height:1.5;">
-          Tu compra se confirmó y tu expediente en Coparentia ya está activo.
+          ${parrafoEstado}
         </p>
         <p style="margin:24px 0;">
           <a href="${enlace}" style="${ESTILO_BOTON}">Entrar a mi expediente →</a>
@@ -71,7 +106,7 @@ export async function enviarCorreoBienvenida(email: string, nombre?: string): Pr
           <a href="${URL_APP}/entrar">coparentia.co/entrar</a> con este mismo correo y te mandamos uno nuevo.
         </p>
         <p style="font-family:sans-serif;color:#6b7280;font-size:13px;">
-          ¿Dudas? Escríbenos a soporte@coparentia.co
+          ¿Dudas? Escríbenos a ${RESPONDER_A}
         </p>
       `,
     });
@@ -80,31 +115,45 @@ export async function enviarCorreoBienvenida(email: string, nombre?: string): Pr
   }
 }
 
-/** Se manda cuando la suscripción pasa a CANCELADA (deja de renovarse, conserva acceso hasta la fecha ya pagada). */
-export async function enviarCorreoCancelacion(email: string, accessUntil?: Date | null): Promise<void> {
+/**
+ * Se manda cuando la suscripción pasa a CANCELADA. `veniaDePrueba` distingue si la persona
+ * alguna vez llegó a pagar: cancelar DURANTE la prueba gratis (nunca hubo cobro) es distinto de
+ * cancelar una suscripción ya pagada — decir "el período que ya pagaste" cuando nunca pagó nada
+ * es una afirmación falsa, justo el tipo de detalle que este avatar (que desconfía de las cuentas
+ * que no cuadran, FICHA-AVATAR.md) no perdona.
+ */
+export async function enviarCorreoCancelacion(
+  email: string,
+  accessUntil: Date | null | undefined,
+  veniaDePrueba: boolean
+): Promise<void> {
   const resend = clienteResend();
   if (!resend) return;
-  const fecha = accessUntil
-    ? accessUntil.toLocaleDateString('es-CO', { day: 'numeric', month: 'long', year: 'numeric' })
-    : null;
+  const fecha = accessUntil ? fechaLargaColombia(accessUntil) : null;
+
+  const parrafoAcceso = fecha
+    ? veniaDePrueba
+      ? `Sigues teniendo acceso completo hasta el <strong>${fecha}</strong>, el resto de tu prueba gratis. No se te cobrará nada.`
+      : `Sigues teniendo acceso completo hasta el <strong>${fecha}</strong>, el período que ya pagaste.`
+    : '';
 
   try {
     await resend.emails.send({
       from: REMITENTE,
       to: email,
+      replyTo: RESPONDER_A,
       subject: 'Confirmamos la cancelación de tu suscripción',
       html: `
         <h1 style="font-family:sans-serif;color:#111827;">Lamentamos que te vayas</h1>
         <p style="font-family:sans-serif;color:#374151;font-size:15px;line-height:1.5;">
-          Tu suscripción a Coparentia quedó cancelada — no se te cobrará de nuevo.
-          ${fecha ? `Sigues teniendo acceso completo hasta el <strong>${fecha}</strong>, el período que ya pagaste.` : ''}
+          Tu suscripción a Coparentia quedó cancelada — no se te cobrará de nuevo. ${parrafoAcceso}
         </p>
         <p style="font-family:sans-serif;color:#374151;font-size:15px;line-height:1.5;">
           Tu expediente y tus comprobantes siguen guardados — si vuelves más adelante, todo va a
           seguir donde lo dejaste.
         </p>
         <p style="font-family:sans-serif;color:#6b7280;font-size:13px;">
-          ¿Cancelaste por error, o hay algo que podamos mejorar? Responde a este correo — lo leemos de verdad.
+          ¿Cancelaste por error, o hay algo que podamos mejorar? Escríbenos a ${RESPONDER_A} — lo leemos de verdad.
         </p>
       `,
     });
@@ -117,14 +166,13 @@ export async function enviarCorreoCancelacion(email: string, accessUntil?: Date 
 export async function enviarCorreoPagoFallido(email: string, graceEndsAt?: Date | null): Promise<void> {
   const resend = clienteResend();
   if (!resend) return;
-  const fecha = graceEndsAt
-    ? graceEndsAt.toLocaleDateString('es-CO', { day: 'numeric', month: 'long', year: 'numeric' })
-    : null;
+  const fecha = graceEndsAt ? fechaLargaColombia(graceEndsAt) : null;
 
   try {
     await resend.emails.send({
       from: REMITENTE,
       to: email,
+      replyTo: RESPONDER_A,
       subject: 'No pudimos procesar tu pago de Coparentia',
       html: `
         <h1 style="font-family:sans-serif;color:#111827;">Tu pago no se pudo procesar</h1>
@@ -134,10 +182,10 @@ export async function enviarCorreoPagoFallido(email: string, graceEndsAt?: Date 
           ${fecha ? `hasta el <strong>${fecha}</strong>` : 'por unos días más'} mientras lo resuelves.
         </p>
         <p style="margin:24px 0;">
-          <a href="https://app.hotmart.com" style="${ESTILO_BOTON}">Actualizar mi método de pago →</a>
+          <a href="https://purchases.hotmart.com" style="${ESTILO_BOTON}">Actualizar mi método de pago →</a>
         </p>
         <p style="font-family:sans-serif;color:#6b7280;font-size:13px;">
-          ¿Necesitas ayuda? Escríbenos a soporte@coparentia.co
+          ¿Necesitas ayuda? Escríbenos a ${RESPONDER_A}
         </p>
       `,
     });

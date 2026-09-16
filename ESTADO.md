@@ -1,5 +1,39 @@
 # ESTADO.md — Coparentia (nombre provisional: PensiónClara)
 
+### Checkpoint (2026-09-16) — Repasada de los 3 correos: 4 problemas reales corregidos
+El usuario pidió revisar los correos de `lib/email.ts` con ojos críticos, no solo ortografía.
+Encontrados y corregidos:
+
+1. **El correo de bienvenida decía "Tu compra se confirmó" incluso al EMPEZAR LA PRUEBA GRATIS**
+   (nadie ha pagado nada todavía) — contradecía la promesa de "hoy no pagas nada" de toda la app.
+   Ahora `enviarCorreoBienvenida` recibe `esPrueba` (viene de si `nuevoEstado === 'trialing'`) y
+   dice explícitamente "hoy no se te cobró nada" + cuándo sería el primer cobro, o "tu compra se
+   confirmó" solo cuando de verdad hubo un cobro directo.
+2. **El correo de cancelación decía "el período que ya pagaste" incluso cancelando DURANTE la
+   prueba gratis** (sin haber pagado nunca) — misma clase de promesa falsa. Ahora recibe
+   `veniaDePrueba` (`anterior === 'trialing'` en el webhook — `first_paid_at` solo se fija al
+   llegar a `active`, así que es la señal correcta) y dice "el resto de tu prueba gratis. No se te
+   cobrará nada." en ese caso.
+3. **Las fechas no estaban ancladas a Colombia** — mismo tipo de bug que motivó `lib/fecha.ts` el
+   2026-09-11, colado en este archivo nuevo. Agregado `fechaLargaColombia()` con
+   `timeZone: 'America/Bogota'` explícito, usado en los 3 correos.
+4. **"Responde a este correo" no llegaba a ningún lado revisado** (el remitente `hola@coparentia.co`
+   no lo lee nadie). Agregado `replyTo: 'soporte@coparentia.co'` en los 3 envíos + el texto ahora
+   dice esa dirección explícitamente en vez de "responde a este correo".
+
+También: el nombre en el saludo usa solo el PRIMER nombre (`primerNombre()`) — Hotmart puede mandar
+el nombre completo y "¡Hola Ana María Restrepo!" suena a plantilla. El botón de "pago fallido"
+apunta a `purchases.hotmart.com` (el área de compras del comprador) en vez de la portada genérica
+de Hotmart — **sin verificar con un clic real todavía**, queda anotado para la prueba E2E.
+
+**Verificado SIN tocar producción**: `tsc`/`build` limpios · disparados 4 escenarios reales por el
+webhook local (inicio de prueba, pago directo, cancelación desde prueba, cancelación desde pago) y
+confirmado con logs de depuración TEMPORALES (agregados y retirados en la misma sesión) que
+`esPrueba`/`veniaDePrueba`/las fechas llegan exactamente como se esperaba en cada caso — sin
+arriesgar una llamada real a `generateLink` de Supabase con correos inventados (se descartó a
+propósito una primera idea de renderizar los correos completos porque hubiera creado usuarios de
+auth falsos en la base real).
+
 ### Checkpoint (2026-09-16) — ✅ Resend CONECTADO Y VERIFICADO de punta a punta
 Los 3 pasos pendientes del usuario, completados:
 1. Dominio agregado en Resend con **"Auto configure"** — Resend detectó `coparentia.co` en Vercel

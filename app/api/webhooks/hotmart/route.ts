@@ -153,9 +153,11 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     const tieneAccesoAhora = nuevoEstado === 'trialing' || nuevoEstado === 'active';
 
     if (correoDestino && tieneAccesoAhora && !teniaAccesoAntes) {
-      await enviarCorreoBienvenida(correoDestino, nombre);
+      await enviarCorreoBienvenida(correoDestino, nombre, nuevoEstado === 'trialing', trialEndsAt);
     } else if (correoDestino && nuevoEstado === 'cancelled') {
-      await enviarCorreoCancelacion(correoDestino, accessUntil);
+      // `anterior === 'trialing'` = nunca hubo un cobro real todavía (first_paid_at solo se fija
+      // al llegar a 'active') — decide si el correo puede decir "el período que ya pagaste" o no.
+      await enviarCorreoCancelacion(correoDestino, accessUntil, anterior === 'trialing');
     } else if (correoDestino && nuevoEstado === 'past_due') {
       await enviarCorreoPagoFallido(correoDestino, graceEndsAt);
     }
