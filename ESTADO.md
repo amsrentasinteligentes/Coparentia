@@ -1780,6 +1780,10 @@ FICHA-ARTE.md que la landing.
 
 ## Problemas conocidos
 
+### Estado de los 3 gates de veredicto tras el fix del favicon + soporte@ (2026-09-16/17)
+Sin cambios de contenido/estructura en ninguna pantalla: `app/favicon.ico` (asset binario, no JSX)
+y configuración externa (ImprovMX, DNS). Se posponen los 3, misma justificación de siempre.
+
 ### Estado de los 3 gates de veredicto tras corregir el copy de los correos (2026-09-16)
 Backend puro otra vez: `lib/email.ts` (texto de correos, no UI de la app) + `app/api/webhooks/
 hotmart/route.ts`. Ninguna pantalla de landing/onboarding/paywall tocada. Se posponen los 3, misma
