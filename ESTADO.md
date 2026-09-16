@@ -23,6 +23,12 @@ la raíz — sitios distintos, sin conflicto. Verificado con Google DNS (`dns.go
 personal (con su propia bandeja, calendario, etc.), la alternativa es Google Workspace (~US$7/mes)
 — anotado en la respuesta al usuario, no implementado (decisión suya, cuesta dinero).
 
+✅ **CONFIRMADO en producción por el usuario**: mandó un correo real a `soporte@coparentia.co`
+desde su correo personal — llegó (a Spam la primera vez, normal en un reenvío nuevo sin
+historial). Se le guió a marcarlo "No es spam" + crear un filtro de Gmail ("Para:
+soporte@coparentia.co" → "Nunca enviarlo a Spam"), confirmado funcionando. El canal de soporte
+queda operativo de punta a punta.
+
 ### Checkpoint (2026-09-16) — ✅ Copy de los 3 correos CONFIRMADO por el usuario
 Se generaron previsualizaciones reales (HTML) de los 5 casos con el código exacto de `lib/email.ts`
 (sin tocar Resend/Supabase — enlace de ejemplo en vez del mágico real) y se mandaron al usuario
