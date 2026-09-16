@@ -1,5 +1,27 @@
 # ESTADO.md — Coparentia (nombre provisional: PensiónClara)
 
+### Checkpoint (2026-09-16) — ✅ Resend CONECTADO Y VERIFICADO de punta a punta
+Los 3 pasos pendientes del usuario, completados:
+1. Dominio agregado en Resend con **"Auto configure"** — Resend detectó `coparentia.co` en Vercel
+   directo (integración oficial) y agregó los registros DNS solo, sin copiar/pegar nada. Verificado
+   en ~11 min ("Domain verified: Your domain is ready to send emails").
+2. `RESEND_API_KEY` — primer intento se perdió (el usuario creyó haberla guardado en Vercel y no
+   estaba en la lista; confirmado con captura). Reintentada, guardada, Redeploy hecho.
+3. **Probado con un aviso real de Hotmart** ("Enviar test" fresco, no un reintento de uno viejo —
+   los reintentos reutilizan la fecha ORIGINAL y la ventana anti-repetición de 48h los rechaza si
+   el test tiene más de 2 días, como pasó en un intento intermedio: correcto, no era bug).
+   Resultado: el correo de cancelación se armó y Resend lo procesó de verdad — status
+   **"Suppressed"**, no "Delivered", porque el destinatario (`test@hotmart.com`) es una dirección
+   inventada por el generador de pruebas de Hotmart, no un buzón real; Resend la bloquea a
+   propósito para proteger la reputación del dominio. **Confirma que el pipeline completo
+   funciona** (código → Resend → intento de envío real) — falta solo la prueba con un correo real
+   para ver "Delivered", que es la compra de prueba real ya pendiente desde antes.
+
+⚠️ **Nota para la próxima ronda de pruebas con "Enviar test" de Hotmart**: no reutilizar avisos del
+historial con más de ~24-48h — usar siempre "Enviar test" desde "Mis configuraciones" para generar
+uno fresco, o la ventana anti-repetición los rechaza (comportamiento correcto, no confundir con un
+bug real).
+
 ### Checkpoint (2026-09-16) — Resend conectado en código (falta la cuenta/dominio/clave del usuario)
 Sigue `18-VENTA-HOTMART.md` § "EMAILS CON RESEND". Construido:
 
