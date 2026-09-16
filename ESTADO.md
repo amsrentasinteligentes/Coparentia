@@ -1,5 +1,28 @@
 # ESTADO.md — Coparentia (nombre provisional: PensiónClara)
 
+### Checkpoint (2026-09-16) — ✅ `soporte@coparentia.co` YA RECIBE correos de verdad (ImprovMX)
+Pregunta del usuario ("¿dónde veo los correos que llegan a soporte@?") reveló un pendiente real:
+esa dirección solo existía como texto en la app/copy, sin ningún buzón conectado.
+
+**Solución elegida — reenvío gratis, no una cuenta pagada aparte** (decisión pragmática: un solo
+dueño, poco volumen todavía): **ImprovMX**, con un alias **`*` (comodín)** que reenvía CUALQUIER
+`@coparentia.co` (soporte@, alianzas@, hola@, lo que sea) a `amsrentasinteligentes@gmail.com`.
+
+**Registros agregados en Vercel → Domains → coparentia.co → DNS Records** (raíz, `Name` vacío):
+- `MX` → `mx1.improvmx.com.` (prioridad 10)
+- `MX` → `mx2.improvmx.com.` (prioridad 20)
+- `TXT` → `v=spf1 include:spf.improvmx.com ~all`
+
+⚠️ **Se comprobó ANTES de agregar el TXT que no chocara con el SPF de Resend** (una sola cadena
+SPF por dominio es obligatoria — dos separadas rompen la validación de correo). Resultado: el SPF
+de Resend vive en el subdominio `send.coparentia.co` (`v=spf1 include:amazonses.com ~all`), NO en
+la raíz — sitios distintos, sin conflicto. Verificado con Google DNS (`dns.google/resolve`) que los
+3 registros propagaron correctos, y en ImprovMX los 3 quedaron con ✓ verde.
+
+**Pendiente (opcional, no urgente)**: si el negocio crece y se quiere un correo separado del Gmail
+personal (con su propia bandeja, calendario, etc.), la alternativa es Google Workspace (~US$7/mes)
+— anotado en la respuesta al usuario, no implementado (decisión suya, cuesta dinero).
+
 ### Checkpoint (2026-09-16) — ✅ Copy de los 3 correos CONFIRMADO por el usuario
 Se generaron previsualizaciones reales (HTML) de los 5 casos con el código exacto de `lib/email.ts`
 (sin tocar Resend/Supabase — enlace de ejemplo en vez del mágico real) y se mandaron al usuario
