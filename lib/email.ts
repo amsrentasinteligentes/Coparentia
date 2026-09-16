@@ -131,9 +131,13 @@ export async function enviarCorreoCancelacion(
   if (!resend) return;
   const fecha = accessUntil ? fechaLargaColombia(accessUntil) : null;
 
+  // "No se te cobrará DE NUEVO" da a entender que ya hubo un cobro antes — falso si cancela
+  // DURANTE la prueba gratis, donde nunca se le cobró nada (hallazgo real del usuario, revisando
+  // la previsualización). Las dos frases (esta y la del párrafo de acceso) tienen que concordar.
+  const fraseCobro = veniaDePrueba ? 'no te cobraremos nada' : 'no se te cobrará de nuevo';
   const parrafoAcceso = fecha
     ? veniaDePrueba
-      ? `Sigues teniendo acceso completo hasta el <strong>${fecha}</strong>, el resto de tu prueba gratis. No se te cobrará nada.`
+      ? `Sigues teniendo acceso completo hasta el <strong>${fecha}</strong>, el resto de tu prueba gratis.`
       : `Sigues teniendo acceso completo hasta el <strong>${fecha}</strong>, el período que ya pagaste.`
     : '';
 
@@ -146,7 +150,7 @@ export async function enviarCorreoCancelacion(
       html: `
         <h1 style="font-family:sans-serif;color:#111827;">Lamentamos que te vayas</h1>
         <p style="font-family:sans-serif;color:#374151;font-size:15px;line-height:1.5;">
-          Tu suscripción a Coparentia quedó cancelada — no se te cobrará de nuevo. ${parrafoAcceso}
+          Tu suscripción a Coparentia quedó cancelada — ${fraseCobro}. ${parrafoAcceso}
         </p>
         <p style="font-family:sans-serif;color:#374151;font-size:15px;line-height:1.5;">
           Tu expediente y tus comprobantes siguen guardados — si vuelves más adelante, todo va a
