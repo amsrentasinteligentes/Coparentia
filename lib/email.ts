@@ -84,7 +84,7 @@ export async function enviarCorreoBienvenida(
 
   const parrafoEstado = esPrueba
     ? `Tu prueba gratis de Coparentia ya está activa — <strong>hoy no se te cobró nada</strong>.` +
-      (fechaCobro ? ` Si sigues, el primer cobro sería el <strong>${fechaCobro}</strong> — te avisamos antes.` : '')
+      (fechaCobro ? ` Si sigues, el primer cobro sería el <strong>${fechaCobro}</strong> — te avisaremos antes.` : '')
     : `Tu compra se confirmó y tu expediente en Coparentia ya está activo.`;
 
   try {
