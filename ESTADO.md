@@ -1,5 +1,23 @@
 # ESTADO.md — Coparentia (nombre provisional: PensiónClara)
 
+### Checkpoint (2026-09-16) — ✅ RESUELTO — `coparentia.co` CONECTADO, con HTTPS activo
+La propagación de nameservers terminó (tardó desde el 2026-09-15 hasta el 2026-09-16 — más lento
+de lo típico, dentro del rango normal de hasta 24-48h). Un primer intento quedó en
+**"Invalid Configuration"** en Vercel pese a que los nameservers ya eran los correctos: el
+certificado HTTPS no se emitía solo. Se destrabó con un clic manual en **"Refrescar"** sobre el
+dominio, en Vercel → Project Settings → Domains — ahí pasó a **"Configuración válida"** de
+inmediato. **Verificado en vivo**: `https://coparentia.co` responde 200 con el candado activo y
+sirve la landing real (`<title>Coparentia — Tu expediente, en confianza</title>`).
+Lección para la próxima vez que esto tarde: si `next intento automático` no llega, no hace falta
+seguir esperando — el botón "Refrescar" en la pantalla de detalle del dominio lo fuerza.
+
+⚠️ **Sigue pendiente** (no depende ya del dominio, solo de tiempo/decisión del usuario):
+1. Activar `soporte@coparentia.co` / `alianzas@coparentia.co` de verdad (hoy son promesas, nadie
+   las lee — requiere un proveedor de correo, ej. Gmail con el dominio o Resend en modo recepción).
+2. Conectar Resend (dominio ya verificable ahora que el DNS vive en Vercel) para que los correos
+   transaccionales salgan del dominio propio y no caigan en spam.
+3. La compra de prueba real en Hotmart (independiente del dominio, sigue pendiente desde antes).
+
 ### Checkpoint (2026-09-15) — Dominio comprado: `coparentia.co` (NO `.co` — confirmar en cada mención vieja)
 El usuario compró **`coparentia.co`**, a propósito (se le preguntó explícitamente porque todo el
 código tenía escrito `coparentia.app`). Reemplazado en los 9 archivos que lo mencionaban:
