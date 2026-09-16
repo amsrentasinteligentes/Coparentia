@@ -1,5 +1,21 @@
 # ESTADO.md — Coparentia (nombre provisional: PensiónClara)
 
+### Checkpoint (2026-09-17) — `favicon.ico` era el logo de Vercel, nunca se había reemplazado
+El usuario notó el ícono equivocado en la pestaña del navegador al abrir `coparentia.co`
+(triángulo negro en círculo). `app/icon.png` SÍ tenía el isotipo correcto (las manos con el bebé,
+sirviendo bien en producción — confirmado con `curl`), pero `app/favicon.ico` seguía siendo el
+placeholder de Vercel de cuando se creó el proyecto, y los navegadores (Chrome en particular)
+priorizan `favicon.ico` sobre el `<link rel="icon">` del PNG para la pestaña — por eso se veía mal
+pese a que el ícono "correcto" ya existía. Confirmado que NO era caché (probado en incógnito).
+
+→ Regenerado `app/favicon.ico` desde el isotipo real (`app/icon.png`), con `sharp` (ya instalado
+en el proyecto): ICO moderno con 3 tamaños (16/32/48px), cada uno con los datos PNG embebidos
+directo (formato que todos los navegadores actuales soportan). Verificado a nivel de bytes (no
+solo visualmente): desarmada la estructura del `.ico` a mano y confirmado que las 3 imágenes
+internas tienen firma PNG válida y decodifican con las dimensiones correctas. El visor de Windows
+(`System.Drawing.Icon`) no lo mostraba bien — limitación conocida de esa herramienta con PNG
+dentro de ICO, no un defecto del archivo. `tsc`/`build` limpios.
+
 ### Checkpoint (2026-09-16) — ✅ `soporte@coparentia.co` YA RECIBE correos de verdad (ImprovMX)
 Pregunta del usuario ("¿dónde veo los correos que llegan a soporte@?") reveló un pendiente real:
 esa dirección solo existía como texto en la app/copy, sin ningún buzón conectado.
