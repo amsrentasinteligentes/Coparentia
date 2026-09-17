@@ -1,3 +1,37 @@
+### Checkpoint (2026-09-17) — Nueva sección "Asistencia Jurídica" (5to destino del nav)
+Pedido del usuario: una pantalla nueva para que el usuario escriba dudas legales (llegan por
+correo/WhatsApp) y para mover ahí la tarjeta de abogado patrocinado que vivía al final de
+Expediente. Plan presentado y aprobado antes de construir (toca navegación + varios archivos).
+
+- `components/app/ui.tsx`: `DESTINOS` pasa de 4 a 5 (agrega `{ href: '/asistencia', label:
+  'Asistencia', icon: Scale }`) — dentro del rango permitido por la regla 14 de navegación (3-5
+  destinos).
+- `app/(app)/asistencia/page.tsx` (NUEVO): caja de texto arriba (mínimo 10 caracteres) con dos
+  salidas — "Enviar consulta" (Server Action → Resend → `soporte@coparentia.co`, la misma bandeja
+  que el usuario ya revisa) y "O escríbenos por WhatsApp" (enlace `wa.me` con el mismo texto
+  precargado al número que dio el usuario, `+57 301 228 3506` — decisión técnica: WhatsApp Business
+  API con envío 100% automático tiene costo y trámite de aprobación; se explicó la diferencia y el
+  usuario eligió la versión simple sin costo). Abajo, `<AbogadoDestacado />`.
+- `app/(app)/asistencia/acciones.ts` (NUEVO): Server Action `enviarConsulta`, valida sesión activa
+  y largo del mensaje (10-2000 caracteres) antes de llamar a Resend.
+- `lib/email.ts`: nueva `enviarConsultaJuridica(email, mensaje)` — a diferencia de los otros
+  correos del archivo (que se tragan el error en silencio porque el webhook ya guardó lo que
+  importa), esta SÍ devuelve `boolean`: la pantalla necesita saber si de verdad se envió para
+  decirle al usuario "se envió" o "intenta de nuevo", no fingir éxito. Escapa el texto del usuario
+  antes de meterlo en el HTML del correo (`escaparHtml`) — sin esto, alguien podría escribir una
+  etiqueta HTML en su "consulta" y que se renderizara de verdad en la bandeja de soporte.
+- `app/(app)/expediente/page.tsx`: se quita `<AbogadoDestacado />` y su import (se mudó completo a
+  Asistencia, no se duplicó).
+
+Pantalla SECUNDARIA (no es de las 4 del dinero) → basta medición + checklist, sin ronda de
+revisor-visual. `tsc` ✓ · `build` ✓ (`/asistencia` aparece como ruta nueva, 20 rutas totales).
+⚠️ **Verificación visual con captura real, PENDIENTE**: el navegador de esta sesión no pudo abrir
+un enlace de `supabase.co` para loguearse localmente y tomar el screenshot (permiso de sitio
+externo denegado en este entorno) — la pantalla se revisó por código, reutilizando 1:1 los mismos
+componentes (`Tarjeta`, `IconoCirculo`, `PageHeader`) que ya están aprobados en Expediente/Ajustes,
+pero falta que el usuario la vea renderizada de verdad y confirme que se ve bien antes de darla por
+"lista" del todo.
+
 # ESTADO.md — Coparentia (nombre provisional: PensiónClara)
 
 ### Checkpoint (2026-09-17) — Prueba de compra real: pago OK, login por enlace fallaba en celular → agregado código de 6 dígitos como salida permanente
@@ -69,6 +103,63 @@ en otra app, y ahora SÍ apunta a la salida real (el código de 8 dígitos) en v
 reintentar el mismo enlace que ya se sabe que falla en ese celular.
 Verificado en vivo (con el correo real del usuario, con el estado de enlace inválido forzado por
 URL, y con la pantalla del código mostrando ya el límite de 8): `tsc`/`build` limpios.
+**Publicado en producción** (commit `e87acc3`, `git push origin master` → Vercel).
+
+✅ **CONFIRMADO por el usuario con una prueba real**: pidió un enlace nuevo, el botón "Sign in"
+volvió a fallar en su celular (esperado, es justo el punto ciego que no se puede cerrar desde el
+enlace), pero **el código de 8 dígitos SÍ lo dejó entrar**. El arreglo permanente queda probado de
+punta a punta, no solo en teoría.
+
+**Ajuste final de copy, pedido por el usuario**: como confirmó que el botón nunca le va a funcionar
+en ese contexto, se reescribió la plantilla "Magic Link" en Supabase (Authentication → Emails →
+Templates) para que el correo diga explícitamente "¿El botón no te abrió la app? Escribe este
+código…" en vez de solo mostrar el código sin indicar cuándo usarlo. De paso, todo el correo
+(asunto + cuerpo) pasó de inglés de fábrica a español, para que combine con el resto de la app.
+Guardado por el usuario en Supabase — confirmado con el aviso "Successfully updated email template".
+
+**Marca personal reemplazada en el Área de Miembros de Hotmart**: el panel de Hotmart mostraba por
+defecto el nombre personal del dueño ("Alejandro Muñoz") en la barra superior que ven los
+compradores, tomado del nombre de la cuenta de Hotmart al crear el Área de Miembros — la URL del
+club también lo lleva (`.../club/alejandro-munoz-2`), pero eso no es visible para el comprador (llega
+directo a la página del producto, no a esa raíz). Sin campo de texto para cambiar el nombre
+mostrado — Hotmart solo permite subir una IMAGEN de marca (Área de Miembros → Tu marca → Tema
+oscuro/Tema claro, 180×48px sugerido, PNG transparente). Generados con `sharp` (isotipo real +
+"Coparentia" en el mismo estilo del header de la app) dos archivos a 640×170 (2x, misma proporción):
+`logo-hotmart-tema-oscuro.png` (texto claro `#e6edf7`, para la barra negra) y
+`logo-hotmart-tema-claro.png` (texto `#13233a`, por si se usa sobre blanco en otro lado). El isotipo
+original (`public/logo-isotipo.png`) traía un margen fuera de la insignia que no se pudo recortar
+con `sharp().trim()` (el fondo no era un color plano uniforme) — se recortó a mano con coordenadas
+fijas, verificado con el resultado. Subido el de tema oscuro por el usuario y publicado —
+confirmado con "¡Cambios publicados con éxito!" y captura mostrando "Coparentia" en la barra en vez
+del nombre personal.
+⚠️ **Pendiente, no urgente**: el usuario aún no subió `logo-hotmart-tema-claro.png` (no se detectó
+que ese fondo se use visiblemente en ningún lugar del flujo del comprador todavía).
+⚠️ **Sigue pendiente**: actualizar el texto de la clase "Tutorial para ingresar a Coparentia" dentro
+del Área de Miembros (Contenidos/Productos → esa clase) — tenía la URL vieja
+`coparentia.vercel.app` (ahora es `coparentia.co`) y el correo de soporte con la terminación vieja
+`.app` en vez de `.co`, más falta mencionar el código de 8 dígitos como respaldo del enlace. Texto
+corregido ya entregado al usuario en el chat, guiado hasta el editor de la clase (Contenido →
+módulo "¡Bienvenido/a a Coparentia!" → la clase) — sin confirmar todavía si ya lo pegó y guardó.
+
+✅ **CONFIRMADO por el usuario, la prueba que de verdad importaba**: desde el MISMO iPhone donde el
+enlace mágico venía fallando (el que originó todo este checkpoint), escribiendo el código de 8
+dígitos SÍ lo dejó entrar a la app. El arreglo permanente del login queda probado en el dispositivo
+real del problema, no solo en teoría ni en el navegador de escritorio.
+
+✅ **Texto de la clase "Tutorial para ingresar a Coparentia" corregido y guardado por el usuario**
+(URL `.co`, correo de soporte `.co` — un primer intento dejó `soporte@coparentia.app` colado, se
+detectó en la captura y se corrigió antes de guardar).
+
+⚠️ **PENDIENTES anotados para retomar (sesión pausada aquí, no abandonada)**:
+1. Subir `logo-hotmart-tema-claro.png` si en algún momento se ve el nombre personal sobre fondo
+   blanco en algún lugar de Hotmart (opcional, no se detectó dónde se usaría todavía).
+2. Terminar la prueba de compra real de punta a punta: confirmar que el correo de bienvenida llegue
+   "Delivered" (no solo enviado) a un correo real, y probar una cancelación/reembolso real en
+   Hotmart para confirmar que el correo de despedida también sale bien y el acceso se ajusta según
+   `lib/membership-fsm.ts` sin borrar datos.
+3. El cambio de diseño que el usuario mencionó como tarea aparte ("después hacemos el cambio de
+   diseño") sigue sin empezar — el usuario pidió pasar a "unos cambios a la app" a continuación,
+   sin especificar todavía cuáles.
 
 ### Checkpoint (2026-09-17) — `favicon.ico` era el logo de Vercel, nunca se había reemplazado
 El usuario notó el ícono equivocado en la pestaña del navegador al abrir `coparentia.co`

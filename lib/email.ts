@@ -62,6 +62,16 @@ function primerNombre(nombre?: string): string | null {
 const ESTILO_BOTON =
   'background:#5b93e8;color:#ffffff;padding:14px 28px;border-radius:12px;text-decoration:none;font-weight:600;display:inline-block';
 
+/** Escapa el texto que escribió el usuario antes de meterlo en HTML del correo — sin esto, alguien
+ *  podría escribir una etiqueta o un enlace falso en su "consulta" y que se renderice de verdad en
+ *  la bandeja de quien la recibe. */
+function escaparHtml(texto: string): string {
+  return texto
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
 /**
  * Se manda al confirmarse el ACCESO por primera vez. `esPrueba` distingue las DOS situaciones
  * reales que disparan este correo — decirlas mal es una promesa de dinero incumplida:
@@ -163,6 +173,35 @@ export async function enviarCorreoCancelacion(
     });
   } catch (e) {
     console.error('fallo al enviar correo de cancelación', e instanceof Error ? e.message : e);
+  }
+}
+
+/**
+ * Consulta jurídica enviada desde la app (Asistencia Jurídica) — a diferencia de los otros correos
+ * de este archivo, este SÍ le importa el resultado a quien lo dispara: la pantalla necesita saber
+ * si de verdad llegó para poder decirle "listo, la enviamos" o "no se pudo, intenta de nuevo" en
+ * vez de fingir éxito. Por eso devuelve boolean en lugar de tragarse el error en silencio.
+ */
+export async function enviarConsultaJuridica(emailUsuario: string, mensaje: string): Promise<boolean> {
+  const resend = clienteResend();
+  if (!resend) return false;
+  try {
+    const { error } = await resend.emails.send({
+      from: REMITENTE,
+      to: RESPONDER_A,
+      replyTo: emailUsuario,
+      subject: `Consulta jurídica de ${emailUsuario}`,
+      html: `
+        <p style="font-family:sans-serif;color:#374151;font-size:14px;">
+          <strong>De:</strong> ${escaparHtml(emailUsuario)}
+        </p>
+        <p style="font-family:sans-serif;color:#111827;font-size:15px;line-height:1.6;white-space:pre-wrap;">${escaparHtml(mensaje)}</p>
+      `,
+    });
+    return !error;
+  } catch (e) {
+    console.error('fallo al enviar consulta jurídica', e instanceof Error ? e.message : e);
+    return false;
   }
 }
 

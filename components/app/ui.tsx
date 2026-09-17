@@ -1,13 +1,13 @@
 'use client';
 
 // KIT DE LA APP INTERNA (Sesión 5) — misma identidad de FICHA-ARTE.md que landing/funnel.
-// Nav inferior de 4 destinos (Inicio · Pagos · Calendario · Expediente), tarjetas y píldoras
-// de estado reutilizadas en las 4 secciones. Consume components/landing/tokens.css.
+// Nav inferior de 5 destinos (Inicio · Pagos · Calendario · Expediente · Asistencia), tarjetas y
+// píldoras de estado reutilizadas en las secciones. Consume components/landing/tokens.css.
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion, useReducedMotion } from 'motion/react';
-import { Home, Wallet, CalendarDays, FolderOpen, CloudOff, Check, type LucideIcon } from 'lucide-react';
+import { Home, Wallet, CalendarDays, FolderOpen, Scale, CloudOff, Check, type LucideIcon } from 'lucide-react';
 import { useEffect, useState, type ReactNode } from 'react';
 
 /* Motion signature de FICHA-ARTE.md, en un solo lugar: ease-out suave, 340ms base, sin springs
@@ -20,6 +20,7 @@ const DESTINOS: { href: string; label: string; icon: LucideIcon }[] = [
   { href: '/pagos', label: 'Pagos', icon: Wallet },
   { href: '/calendario', label: 'Calendario', icon: CalendarDays },
   { href: '/expediente', label: 'Expediente', icon: FolderOpen },
+  { href: '/asistencia', label: 'Asistencia', icon: Scale },
 ];
 
 /* ── <NumeroContado> — un número héroe cuenta desde 0 hasta su valor al aparecer (baseline 2 de
