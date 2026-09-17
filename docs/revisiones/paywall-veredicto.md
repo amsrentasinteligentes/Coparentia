@@ -1,48 +1,58 @@
 # VEREDICTO revisor-visual — paywall
-Fecha: 2026-09-17 18:40
+Fecha: 2026-09-17 21:10
 Screenshot: docs/revisiones/paywall-paso2-precio-375.png
-Usabilidad: 33/40
-Craft: 16/20
+Usabilidad: 32/40
+Craft: 14/20
 Copy (si vende): 18/20
 Fidelidad (si hubo referencia): N-A
 Veredicto: NO LISTA
 
-Detalle usabilidad: h1:4 h2:4 h3:3 h4:3 h5:2 h6:4 h7:3 h8:3 h9:3 h10:4
-Detalle craft: jerarquía:3 profundidad:3 identidad:3 movimiento:4 encaje:3
-Detalle copy: idea:4 especificidad:4 emoción:3 oferta:3 acción:4
+Detalle usabilidad: h1:3 h2:3 h3:3 h4:3 h5:4 h6:3 h7:3 h8:3 h9:4 h10:3
+Detalle craft: jerarquía:3 profundidad:3 identidad:3 movimiento:3 encaje:2
+Detalle copy: idea:4 especificidad:3 emoción:3 oferta:4 acción:4
 
-Capturas puntuadas: paywall-paso1-375.png (INVÁLIDA: stale) · paywall-paso2-precio-375.png ·
-paywall-paso1-1440.png · paywall-paso2-precio-1440.png
+Capturas puntuadas: paywall-paso1-375.png · paywall-paso2-precio-375.png ·
+paywall-paso1-1440.png (INVÁLIDA: stale — no coincide con el código actual) · paywall-paso2-precio-1440.png
 Código verificado: app/paywall/page.tsx · components/funnel/ui.tsx · components/funnel/PanelExpediente.tsx
+FICHA-ARTE: paleta (#0b1524/#13233a/#5b93e8), Spectral display + IBM Plex Sans body, radios 14/10 — coinciden en el render.
 
 Correcciones de la ronda anterior — verificación independiente:
-- CTA sticky a 375px: CONFIRMADO en código (page.tsx:595 `sticky bottom-0 ... lg:static`) y visible
-  en paywall-paso2-precio-375.png con garantía + pago seguro dentro del bloque.
-- Plural: CONFIRMADO en código (page.tsx:338 `n === 1 ? 'tu respuesta' : ...`) y en el render 1440.
-  NO confirmado a 375px: la captura del paso 1 sigue mostrando el texto viejo → captura stale.
-- Panel de computador lleno: PARCIAL. Ya no está vacío (expediente real o 3 pilares), pero conserva
-  ~60% de aire y sigue sin eje compartido con la columna derecha.
-- Halo acotado: CONFIRMADO en código (ui.tsx:124 `inset-x-0`). La barra horizontal que aún se ve en
-  paywall-paso1-375.png pertenece a la captura vieja.
-- Marcador con text-decoration + skip-ink: CONFIRMADO (ui.tsx:102-105), sin cruce de descendentes en
-  "WhatsApp" a 1440.
-- --surface-2 en bloques hundidos: CONFIRMADO (page.tsx:489, 522).
+- Captura paso 1 a 375: CONFIRMADA fresca ("Hecho con tu respuesta", sin scroll horizontal).
+- Comentario del webhook: CONFIRMADO corregido (page.tsx:8-12).
+- Panel de computador con expediente + pilares + justify-start: CONFIRMADO en código (ui.tsx:259,
+  page.tsx:195-235) y en paywall-paso2-precio-1440.png. NO confirmado en paso 1: la captura
+  paywall-paso1-1440.png es anterior (panel centrado, sin pilares ni "Corregir").
+- Desborde a 1440×900: SIGUE en el paso 2 (scrollbar visible y "Términos · Privacidad" cortado en y≈897).
+- Safe-area dentro del div con fondo: CONFIRMADO (page.tsx:610).
+- "Corregir alguna respuesta": CONFIRMADO, pero solo existe en el panel lg (invisible en celular).
+- role="alert": CONFIRMADO (page.tsx:628). focus-visible en tarjetas de plan: CONFIRMADO (page.tsx:467, 512).
+
+CTA héroe vivo: contraste 5.9:1 ✓ · whileTap 0.97 ✓ · nunca disabled por defecto ✓ · 56px ancho completo ✓.
+Gate de carga cognitiva: pasa (0 fallas).
 
 Top defectos:
-1. [evidencia · paso 1 a 375px] paywall-paso1-375.png es una captura ANTERIOR al fix (muestra "Hecho
-   con tus 1 respuestas" y barra de scroll horizontal, ambos ya corregidos en código; el render a
-   1440 con los mismos datos dice "tu respuesta") → re-capturar el paso 1 a 375px con el build
-   actual; hasta entonces el paso 1 móvil queda SIN verificar.
-2. [CTA final · paso 2] el botón lleva a un cobro REAL de Hotmart y el webhook no está conectado
-   (page.tsx:8-12): quien paga no recibe cuenta ni acceso automático → conectar el webhook antes de
-   publicar, o mostrar bajo el CTA la línea de qué pasa después del pago + alta manual garantizada.
-3. [computador · columna izquierda, ambos pasos] el panel conserva ~60% de aire y arranca 125px más
-   abajo que el header derecho (titular izq. y≈313 vs. derecho y≈188): las dos columnas no comparten
-   eje → alinear el panel al arranque de la columna derecha (justify-start + mismo padding-top) y
-   mostrar expediente Y pilares juntos en vez de excluyentes.
-4. [computador · paso 2, pie] a 1440×900 la columna derecha desborda: "Términos · Privacidad" queda
-   pegado al borde inferior (y≈883/900) y el lg:py-12 se pierde → en ≥1024px pasar de
-   `lg:justify-center` a `justify-start` con padding fijo cuando el contenido excede el viewport.
-5. [375px · paso 2, bajo el CTA sticky] el `pb-[max(8px,env(safe-area-inset-bottom))]` vive en el
-   contenedor sticky, fuera del div con `bg-[var(--bg)]`: queda una franja transparente bajo el botón
-   por la que se ve pasar el contenido al scrollear → mover el padding-bottom al div con fondo.
+1. [evidencia · computador paso 1] paywall-paso1-1440.png es una captura ANTERIOR al fix: panel
+   izquierdo centrado verticalmente (titular en y≈313 vs. header derecho y≈100), sin pilares ni
+   "Corregir alguna respuesta", cuando el código ya renderiza justify-start + pilares siempre →
+   recapturar el paso 1 a 1440 con el build actual; hasta entonces el eje compartido del paso 1 queda SIN verificar.
+2. [computador · paso 2, columna derecha, 1440×900] desborda: aparece scrollbar y "Términos ·
+   Privacidad" queda cortado en el borde inferior (y≈897/900); la medición scrollHeight===clientHeight
+   solo se hizo en el paso 1 → en ≥1024px bajar `lg:pt-16` a `lg:pt-10` en las dos columnas de
+   MarcoFunnel (ui.tsx:259 y 270) o fundir Términos/Privacidad en la línea de "Ahora no · ¿Dudas?", y medir el paso 2.
+3. [375 · paso 2, caja hundida de AMBAS tarjetas de plan] "COP" cae huérfano en una segunda línea
+   ("≈ $278.400 / COP", "≈ $375.000 / COP") justo en el elemento de decisión → envolver "≈ … COP" en
+   `whitespace-nowrap` (page.tsx:497, 530) o formatear "≈ COP $278.400" para que la unidad no se separe.
+4. [paso 1 subtítulo vs. panel de computador] "Hecho con tu respuesta" (singular) mientras el expediente
+   muestra 2 respuestas (Tu rol + Meses a documentar): `nRespuestas` no cuenta `r.rol` (page.tsx:118) →
+   incluir `r.rol` en el array; ante un avatar que "desconfía de las cuentas que no cuadran" es un dato que no cuadra.
+5. [cabecera · ambos anchos] al pasar al paso 2 aparece el chevron y la marca "Coparentia" + la barra
+   de progreso saltan 52px a la derecha (x=18→70 a 375; x=810→850 a 1440) → reservar siempre el hueco
+   del chevron (`size-11` con `invisible` en paso 1) para que la cabecera no se mueva entre pasos.
+
+Menores: "Corregir alguna respuesta" no existe en celular (el panel es lg-only) — en 375 no hay vuelta
+al onboarding salvo la X que abandona el flujo · el radiogroup usa role="radio" sin navegación por
+flechas ni tabindex roving (semántica de radio incompleta) · la referencia en COP llega tarde (TRM
+asíncrona) y hace saltar de 1 a 2 líneas la caja hundida sin placeholder · "PDF foliado" y "Respaldo
+probatorio" son léxico jurídico que la ficha no registra en el vocabulario del avatar · las capturas
+llevan solo 2 respuestas de semilla (rol + meses); el expediente de computador se ve escuálido frente
+al onboarding completo.

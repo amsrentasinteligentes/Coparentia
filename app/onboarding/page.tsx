@@ -90,11 +90,21 @@ function InfoContextual({ children, anclar = true }: { children: ReactNode; ancl
 // en el MISMO tick del clic y el spring del check de <Chip> nunca alcanza a verse (defecto real
 // encontrado por el revisor-visual). El estado local muestra el check de inmediato; el padre
 // se entera un instante después, cuando ya se vio la selección.
+// ⚠️ Guard contra el doble toque (revisor-visual, 4ª ronda): dos toques en <180ms (o tocar dos
+// opciones seguidas) disparaban onElegir dos veces → setPaso(p => p + 1) corría dos veces y la
+// persona SALTABA una pregunta entera sin enterarse, dejando un hueco en su expediente. La primera
+// elección cierra la puerta; el timeout se limpia al desmontar para no avanzar una pantalla que ya
+// no existe.
 function useSeleccionRetrasada<T>(onElegir: (v: T) => void, ms = 180): { local: T | null; elegir: (v: T) => void } {
   const [local, setLocal] = useState<T | null>(null);
+  const disparado = useRef(false);
+  const temporizador = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => { if (temporizador.current) clearTimeout(temporizador.current); }, []);
   const elegir = (v: T): void => {
+    if (disparado.current) return;
+    disparado.current = true;
     setLocal(v);
-    setTimeout(() => onElegir(v), ms);
+    temporizador.current = setTimeout(() => onElegir(v), ms);
   };
   return { local, elegir };
 }
@@ -190,6 +200,9 @@ export default function Onboarding() {
   const avanzar = (patch?: Partial<Respuestas>): void => {
     if (patch) setR((prev) => ({ ...prev, ...patch }));
     setPaso((p) => p + 1);
+    // La banda "Retomamos donde lo dejaste" es un aviso de llegada: en cuanto la persona avanza
+    // ya sabe que retomó, y dejarla fija cinco preguntas más la convierte en ruido.
+    setRetomado(false);
   };
   const atras = (): void => setPaso((p) => Math.max(0, p - 1));
 
@@ -247,7 +260,7 @@ export default function Onboarding() {
               subrayado de acento que la pregunta de la derecha — dos titulares empatados en la
               misma vista y el dispositivo de marca gastado dos veces (revisor-visual). Ahora va un
               escalón abajo (21px, sin marcador): la pregunta sigue siendo EL objeto de la pantalla. */}
-          <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-[var(--accent)]">
+          <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-[var(--accent)] lg:mt-3">
             Tu expediente se está armando
           </p>
           <h2 className="mt-3 text-balance text-[21px] font-semibold leading-[1.25] text-[var(--text-primary)] [font-family:var(--font-display)]">
@@ -338,7 +351,7 @@ export default function Onboarding() {
           venía marcando como vacío en las pantallas de opciones. Se oculta en los pasos que ya
           llenan la pantalla solos (reconocimientos y carga final) para no competir con su CTA. */}
       {PASOS_CON_RESUMEN_MOVIL.includes(paso) && (
-        <div className="mt-auto pt-6 lg:hidden">
+        <div className="my-auto pt-6 lg:hidden">
           <PanelExpediente filas={filas} compacto />
         </div>
       )}
@@ -469,7 +482,7 @@ function PreguntaSituacion({
       palabraClave="situación"
       tituloDespues=" hoy?"
       subtitulo="Esto nos ayuda a armar tu expediente"
-      porQue="¿Por qué lo preguntamos? Tu situación actual decide qué evidencia prioriza tu expediente — nunca cambia tus derechos, solo el orden en que los organizamos. Tus respuestas son privadas."
+      porQue="¿Por qué lo preguntamos? Tu situación decide qué evidencia va primero — nunca cambia tus derechos, solo el orden. Tus respuestas son privadas."
     >
       {opciones.map(({ icon: Icon, label }, i) => (
         <Chip

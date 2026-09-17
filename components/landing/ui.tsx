@@ -70,10 +70,13 @@ export function Accent({ children }: { children: ReactNode }) {
         // computador) se convertía en un bloque sólido detrás de media frase. `text-decoration`
         // mantiene el grosor proporcional a la letra Y abre hueco alrededor de las descendentes
         // (`skip-ink` por defecto), que es justo donde fallaban las versiones anteriores.
+        // …salvo aquí: en un H1 de 40-58px los huecos del skip-ink se ven como una raya partida en
+        // guiones (revisor, 4ª ronda). En display se dibuja continuo y un pelo más fino.
         textDecorationLine: 'underline',
         textDecorationColor: 'color-mix(in oklab, var(--accent) 40%, transparent)',
-        textDecorationThickness: '0.13em',
+        textDecorationThickness: '0.10em',
         textUnderlineOffset: '0.12em',
+        textDecorationSkipInk: 'none',
       }}
     >
       {children}

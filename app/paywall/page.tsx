@@ -14,8 +14,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
-import { ChevronLeft, X, Check, ShieldCheck, Lock, FileCheck2, HeartHandshake } from 'lucide-react';
-import { BarraProgreso, CtaFunnel, FunnelHeader, Halo, MarcoFunnel, Marcador, usePasoVariants } from '@/components/funnel/ui';
+import { X, Check, ShieldCheck, Lock, FileCheck2, HeartHandshake } from 'lucide-react';
+import { BarraAtras, CtaFunnel, FunnelHeader, Halo, MarcoFunnel, Marcador, usePasoVariants } from '@/components/funnel/ui';
 import { PanelExpediente, type FilaExpediente } from '@/components/funnel/PanelExpediente';
 import { obtenerTRM } from '@/lib/trm';
 import { aproximadoEnPesos } from '@/lib/formato-cop';
@@ -115,7 +115,7 @@ export default function Paywall() {
   // leía "Hecho con tus 5 respuestas" sin haber contestado ninguna — personalización falsa, justo
   // el tipo de detalle que este avatar (que desconfía de las cuentas que no cuadran) castiga.
   const nRespuestas = r
-    ? [r.situacion, r.preocupacion, String(r.metaMeses), r.momento, r.atribucion].filter(Boolean).length
+    ? [r.rol, r.situacion, r.preocupacion, String(r.metaMeses), r.momento, r.atribucion].filter(Boolean).length
     : 0;
 
   // La TRM oficial se pide una sola vez al abrir. Si falla, `trm` queda en null y la pantalla
@@ -237,22 +237,12 @@ export default function Paywall() {
       }
     >
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-1">
-          {/* "Volver" y "Cerrar" eran DOS círculos rellenos idénticos con consecuencias opuestas:
-              uno retrocede un paso, el otro abandona la compra. Ahora el retroceso va sin fondo
-              (mismo tratamiento que en el onboarding) y el círculo relleno queda solo para la X. */}
-          {paso > 0 && (
-            <button
-              type="button"
-              onClick={() => setPaso((p) => Math.max(0, p - 1))}
-              aria-label="Volver al paso anterior"
-              className="flex size-11 shrink-0 items-center justify-center rounded-full text-[var(--text-secondary)] [touch-action:manipulation]"
-            >
-              <ChevronLeft size={22} aria-hidden="true" />
-            </button>
-          )}
-          <FunnelHeader />
-        </div>
+        {/* MISMO encabezado que el onboarding: marca arriba, y debajo el renglón atrás + barra +
+            "Paso N de 2". Antes el chevron aparecía solo en el paso 2, al lado de la marca, y la
+            marca y la barra saltaban 52px a la derecha al cambiar de paso (revisor, 4ª ronda);
+            reservarle el hueco dejaba la marca descolgada del margen. En el paso 1, "atrás" vuelve
+            al recorrido de preguntas — la misma salida que "Corregir alguna respuesta". */}
+        <FunnelHeader />
         <button
           type="button"
           onClick={cerrar}
@@ -267,12 +257,12 @@ export default function Paywall() {
           separadas y cada una tenía ~39% de fondo vacío, porque su contenido real eran 3 líneas.
           Fusionadas responden juntas las dos preguntas que van encadenadas ("qué me llevo" y
           "cuándo me cobran") y llenan una pantalla completa. Decisión aprobada por el usuario. */}
-      <div className="mt-1 flex items-center gap-2">
-        <BarraProgreso porcentaje={((paso + 1) / 2) * 100} />
-        <span className="shrink-0 whitespace-nowrap text-right text-[12px] tabular-nums text-[var(--text-tertiary)]">
-          Paso {paso + 1} de 2
-        </span>
-      </div>
+      <BarraAtras
+        porcentaje={((paso + 1) / 2) * 100}
+        pasoActual={paso + 1}
+        pasoTotal={2}
+        onAtras={paso === 0 ? () => router.push('/onboarding') : () => setPaso((p) => Math.max(0, p - 1))}
+      />
 
       {/* `flex-1` sostiene el CTA abajo en celular; en computador la columna ya viene centrada por
           el marco y estirarla reabriría el vacío que este rediseño cierra. */}
@@ -280,7 +270,13 @@ export default function Paywall() {
         <AnimatePresence mode="wait" initial={false}>
           <motion.div key={paso} variants={variants} initial="enter" animate="center" exit="exit" className="flex flex-1 flex-col">
             {paso === 0 && (
-              <ValorYPrueba situacion={r?.situacion} n={nRespuestas} plan={plan} onContinuar={() => setPaso(1)} />
+              <ValorYPrueba
+                situacion={r?.situacion}
+                n={nRespuestas}
+                plan={plan}
+                onContinuar={() => setPaso(1)}
+                onCorregir={() => router.push('/onboarding')}
+              />
             )}
             {paso === 1 && (
               <Precio plan={plan} onCambiarPlan={setPlan} onCta={irAlPago} onAhoraNo={cerrar} yendo={yendo} falloAlAbrir={falloAlAbrir} trm={trm} />
@@ -302,11 +298,13 @@ function ValorYPrueba({
   n,
   plan,
   onContinuar,
+  onCorregir,
 }: {
   situacion?: string;
   n: number;
   plan: 'anual' | 'mensual';
   onContinuar: () => void;
+  onCorregir: () => void;
 }) {
   const reduce = useReducedMotion();
   const entrada = (i: number) => ({
@@ -343,6 +341,15 @@ function ValorYPrueba({
           <>
             Hecho con {n === 1 ? 'tu respuesta' : `tus ${n} respuestas`}
             {situacion ? ` · "${situacion}"` : ''}
+            {/* En celular no existe el panel lateral con "Corregir alguna respuesta": esta es la
+                única salida para quien se equivocó en el recorrido (revisor, 4ª ronda). */}
+            <button
+              type="button"
+              onClick={onCorregir}
+              className="ml-2 inline py-2 text-[13px] text-[var(--text-tertiary)] underline underline-offset-2 [touch-action:manipulation] lg:hidden"
+            >
+              Corregir
+            </button>
           </>
         ) : (
           <>Así funciona tu expediente desde el primer día</>
@@ -366,7 +373,7 @@ function ValorYPrueba({
           ninguna pantalla (defecto del revisor). Aquí separa los dos bloques sin meter otra caja. */}
       <div
         aria-hidden="true"
-        className="my-6 h-px w-full"
+        className="my-4 h-px w-full"
         style={{
           background:
             'linear-gradient(to right, transparent, color-mix(in oklab, var(--accent) 38%, transparent), transparent)',
@@ -399,7 +406,7 @@ function ValorYPrueba({
                 />
               )}
             </div>
-              <div className="pb-5">
+              <div className="pb-4">
                 <p className="text-[15px] font-semibold text-[var(--text-primary)]">{nodo.titulo}</p>
                 <p className="mt-0.5 text-[13px] text-[var(--text-secondary)]">{nodo.detalle}</p>
               </div>
@@ -454,7 +461,7 @@ function Precio({
       {/* `radiogroup` + `aria-checked`: las dos tarjetas eran <button> sueltos y el check estaba
           marcado como decorativo, así que con lector de pantalla NINGÚN plan aparecía elegido —
           alguien ciego no podía saber qué está por contratar. */}
-      <div role="radiogroup" aria-label="Elige tu plan" className="mt-8 flex flex-col gap-3">
+      <div role="radiogroup" aria-label="Elige tu plan" className="mt-8 flex flex-col gap-3 lg:mt-6">
         <motion.button
           type="button"
           role="radio"
@@ -494,7 +501,7 @@ function Precio({
                   distingue del precio principal sin agregar otro color ni otro tamaño de letra. */}
               <p className="mt-2 rounded-[var(--radius-button)] bg-[var(--surface-2)] px-3 py-1.5 text-[13px] text-[var(--text-secondary)] shadow-[inset_0_1px_2px_rgb(0_0_0_/_0.3)]">
                 {PLAN_ANUAL.totalAnual}
-                {trm && <span className="text-[var(--text-tertiary)]"> · ≈ {aproximadoEnPesos(PLAN_ANUAL.cobroAnual, trm)} COP</span>}
+                {trm && <span className="block text-[var(--text-tertiary)] lg:ml-2 lg:inline">≈ {aproximadoEnPesos(PLAN_ANUAL.cobroAnual, trm)} COP</span>}
               </p>
             </div>
           </div>
@@ -527,7 +534,7 @@ function Precio({
                 comprobar contra nada: faltaba el término de comparación. */}
             <p className="mt-2 rounded-[var(--radius-button)] bg-[var(--surface-2)] px-3 py-1.5 text-[13px] text-[var(--text-secondary)] shadow-[inset_0_1px_2px_rgb(0_0_0_/_0.3)]">
               {PLAN_MENSUAL.totalAnual}
-              {trm && <span className="text-[var(--text-tertiary)]"> · ≈ {aproximadoEnPesos(PLAN_MENSUAL.cobroAnual, trm)} COP</span>}
+              {trm && <span className="block text-[var(--text-tertiary)] lg:ml-2 lg:inline">≈ {aproximadoEnPesos(PLAN_MENSUAL.cobroAnual, trm)} COP</span>}
             </p>
           </div>
         </motion.button>
@@ -538,7 +545,7 @@ function Precio({
           la misma lista hace que la pantalla se sienta vacía de argumentos. Ahora responden lo que
           de verdad se pregunta EN EL MOMENTO DE PAGAR: cuánto cuesta en realidad, si sirve sin la
           otra parte, y qué pasa si me arrepiento. Los tres son hechos comprobables del producto. */}
-      <div className="mt-4 flex flex-col gap-2.5">
+      <div className="mt-4 flex flex-col gap-2.5 lg:mt-3">
         {[
           { icon: ShieldCheck, pre: 'Te sale a ', fuerte: costoDiario, post: ' al día.' },
           { icon: HeartHandshake, pre: 'Funciona ', fuerte: 'aunque la otra persona no la use', post: '.' },
@@ -563,7 +570,7 @@ function Precio({
           (a) señales de confianza JUNTAS sobre el CTA — garantía y pago seguro son lo mismo;
           (b) el CTA con su aviso de renovación (obligatorio, no se toca);
           (c) la salida y la letra chica, separadas 16px del resto para que no compitan. */}
-      <div className="mt-auto pt-6">
+      <div className="mt-auto pt-6 lg:pt-4">
         {/* Hairline degradada también aquí: existía solo en el paso 1, así que el sistema de
             profundidad cambiaba entre dos pantallas seguidas (defecto del revisor). */}
         <div
@@ -590,6 +597,7 @@ function Precio({
             a soporte y te devolvemos todo. Sin explicaciones.
           </p>
         </details>
+      </div>
         {/* CTA PEGADO AL FONDO EN CELULAR (2026-09-17). El revisor-visual encontró que a 375px la
             pantalla de decisión abría SIN el botón visible: con dos tarjetas de plan, tres
             beneficios y el pie de confianza, el CTA quedaba bajo el pliegue y había que adivinar
@@ -597,7 +605,10 @@ function Precio({
             en su sitio al llegar al final; el degradado evita el corte seco contra el contenido.
             Las dos señales de confianza viajan DENTRO del bloque fijo: una garantía que no se ve
             en el momento de decidir no des-arriesga nada.
-            En computador no hace falta (la columna entra completa), así que vuelve al flujo. */}
+            En computador no hace falta (la columna entra completa), así que vuelve al flujo.
+            Va como hijo DIRECTO de la columna del paso: metido en el <div mt-auto> de arriba, su
+            caja contenedora medía casi lo mismo que él y el sticky no tenía hacia dónde subir —
+            el botón quedaba cortado bajo el borde inferior a 375×812 (medido 2026-09-17). */}
         {/* El `padding-bottom` de safe-area va DENTRO del div con fondo, no en el contenedor
             sticky: afuera dejaba una franja transparente bajo el botón por la que se veía pasar el
             contenido al hacer scroll (defecto del revisor). */}
@@ -608,12 +619,13 @@ function Precio({
             style={{ background: 'linear-gradient(to top, var(--bg), transparent)' }}
           />
           <div className="relative bg-[var(--bg)] pb-[max(8px,env(safe-area-inset-bottom))] lg:bg-transparent lg:pb-0">
-            <div className="mb-2 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-center text-[13px] font-medium text-[var(--text-secondary)]">
+            {/* Sin punto medio entre las dos señales: a 375px la línea siempre parte en dos y el
+                "·" quedaba huérfano al final de la primera. Los íconos ya separan cada señal. */}
+            <div className="mb-2 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-center text-[13px] font-medium text-[var(--text-secondary)]">
               <span className="flex items-center gap-1.5">
                 <ShieldCheck size={14} color="var(--accent)" aria-hidden="true" />
                 Garantía del Primer Expediente · 15 días
               </span>
-              <span aria-hidden="true" className="text-[var(--text-tertiary)]">·</span>
               <span className="flex items-center gap-1.5">
                 <Lock size={13} color="var(--accent)" aria-hidden="true" />
                 Pago seguro con Hotmart
@@ -634,9 +646,10 @@ function Precio({
             </p>
           </div>
         </div>
-      </div>
 
-      <div className="mt-4 flex items-center justify-center gap-3 text-[13px] text-[var(--text-secondary)]">
+      {/* UNA sola fila de pie: 'Ahora no · ¿Dudas?' y la letra chica juntas. En dos filas, a
+          1440×900 la última quedaba cortada contra el borde inferior (revisor, 4ª ronda). */}
+      <div className="mt-4 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-[13px] text-[var(--text-secondary)] lg:mt-2">
         <button type="button" onClick={onAhoraNo} className="py-2 [touch-action:manipulation]">
           Ahora no
         </button>
@@ -644,12 +657,9 @@ function Precio({
         <a href="mailto:soporte@coparentia.co" className="py-2 underline-offset-2 hover:underline [touch-action:manipulation]">
           ¿Dudas? Escríbenos
         </a>
-      </div>
-
-      <div className="mt-2 flex items-center justify-center gap-2 text-[11px] text-[var(--text-tertiary)]">
-        <a href="/terminos" className="underline-offset-2 hover:underline">Términos</a>
-        <span aria-hidden="true">·</span>
-        <a href="/privacidad" className="underline-offset-2 hover:underline">Privacidad</a>
+        <span aria-hidden="true" className="text-[var(--text-tertiary)]">·</span>
+        <a href="/terminos" className="py-2 text-[11px] text-[var(--text-tertiary)] underline-offset-2 hover:underline">Términos</a>
+        <a href="/privacidad" className="py-2 text-[11px] text-[var(--text-tertiary)] underline-offset-2 hover:underline">Privacidad</a>
       </div>
     </div>
   );

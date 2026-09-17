@@ -1,30 +1,20 @@
 # VEREDICTO revisor-visual — landing
-Fecha: 2026-09-10 00:00
-Screenshot: docs/revisiones/landing-oferta-cta-375.png
-Usabilidad: 37/40
-Craft: 17/20
-Copy (si vende): 18/20
+Fecha: 2026-09-17 00:00
+Screenshot: docs/revisiones/landing-375.png
+Usabilidad: 34/40
+Craft: 15/20
+Copy (si vende): 17/20
 Fidelidad (si hubo referencia): N-A
-Veredicto: LISTA
+Veredicto: NO LISTA
 
-Re-confirmado 2026-09-10 (3ª vez). El gate de frescura compara el mtime de CUALQUIER .tsx de
-app/components/src, así que se marca "caducado" cada vez que se toma una captura de las pantallas
-internas (el desvío temporal de sesión toca `app/(app)/layout.tsx`, se revierte enseguida). NADA
-del árbol de la landing —`app/page.tsx` + `components/landing/*`— ha cambiado desde el último
-commit que los modifica (8d9f40d, anterior a la ronda LISTA). El veredicto sigue vigente en
-sustancia: landing 37/40 · 17/20 · 18/20 · LISTA.
-
-Re-confirmado 2026-09-10 (4ª vez). Cambios en el árbol de la landing desde entonces, ninguno
-visual/estructural: (a) `app/page.tsx` — una pregunta de FAQ reformulada para no usar la palabra
-"ex" ("¿La otra persona tiene que descargar la app también?"), mismo largo, misma jerarquía, mismo
-componente `<Faq>`; (b) `components/landing/AppPorDentro.tsx` — fix de comportamiento: el carrusel
-ahora se arrastra con el mouse en desktop (`draggable={false}` en el `<img>` + `preventDefault`),
-sin cambio de layout, tamaños ni tokens. Ambos verificados a 375px en preview. El veredicto de
-usabilidad/craft/copy NO cambia: landing 37/40 · 17/20 · 18/20 · LISTA.
+Evaluado a 375px (docs/revisiones/landing-375.png) Y por primera vez a 1440px
+(docs/revisiones/landing-1440.png). Detalle: h1:3 h2:4 h3:4 h4:3 h5:4 h6:3 h7:3 h8:3 h9:3 h10:4 ·
+jerarquía:4 profundidad:3 identidad:3 movimiento:3 encaje:2 · copy idea:4 especificidad:3
+emoción:4 oferta:3 acción:3. Falla el gate doble por craft (15 < 16) y por usabilidad (34 < 36).
 
 Top defectos:
-1. Card mensual (sección Oferta) — con solo 3 bullets queda ~40% más corta que la anual; en desktop el grid items-start deja las cards desparejas y "Todo lo que incluye el plan Anual" obliga a saltar a la otra card → sumar 1 bullet concreto o fijar min-height igualada.
-2. Card anual (bajo el precio) — "Se cobra US$89 al año" (semibold) + "3 meses gratis" (accent) siguen siendo dos focos que compiten bajo el display; el ojo apurado salta entre ambos → mover "3 meses gratis" al badge superior o bajarlo a peso normal.
-3. Hero (H1) — el subrayado tipo marcador sobre "pagada y probada" cubre dos líneas con bloques de ancho distinto y se ve tosco/desalineado → limitar el highlight a una línea o padding uniforme.
-4. Página completa — "Garantía del Primer Expediente (15 días)" se repite 5+ veces (2 cards, stack, sección garantía, recap CTA final, PS) → dejarla en card anual + sección garantía; quitar de mensual y del recap.
-5. CTA final (recap) — "7 días de prueba gratis · Garantía del Primer Expediente (15 días)" envuelve y deja "(15 días)" huérfano en su línea → acortar a "7 días gratis · Garantía de 15 días".
+1. Hero H1, subrayado <Accent> ("pagada" / "y probada") en AMBOS viewports — el skip-ink nativo abre huecos bajo g/p/y y con 0.13em de grosor (7.5px a 58px) el "marcador" se lee como una barra a trozos/guiones, no como un subrayado; el dispositivo ownable de la ficha queda roto en el elemento más grande de la página → en components/landing/ui.tsx <Accent> añadir `textDecorationSkipInk: 'none'` (el 40% de opacidad ya deja pasar las descendentes) y bajar el grosor a 0.10em.
+2. Hero 1440, tarjeta del producto (derecha) — la captura /hero-visual-inicio.png termina 5px después de la fila "Próximo · Visita" mientras arriba tiene ~30px de aire: padding asimétrico evidente en el borde inferior de la card → recortar el asset con 24px de padding inferior o dar `pb-6 bg-[var(--surface)]` al contenedor del visual en Hero.tsx.
+3. 1440, salto hero → "¿Te suena?" — el hero ocupa 1140px alineado a la izquierda (x=163) y la sección siguiente es una columna de 620px centrada (x=405): el ojo percibe dos plantillas distintas al hacer scroll → subir max-w de Problema/Agitación a 760px o alinear el kicker/título de §2 al mismo margen izquierdo del grid del hero.
+4. Oferta, card Mensual — "Todo lo que incluye el plan Anual" obliga a recordar la otra card (reconocer > recordar) y deja la card ~40% más corta en desktop (items-start) → reemplazar por 2 bullets concretos (Sello de Confianza + expediente PDF) y quitar la repetición de la garantía.
+5. Página completa — "Garantía del Primer Expediente (15 días)" aparece 5 veces (features anual, features mensual, sección Garantía, recap del CTA final, PS) → dejarla en card anual + sección Garantía; el recap pasa a "7 días gratis · Garantía de 15 días".

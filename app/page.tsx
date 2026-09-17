@@ -156,9 +156,9 @@ export default function Home() {
           // Antes repetía 4 de los 5 bullets del plan anual y el diferenciador real se diluía.
           // Ahora dice solo en qué se diferencia: mismas funciones, sin compromiso de 12 meses.
           features: [
-            'Todo lo que incluye el plan Anual',
+            'Sello de Confianza en cada comprobante',
+            'Expediente exportable en PDF foliado',
             'Cancelas cuando quieras, sin permanencia',
-            'Garantía del Primer Expediente (15 días)',
           ],
         }}
       />
@@ -191,7 +191,7 @@ export default function Home() {
           {
             pregunta: '¿Es muy cara la suscripción?',
             respuestaMarked:
-              'Menos de US$0.25 al día con el plan anual — comparado con lo que cobra un abogado por cada correo de aclaración, [b]se paga solo[/b].',
+              'Menos de US$0.25 al día con el plan anual — comparado con los US$100 que puede cobrar un abogado por cada correo de aclaración, [b]se paga solo[/b].',
           },
           {
             pregunta: '¿Mis datos financieros están seguros?',
@@ -207,8 +207,8 @@ export default function Home() {
         futurePacingMarked="La próxima vez que te reclamen por WhatsApp, abres tu expediente y respondes con hechos — no con capturas sueltas."
         ctaLabel={CTA_LABEL}
         ctaHref={CTA_HREF}
-        recap="7 días de prueba gratis · Garantía del Primer Expediente (15 días)"
-        psMarked="PS: Coparentia convierte tus comprobantes en un expediente fechado y listo para mostrar con el Sello de Confianza. Hoy entras con 7 días gratis y la Garantía del Primer Expediente de 15 días."
+        recap="7 días gratis · Garantía de 15 días"
+        psMarked="PS: Coparentia convierte tus comprobantes en un expediente fechado y listo para mostrar con el Sello de Confianza. Hoy entras con 7 días gratis y, si no armas tu primer expediente en 15 días, te devolvemos todo."
       />
 
       {/* SECCIÓN EXTRA (fuera de la estructura canónica de 19, pedida por el usuario):

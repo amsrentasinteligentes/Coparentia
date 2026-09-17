@@ -176,6 +176,61 @@ página.
 este bug, el que sí lo cerró, y de raíz: el menú dejó de depender de que el navegador reparta bien
 su propio espacio, así que no es un parche que pueda desarmarse con una actualización de Chrome.
 
+### Checkpoint (2026-09-17) — REDISEÑO EN CURSO: landing + onboarding + paywall (4 rondas de revisor)
+Aprobación del usuario: mantener el estilo oscuro (FICHA-ARTE cosa juzgada), aplicar los patrones
+aprendidos de Niddo / OurFamilyWizard / 2houses sin cambiar la esencia, que se vea bien en
+computador Y celular, y que sea reversible. **Punto de restauración: commit `73151e8`** (todo lo
+de abajo se deshace con `git reset --hard 73151e8`, decisión del usuario).
+
+**Lo construido (commits 68bc03c → 78995db):**
+- `components/funnel/ui.tsx` → `<MarcoFunnel>`: en celular idéntico a ContenedorFunnel; en computador
+  (≥1024) dos columnas con panel de marca a la izquierda y el flujo a la derecha, ambas con el
+  mismo eje vertical (justify-start + pt-16). Patrón de las 3 apps del nicho: el formulario nunca
+  va solo. Usado por onboarding, paywall y /entrar.
+- `components/funnel/PanelExpediente.tsx` (NUEVO): las respuestas del onboarding como filas de un
+  expediente que se arma en vivo (contestadas con check, pendientes con rayita, 3-5 filas + "y N
+  más"). Llena el vacío estructural que 9 rondas de revisor venían marcando y obliga a guardar cada
+  respuesta al momento (antes solo en el paso 9 → cerrar la pestaña borraba todo — bug real).
+- Onboarding: guardado incremental de respuestas + paso, banda "Retomamos donde lo dejaste" con
+  "Empezar de nuevo", panel de computador un escalón abajo en jerarquía (21px, sin marcador).
+- Paywall: CTA sticky en celular (quedaba BAJO EL PLIEGUE, la pantalla de decisión abría sin botón),
+  garantía + pago seguro dentro del bloque fijo, plan recordado al volver, plural roto corregido,
+  pie compactado con <details>, --surface-2 en los datos en pesos, enlace "Corregir alguna
+  respuesta", panel con expediente + 3 pilares. Comentario de cabecera que decía que el webhook NO
+  estaba conectado (falso desde hoy temprano) corregido — un revisor lo leyó como riesgo real.
+- Landing: hero en dos columnas desde lg (copy izq., captura a ancho de teléfono der. — antes la
+  captura salía estirada a 720px, al doble de su tamaño natural).
+- Kit: <Halo> acotado a inset-x-0 (desbordaba 16px → SCROLL HORIZONTAL real en celular, en las
+  dos pantallas); <Marcador> y <Accent> migrados a text-decoration nativo con skip-ink (el trazo
+  por gradiente cruzaba las descendentes de "WhatsApp" y se leía como TACHADO; a 58px se volvía un
+  bloque); <Chip> de h-14 a min-h-14 (opciones de 2 líneas se salían de la caja).
+
+**Puntajes por ronda (revisor-visual, contexto limpio):**
+- Onboarding: 29/40·14/20 → 27·13 → 31·16 → 31·16 → (r5 pendiente). Craft PASA desde la r3.
+- Paywall: 31/40·15/20·copy 18 → 27·14·17 → 33·16·18 → 32·14·18 → (r5 pendiente).
+- Landing: 37/40·17/20·18/20 (viejo, solo 375) → 34·15·17 (primera medición a 1440) → (r5 pendiente).
+
+**Cierre de la r4 (aplicado, sin commit al momento de escribir esto):**
+- Onboarding: guard de doble tap (useRef), banner "retomado" se apaga al avanzar, tarjeta móvil
+  centrada (my-auto), porqués recortados, springs reduce-aware, PanelExpediente 4-5 filas con
+  hairline y pie siempre.
+- Paywall: encabezado IGUAL al del onboarding (marca arriba + <BarraAtras> con "Paso N de 2"; el
+  chevron que aparecía solo en el paso 2 hacía saltar marca y barra 52px). CTA sticky de verdad:
+  estaba metido en un <div mt-auto> que era su caja contenedora y no tenía hacia dónde subir → el
+  botón quedaba CORTADO bajo el borde a 375×812 (medido bottom 835 > 812). Ahora es hijo directo de
+  la columna. Paso 1 recortado 28px para caber sin scroll a 812. Paso 2 cabe en 1440×900 (medido
+  843 < 900; antes 918). Pesos en línea propia en celular / inline en computador. "Corregir" visible
+  en celular junto a "Hecho con tus N respuestas". nRespuestas cuenta el rol. Pie en una sola fila.
+- Landing: <Accent> sin skip-ink (a 58px los huecos se leían como guiones) y 0.10em; tarjeta del
+  hero con fondo = --bg (la imagen es #0b1524 exacto) + pb-6; Problema/Agitación a 760px en lg;
+  plan mensual con 2 bullets concretos; garantía nombrada 5→2 veces (card anual + sección; el cierre
+  dice "7 días gratis · Garantía de 15 días"); FAQ recupera "US$100 por cada correo" (FICHA-AVATAR).
+- Kit: <Halo> con `closest-side` — con el tamaño por defecto (farthest-corner) el degradado llegaba
+  con color a los bordes cercanos y a 1440 se veía un RECTÁNGULO claro detrás del H1 del paywall.
+  MarcoFunnel lg:pt/pb 16→8.
+La bajada en la r2 no fue regresión: el revisor encontró bugs preexistentes que la r1 no vio
+(scroll horizontal, CTA bajo el pliegue) al mirar por primera vez ambas medidas.
+
 ### Checkpoint (2026-09-17) — Diseño: rondas frescas de revisor + investigación de competencia
 Pedido del usuario: retomar el trabajo de diseño de landing/onboarding/paywall (invocado el skill
 `diseno`). Fase 1-2 (explorar + diagnosticar) hechas; el plan quedó presentado al usuario, EN

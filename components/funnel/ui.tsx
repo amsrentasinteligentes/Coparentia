@@ -130,9 +130,15 @@ export function Halo() {
         // (b) al 16% el revisor lo declaró imperceptible: no cumplía su función de dar
         //     profundidad ni identidad. Subido al 26%, el valor único del sistema.
         // El corte al 62% dejaba un borde recto perceptible en pantallas anchas (el revisor lo
-        // describió como "rectángulo"): al 72% el degradado termina de apagarse dentro de su caja.
+        // describió como "rectángulo"); al 72% seguía pasando, y por una razón de geometría: el
+        // tamaño por defecto del degradado es `farthest-corner`, así que hacia la esquina más
+        // lejana se apagaba bien pero hacia los bordes CERCANOS (izquierdo y superior, a solo 28% y
+        // 38% del centro) llegaba todavía con color y se cortaba en seco — a 1440px se veía un
+        // rectángulo claro detrás del título (medido 2026-09-17). `closest-side` dimensiona la
+        // elipse para que toque el borde más cercano exactamente donde el color llega a cero: se
+        // apaga por completo antes de cualquier borde, en celular y en computador.
         background:
-          'radial-gradient(ellipse at 28% 38%, color-mix(in oklab, var(--accent) 26%, transparent) 0%, transparent 72%)',
+          'radial-gradient(ellipse closest-side at 36% 46%, color-mix(in oklab, var(--accent) 26%, transparent) 0%, transparent 100%)',
       }}
     />
   );
@@ -175,7 +181,7 @@ export function Chip({
         <motion.span
           initial={{ scale: 0.5, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 0.24, type: 'spring', bounce: 0.1 }}
+          transition={reduce ? { duration: 0 } : { duration: 0.24, type: 'spring', bounce: 0.1 }}
           aria-hidden="true"
           className="flex size-5 shrink-0 items-center justify-center rounded-full bg-[var(--accent)]"
         >
@@ -256,7 +262,7 @@ export function MarcoFunnel({ panel, children }: { panel?: ReactNode; children: 
         // 125px más abajo que el derecho — sin eje común, como dos páginas pegadas) y, cuando el
         // contenido superaba el alto de la ventana, el centrado recortaba el principio.
         <aside
-          className="relative hidden overflow-hidden border-r border-[color-mix(in_oklab,var(--text-tertiary)_12%,transparent)] lg:flex lg:flex-col lg:justify-start lg:px-10 lg:pb-12 lg:pt-16 xl:px-16"
+          className="relative hidden overflow-hidden border-r border-[color-mix(in_oklab,var(--text-tertiary)_12%,transparent)] lg:flex lg:flex-col lg:justify-start lg:px-10 lg:pb-8 lg:pt-8 xl:px-16"
           style={{
             background:
               'radial-gradient(900px 620px at 20% 0%, color-mix(in oklab, var(--accent) 15%, transparent) 0%, transparent 62%), ' +
@@ -267,7 +273,7 @@ export function MarcoFunnel({ panel, children }: { panel?: ReactNode; children: 
           <div className="mx-auto w-full max-w-[460px]">{panel}</div>
         </aside>
       )}
-      <div className="mx-auto flex min-h-dvh w-full max-w-[520px] flex-col px-4 pt-4 pb-[max(20px,env(safe-area-inset-bottom))] lg:max-w-[560px] lg:justify-start lg:px-10 lg:pb-12 lg:pt-16">
+      <div className="mx-auto flex min-h-dvh w-full max-w-[520px] flex-col px-4 pt-4 pb-[max(20px,env(safe-area-inset-bottom))] lg:max-w-[560px] lg:justify-start lg:px-10 lg:pb-8 lg:pt-8">
         {children}
       </div>
     </div>

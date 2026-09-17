@@ -117,7 +117,7 @@ export function Hero({
               limita al ancho real de un teléfono para que la captura se lea a su tamaño natural. */}
           <div className="mt-10 w-full max-w-[720px] lg:mt-0 lg:max-w-[380px] lg:justify-self-end">
             {visual ? (
-              <div className="overflow-hidden rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--accent)_18%,transparent)] shadow-[var(--shadow-2)]">
+              <div className="overflow-hidden rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--accent)_18%,transparent)] bg-[var(--bg)] pb-6 shadow-[var(--shadow-2)]">
                 {visual}
               </div>
             ) : (
