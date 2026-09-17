@@ -65,17 +65,15 @@ export function Accent({ children }: { children: ReactNode }) {
     <span
       className="text-[var(--accent)] [box-decoration-break:clone] [-webkit-box-decoration-break:clone]"
       style={{
-        // ⚠️ El trazo va en EM, no en porcentaje del alto de la caja (mismo bug ya corregido en
-        // el <Marcador> del funnel): con `transparent 66%` el subrayado ocupaba el 34% del alto de
-        // línea, así que en el H1 del hero —40px en celular, hasta 58px en computador— dejaba de
-        // ser un resaltado y se veía como un bloque sólido detrás de media frase. En em, el grosor
-        // es siempre el mismo respecto a la letra, en cualquier tamaño.
-        backgroundImage:
-          'linear-gradient(color-mix(in oklab, var(--accent) 28%, transparent), color-mix(in oklab, var(--accent) 28%, transparent))',
-        backgroundRepeat: 'no-repeat',
-        backgroundPosition: '0 calc(100% - 0.04em)',
-        backgroundSize: '100% 0.16em',
-        padding: '0 0.05em',
+        // Mismo subrayado nativo que el <Marcador> del funnel (2026-09-17): antes era un gradiente
+        // por porcentaje del alto de línea, que en el H1 del hero (40px en celular, 58px en
+        // computador) se convertía en un bloque sólido detrás de media frase. `text-decoration`
+        // mantiene el grosor proporcional a la letra Y abre hueco alrededor de las descendentes
+        // (`skip-ink` por defecto), que es justo donde fallaban las versiones anteriores.
+        textDecorationLine: 'underline',
+        textDecorationColor: 'color-mix(in oklab, var(--accent) 40%, transparent)',
+        textDecorationThickness: '0.13em',
+        textUnderlineOffset: '0.12em',
       }}
     >
       {children}

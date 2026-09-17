@@ -92,19 +92,17 @@ export function Marcador({ children }: { children: ReactNode }) {
     <span
       className="[box-decoration-break:clone] [-webkit-box-decoration-break:clone]"
       style={{
-        backgroundImage:
-          'linear-gradient(color-mix(in oklab, var(--accent) 30%, transparent), color-mix(in oklab, var(--accent) 30%, transparent))',
-        backgroundRepeat: 'no-repeat',
-        // Anclado al borde inferior de la caja inline (`0 100%`), el trazo quedaba ~6px por debajo
-        // de las letras y se leía como una barra flotante suelta, no como un subrayado. Subirlo
-        // lo pega a la base del texto en cualquier tamaño de fuente.
-        // ⚠️ Ajuste 2026-09-17 (revisor-visual): con 0.14em de subida y 0.22em de grosor, el trazo
-        // cruzaba el cuerpo de las letras con rasgo descendente ("WhatsApp") y se leía como TACHADO,
-        // no como resaltado — justo en el titular que más pesa del paywall. Más bajo y más fino:
-        // pasa por debajo de las descendentes y vuelve a leerse como subrayado.
-        backgroundPosition: '0 calc(100% - 0.04em)',
-        backgroundSize: '100% 0.16em',
-        padding: '0 0.05em',
+        // SUBRAYADO NATIVO, no un degradado de fondo (2026-09-17). Historia de este trazo: primero
+        // fue un gradiente por PORCENTAJE del alto de línea (se inflaba con el tamaño de fuente y
+        // en títulos grandes se volvía un bloque); luego pasó a `em` (mejor, pero seguía cruzando
+        // las descendentes de "WhatsApp" y se leía como TACHADO — dos rondas del revisor-visual).
+        // `text-decoration` resuelve el problema de raíz: el navegador conoce la baseline real de
+        // la fuente y, con `skip-ink` (su valor por defecto), ABRE UN HUECO alrededor de cada
+        // descendente en vez de atravesarla. Ningún cálculo manual puede igualar eso.
+        textDecorationLine: 'underline',
+        textDecorationColor: 'color-mix(in oklab, var(--accent) 45%, transparent)',
+        textDecorationThickness: '0.13em',
+        textUnderlineOffset: '0.12em',
       }}
     >
       {children}
@@ -118,7 +116,12 @@ export function Halo() {
   return (
     <span
       aria-hidden="true"
-      className="pointer-events-none absolute -left-8 -right-8 -top-16 -bottom-24 -z-10"
+      // ⚠️ `-left-8 -right-8` (32px a cada lado) dentro de un contenedor con solo 16px de padding
+      // desbordaba la pantalla y abría una BARRA DE SCROLL HORIZONTAL en celular — el defecto que
+      // las dos revisiones de hoy encontraron a la vez, en onboarding y en paywall. Acotado a los
+      // bordes del propio título: el degradado ya se desvanece dentro de su caja, así que el halo
+      // se sigue viendo igual sin salirse de la pantalla.
+      className="pointer-events-none absolute inset-x-0 -top-16 -bottom-24 -z-10"
       style={{
         // DOS bugs corregidos aquí, y este componente alimenta TODO el onboarding:
         // (a) `220px 140px` son RADIOS, o sea una elipse de 440×280 dentro de una caja de ~190px:
@@ -126,8 +129,10 @@ export function Halo() {
         //     degradado se dimensiona contra su caja y siempre termina de desvanecerse dentro.
         // (b) al 16% el revisor lo declaró imperceptible: no cumplía su función de dar
         //     profundidad ni identidad. Subido al 26%, el valor único del sistema.
+        // El corte al 62% dejaba un borde recto perceptible en pantallas anchas (el revisor lo
+        // describió como "rectángulo"): al 72% el degradado termina de apagarse dentro de su caja.
         background:
-          'radial-gradient(ellipse at 22% 34%, color-mix(in oklab, var(--accent) 26%, transparent) 0%, transparent 62%)',
+          'radial-gradient(ellipse at 28% 38%, color-mix(in oklab, var(--accent) 26%, transparent) 0%, transparent 72%)',
       }}
     />
   );
@@ -242,8 +247,9 @@ export function MarcoFunnel({ panel, children }: { panel?: ReactNode; children: 
   return (
     <div className="lg:grid lg:min-h-dvh lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1fr)]">
       {panel && (
+        // Sin `aria-hidden`: el panel muestra las respuestas REALES de la persona (su expediente
+        // armándose), no decoración — esconderlo del lector de pantalla ocultaba contenido útil.
         <aside
-          aria-hidden="true"
           className="relative hidden overflow-hidden border-r border-[color-mix(in_oklab,var(--text-tertiary)_12%,transparent)] lg:flex lg:flex-col lg:justify-center lg:px-10 lg:py-12 xl:px-16"
           style={{
             background:

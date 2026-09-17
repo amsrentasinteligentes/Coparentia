@@ -149,6 +149,7 @@ const VACIAS: Respuestas = {
 };
 
 const CLAVE_ONBOARDING = 'coparentia_onboarding';
+const CLAVE_PASO = 'coparentia_onboarding_paso';
 
 // En celular el resumen va SOLO en las pantallas de puras opciones — son las que dejaban el tercio
 // inferior vacío. Los pasos con su propio botón al fondo (reconocimientos, la meta con slider, la
@@ -189,14 +190,26 @@ export default function Onboarding() {
   };
   const atras = (): void => setPaso((p) => Math.max(0, p - 1));
 
-  // Se retoman las respuestas de un intento anterior si las hay: quien cerró la pestaña a mitad
-  // de camino vuelve a encontrarlas, en vez de empezar de cero sin explicación.
+  // Se retoman las respuestas Y EL PASO de un intento anterior: guardar solo las respuestas dejaba
+  // a quien volvía en la pregunta 1 con el expediente ya lleno — dos señales contradictorias en la
+  // misma pantalla (revisor-visual). Se retrocede un paso desde la pantalla de carga: nadie debe
+  // reaparecer dentro de una animación de "preparando tu plan" que ya corrió.
   useEffect(() => {
     try {
       const guardado = sessionStorage.getItem(CLAVE_ONBOARDING);
       if (guardado) setR((prev) => ({ ...prev, ...(JSON.parse(guardado) as Partial<Respuestas>) }));
+      const pasoGuardado = Number(sessionStorage.getItem(CLAVE_PASO));
+      if (Number.isInteger(pasoGuardado) && pasoGuardado > 0) {
+        setPaso(Math.min(pasoGuardado, PASO_LOADING - 1));
+      }
     } catch {}
   }, []);
+
+  useEffect(() => {
+    try {
+      sessionStorage.setItem(CLAVE_PASO, String(paso));
+    } catch {}
+  }, [paso]);
 
   // GUARDADO INCREMENTAL (2026-09-17). Antes esto solo corría en el paso 9 de 10: cerrar la
   // pestaña en cualquier paso intermedio borraba TODAS las respuestas, sin aviso y sin forma de
@@ -214,11 +227,15 @@ export default function Onboarding() {
     <MarcoFunnel
       panel={
         <>
+          {/* JERARQUÍA: este panel ACOMPAÑA, no compite. Antes era Spectral 28px bold con el mismo
+              subrayado de acento que la pregunta de la derecha — dos titulares empatados en la
+              misma vista y el dispositivo de marca gastado dos veces (revisor-visual). Ahora va un
+              escalón abajo (21px, sin marcador): la pregunta sigue siendo EL objeto de la pantalla. */}
           <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-[var(--accent)]">
             Tu expediente se está armando
           </p>
-          <h2 className="mt-3 text-balance text-[28px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)]">
-            Cada respuesta le da forma a lo que vas a poder <Marcador>mostrar</Marcador>
+          <h2 className="mt-3 text-balance text-[21px] font-semibold leading-[1.25] text-[var(--text-primary)] [font-family:var(--font-display)]">
+            Cada respuesta le da forma a lo que vas a poder mostrar
           </h2>
           <p className="mt-3 text-[14px] leading-[1.6] text-[var(--text-secondary)]">
             No es un cuestionario: es el índice de tu expediente. Lo que contestas define qué
@@ -240,10 +257,15 @@ export default function Onboarding() {
         />
       )}
 
-      {/* `flex-1` es lo correcto en celular (el paso ocupa lo que queda de alto y el CTA se ancla
-          abajo). En computador NO: la columna ya está centrada por el marco, así que estirar el
-          bloque volvía a abrir el hueco que este rediseño vino a cerrar. */}
-      <div className="relative mt-6 flex flex-1 flex-col lg:flex-none">
+      {/* `flex-1` es lo correcto cuando el paso tiene su propio botón al fondo (lo ancla abajo).
+          En los pasos de puras opciones NO: estirar el bloque empujaba la tarjeta del expediente
+          hasta el borde inferior y volvía a abrir un hueco en medio — justo lo que este rediseño
+          cierra. En computador nunca estira: la columna ya viene centrada por el marco. */}
+      <div
+        className={`relative mt-6 flex flex-col lg:flex-none ${
+          PASOS_CON_RESUMEN_MOVIL.includes(paso) ? 'flex-none' : 'flex-1'
+        }`}
+      >
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
             key={paso}

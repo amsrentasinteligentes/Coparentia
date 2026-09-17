@@ -11,7 +11,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'motion/react';
 import { Lock, Mail } from 'lucide-react';
-import { ContenedorFunnel, CtaFunnel, FunnelHeader } from '@/components/funnel/ui';
+import { CtaFunnel, FunnelHeader, MarcoFunnel } from '@/components/funnel/ui';
 import { crearClienteSupabase } from '@/lib/supabase/client';
 
 type Estado = 'idle' | 'enviando' | 'enviado' | 'error' | 'enlace_invalido';
@@ -108,14 +108,36 @@ function EntrarInterno() {
   };
 
   return (
-    <ContenedorFunnel>
+    // Mismo marco de dos columnas que onboarding y paywall: el login venía justo después de un
+    // paywall de dos columnas y volvía a ser una tira angosta en medio de la pantalla — el salto
+    // se notaba (defecto de consistencia del kit, revisor-visual 2026-09-17).
+    <MarcoFunnel
+      panel={
+        <>
+          <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-[var(--accent)]">
+            Tu expediente te espera
+          </p>
+          <h2 className="mt-3 text-balance text-[21px] font-semibold leading-[1.25] text-[var(--text-primary)] [font-family:var(--font-display)]">
+            Entras con tu correo, sin contraseñas que recordar
+          </h2>
+          <p className="mt-3 text-[14px] leading-[1.6] text-[var(--text-secondary)]">
+            Te mandamos un enlace de un solo uso y un código de 8 dígitos. Cualquiera de los dos te
+            abre tu expediente en este mismo dispositivo.
+          </p>
+          <p className="mt-6 flex items-start gap-2 text-[13px] leading-[1.6] text-[var(--text-tertiary)]">
+            <Lock size={14} className="mt-0.5 shrink-0 text-[var(--accent)]" aria-hidden="true" />
+            Tus comprobantes viajan cifrados y solo tú accedes a tu expediente.
+          </p>
+        </>
+      }
+    >
       <FunnelHeader />
 
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-        className="mt-8 flex flex-1 flex-col"
+        className="mt-8 flex flex-1 flex-col lg:flex-none"
       >
         {estado !== 'enviado' ? (
           <>
@@ -265,6 +287,6 @@ function EntrarInterno() {
           </div>
         )}
       </motion.div>
-    </ContenedorFunnel>
+    </MarcoFunnel>
   );
 }

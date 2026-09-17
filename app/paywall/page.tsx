@@ -330,8 +330,14 @@ function ValorYPrueba({
         Tu expediente está <span className="text-[var(--accent)]">listo para empezar</span>
       </h1>
       <p className="mt-2 text-[14px] text-[var(--text-secondary)]">
+        {/* El plural se rompía justo en la línea que PRUEBA la personalización ("Hecho con tus 1
+            respuestas") — ante un avatar que desconfía de las cuentas que no cuadran, ese detalle
+            es el que delata que nadie leyó la frase (revisor-visual, 2026-09-17). */}
         {n > 0 ? (
-          <>Hecho con tus {n} respuestas{situacion ? ` · "${situacion}"` : ''}</>
+          <>
+            Hecho con {n === 1 ? 'tu respuesta' : `tus ${n} respuestas`}
+            {situacion ? ` · "${situacion}"` : ''}
+          </>
         ) : (
           <>Así funciona tu expediente desde el primer día</>
         )}
@@ -480,7 +486,7 @@ function Precio({
                   tenía fondo base y tarjeta elevada; FICHA-ARTE declara tres niveles. La referencia
                   en pesos —dato de apoyo, no el precio— va sobre una superficie HUNDIDA: se
                   distingue del precio principal sin agregar otro color ni otro tamaño de letra. */}
-              <p className="mt-2 rounded-[var(--radius-button)] bg-[color-mix(in_oklab,var(--bg)_55%,black)] px-3 py-2 text-[13px] text-[var(--text-secondary)] shadow-[inset_0_1px_2px_rgb(0_0_0_/_0.3)]">
+              <p className="mt-2 rounded-[var(--radius-button)] bg-[var(--surface-2)] px-3 py-1.5 text-[13px] text-[var(--text-secondary)] shadow-[inset_0_1px_2px_rgb(0_0_0_/_0.3)]">
                 {PLAN_ANUAL.totalAnual}
                 {trm && <span className="text-[var(--text-tertiary)]"> · ≈ {aproximadoEnPesos(PLAN_ANUAL.cobroAnual, trm)} COP</span>}
               </p>
@@ -513,7 +519,7 @@ function Precio({
             </div>
             {/* Solo la tarjeta Anual mostraba su total, así que el "ahorras US$30.88" no se podía
                 comprobar contra nada: faltaba el término de comparación. */}
-            <p className="mt-2 rounded-[var(--radius-button)] bg-[color-mix(in_oklab,var(--bg)_55%,black)] px-3 py-2 text-[13px] text-[var(--text-secondary)] shadow-[inset_0_1px_2px_rgb(0_0_0_/_0.3)]">
+            <p className="mt-2 rounded-[var(--radius-button)] bg-[var(--surface-2)] px-3 py-1.5 text-[13px] text-[var(--text-secondary)] shadow-[inset_0_1px_2px_rgb(0_0_0_/_0.3)]">
               {PLAN_MENSUAL.totalAnual}
               {trm && <span className="text-[var(--text-tertiary)]"> · ≈ {aproximadoEnPesos(PLAN_MENSUAL.cobroAnual, trm)} COP</span>}
             </p>
@@ -567,39 +573,56 @@ function Precio({
             renovación— y se leían como un muro legal justo donde hay que decidir. Ahora las dos
             señales de confianza van en UNA línea, y el detalle del reembolso se despliega solo si
             alguien lo busca (<details> nativo: cero JS, accesible por teclado). */}
-        <div className="mb-3 flex flex-col items-center gap-1.5 text-[13px] font-medium text-[var(--text-secondary)]">
-          <span className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-center">
-            <span className="flex items-center gap-1.5">
-              <ShieldCheck size={14} color="var(--accent)" aria-hidden="true" />
-              Garantía de 15 días
-            </span>
-            <span aria-hidden="true" className="text-[var(--text-tertiary)]">·</span>
-            <span className="flex items-center gap-1.5">
-              <Lock size={13} color="var(--accent)" aria-hidden="true" />
-              Pago seguro con Hotmart
-            </span>
-          </span>
-          <details className="w-full text-center">
-            <summary className="cursor-pointer list-none text-[12px] text-[var(--text-tertiary)] underline-offset-2 [touch-action:manipulation] hover:underline">
-              Cómo funciona la garantía
-            </summary>
-            <p className="mt-2 text-[13px] leading-[1.5] text-[var(--text-secondary)]">
-              Es la Garantía del Primer Expediente: si en 15 días tu expediente no te sirve, escribes
-              a soporte y te devolvemos todo. Sin explicaciones.
-            </p>
-          </details>
-        </div>
-        <CtaFunnel onClick={onCta} disabled={yendo}>
-          {yendo ? 'Abriendo…' : 'Empezar mis 7 días gratis'}
-        </CtaFunnel>
-        {falloAlAbrir && !yendo && (
-          <p role="status" className="mt-2 text-center text-[13px] leading-[1.5] text-[var(--status-error)]">
-            No pudimos abrir el siguiente paso. Revisa tu conexión y toca el botón otra vez.
+        {/* El detalle de la garantía queda FUERA del bloque fijo (se lee una vez, no hace falta
+            tenerlo siempre a la vista); el nombre y el sello de pago seguro sí entran con el CTA. */}
+        <details className="mb-3 w-full text-center">
+          <summary className="cursor-pointer list-none text-[12px] text-[var(--text-tertiary)] underline-offset-2 [touch-action:manipulation] hover:underline">
+            Cómo funciona la garantía
+          </summary>
+          <p className="mt-2 text-[13px] leading-[1.5] text-[var(--text-secondary)]">
+            Es la Garantía del Primer Expediente: si en 15 días tu expediente no te sirve, escribes
+            a soporte y te devolvemos todo. Sin explicaciones.
           </p>
-        )}
-        <p className="mt-2 text-center text-[13px] text-[var(--text-secondary)]">
-          Hoy no pagas nada · Se renueva automáticamente tras el día 7, cancela cuando quieras
-        </p>
+        </details>
+        {/* CTA PEGADO AL FONDO EN CELULAR (2026-09-17). El revisor-visual encontró que a 375px la
+            pantalla de decisión abría SIN el botón visible: con dos tarjetas de plan, tres
+            beneficios y el pie de confianza, el CTA quedaba bajo el pliegue y había que adivinar
+            que existía. `sticky bottom-0` lo mantiene a la vista durante todo el scroll y lo suelta
+            en su sitio al llegar al final; el degradado evita el corte seco contra el contenido.
+            Las dos señales de confianza viajan DENTRO del bloque fijo: una garantía que no se ve
+            en el momento de decidir no des-arriesga nada.
+            En computador no hace falta (la columna entra completa), así que vuelve al flujo. */}
+        <div className="sticky bottom-0 z-10 -mx-4 px-4 pb-[max(8px,env(safe-area-inset-bottom))] pt-3 lg:static lg:mx-0 lg:px-0 lg:pb-0 lg:pt-0">
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-x-0 bottom-full h-8 lg:hidden"
+            style={{ background: 'linear-gradient(to top, var(--bg), transparent)' }}
+          />
+          <div className="relative bg-[var(--bg)] lg:bg-transparent">
+            <div className="mb-2 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-center text-[13px] font-medium text-[var(--text-secondary)]">
+              <span className="flex items-center gap-1.5">
+                <ShieldCheck size={14} color="var(--accent)" aria-hidden="true" />
+                Garantía del Primer Expediente · 15 días
+              </span>
+              <span aria-hidden="true" className="text-[var(--text-tertiary)]">·</span>
+              <span className="flex items-center gap-1.5">
+                <Lock size={13} color="var(--accent)" aria-hidden="true" />
+                Pago seguro con Hotmart
+              </span>
+            </div>
+            <CtaFunnel onClick={onCta} disabled={yendo}>
+              {yendo ? 'Abriendo…' : 'Empezar mis 7 días gratis'}
+            </CtaFunnel>
+            {falloAlAbrir && !yendo && (
+              <p role="status" className="mt-2 text-center text-[13px] leading-[1.5] text-[var(--status-error)]">
+                No pudimos abrir el siguiente paso. Revisa tu conexión y toca el botón otra vez.
+              </p>
+            )}
+            <p className="mt-2 text-center text-[13px] text-[var(--text-secondary)]">
+              Hoy no pagas nada · Se renueva tras el día 7, cancela cuando quieras
+            </p>
+          </div>
+        </div>
       </div>
 
       <div className="mt-4 flex items-center justify-center gap-3 text-[13px] text-[var(--text-secondary)]">

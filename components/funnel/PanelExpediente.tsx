@@ -39,6 +39,22 @@ export function PanelExpediente({
   const total = filas.length;
   const porcentaje = total === 0 ? 0 : Math.round((listas / total) * 100);
 
+  // Se muestran las contestadas + las que siguen, nunca las siete de golpe: una lista de 7 ítems
+  // (con 5 en gris) supera el tope de 4-5 del SO, se lee como ruido y hace ver el expediente más
+  // vacío de lo que está (defecto del revisor-visual). El resto se resume en una línea.
+  // Piso de 3 y techo de 5: con una sola fila la tarjeta se veía escuálida al arrancar, y con más
+  // de cinco vuelve a ser una lista larga de grises.
+  const MIN_VISIBLES = 3;
+  const MAX_VISIBLES = 5;
+  const contestadas = filas.filter((f) => f.valor);
+  const pendientes = filas.filter((f) => !f.valor);
+  const cuantasPendientes = Math.max(
+    contestadas.length >= filas.length ? 0 : 1,
+    MIN_VISIBLES - contestadas.length
+  );
+  const visibles = [...contestadas, ...pendientes.slice(0, cuantasPendientes)].slice(0, MAX_VISIBLES);
+  const ocultas = filas.length - visibles.length;
+
   return (
     <div
       className="rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--text-tertiary)_16%,transparent)] bg-[var(--surface)] p-4 shadow-[var(--shadow-1)]"
@@ -55,12 +71,10 @@ export function PanelExpediente({
             }
       }
     >
-      <div className="flex items-center justify-between gap-3">
-        <p className="text-[13px] font-semibold text-[var(--text-primary)]">Tu expediente</p>
-        <span className="text-[12px] tabular-nums text-[var(--text-tertiary)]">
-          {listas} de {total}
-        </span>
-      </div>
+      {/* Sin contador propio: la pantalla ya tiene el suyo arriba ("Paso 3 de 10") y dos cifras
+          distintas en la misma vista se contradicen a la vista (defecto del revisor-visual). El
+          avance de esta tarjeta lo cuenta la barra, que es la misma señal sin número que compita. */}
+      <p className="text-[13px] font-semibold text-[var(--text-primary)]">Tu expediente</p>
 
       {/* Barra de avance del propio expediente — el mismo lenguaje visual del anillo de la app
           interna, en su versión más simple: un dato real, nunca decoración. */}
@@ -73,8 +87,10 @@ export function PanelExpediente({
         />
       </div>
 
-      <ul className={`mt-4 flex flex-col ${compacto ? 'gap-2' : 'gap-3'}`}>
-        {filas.map((fila) => {
+      {/* `aria-live`: quien usa lector de pantalla oye que su respuesta quedó registrada en el
+          expediente, que es justo el mensaje de esta tarjeta — sin él, el cambio pasaba mudo. */}
+      <ul aria-live="polite" className={`mt-4 flex flex-col ${compacto ? 'gap-2' : 'gap-3'}`}>
+        {visibles.map((fila) => {
           const lista = Boolean(fila.valor);
           return (
             <li key={fila.label} className="flex items-start gap-3">
@@ -100,8 +116,10 @@ export function PanelExpediente({
               {/* Una fila contestada muestra etiqueta + respuesta; una pendiente muestra SOLO su
                   etiqueta, atenuada. Repetir "Pendiente" siete veces llenaba la tarjeta de ruido
                   y hacía ver el expediente más vacío de lo que está. */}
+              {/* La fila pendiente usa --text-tertiary PLENO (5.1:1 sobre --surface): con el
+                  `color-mix` al 75% caía a 3.46:1 y no pasaba AA — el revisor lo midió. */}
               <div className="min-w-0 flex-1">
-                <p className={lista ? 'text-[12px] text-[var(--text-tertiary)]' : 'text-[13px] text-[color-mix(in_oklab,var(--text-tertiary)_75%,transparent)]'}>
+                <p className={lista ? 'text-[12px] text-[var(--text-tertiary)]' : 'text-[13px] text-[var(--text-tertiary)]'}>
                   {fila.label}
                 </p>
                 {lista && (
@@ -119,6 +137,12 @@ export function PanelExpediente({
           );
         })}
       </ul>
+
+      {ocultas > 0 && (
+        <p className="mt-3 text-[12px] text-[var(--text-tertiary)]">
+          y {ocultas} {ocultas === 1 ? 'pregunta más' : 'preguntas más'}
+        </p>
+      )}
 
       {!compacto && (
         <p className="mt-4 flex items-start gap-2 border-t border-[color-mix(in_oklab,var(--text-tertiary)_12%,transparent)] pt-4 text-[12px] leading-[1.5] text-[var(--text-tertiary)]">
