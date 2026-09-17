@@ -32,6 +32,66 @@ componentes (`Tarjeta`, `IconoCirculo`, `PageHeader`) que ya están aprobados en
 pero falta que el usuario la vea renderizada de verdad y confirme que se ve bien antes de darla por
 "lista" del todo.
 
+✅ **CONFIRMADO por el usuario probando en su celular real** (con sesión propia, sin necesitar el
+truco del enlace admin): la pantalla nueva se ve y funciona — pero de paso encontró un bug real de
+la app existente (no de esta pantalla nueva), ver checkpoint siguiente.
+
+### Checkpoint (2026-09-17) — Primer anuncio REAL en "Asistencia Jurídica": Dra. Ivonne Reyes
+El usuario mandó un banner de anuncio ya diseñado (Dra. Ivonne Reyes, derecho de familia, contacto
+`3012283506`) para publicar en la tarjeta de abogado patrocinado. Antes de tocar el código, se
+confirmó explícitamente con el usuario que es un abogado REAL listo para publicar (no un ejemplo) —
+"Ivonne Reyes" había aparecido antes en esta sesión como el correo de PRUEBA de la compra de
+Hotmart, así que había que descartar que fuera el mismo dato de prueba coincidiendo por casualidad
+antes de publicarlo como si fuera un cliente pagando de verdad (regla dura: nunca un abogado
+inventado en `AbogadoDestacado.tsx`).
+
+- `components/app/AbogadoDestacado.tsx`: nuevo campo opcional `imagenAnuncioUrl` — cuando se da, la
+  tarjeta muestra el banner completo (ya trae nombre+especialidad+contacto diseñados) en vez del
+  layout de perfil con foto+texto, para no repetir la misma información dos veces; toda la imagen
+  queda envuelta en el enlace de contacto (tocarla abre WhatsApp). `ciudad` pasa a opcional (no
+  aplica cuando hay banner propio). `ABOGADO_ACTUAL` ya NO es `null`.
+- La imagen la mandó el usuario pegada en el chat (sin archivo accesible) — hubo que pedirle que la
+  guardara ella misma y diera la ruta (`Descargas/Ivonne 1.jpeg`) para poder tomarla de verdad;
+  optimizada con `sharp` (1254×1254 original → 900×900, JPEG calidad 82, ~125 KB) y guardada en
+  `public/anuncios/ivonne-reyes-derecho-familia.jpg`.
+- Número de contacto reutiliza el mismo WhatsApp que ya se conectó para "Asistencia Jurídica"
+  (`+57 301 228 3506`) — coincide con el que trae el banner.
+
+El usuario también pidió que la caja de pregunta y el anuncio cupieran SIN necesitar deslizar al
+entrar a la pantalla. Se recortó lo que se pudo sin sacrificar claridad (el párrafo explicativo de
+la caja de pregunta se quitó — el título ya bastaba —, y el textarea bajó de 5 a 3 líneas), pero
+**honestamente no es 100% alcanzable** con una imagen cuadrada de marca de un abogado real de por
+medio (a ese tamaño, en un celular angosto, sigue ocupando bastante alto) — se avisó al usuario en
+vez de prometer algo que no se iba a cumplir del todo.
+
+`tsc` ✓ · `build` ✓ · publicado. Pantalla secundaria, sin ronda de revisor-visual — **verificación
+visual real (screenshot del usuario tras este push) pendiente**, igual que el resto de esta pantalla.
+
+### Checkpoint (2026-09-17) — Menú de abajo con etiquetas tapadas solo en Inicio, al entrar por primera vez
+El usuario reportó que al entrar recién a Inicio (justo después de iniciar sesión, con una recarga
+completa de la página — no navegación interna), los 5 íconos del menú de abajo se veían pero SIN
+sus nombres, hasta deslizar hacia arriba una vez; en el resto de pantallas el menú se veía completo
+y fijo desde el principio. Dijo además que en la versión anterior de la app esto no pasaba.
+
+**Causa real encontrada**: `app/layout.tsx` nunca declaraba `viewport-fit=cover` en la
+configuración de viewport (no existía ningún `export const viewport` en todo el archivo) — pese a
+que `BottomNav` y `ContenedorApp` (`components/app/ui.tsx`) ya dependían de
+`env(safe-area-inset-bottom)`/`env(safe-area-inset-top)` para calcular su espacio. Sin ese
+`viewport-fit=cover`, el navegador no tiene por qué entregar esos valores de forma confiable — el
+resultado varía por navegador/momento de carga, lo que explica que fallara justo en el peor momento
+(la primera pintura tras una recarga completa, cuando la barra de direcciones de Android todavía
+está expandida) y no en las demás pantallas (a las que siempre se llega navegando DENTRO de la app,
+sin recargar, con el navegador ya "asentado" de antes).
+
+→ `app/layout.tsx`: agregado `export const viewport: Viewport = { width: 'device-width',
+initialScale: 1, viewportFit: 'cover' }` — activa `env(safe-area-inset-*)` de verdad en todo el
+sitio. `components/app/ui.tsx`: el padding inferior del nav pasa de
+`env(safe-area-inset-bottom)` a `max(8px, env(safe-area-inset-bottom))` — respaldo mínimo para que
+nunca quede en 0 aunque algún navegador siga sin reportar el valor real.
+`tsc` ✓ · `build` ✓ · publicado (commit `11e2c7e`). Pantalla secundaria/fix transversal, sin ronda
+de revisor-visual — **verificación en el celular real del usuario, pendiente de confirmación tras
+este último push** (se le pidió cerrar y volver a abrir la pestaña para descartar caché vieja).
+
 # ESTADO.md — Coparentia (nombre provisional: PensiónClara)
 
 ### Checkpoint (2026-09-17) — Prueba de compra real: pago OK, login por enlace fallaba en celular → agregado código de 6 dígitos como salida permanente
@@ -1940,6 +2000,16 @@ FICHA-ARTE.md que la landing.
   presupuesto; queda anotado para antes de declarar el funnel "vendible" de verdad.
 
 ## Problemas conocidos
+
+### Estado de los 3 gates de veredicto tras "Asistencia Jurídica" (2026-09-17)
+Pantalla nueva (`app/(app)/asistencia/page.tsx`) y cambio de nav (`components/app/ui.tsx`), ambos
+de la APP INTERNA — ninguno toca `app/page.tsx` (landing) ni `components/landing/*`. Se posponen
+los 3 con la misma justificación: **veredicto:landing** sigue LISTA (37/40·17/20·18/20), el gate
+marca "caducado" por comparar mtime de CUALQUIER `.tsx`, no por un cambio real en la landing.
+**veredicto:onboarding**/**veredicto:paywall** siguen NO LISTA por el techo estructural ya
+documentado, sin tocar en esta sesión. `asistencia` es pantalla SECUNDARIA (no landing/onboarding/
+paywall/pantalla-principal) → basta medición + checklist, sin revisor-visual — ver checkpoint
+arriba, con verificación visual real (screenshot del usuario) todavía pendiente.
 
 ### Estado de los 3 gates de veredicto tras corregir el largo del código en /entrar (2026-09-17)
 Mismo archivo secundario de la entrada de abajo (`app/entrar/page.tsx`), esta vez arreglando un bug

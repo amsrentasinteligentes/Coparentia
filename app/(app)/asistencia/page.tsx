@@ -46,15 +46,9 @@ export default function Asistencia() {
       <PageHeader titulo="Asistencia Jurídica" subtitulo="Escríbenos tu duda, te respondemos por correo" />
 
       <Tarjeta destacada>
-        <div className="flex items-start gap-3">
-          <IconoCirculo icon={MessageCircle} />
-          <div className="min-w-0 flex-1">
-            <p className="text-[14px] font-medium text-[var(--text-primary)]">¿Qué necesitas resolver?</p>
-            <p className="mt-1 text-[13px] leading-[1.5] text-[var(--text-secondary)]">
-              Cuéntanos tu situación — no somos abogados, pero leemos cada consulta y te orientamos o te
-              conectamos con alguien que pueda ayudarte.
-            </p>
-          </div>
+        <div className="flex items-center gap-3">
+          <IconoCirculo icon={MessageCircle} size={18} />
+          <p className="text-[14px] font-medium text-[var(--text-primary)]">¿Qué necesitas resolver?</p>
         </div>
 
         <textarea
@@ -64,8 +58,8 @@ export default function Asistencia() {
             if (estado === 'error' || estado === 'enviado') setEstado('idle');
           }}
           placeholder="Ej.: mi expareja lleva 2 meses sin pagar la cuota, ¿qué puedo hacer?"
-          rows={5}
-          className="mt-4 w-full resize-none rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--surface)] p-4 text-[15px] leading-relaxed text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)]"
+          rows={3}
+          className="mt-3 w-full resize-none rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--surface)] p-4 text-[15px] leading-relaxed text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)]"
         />
 
         <motion.button

@@ -23,16 +23,26 @@ export interface AbogadoDestacado {
   nombre: string;
   /** Ej. "Derecho de familia · Cuota alimentaria" */
   especialidad: string;
-  ciudad: string;
+  ciudad?: string;
   /** mailto:, tel:, o https://wa.me/… — a dónde escribe el usuario. */
   contactoUrl: string;
   /** Foto de perfil (opcional). Debe vivir en /public o ser una URL https permitida. */
   fotoUrl?: string;
+  /** Banner/creativo completo del anuncio (ya trae nombre+especialidad+contacto diseñados) — si
+   *  se da, reemplaza el layout de perfil (foto+nombre+especialidad+ciudad) por la imagen entera,
+   *  para no duplicar el mismo texto dos veces. Debe vivir en /public. */
+  imagenAnuncioUrl?: string;
 }
 
 // ⬇️ Cuando un abogado pague por el cupo, poné sus datos acá. Mientras sea `null`, la tarjeta
 //    muestra el estado honesto de "todavía no hay abogados verificados".
-const ABOGADO_ACTUAL: AbogadoDestacado | null = null;
+// Primer anuncio real (2026-09-17): Dra. Ivonne Reyes, derecho de familia — banner propio.
+const ABOGADO_ACTUAL: AbogadoDestacado | null = {
+  nombre: 'Ivonne Reyes',
+  especialidad: 'Derecho de familia · Divorcio, custodia, alimentos y sucesiones',
+  contactoUrl: 'https://wa.me/573012283506',
+  imagenAnuncioUrl: '/anuncios/ivonne-reyes-derecho-familia.jpg',
+};
 
 // Email al que escriben los abogados interesados (mismo que la sección de la landing).
 const CONTACTO_ALIANZAS = 'alianzas@coparentia.co';
@@ -68,35 +78,60 @@ export function AbogadoDestacado({ abogado = ABOGADO_ACTUAL }: { abogado?: Aboga
       <p className="text-[11px] font-semibold uppercase tracking-[0.06em] text-[var(--text-tertiary)]">
         Abogado de familia · Patrocinado
       </p>
-      <div className="mt-3 flex items-center gap-3">
-        {abogado.fotoUrl ? (
+
+      {/* Con banner propio: la imagen YA trae nombre+especialidad+contacto diseñados — mostrar
+          también el layout de texto sería repetir la misma información dos veces. */}
+      {abogado.imagenAnuncioUrl ? (
+        <a
+          href={abogado.contactoUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-3 block overflow-hidden rounded-[var(--radius-card)] [touch-action:manipulation]"
+        >
           <Image
-            src={abogado.fotoUrl}
-            alt={`Foto de ${abogado.nombre}`}
-            width={48}
-            height={48}
-            className="size-12 shrink-0 rounded-full object-cover"
+            src={abogado.imagenAnuncioUrl}
+            alt={`Anuncio de ${abogado.nombre} — ${abogado.especialidad}`}
+            width={900}
+            height={900}
+            className="w-full object-cover"
           />
-        ) : (
-          <IconoCirculo icon={Briefcase} size={22} />
-        )}
-        <div className="min-w-0 flex-1">
-          <p className="truncate text-[15px] font-semibold text-[var(--text-primary)]">{abogado.nombre}</p>
-          {/* Especialidad y ciudad en líneas separadas: juntas con " · " la ciudad se cortaba en
-              móvil cuando la especialidad es larga. */}
-          <p className="truncate text-[13px] text-[var(--text-secondary)]">{abogado.especialidad}</p>
-          <p className="truncate text-[12px] text-[var(--text-tertiary)]">{abogado.ciudad}</p>
+        </a>
+      ) : (
+        <div className="mt-3 flex items-center gap-3">
+          {abogado.fotoUrl ? (
+            <Image
+              src={abogado.fotoUrl}
+              alt={`Foto de ${abogado.nombre}`}
+              width={48}
+              height={48}
+              className="size-12 shrink-0 rounded-full object-cover"
+            />
+          ) : (
+            <IconoCirculo icon={Briefcase} size={22} />
+          )}
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-[15px] font-semibold text-[var(--text-primary)]">{abogado.nombre}</p>
+            {/* Especialidad y ciudad en líneas separadas: juntas con " · " la ciudad se cortaba en
+                móvil cuando la especialidad es larga. */}
+            <p className="truncate text-[13px] text-[var(--text-secondary)]">{abogado.especialidad}</p>
+            {abogado.ciudad && <p className="truncate text-[12px] text-[var(--text-tertiary)]">{abogado.ciudad}</p>}
+          </div>
         </div>
-      </div>
-      <a
-        href={abogado.contactoUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="mt-4 flex h-11 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--accent)_40%,transparent)] text-[13.5px] font-semibold text-[var(--accent)] [touch-action:manipulation]"
-      >
-        Escribir a {abogado.nombre.split(' ')[0]}
-        <ExternalLink size={15} aria-hidden="true" />
-      </a>
+      )}
+
+      {/* Con banner propio, la imagen entera YA es el enlace de contacto (envuelta arriba) — este
+          botón de texto solo hace falta en el layout de perfil, donde nada más es tocable. */}
+      {!abogado.imagenAnuncioUrl && (
+        <a
+          href={abogado.contactoUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-4 flex h-11 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--accent)_40%,transparent)] text-[13.5px] font-semibold text-[var(--accent)] [touch-action:manipulation]"
+        >
+          Escribir a {abogado.nombre.split(' ')[0]}
+          <ExternalLink size={15} aria-hidden="true" />
+        </a>
+      )}
       <p className="mt-2 text-[11px] leading-[1.5] text-[var(--text-tertiary)]">
         Espacio publicitario. Coparentia no presta servicios legales ni responde por la asesoría de
         terceros.
