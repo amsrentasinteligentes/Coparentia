@@ -172,12 +172,56 @@ página.
   (que usa `<Portal>` para escapar del `relative isolate` de `ContenedorApp` — ese mecanismo NO se
   tocó y sigue funcionando). `tsc` ✓ · `build` ✓ · publicado.
 
-⚠️ **Honestidad sobre el límite de esta verificación**: el navegador de este entorno no puede
-reproducir el comportamiento real de la barra de Chrome en Android (el bug original) — lo que se
-verificó es que la ESTRUCTURA nueva funciona correctamente (scroll contenido, nav fijo, botón
-sticky, modal). El argumento de por qué debería cerrar el bug de raíz es que el menú YA NO
-depende de ningún cálculo de espacio de navegador — pero la confirmación definitiva es la prueba
-del usuario en su celular real, pendiente.
+✅ **CONFIRMADO por el usuario en su celular real** ("ya se ve muy bien") — cuarto intento sobre
+este bug, el que sí lo cerró, y de raíz: el menú dejó de depender de que el navegador reparta bien
+su propio espacio, así que no es un parche que pueda desarmarse con una actualización de Chrome.
+
+### Checkpoint (2026-09-17) — Diseño: rondas frescas de revisor + investigación de competencia
+Pedido del usuario: retomar el trabajo de diseño de landing/onboarding/paywall (invocado el skill
+`diseno`). Fase 1-2 (explorar + diagnosticar) hechas; el plan quedó presentado al usuario, EN
+ESPERA de su OK antes de tocar código (regla del SO: visual = plan + aprobación).
+
+**Rondas frescas de revisor-visual (contexto limpio, independientes de esta sesión):**
+- `docs/revisiones/onboarding-veredicto.md` — **NO LISTA (29/40 · 14/20)**. Confirma el vacío
+  estructural de siempre (~43% del viewport en pantallas de solo-chips) y el `<Halo>` imperceptible
+  — pero encontró algo NUEVO y real: `sessionStorage.setItem` en `app/onboarding/page.tsx` solo
+  corre en el paso de carga final (paso 9 de 10) — si alguien cierra la pestaña en cualquier paso
+  intermedio, pierde TODAS sus respuestas sin aviso ni forma de retomar. Bug real, no solo estético.
+- `docs/revisiones/paywall-veredicto.md` — **NO LISTA pero cerca (31/40 · 15/20 · copy 18/20 YA
+  PASA)**. Confirmó que los 3 pendientes de rondas viejas (indicador de paso, stagger en botones de
+  plan, titular reescrito) SÍ están resueltos en el código actual — subieron el puntaje pero no
+  cruzaron el gate. Confirma explícitamente que NO hay techo estructural: quedan 5 defectos
+  puntuales y accionables (comprimir el pie de la pantalla Precio, recordar el plan elegido al
+  volver, bajar el trazo del `<Marcador>` en "WhatsApp" ~0.16em, dar tratamiento hundido al dato en
+  COP, verificar consistencia del kit con onboarding/app interna).
+- Landing NO se re-evaluó esta sesión (sigue con el veredicto viejo LISTA 37/40·17/20·18/20 — el
+  gate de "caducado" solo compara mtime de cualquier `.tsx`, no hay cambio real que re-puntuar).
+
+**Investigación de competencia** (pedido explícito del usuario, solo investigación — sin tocar
+código): revisadas niddoapp.com/es, ourfamilywizard.com, 2houses.com/es (los 3 competidores más
+cercanos del nicho). Hallazgos relevantes para fusionar (nunca copiar assets/copy/marca, solo
+patrones — 16-DIRECCION-DE-ARTE.md):
+- **Niddo**: fondo CLARO con fotografía real de familias (no solo capturas de la app), prueba
+  social fuerte (estrellas+reseñas, logos de prensa, testimonios con nombre), segmentación por tipo
+  de familia, doble camino "quien cuida" vs. "profesional" (paralelo directo a Asistencia Jurídica).
+- **OurFamilyWizard**: posicionamiento de autoridad legal ("recomendada por juzgados"), tipografía
+  con serifa sobre fondo crema (confirma que la elección de Spectral + fondo con carácter de
+  Coparentia va en línea con el nicho), "registro que no se puede alterar" — mismo concepto que el
+  Sello de Confianza con otras palabras, testimonios largos y específicos (resultado, no genérico).
+- **2Houses**: un solo precio mostrado GIGANTE en una tarjeta sola (sin comparar planes), formas
+  orgánicas de acento, alto volumen de testimonios cortos con nombre+ciudad+contexto.
+
+**Plan propuesto al usuario (esperando OK):**
+1. Onboarding: llenar el vacío con un mini-resumen progresivo de las respuestas ya dadas (chips que
+   se acumulan) — resuelve el vacío estructural Y el bug de pérdida de datos a la vez, porque para
+   mostrar el resumen hace falta guardar cada respuesta al momento en vez de solo al final.
+2. Paywall: aplicar los 5 defectos puntuales que dejó la revisión fresca.
+3. Landing: valorar 1-2 toques de prueba social más fuerte inspirados en la competencia — SOLO con
+   datos reales propios, nunca inventados (regla dura de 19-PAGINA-DE-VENTAS.md).
+
+⚠️ **NADA de esto se ha ejecutado todavía** — el usuario preguntó por dónde empezar (onboarding
+primero, por el bug real), sin haber dado el OK explícito al plan completo cuando se cerró este
+checkpoint.
 
 # ESTADO.md — Coparentia (nombre provisional: PensiónClara)
 
@@ -302,8 +346,10 @@ detectó en la captura y se corrigió antes de guardar).
    blanco en algún lugar de Hotmart (opcional, no se detectó dónde se usaría todavía).
 2. Terminar la prueba de compra real de punta a punta: confirmar que el correo de bienvenida llegue
    "Delivered" (no solo enviado) a un correo real, y probar una cancelación/reembolso real en
-   Hotmart para confirmar que el correo de despedida también sale bien y el acceso se ajusta según
-   `lib/membership-fsm.ts` sin borrar datos.
+   Hotmart (sobre la suscripción ya activa de `ivonnereyes.abogada@gmail.com`) para confirmar que
+   el correo de despedida también sale bien y el acceso se ajusta según `lib/membership-fsm.ts` sin
+   borrar datos. **El usuario pospuso esto para la noche del 2026-09-17** — no tiene acceso a esa
+   cuenta en este momento.
 3. El cambio de diseño que el usuario mencionó como tarea aparte ("después hacemos el cambio de
    diseño") sigue sin empezar — el usuario pidió pasar a "unos cambios a la app" a continuación,
    sin especificar todavía cuáles.
@@ -2087,6 +2133,15 @@ FICHA-ARTE.md que la landing.
   presupuesto; queda anotado para antes de declarar el funnel "vendible" de verdad.
 
 ## Problemas conocidos
+
+### Estado de los 3 gates de veredicto tras el arreglo de raíz del menú fijo (2026-09-17)
+Backend/estructura transversal: `app/(app)/layout.tsx`, `components/app/ui.tsx` y los 3 archivos
+que perdieron el prop `conBotonFlotante` (Inicio, Pagos, Calendario) — ninguno del árbol de
+landing/onboarding/paywall. Se posponen los 3 con la misma justificación de siempre:
+**veredicto:landing** sigue LISTA (37/40·17/20·18/20), el gate marca "caducado" solo por mtime de
+CUALQUIER `.tsx`; **veredicto:onboarding**/**veredicto:paywall** siguen NO LISTA por el techo
+estructural ya documentado, sin tocar en esta sesión (ni sus `.tsx` ni su lógica de scroll/nav —
+onboarding y paywall no usan `<BottomNav>`, viven fuera del `(app)/layout.tsx`).
 
 ### Estado de los 3 gates de veredicto tras "Asistencia Jurídica" (2026-09-17)
 Pantalla nueva (`app/(app)/asistencia/page.tsx`) y cambio de nav (`components/app/ui.tsx`), ambos
