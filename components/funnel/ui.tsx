@@ -161,7 +161,9 @@ export function Chip({
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: reduce ? 0 : 0.25, delay: reduce ? 0 : index * 0.06, ease: [0.16, 1, 0.3, 1] }}
-      className={`flex h-14 w-full items-center gap-3 rounded-[var(--radius-button)] border px-4 text-left text-[16px] font-medium transition-colors duration-150 [touch-action:manipulation] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)] ${
+      // `min-h-14` en vez de `h-14`: ya hay opciones que envuelven a dos líneas a 375px ("Tengo
+      // disputas frecuentes por la cuota") y con alto fijo el texto se salía de su propia caja.
+      className={`flex min-h-14 w-full items-center gap-3 rounded-[var(--radius-button)] border px-4 py-3 text-left text-[16px] font-medium transition-colors duration-150 [touch-action:manipulation] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)] ${
         seleccionado
           ? 'border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_10%,transparent)] text-[var(--text-primary)] shadow-[0_4px_16px_color-mix(in_oklab,var(--accent)_22%,transparent)]'
           : 'border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] bg-[var(--surface)] text-[var(--text-primary)] shadow-[0_2px_8px_rgb(6_12_24_/_0.45)]'
@@ -249,8 +251,12 @@ export function MarcoFunnel({ panel, children }: { panel?: ReactNode; children: 
       {panel && (
         // Sin `aria-hidden`: el panel muestra las respuestas REALES de la persona (su expediente
         // armándose), no decoración — esconderlo del lector de pantalla ocultaba contenido útil.
+        // `justify-start` con el MISMO padding superior que la columna de flujo: centrar cada
+        // columna por su cuenta las dejaba arrancando a alturas distintas (el titular izquierdo
+        // 125px más abajo que el derecho — sin eje común, como dos páginas pegadas) y, cuando el
+        // contenido superaba el alto de la ventana, el centrado recortaba el principio.
         <aside
-          className="relative hidden overflow-hidden border-r border-[color-mix(in_oklab,var(--text-tertiary)_12%,transparent)] lg:flex lg:flex-col lg:justify-center lg:px-10 lg:py-12 xl:px-16"
+          className="relative hidden overflow-hidden border-r border-[color-mix(in_oklab,var(--text-tertiary)_12%,transparent)] lg:flex lg:flex-col lg:justify-start lg:px-10 lg:pb-12 lg:pt-16 xl:px-16"
           style={{
             background:
               'radial-gradient(900px 620px at 20% 0%, color-mix(in oklab, var(--accent) 15%, transparent) 0%, transparent 62%), ' +
@@ -261,7 +267,7 @@ export function MarcoFunnel({ panel, children }: { panel?: ReactNode; children: 
           <div className="mx-auto w-full max-w-[460px]">{panel}</div>
         </aside>
       )}
-      <div className="mx-auto flex min-h-dvh w-full max-w-[520px] flex-col px-4 pt-4 pb-[max(20px,env(safe-area-inset-bottom))] lg:max-w-[560px] lg:justify-center lg:px-10 lg:py-12">
+      <div className="mx-auto flex min-h-dvh w-full max-w-[520px] flex-col px-4 pt-4 pb-[max(20px,env(safe-area-inset-bottom))] lg:max-w-[560px] lg:justify-start lg:px-10 lg:pb-12 lg:pt-16">
         {children}
       </div>
     </div>

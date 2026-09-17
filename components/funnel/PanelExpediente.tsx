@@ -35,9 +35,6 @@ export function PanelExpediente({
   compacto?: boolean;
 }) {
   const reduce = useReducedMotion();
-  const listas = filas.filter((f) => f.valor).length;
-  const total = filas.length;
-  const porcentaje = total === 0 ? 0 : Math.round((listas / total) * 100);
 
   // Se muestran las contestadas + las que siguen, nunca las siete de golpe: una lista de 7 ítems
   // (con 5 en gris) supera el tope de 4-5 del SO, se lee como ruido y hace ver el expediente más
@@ -71,21 +68,12 @@ export function PanelExpediente({
             }
       }
     >
-      {/* Sin contador propio: la pantalla ya tiene el suyo arriba ("Paso 3 de 10") y dos cifras
-          distintas en la misma vista se contradicen a la vista (defecto del revisor-visual). El
-          avance de esta tarjeta lo cuenta la barra, que es la misma señal sin número que compita. */}
+      {/* NI contador NI barra propia. Primero se quitó el "3 de 7" porque contradecía al "Paso 3
+          de 10" del encabezado; la barra que quedó reintrodujo el mismo problema en otro formato
+          (dos barras de 3px en acento, con porcentajes distintos, en la misma vista — el revisor lo
+          volvió a marcar). El avance ya lo cuenta el encabezado: esta tarjeta muestra CONTENIDO,
+          no progreso. */}
       <p className="text-[13px] font-semibold text-[var(--text-primary)]">Tu expediente</p>
-
-      {/* Barra de avance del propio expediente — el mismo lenguaje visual del anillo de la app
-          interna, en su versión más simple: un dato real, nunca decoración. */}
-      <div className="mt-2 h-[3px] w-full overflow-hidden rounded-full bg-[color-mix(in_oklab,var(--text-tertiary)_15%,transparent)]">
-        <motion.div
-          className="h-full rounded-full bg-[var(--accent)]"
-          initial={false}
-          animate={{ width: `${porcentaje}%` }}
-          transition={{ duration: reduce ? 0 : 0.34, ease: [0.22, 0.61, 0.36, 1] }}
-        />
-      </div>
 
       {/* `aria-live`: quien usa lector de pantalla oye que su respuesta quedó registrada en el
           expediente, que es justo el mensaje de esta tarjeta — sin él, el cambio pasaba mudo. */}
@@ -94,14 +82,16 @@ export function PanelExpediente({
           const lista = Boolean(fila.valor);
           return (
             <li key={fila.label} className="flex items-start gap-3">
+              {/* La fila pendiente ya NO lleva círculo punteado: parecía una casilla marcable y no
+                  hacía nada al tocarla (afordancia falsa, defecto del revisor). Una rayita tenue
+                  dice "esto viene después" sin prometer una interacción que no existe. */}
               <span
                 aria-hidden="true"
                 className={`mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full ${
-                  lista
-                    ? 'bg-[var(--accent)]'
-                    : 'border border-dashed border-[color-mix(in_oklab,var(--text-tertiary)_40%,transparent)]'
+                  lista ? 'bg-[var(--accent)]' : ''
                 }`}
               >
+                {!lista && <span className="h-px w-2.5 rounded-full bg-[var(--text-tertiary)]" />}
                 {lista && (
                   <motion.span
                     initial={reduce ? false : { scale: 0.5, opacity: 0 }}

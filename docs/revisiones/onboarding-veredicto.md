@@ -1,56 +1,34 @@
-# VEREDICTO revisor-visual — onboarding (paso 1 de 10, "¿Cuál es tu rol hoy?")
-Fecha: 2026-09-17 18:40
+# VEREDICTO revisor-visual — onboarding
+Fecha: 2026-09-17 16:40
 Screenshot: docs/revisiones/onboarding-375.png
-Usabilidad: 27/40
-Craft: 13/20
+Usabilidad: 31/40
+Craft: 16/20
 Copy (si vende): N-A
 Fidelidad (si hubo referencia): N-A
 Veredicto: NO LISTA
 
-Detalle usabilidad: h1:3 h2:3 h3:3 h4:2 h5:3 h6:3 h7:2 h8:2 h9:3 h10:3
-Detalle craft: jerarquía:2 profundidad:3 identidad:3 movimiento:3 encaje:2
+Screenshots evaluados: docs/revisiones/onboarding-375.png (paso 1) · docs/revisiones/onboarding-mid-375.png (paso 2) · docs/revisiones/onboarding-1440.png (computador)
 
-Medidas evaluadas: 375px (docs/revisiones/onboarding-375.png) y 1440px
-(docs/revisiones/_wip-onboarding-mid-1440.png, paso 2 con 1 respuesta dada).
+Detalle usabilidad: h1:3 h2:3 h3:3 h4:3 h5:3 h6:3 h7:3 h8:3 h9:3 h10:4
+Detalle craft: jerarquía:3 profundidad:3 identidad:3 movimiento:4 encaje:3
 
-Estado de los 5 defectos de la ronda anterior:
-1. ~43% de viewport vacío abajo (celular) — CERRADO en composición (la tarjeta "Tu expediente"
-   ocupa el tercio inferior), pero ABIERTO en calidad: ese relleno falla contraste AA y excede
-   el tope de ítems por lista. Ver defecto 1.
-2. Halo imperceptible — PARCIAL. Subido a 26% y ya se ve, pero el radial (centro 22%/34%,
-   stop 62%) no se apaga dentro de su caja: a 1440 se lee como un rectángulo con borde recto a
-   la izquierda del contenido, y su caja absoluta provoca scroll horizontal a 375. Ver defecto 2.
-3. Pérdida de respuestas al cerrar la pestaña — CERRADO parcialmente. Verificado en
-   app/onboarding/page.tsx: useEffect sobre [r] escribe sessionStorage en cada respuesta y hay
-   efecto de rehidratación al montar. PERO `paso` no se persiste: al volver, la persona aterriza
-   en "Paso 1 de 10" con el expediente en "7 de 7" y debe re-tocar las 8 pantallas. Ver defecto 5.
-4. Mitad inferior sin profundidad — CERRADO. Tres niveles reales y consistentes: base #0B1524,
-   elevado (chips y tarjeta con --shadow-1), hundido (caja "¿Por qué lo preguntamos?" con
-   inset y fondo bajo el base). En computador se suma el panel con radial y hairline degradé.
-5. Sin atajo para elegir chips — PARCIAL. Existe manejarFlechasChips (↑/↓ mueven foco) y
-   Tab+Enter nativo; NO hay atajo numérico ni ninguna pista visible de que exista atajo. Las
-   flechas mueven foco pero no seleccionan. h7 se queda en 2.
+Correcciones declaradas — verificadas en código:
+- CERRADO: filas pendientes usan --text-tertiary pleno (#7f93b3 sobre --surface #13233a = 5.1:1, declarado en tokens.css:33). PanelExpediente.tsx:122.
+- CERRADO: lista acotada a 3-5 filas + "y N preguntas más" (PanelExpediente.tsx:47-56). Confirmado en el screenshot: 3 filas + "y 4 preguntas más".
+- CERRADO: Halo acotado a `inset-x-0` (ui.tsx:124). Sin desborde lateral en el código; no se observa scroll horizontal en los renders.
+- CERRADO: panel de computador a 21px semibold sin Marcador (page.tsx:237). En el render de 1440 la pregunta de la derecha es el único héroe.
+- PARCIAL: el contador numérico propio de la tarjeta se eliminó, pero quedó DENTRO de la tarjeta una barra de avance de 3px en acento — el mismo lenguaje visual que la barra superior y con otro porcentaje. La contradicción volvió en forma de barra.
+- CERRADO: paso persistido (page.tsx:197-212) y aria-hidden retirado del panel + aria-live en la lista (MarcoFunnel ui.tsx:252, PanelExpediente.tsx:92). Falta avisar al usuario que se retomó.
+
+Baseline de movimiento (7, verificadas en código): stagger de chips (ui.tsx:163) ✓ · conteo de número héroe en la meta (page.tsx:614-628) ✓ · anillo de carga y barras que se dibujan (page.tsx:823-836, ui.tsx:39-45) ✓ · whileTap 0.97 (<150ms) ✓ · transición entre pasos (usePasoVariants) ✓ · modales: no existen en esta pantalla (N/A) · celebración spring en los dos reconocimientos ✓ · useReducedMotion en todos los componentes ✓.
+
+CTA héroe vivo (paso "Otra cosa" y reconocimientos): contraste acento #5b93e8 sobre #0b1524 ✓ · whileTap definido ✓ · nunca disabled por defecto, valida al click con role="alert" ✓ · h-14 (56px) ancho completo ✓. Los 4 anclajes pasan.
+
+Anclas de conversión: titular con énfasis ✓ (bold + palabra clave subrayada en acento) · chips SVG sin emojis ✓ · secciones distinguibles y texto AA ✓ · hairline degradé: SOLO en la tarjeta de computador (PanelExpediente.tsx:66-71); en celular la tarjeta usa borde plano → la vista móvil se queda sin ningún hairline degradé.
 
 Top defectos:
-1. [celular · tarjeta "Tu expediente"] Las 5 filas pendientes usan
-   color-mix(text-tertiary 75%, transparent) sobre --surface ≈ #64778F/#13233A = 3.46:1 a 13px
-   (AA exige 4.5:1), y la lista muestra 7 ítems de golpe (tope del SO: 4-5). El bloque que llena
-   el tercio inferior es a la vez ilegible y ruidoso → subir el pendiente a --text-tertiary pleno
-   y mostrar solo las 2-3 filas contiguas (contestadas + la siguiente) con un "y 4 más".
-2. [celular · todo el flujo] Scroll horizontal real: <Halo> es absolute -left-8 -right-8 dentro
-   del h1, que ya vive en una columna con px-4 → desborda ~16px del viewport de 375 (la barra
-   horizontal se ve en el screenshot; nada pone overflow-x:hidden en globals.css ni en MarcoFunnel)
-   → acotar el halo con inset-x-0 (o overflow-hidden en el contenedor) y cerrar el radial con
-   stop al 100% para que además deje de recortarse como rectángulo.
-3. [computador 1440 · dos columnas] El h2 del panel izquierdo y el h1 de la pregunta son ambos
-   Spectral 28px bold CON el mismo subrayado de acento: al entrecerrar hay dos héroes empatados y
-   el dispositivo ownable se gasta dos veces en la misma vista → bajar el panel a 20-22px sin
-   marcador y dejar el subrayado solo en la pregunta.
-4. [ambas medidas · cabecera vs tarjeta] Dos contadores que se contradicen a la vista:
-   "Paso 1 de 10" arriba y "0 de 7" en el expediente → unificar el conteo (o etiquetar el de la
-   tarjeta como "datos de tu expediente", sin número, para que no compita con el progreso).
-5. [código · retomar y accesibilidad] Al volver, `paso` no se restaura (se reinicia en 1 con las
-   respuestas ya dadas) y el <aside> del panel de computador es aria-hidden="true", así que el
-   expediente no existe para lector de pantalla en ninguna medida (en celular la tarjeta tampoco
-   anuncia cambios) → persistir `paso` en sessionStorage y quitar el aria-hidden del panel
-   (dejarlo solo en los adornos) + aria-live="polite" en la fila recién completada.
+1. [Celular, pasos de opciones — bajo la tarjeta "Tu expediente"] ~115px de fondo muerto al fondo del paso 1: PASOS_CON_RESUMEN_MOVIL fuerza `flex-none` (page.tsx:264-267) y nada absorbe el sobrante → fix: dejar `flex-1` en esos pasos y anclar la tarjeta con `mt-auto` (o `justify-between`) para que el aire se reparta y no quede hueco abajo.
+2. [Tarjeta "Tu expediente" vs barra del encabezado] dos barras de 3px en acento con porcentajes distintos en la misma vista (PanelExpediente.tsx:81-88 vs ui.tsx:28-47) — es el defecto de "dos contadores" en otra forma → fix: quitar la barra interna de la tarjeta o cambiarla a un lenguaje distinto (segmentos por fila), dejando UNA sola señal de avance.
+3. [Tarjeta "Tu expediente" — filas pendientes] los círculos punteados leen como casillas marcables y no responden al tap (regla UX 11); además la etiqueta "Cómo está fijada" queda incompleta fuera de contexto → fix: sustituir el círculo punteado por un guion/línea tenue y renombrar la fila a "Cómo está fijada tu cuota" (page.tsx:166).
+4. [Arranque tras retomar] se restauran respuestas y paso desde sessionStorage (page.tsx:197-206) sin decírselo a nadie: quien vuelve aparece en el paso 5 de 10 con el expediente medio lleno y sin explicación → fix: banda de una línea al retomar ("Retomamos donde lo dejaste") con opción de empezar de nuevo.
+5. [Chip de opción — components/funnel/ui.tsx:164] `h-14` es alto FIJO y ya hay opciones que envuelven a 2 líneas ("Tengo disputas frecuentes por la cuota" a 375px): a 320px o con una tercera línea el texto desborda la caja → fix: `min-h-14 py-3` en vez de `h-14`.

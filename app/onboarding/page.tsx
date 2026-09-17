@@ -163,7 +163,9 @@ function filasExpediente(r: Respuestas): FilaExpediente[] {
   return [
     { label: 'Tu rol', valor: r.rol === 'paga' ? 'Pago la cuota' : r.rol === 'recibe' ? 'Recibo la cuota' : undefined },
     { label: 'Tu situación', valor: r.situacion === 'Otra cosa' && r.situacionOtra ? r.situacionOtra : r.situacion || undefined },
-    { label: 'Cómo está fijada', valor: r.fijacion || undefined },
+    // Etiqueta completa: "Cómo está fijada" sola, fuera del contexto de su pregunta, no se
+    // entendía dentro de la tarjeta (defecto del revisor-visual).
+    { label: 'Cómo está fijada tu cuota', valor: r.fijacion || undefined },
     { label: 'Lo que más te preocupa', valor: r.preocupacion || undefined },
     { label: 'Meses a documentar', valor: r.metaMeses && r.momento ? `${r.metaMeses} ${r.metaMeses === 1 ? 'mes' : 'meses'}` : undefined },
     { label: 'Cuándo registras', valor: r.momento || undefined },
@@ -183,6 +185,7 @@ export default function Onboarding() {
   // Permite que un paso (ej. el sub-estado "otra cosa" de la pregunta de situación) capture
   // el botón Atrás para volver a SU estado anterior, en vez de salir del paso completo.
   const [atrasLocal, setAtrasLocal] = useState<(() => void) | null>(null);
+  const [retomado, setRetomado] = useState(false);
 
   const avanzar = (patch?: Partial<Respuestas>): void => {
     if (patch) setR((prev) => ({ ...prev, ...patch }));
@@ -201,9 +204,22 @@ export default function Onboarding() {
       const pasoGuardado = Number(sessionStorage.getItem(CLAVE_PASO));
       if (Number.isInteger(pasoGuardado) && pasoGuardado > 0) {
         setPaso(Math.min(pasoGuardado, PASO_LOADING - 1));
+        // Reaparecer en el paso 5 de 10 con el expediente medio lleno, sin una palabra que lo
+        // explique, se siente como si la app hubiera decidido sola por uno (revisor-visual).
+        setRetomado(true);
       }
     } catch {}
   }, []);
+
+  const empezarDeNuevo = (): void => {
+    try {
+      sessionStorage.removeItem(CLAVE_ONBOARDING);
+      sessionStorage.removeItem(CLAVE_PASO);
+    } catch {}
+    setR(VACIAS);
+    setPaso(0);
+    setRetomado(false);
+  };
 
   useEffect(() => {
     try {
@@ -257,15 +273,27 @@ export default function Onboarding() {
         />
       )}
 
-      {/* `flex-1` es lo correcto cuando el paso tiene su propio botón al fondo (lo ancla abajo).
-          En los pasos de puras opciones NO: estirar el bloque empujaba la tarjeta del expediente
-          hasta el borde inferior y volvía a abrir un hueco en medio — justo lo que este rediseño
-          cierra. En computador nunca estira: la columna ya viene centrada por el marco. */}
-      <div
-        className={`relative mt-6 flex flex-col lg:flex-none ${
-          PASOS_CON_RESUMEN_MOVIL.includes(paso) ? 'flex-none' : 'flex-1'
-        }`}
-      >
+      {retomado && paso < PASO_LOADING && (
+        <div
+          role="status"
+          className="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-[var(--radius-button)] bg-[color-mix(in_oklab,var(--accent)_10%,transparent)] px-3 py-2 text-[13px] text-[var(--text-secondary)]"
+        >
+          <span>Retomamos donde lo dejaste.</span>
+          <button
+            type="button"
+            onClick={empezarDeNuevo}
+            className="font-semibold text-[var(--accent)] underline-offset-2 hover:underline [touch-action:manipulation]"
+          >
+            Empezar de nuevo
+          </button>
+        </div>
+      )}
+
+      {/* `flex-1` SIEMPRE (el paso ocupa el alto disponible); la tarjeta de abajo se ancla con
+          `mt-auto`. Con `flex-none` el bloque dejaba de estirarse y el sobrante caía al final de
+          la pantalla como ~115px de fondo muerto — el revisor lo detectó en la ronda siguiente.
+          En computador no estira: la columna ya la compone el marco. */}
+      <div className="relative mt-6 flex flex-1 flex-col lg:flex-none">
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
             key={paso}
@@ -310,7 +338,7 @@ export default function Onboarding() {
           venía marcando como vacío en las pantallas de opciones. Se oculta en los pasos que ya
           llenan la pantalla solos (reconocimientos y carga final) para no competir con su CTA. */}
       {PASOS_CON_RESUMEN_MOVIL.includes(paso) && (
-        <div className="mt-6 lg:hidden">
+        <div className="mt-auto pt-6 lg:hidden">
           <PanelExpediente filas={filas} compacto />
         </div>
       )}

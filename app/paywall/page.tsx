@@ -5,11 +5,11 @@
 // (Superwall 2026). El CTA final lleva al checkout REAL de Hotmart (2026-09-11) — cada plan
 // a su propio enlace de pago, nunca un checkout falso que simule un cobro real (C3ter).
 //
-// ⚠️ PENDIENTE (no lo resuelve esta pantalla): el webhook de Hotmart todavía no está conectado
-// (18-VENTA-HOTMART.md). Hoy, quien paga aquí llega al checkout real y Hotmart le cobra de
-// verdad, pero la app AÚN NO se entera de ese pago — nadie crea su cuenta ni le manda el enlace
-// de acceso en automático. Mientras tanto, el alta debe hacerse a mano desde el panel de
-// administración con el correo que la persona usó al pagar.
+// ✅ El webhook de Hotmart YA ESTÁ CONECTADO Y PROBADO con una compra real (2026-09-17): quien
+// paga aquí queda con su suscripción creada sola y recibe por correo su enlace de acceso + código
+// de 8 dígitos. Este comentario decía lo contrario durante semanas y siguió ahí después de
+// conectarlo — un revisor externo lo leyó y lo reportó como riesgo abierto. Si el flujo de cobro
+// vuelve a cambiar, se actualiza AQUÍ: un comentario desactualizado engaña igual que un dato falso.
 
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -189,15 +189,22 @@ export default function Paywall() {
           <h2 className="mt-3 text-balance text-[28px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)]">
             Falta un paso para que empiece a <Marcador>probar</Marcador> lo que pagas
           </h2>
-          {filasExpediente.length > 0 ? (
+          {/* Expediente Y pilares, no uno u otro: con solo la tarjeta el panel quedaba con ~60% de
+              aire (defecto del revisor). Si no hubo onboarding, los pilares sostienen la columna
+              solos — nunca un expediente inventado, que es justo lo que este avatar castiga. */}
+          {filasExpediente.length > 0 && (
             <div className="mt-8">
               <PanelExpediente filas={filasExpediente} />
+              <button
+                type="button"
+                onClick={() => router.push('/onboarding')}
+                className="mt-3 text-[13px] text-[var(--text-tertiary)] underline-offset-2 hover:underline [touch-action:manipulation]"
+              >
+                Corregir alguna respuesta
+              </button>
             </div>
-          ) : (
-            /* Sin respuestas del onboarding (entrada directa a /paywall) el panel no puede mostrar
-               un expediente real — y un mockup inventado sería exactamente lo que este avatar
-               castiga. En su lugar, los tres pilares comprobables del producto. */
-            <ul className="mt-8 flex flex-col gap-5">
+          )}
+          <ul className="mt-8 flex flex-col gap-5">
               {[
                 {
                   icon: FileCheck2,
@@ -225,8 +232,7 @@ export default function Paywall() {
                   </div>
                 </li>
               ))}
-            </ul>
-          )}
+          </ul>
         </>
       }
     >
@@ -458,7 +464,7 @@ function Precio({
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: reduce ? 0 : 0.25, delay: reduce ? 0 : 0, ease: [0.16, 1, 0.3, 1] }}
-          className={`flex flex-col rounded-[var(--radius-card)] border p-4 text-left transition-colors [touch-action:manipulation] ${
+          className={`flex flex-col rounded-[var(--radius-card)] border p-4 text-left transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--text-primary)] [touch-action:manipulation] ${
             plan === 'anual'
               ? 'border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_7%,transparent)] shadow-[0_6px_20px_color-mix(in_oklab,var(--accent)_18%,transparent)]'
               : 'border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] bg-[var(--surface)] shadow-[var(--shadow-1)]'
@@ -503,7 +509,7 @@ function Precio({
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: reduce ? 0 : 0.25, delay: reduce ? 0 : 0.06, ease: [0.16, 1, 0.3, 1] }}
-          className={`flex items-start gap-3 rounded-[var(--radius-card)] border p-4 text-left transition-colors [touch-action:manipulation] ${
+          className={`flex items-start gap-3 rounded-[var(--radius-card)] border p-4 text-left transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--text-primary)] [touch-action:manipulation] ${
             plan === 'mensual'
               ? 'border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_7%,transparent)] shadow-[0_6px_20px_color-mix(in_oklab,var(--accent)_18%,transparent)]'
               : 'border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] bg-[var(--surface)] shadow-[var(--shadow-1)]'
@@ -592,13 +598,16 @@ function Precio({
             Las dos señales de confianza viajan DENTRO del bloque fijo: una garantía que no se ve
             en el momento de decidir no des-arriesga nada.
             En computador no hace falta (la columna entra completa), así que vuelve al flujo. */}
-        <div className="sticky bottom-0 z-10 -mx-4 px-4 pb-[max(8px,env(safe-area-inset-bottom))] pt-3 lg:static lg:mx-0 lg:px-0 lg:pb-0 lg:pt-0">
+        {/* El `padding-bottom` de safe-area va DENTRO del div con fondo, no en el contenedor
+            sticky: afuera dejaba una franja transparente bajo el botón por la que se veía pasar el
+            contenido al hacer scroll (defecto del revisor). */}
+        <div className="sticky bottom-0 z-10 -mx-4 px-4 pt-3 lg:static lg:mx-0 lg:px-0 lg:pt-0">
           <div
             aria-hidden="true"
             className="pointer-events-none absolute inset-x-0 bottom-full h-8 lg:hidden"
             style={{ background: 'linear-gradient(to top, var(--bg), transparent)' }}
           />
-          <div className="relative bg-[var(--bg)] lg:bg-transparent">
+          <div className="relative bg-[var(--bg)] pb-[max(8px,env(safe-area-inset-bottom))] lg:bg-transparent lg:pb-0">
             <div className="mb-2 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-center text-[13px] font-medium text-[var(--text-secondary)]">
               <span className="flex items-center gap-1.5">
                 <ShieldCheck size={14} color="var(--accent)" aria-hidden="true" />
@@ -613,8 +622,10 @@ function Precio({
             <CtaFunnel onClick={onCta} disabled={yendo}>
               {yendo ? 'Abriendo…' : 'Empezar mis 7 días gratis'}
             </CtaFunnel>
+            {/* `role="alert"`, no "status": que el pago no se pudiera abrir es un fallo que hay que
+                interrumpir a anunciar, no una actualización de fondo (revisor-visual). */}
             {falloAlAbrir && !yendo && (
-              <p role="status" className="mt-2 text-center text-[13px] leading-[1.5] text-[var(--status-error)]">
+              <p role="alert" className="mt-2 text-center text-[13px] leading-[1.5] text-[var(--status-error)]">
                 No pudimos abrir el siguiente paso. Revisa tu conexión y toca el botón otra vez.
               </p>
             )}
