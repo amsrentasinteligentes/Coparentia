@@ -428,22 +428,6 @@ function Dashboard() {
     };
   }, [intentoDatos]);
 
-  // El esqueleto de carga es más corto que el dashboard real: cuando los datos llegan, la pantalla
-  // crece de golpe SIN que la persona haya hecho scroll. En Android, Chrome a veces no recalcula el
-  // espacio que le da a su propia barra hasta el primer gesto de scroll real — y hasta entonces, el
-  // menú fijo de abajo queda con las etiquetas tapadas (hallazgo real del usuario, 2026-09-17: pasaba
-  // SOLO en Inicio, nunca en Pagos/Calendario, que no tienen este salto de alto tan marcado). Un
-  // scroll de 1px y de vuelta —invisible para la persona— es el empujón que hace falta para que el
-  // navegador se dé cuenta de que el alto cambió.
-  useEffect(() => {
-    if (cargando) return;
-    const id = requestAnimationFrame(() => {
-      window.scrollBy(0, 1);
-      window.scrollBy(0, -1);
-    });
-    return () => cancelAnimationFrame(id);
-  }, [cargando]);
-
   const totalRegistrado = pagos.reduce((acc, p) => acc + p.monto, 0);
   const mesesConRegistro = new Set(pagos.filter((p) => p.tipo === 'cuota').map((p) => p.fecha.slice(0, 7))).size;
   // `metaMeses` era un 6 escrito a mano, sin rótulo ni relación con el caso: "3 de 6" no

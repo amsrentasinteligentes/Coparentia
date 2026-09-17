@@ -15,6 +15,36 @@ import { useEffect, useState, type ReactNode } from 'react';
 const EASE_SERENO = [0.22, 0.61, 0.36, 1] as const;
 const DUR_BASE = 0.34;
 
+/* ── useDesajusteViewportVisual — el arreglo real del menú tapado en Android (hallazgo del
+   usuario, 2026-09-17: SOLO en Inicio, justo al terminar de cargar, "por un segundo se ve bien y
+   luego ajusta pantalla"). Causa de fondo: en Android, cuando una pantalla pasa de "más corta que
+   la ventana" (el esqueleto de carga) a "más alta, con scroll" (el dashboard real), el navegador
+   reserva espacio para su propia barra de forma distinta al "viewport de diseño" (donde vive
+   `position: fixed`) que al "viewport visual" (lo que la persona ve de verdad) — hay un hueco entre
+   los dos que `env(safe-area-inset-bottom)` NO cubre (eso es para muescas/barra de gestos de iOS,
+   no para esta diferencia). En vez de adivinar CUÁNDO pasa ese ajuste (se intentó con un empujón de
+   scroll y no bastó), esto lo mide en tiempo real con `visualViewport` y corrige el menú siempre
+   que haga falta, sin importar el motivo del desajuste. */
+function useDesajusteViewportVisual(): number {
+  const [desajuste, setDesajuste] = useState(0);
+  useEffect(() => {
+    const vv = window.visualViewport;
+    if (!vv) return;
+    const actualizar = () => {
+      const hueco = window.innerHeight - vv.height - vv.offsetTop;
+      setDesajuste(hueco > 0 ? Math.round(hueco) : 0);
+    };
+    actualizar();
+    vv.addEventListener('resize', actualizar);
+    vv.addEventListener('scroll', actualizar);
+    return () => {
+      vv.removeEventListener('resize', actualizar);
+      vv.removeEventListener('scroll', actualizar);
+    };
+  }, []);
+  return desajuste;
+}
+
 const DESTINOS: { href: string; label: string; icon: LucideIcon }[] = [
   { href: '/inicio', label: 'Inicio', icon: Home },
   { href: '/pagos', label: 'Pagos', icon: Wallet },
@@ -118,10 +148,12 @@ function conMarcador(titulo: string, palabra?: string): ReactNode {
 export function BottomNav() {
   const pathname = usePathname();
   const reduce = useReducedMotion();
+  const desajuste = useDesajusteViewportVisual();
   return (
     <nav
       aria-label="Navegación principal"
-      className="fixed inset-x-0 bottom-0 z-20 border-t border-[color-mix(in_oklab,var(--text-tertiary)_15%,transparent)] bg-[var(--surface)]/95 backdrop-blur [padding-bottom:max(8px,env(safe-area-inset-bottom))]"
+      style={{ bottom: desajuste }}
+      className="fixed inset-x-0 z-20 border-t border-[color-mix(in_oklab,var(--text-tertiary)_15%,transparent)] bg-[var(--surface)]/95 backdrop-blur [padding-bottom:max(8px,env(safe-area-inset-bottom))]"
     >
       <div className="mx-auto flex max-w-[520px] items-stretch justify-around">
         {DESTINOS.map(({ href, label, icon: Icon }) => {
@@ -303,12 +335,16 @@ export function IconoCirculo({ icon: Icon, size = 20 }: { icon: LucideIcon; size
 
 /* ── <BotonFlotante> — acción primaria de la sección, siempre visible (proximidad, regla 12) ── */
 export function BotonFlotante({ onClick, children }: { onClick: () => void; children: ReactNode }) {
+  // Mismo desajuste visual/layout que corrige <BottomNav> — sin esto, el botón podía quedar mal
+  // ubicado en el mismo momento (carga de Inicio) en el que el menú de abajo perdía sus etiquetas.
+  const desajuste = useDesajusteViewportVisual();
   return (
     <motion.button
       type="button"
       onClick={onClick}
       whileTap={{ scale: 0.96 }}
-      className="fixed bottom-[calc(76px+env(safe-area-inset-bottom))] right-4 z-10 flex h-14 items-center gap-2 rounded-full bg-[var(--accent)] px-5 text-[15px] font-semibold text-[var(--bg)] shadow-[0_8px_24px_color-mix(in_oklab,var(--accent)_35%,transparent)] [touch-action:manipulation]"
+      style={{ bottom: `calc(76px + env(safe-area-inset-bottom) + ${desajuste}px)` }}
+      className="fixed right-4 z-10 flex h-14 items-center gap-2 rounded-full bg-[var(--accent)] px-5 text-[15px] font-semibold text-[var(--bg)] shadow-[0_8px_24px_color-mix(in_oklab,var(--accent)_35%,transparent)] [touch-action:manipulation]"
     >
       {children}
     </motion.button>
