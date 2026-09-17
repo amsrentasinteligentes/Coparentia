@@ -199,7 +199,10 @@ export default function Onboarding() {
 
   const avanzar = (patch?: Partial<Respuestas>): void => {
     if (patch) setR((prev) => ({ ...prev, ...patch }));
-    setPaso((p) => p + 1);
+    // Solo avanza desde el paso que disparó el toque: durante los 200ms de la salida animada el
+    // paso anterior sigue montado y un segundo toque volvía a sumar (saltaba una pregunta).
+    const origen = paso;
+    setPaso((p) => (p === origen ? p + 1 : p));
     // La banda "Retomamos donde lo dejaste" es un aviso de llegada: en cuanto la persona avanza
     // ya sabe que retomó, y dejarla fija cinco preguntas más la convierte en ruido.
     setRetomado(false);
@@ -214,6 +217,12 @@ export default function Onboarding() {
     try {
       const guardado = sessionStorage.getItem(CLAVE_ONBOARDING);
       if (guardado) setR((prev) => ({ ...prev, ...(JSON.parse(guardado) as Partial<Respuestas>) }));
+      // ?plan=anual|mensual viene de las tarjetas de precio de la landing: la elección viaja al
+      // paywall (antes se descartaba y "Elegir mensual" no elegía nada — revisor, 5ª ronda).
+      const planElegido = new URLSearchParams(window.location.search).get('plan');
+      if (planElegido === 'anual' || planElegido === 'mensual') {
+        sessionStorage.setItem('coparentia_plan_elegido', planElegido);
+      }
       const pasoGuardado = Number(sessionStorage.getItem(CLAVE_PASO));
       if (Number.isInteger(pasoGuardado) && pasoGuardado > 0) {
         setPaso(Math.min(pasoGuardado, PASO_LOADING - 1));
@@ -351,7 +360,7 @@ export default function Onboarding() {
           venía marcando como vacío en las pantallas de opciones. Se oculta en los pasos que ya
           llenan la pantalla solos (reconocimientos y carga final) para no competir con su CTA. */}
       {PASOS_CON_RESUMEN_MOVIL.includes(paso) && (
-        <div className="my-auto pt-6 lg:hidden">
+        <div className="my-auto pt-4 lg:hidden">
           <PanelExpediente filas={filas} compacto />
         </div>
       )}
@@ -436,6 +445,19 @@ function PreguntaSituacion({
           <Halo />
           Cuéntanos con <Marcador>tus palabras</Marcador>
         </h1>
+        {/* Es un formulario de verdad: Enter envía (antes el input vivía suelto y el CTA era
+            type="button"). */}
+        <form
+          className="flex flex-1 flex-col"
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (!texto.trim()) {
+              setFaltaTexto(true);
+              return;
+            }
+            onElegir(texto.trim());
+          }}
+        >
         <input
           autoFocus
           type="text"
@@ -456,15 +478,7 @@ function PreguntaSituacion({
         <div className="mt-auto pt-8">
           {/* Nunca `disabled` por defecto (ancla del SO): una píldora gris muerta esperando el
               input desanima. Se ve activo; si está vacío al tocarlo, avisa qué falta. */}
-          <CtaFunnel
-            onClick={() => {
-              if (!texto.trim()) {
-                setFaltaTexto(true);
-                return;
-              }
-              onElegir(texto.trim());
-            }}
-          >
+          <CtaFunnel type="submit">
             Continuar
           </CtaFunnel>
           {faltaTexto && !texto.trim() && (
@@ -473,6 +487,7 @@ function PreguntaSituacion({
             </p>
           )}
         </div>
+        </form>
       </div>
     );
   }
@@ -522,7 +537,7 @@ function PreguntaFijacion({ valor, onElegir }: { valor: string; onElegir: (v: st
       palabraClave="fijada"
       tituloDespues=" tu cuota?"
       subtitulo="Así damos el formato correcto a tu expediente"
-      porQue="¿Por qué lo preguntamos? El formato de tu expediente cambia según cómo esté fijada tu cuota — así el PDF que generes tiene el respaldo correcto para tu caso. No reemplazamos a tu abogado."
+      porQue="¿Por qué lo preguntamos? El formato del PDF cambia según cómo esté fijada tu cuota. No reemplazamos a tu abogado."
     >
       {opciones.map(({ icon: Icon, label }, i) => (
         <Chip
@@ -671,7 +686,8 @@ function PreguntaMeta({ valor, onFijar }: { valor: number; onFijar: (v: number) 
 
   return (
     <div className="flex flex-1 flex-col">
-      <h1 className="text-balance text-[28px] font-bold leading-[1.1] text-[var(--text-primary)] [font-family:var(--font-display)]">
+      <h1 className="relative text-balance text-[28px] font-bold leading-[1.1] text-[var(--text-primary)] [font-family:var(--font-display)]">
+        <Halo />
         ¿Cuántos <Marcador>meses</Marcador> de comprobantes quieres organizar primero?
       </h1>
       <div className="mt-10 flex flex-col items-center">
@@ -743,7 +759,7 @@ function PreguntaMomento({ valor, onElegir }: { valor: string; onElegir: (v: str
 /* ── Paso 7: atribución (Cal AI pattern — dato de marketing) ── */
 function PreguntaAtribucion({ valor, onElegir }: { valor: string; onElegir: (v: string) => void }) {
   const opciones = [
-    { icon: Sparkles, label: 'Redes sociales (Instagram, TikTok, Google)' },
+    { icon: Sparkles, label: 'Redes o buscadores (Instagram, TikTok, Google)' },
     { icon: Scale, label: 'Mi abogado me la recomendó' },
     { icon: Users, label: 'Un amigo o familiar' },
     { icon: HelpCircle, label: 'Otro' },
@@ -880,7 +896,7 @@ function LoadingPlan({ respuestas, onListo }: { respuestas: Respuestas; onListo:
           {pct}%
         </span>
       </div>
-      <h1 className="mt-6 text-[22px] font-bold text-[var(--text-primary)] [font-family:var(--font-display)]">
+      <h1 className="mt-6 text-[26px] font-bold text-[var(--text-primary)] [font-family:var(--font-display)]">
         Construyendo tu expediente…
       </h1>
       <ul className="mt-8 flex w-full flex-col gap-4">

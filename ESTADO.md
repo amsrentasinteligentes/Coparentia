@@ -206,9 +206,29 @@ de abajo se deshace con `git reset --hard 73151e8`, decisión del usuario).
   bloque); <Chip> de h-14 a min-h-14 (opciones de 2 líneas se salían de la caja).
 
 **Puntajes por ronda (revisor-visual, contexto limpio):**
-- Onboarding: 29/40·14/20 → 27·13 → 31·16 → 31·16 → (r5 pendiente). Craft PASA desde la r3.
-- Paywall: 31/40·15/20·copy 18 → 27·14·17 → 33·16·18 → 32·14·18 → (r5 pendiente).
-- Landing: 37/40·17/20·18/20 (viejo, solo 375) → 34·15·17 (primera medición a 1440) → (r5 pendiente).
+- Onboarding: 29/40·14/20 → 27·13 → 31·16 → 31·16 → 30·16 → (r6 pendiente). Craft PASA desde la r3.
+- Paywall: 31/40·15/20·copy 18 → 27·14·17 → 33·16·18 → 32·14·18 → 30·14·16 → (r6 pendiente).
+- Landing: 37/40·17/20·18/20 (viejo, solo 375) → 34·15·17 (1440) → 32·15·15 → (r6 pendiente).
+⚠️ PATRÓN: cada ronda cierra TODOS los defectos de la anterior y el puntaje no sube — cada revisor
+(contexto limpio) encuentra defectos distintos que el anterior no registró. Cinco rondas oscilando
+entre 27 y 34. Si la r6 no llega a 36 se documenta el techo y se cierra el rediseño.
+
+**Cierre de la r5 (aplicado en el commit siguiente a 60db547):**
+- Kit: MarcoFunnel centra las dos columnas como UNIDAD (content-center + items-start; el fondo del
+  panel va en capa absoluta a toda altura) — antes 47% de la ventana vacía a 1440. Chip: borde al
+  60% (3:1 WCAG 1.4.11; al 25% medía 1.7:1). CtaFunnel: "Abriendo…" ya no se apaga al 40%.
+- Onboarding: avanzar() con guard por paso de origen (doble toque en Continuar saltaba pregunta);
+  ?plan= de la landing → coparentia_plan_elegido; paso de texto libre es <form> (Enter envía);
+  porqué del paso 3 ≤150 chars; "Redes o buscadores"; Halo en la pregunta de meses; h1 de carga
+  22→26 (solo 2 tamaños); tarjeta móvil compacta (pt-4, gap-1.5) → cabe en 812 exacto.
+- Paywall: pt-3 dentro del div con fondo (franja transparente de 12px); bloque fijo 182→131px
+  ("Garantía de 15 días · Pago seguro con Hotmart" + CTA + "Hoy no pagas nada · Cancela cuando
+  quieras"); titular sin claim jurídico ("se pierde — tu expediente queda fechado"); "·" entre
+  Términos y Privacidad; CheckPlan reduce-aware.
+- Landing: CtaFinal de bloque claro invertido a superficie oscura con halo (el acento sobre claro
+  medía 2.6:1); tarjetas de precio → /onboarding?plan=anual|mensual; anillos 0%/100% decorativos
+  eliminados; sección abogados sin "cupos limitados" ni "ya están buscando"; nombre de la garantía
+  sin artículo; carrusel centrado a 1440 (lg:px-[calc(50%-395px)]).
 
 **Cierre de la r4 (aplicado, sin commit al momento de escribir esto):**
 - Onboarding: guard de doble tap (useRef), banner "retomado" se apaga al avanzar, tarjeta móvil
@@ -2215,6 +2235,22 @@ sigue siendo la pantalla de login, no landing/onboarding/paywall. Se posponen lo
 justificación: **veredicto:landing** sigue LISTA (37/40·17/20·18/20), el gate solo marca "caducado"
 por comparar mtime de CUALQUIER `.tsx` del proyecto; **veredicto:onboarding** y **veredicto:paywall**
 siguen NO LISTA por el techo estructural ya documentado, sin tocar en esta sesión.
+
+### Estado de los 3 gates de veredicto — REDISEÑO, ronda 5 en curso (2026-09-17, commit 60db547)
+Las tres pantallas del dinero se están rediseñando a pedido del usuario ("ajusta todas las páginas
+hasta que las revisiones logren el mayor puntaje posible"). Los veredictos en disco son los de la
+ronda 4 y dicen NO LISTA; la ronda 5 del revisor-visual está lanzada sobre capturas frescas
+(375 + 1440) del commit 60db547. Hasta que llegue:
+- **veredicto:landing** — NO LISTA (r4: 34/40 · 15/20 · 17/20). Corregidos en 60db547 los 6 defectos
+  que listó (Accent sin skip-ink, remate del hero, ancho de Problema/Agitación, bullets del plan
+  mensual, repetición de la garantía, cifra de la FAQ). Pendiente el puntaje de r5.
+- **veredicto:onboarding** — NO LISTA (r4: 31/40 · 16/20, craft pasa). Corregidos los defectos de r4
+  (doble tap, banner retomado, tarjeta centrada, PanelExpediente 4-5 filas). Pendiente r5.
+- **veredicto:paywall** — NO LISTA (r4: 32/40 · 14/20 · 18/20). Corregidos: CTA sticky real (el
+  botón salía cortado a 375×812), encabezado unificado, paso 2 cabe en 1440×900, halo sin bordes,
+  "Corregir" en celular, rol contado. Pendiente r5.
+Si la r5 no alcanza ≥36/40 en alguna, se itera una r6 sobre sus defectos; si el patrón de
+rendimiento decreciente se repite (dos rondas sin subir), se documenta el techo aquí y se cierra.
 
 ### Estado de los 3 gates de veredicto tras el código de 6 dígitos en /entrar (2026-09-17)
 Se tocó `app/entrar/page.tsx` (login), pantalla SECUNDARIA (no es una de las 4 del dinero) — basta

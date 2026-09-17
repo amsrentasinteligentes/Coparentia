@@ -1,8 +1,10 @@
 'use client';
 
 // KIT DE LANDING — §9 CTA FINAL EMOCIONAL + PS (blueprint: 55 §9)
-// El bloque de MÁXIMO contraste de la página: fondo INVERTIDO (usa
-// --text-primary como fondo y --bg como texto), sin nav ni distracciones.
+// El bloque de cierre, sin nav ni distracciones. Iba INVERTIDO (fondo claro, texto oscuro),
+// pero el acento sobre ese fondo claro medía 2.6:1: fallaban las palabras en acento del H2 y el
+// relleno del botón contra su fondo (revisor, 5ª ronda). Ahora es superficie elevada con el halo
+// del acento — el mismo sistema de profundidad del resto de la página, con contraste AA.
 // H2 emocional ≤8 palabras (warn) · future pacing 1-2 líneas en presente y 2ª
 // persona · CTA ≥56px con el MISMO verbo del hero (42) · recap riesgo/urgencia
 // SOLO con datos reales · PS estilo carta (borde izquierdo en acento) — el
@@ -48,7 +50,7 @@ export function CtaFinal({
       id={id}
       aria-label="Empieza hoy"
       className="relative overflow-hidden py-20 md:py-24"
-      style={{ background: 'var(--text-primary)' }}
+      style={{ background: 'var(--surface)' }}
     >
       {/* Profundidad también en el bloque invertido: radial sutil del acento */}
       <div
@@ -56,7 +58,7 @@ export function CtaFinal({
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            'radial-gradient(720px 420px at 50% 0%, color-mix(in oklab, var(--accent) 16%, transparent) 0%, transparent 60%)',
+            'radial-gradient(ellipse closest-side at 50% 30%, color-mix(in oklab, var(--accent) 22%, transparent) 0%, transparent 100%)',
         }}
       />
 
@@ -69,22 +71,20 @@ export function CtaFinal({
       >
         <motion.h2
           variants={item}
-          className="text-balance text-[30px] font-bold leading-[1.15] [font-family:var(--font-display)] md:text-[44px]"
-          style={{ color: 'var(--bg)' }}
+          className="text-balance text-[30px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)] md:text-[44px]"
         >
           <MarkedCopy text={h2Marked} />
         </motion.h2>
 
         <motion.p
           variants={item}
-          className="mt-4 max-w-[520px] text-[17px] leading-relaxed"
-          style={{ color: 'color-mix(in oklab, var(--bg) 78%, transparent)' }}
+          className="mt-4 max-w-[520px] text-[17px] leading-relaxed text-[var(--text-secondary)]"
         >
           <MarkedCopy text={futurePacingMarked} />
         </motion.p>
 
         <motion.div variants={item} className="mt-8 w-full sm:w-auto">
-          {/* Acento pleno sobre fondo invertido = el máximo contraste de la página */}
+          {/* Mismo botón que el hero: acento pleno sobre superficie oscura (5.9:1) */}
           <CtaButton href={ctaHref} alto={56}>
             {ctaLabel}
           </CtaButton>
@@ -93,8 +93,7 @@ export function CtaFinal({
         {recap && (
           <motion.p
             variants={item}
-            className="mt-3 text-[13px]"
-            style={{ color: 'color-mix(in oklab, var(--bg) 65%, transparent)' }}
+            className="mt-3 text-[13px] text-[var(--text-tertiary)]"
           >
             {recap}
           </motion.p>
@@ -103,11 +102,7 @@ export function CtaFinal({
         {psMarked !== undefined && (
           <motion.p
             variants={item}
-            className="mt-10 max-w-[520px] border-l-2 pl-4 text-left text-[15px] italic leading-[1.6]"
-            style={{
-              borderColor: 'var(--accent)',
-              color: 'color-mix(in oklab, var(--bg) 80%, transparent)',
-            }}
+            className="mt-10 max-w-[520px] border-l-2 border-[var(--accent)] pl-4 text-left text-[15px] italic leading-[1.6] text-[var(--text-secondary)]"
           >
             <MarkedCopy text={psMarked} />
           </motion.p>

@@ -50,6 +50,7 @@ function PrecioContado({ valor }: { valor: number }) {
 
 /* ── <CheckPlan> — check circular animado del plan activo, mismo device que <Chip> ── */
 function CheckPlan({ activo }: { activo: boolean }) {
+  const reduce = useReducedMotion();
   return (
     <span
       aria-hidden="true"
@@ -59,9 +60,9 @@ function CheckPlan({ activo }: { activo: boolean }) {
     >
       {activo && (
         <motion.span
-          initial={{ scale: 0.5, opacity: 0 }}
+          initial={reduce ? false : { scale: 0.5, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 0.2, type: 'spring', bounce: 0.35 }}
+          transition={reduce ? { duration: 0 } : { duration: 0.2, type: 'spring', bounce: 0.35 }}
           className="flex items-center justify-center"
         >
           <Check size={12} strokeWidth={3} color="var(--bg)" />
@@ -455,7 +456,7 @@ function Precio({
         {/* El <Marcador> envolvía "captura de WhatsApp": a 375px esa frase cruza tres renglones y
             el subrayado se partía en tres trazos sueltos que parecían marcar palabras al azar.
             Marcando UNA sola palabra —la memorable— el trazo siempre cae entero en un renglón. */}
-        Una captura de <Marcador>WhatsApp</Marcador> no prueba nada —<span className="text-[var(--accent)]"> tu expediente sí</span>
+        Una captura de WhatsApp <Marcador>se pierde</Marcador> — <span className="text-[var(--accent)]">tu expediente queda fechado</span>
       </h1>
 
       {/* `radiogroup` + `aria-checked`: las dos tarjetas eran <button> sueltos y el check estaba
@@ -612,19 +613,21 @@ function Precio({
         {/* El `padding-bottom` de safe-area va DENTRO del div con fondo, no en el contenedor
             sticky: afuera dejaba una franja transparente bajo el botón por la que se veía pasar el
             contenido al hacer scroll (defecto del revisor). */}
-        <div className="sticky bottom-0 z-10 -mx-4 px-4 pt-3 lg:static lg:mx-0 lg:px-0 lg:pt-0">
+        <div className="sticky bottom-0 z-10 -mx-4 px-4 lg:static lg:mx-0 lg:px-0">
           <div
             aria-hidden="true"
             className="pointer-events-none absolute inset-x-0 bottom-full h-8 lg:hidden"
             style={{ background: 'linear-gradient(to top, var(--bg), transparent)' }}
           />
-          <div className="relative bg-[var(--bg)] pb-[max(8px,env(safe-area-inset-bottom))] lg:bg-transparent lg:pb-0">
+          {/* El pt-3 va AQUÍ, dentro del div con fondo: en el contenedor sticky dejaba una franja
+              transparente de 12px por la que se veía pasar el contenido (revisor, 5ª ronda). */}
+          <div className="relative bg-[var(--bg)] pt-3 pb-[max(8px,env(safe-area-inset-bottom))] lg:bg-transparent lg:pb-0 lg:pt-0">
             {/* Sin punto medio entre las dos señales: a 375px la línea siempre parte en dos y el
                 "·" quedaba huérfano al final de la primera. Los íconos ya separan cada señal. */}
             <div className="mb-2 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-center text-[13px] font-medium text-[var(--text-secondary)]">
               <span className="flex items-center gap-1.5">
                 <ShieldCheck size={14} color="var(--accent)" aria-hidden="true" />
-                Garantía del Primer Expediente · 15 días
+                Garantía de 15 días
               </span>
               <span className="flex items-center gap-1.5">
                 <Lock size={13} color="var(--accent)" aria-hidden="true" />
@@ -642,7 +645,7 @@ function Precio({
               </p>
             )}
             <p className="mt-2 text-center text-[13px] text-[var(--text-secondary)]">
-              Hoy no pagas nada · Se renueva tras el día 7, cancela cuando quieras
+              Hoy no pagas nada · Cancela cuando quieras
             </p>
           </div>
         </div>
@@ -659,6 +662,7 @@ function Precio({
         </a>
         <span aria-hidden="true" className="text-[var(--text-tertiary)]">·</span>
         <a href="/terminos" className="py-2 text-[11px] text-[var(--text-tertiary)] underline-offset-2 hover:underline">Términos</a>
+        <span aria-hidden="true" className="text-[11px] text-[var(--text-tertiary)]">·</span>
         <a href="/privacidad" className="py-2 text-[11px] text-[var(--text-tertiary)] underline-offset-2 hover:underline">Privacidad</a>
       </div>
     </div>

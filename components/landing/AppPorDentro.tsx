@@ -137,7 +137,7 @@ export function AppPorDentro({
             onPointerUp={onPointerUp}
             onPointerLeave={onPointerUp}
             onDragStart={(e) => e.preventDefault()}
-            className="flex snap-x snap-mandatory gap-5 overflow-x-auto px-[max(20px,calc(50%-125px))] pb-2 select-none [scrollbar-width:none] active:cursor-grabbing md:cursor-grab [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)] [&::-webkit-scrollbar]:hidden"
+            className="flex snap-x snap-mandatory gap-5 overflow-x-auto px-[max(20px,calc(50%-125px))] pb-2 lg:px-[calc(50%-395px)] select-none [scrollbar-width:none] active:cursor-grabbing md:cursor-grab [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)] [&::-webkit-scrollbar]:hidden"
           >
             {frames.map((f, i) => (
               <div key={i} className="shrink-0 snap-center">

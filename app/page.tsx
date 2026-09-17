@@ -77,10 +77,8 @@ export default function Home() {
         contraste={{
           labelHoy: 'Hoy',
           hoy: 'Capturas de pantalla dispersas y la ansiedad de no poder probar nada.',
-          anilloHoy: 0,
           labelFuturo: 'En 6 meses, si nada cambia',
           futuro: 'El mismo desorden — con 6 meses menos de comprobantes a mano.',
-          anilloFuturo: 0,
         }}
       />
 
@@ -97,10 +95,8 @@ export default function Home() {
         antesDespues={{
           labelAntes: 'Antes',
           antes: 'Capturas perdidas en el chat y ningún orden.',
-          anilloAntes: 0,
           labelDespues: 'Después',
           despues: 'Un expediente exportable, con fecha y soporte, listo en segundos.',
-          anilloDespues: 100,
         }}
       />
 
@@ -139,7 +135,7 @@ export default function Home() {
           totalAnual: 'Se cobra US$89 al año',
           ahorro: '3 meses gratis',
           ctaLabel: 'Empezar mis 7 días gratis',
-          ctaHref: CTA_HREF,
+          ctaHref: '/onboarding?plan=anual',
           features: [
             'Sello de Confianza en cada comprobante',
             'Expediente exportable en PDF foliado',
@@ -152,7 +148,7 @@ export default function Home() {
           nombre: 'Mensual',
           precioMes: 'US$9.99',
           ctaLabel: 'Elegir mensual',
-          ctaHref: CTA_HREF,
+          ctaHref: '/onboarding?plan=mensual',
           // Antes repetía 4 de los 5 bullets del plan anual y el diferenciador real se diluía.
           // Ahora dice solo en qué se diferencia: mismas funciones, sin compromiso de 12 meses.
           features: [
@@ -165,7 +161,7 @@ export default function Home() {
 
       {/* 7. GARANTÍA — 15 días > 7 días de prueba (regla dura 18, verificada en FICHA-MERCADO.md) */}
       <Garantia
-        nombre="la Garantía del Primer Expediente"
+        nombre="Garantía del Primer Expediente"
         condicionMarked="Si en 15 días no tienes tu primer comprobante organizado y listo para exportar, escribes un correo y [b]te devolvemos todo[/b]. Sin preguntas."
         pisoLegal="Respaldada por la garantía Hotmart de 15 días"
       />

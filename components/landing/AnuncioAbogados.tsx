@@ -50,12 +50,12 @@ export function AnuncioAbogados({ contactoEmail, id = 'para-abogados' }: Anuncio
         <motion.div variants={item} className="text-center">
           <Kicker>PARA ABOGADOS DE FAMILIA</Kicker>
           <h2 className="text-balance text-[24px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)] md:text-[32px]">
-            Sé el abogado que nuestros usuarios ya están buscando
+            Sé el abogado que aparece cuando lo necesitan
           </h2>
           <p className="mx-auto mt-3 max-w-[52ch] text-[15px] leading-relaxed text-[var(--text-secondary)]">
-            Coparentia conecta a diario con padres separados que documentan su caso y, tarde o
-            temprano, necesitan un abogado de familia de confianza. Anúnciate y sé tú quien
-            aparece cuando llega ese momento.
+            Los padres que usan Coparentia documentan su caso mes a mes y, cuando necesitan
+            un abogado de familia, lo buscan desde la misma app. Anúnciate y sé tú quien aparece
+            en ese momento.
           </p>
         </motion.div>
 
@@ -78,7 +78,7 @@ export function AnuncioAbogados({ contactoEmail, id = 'para-abogados' }: Anuncio
           >
             Quiero anunciarme como abogado
           </a>
-          <p className="text-[12px] text-[var(--text-tertiary)]">Cupos limitados por ciudad — te contactamos en menos de 48 horas.</p>
+          <p className="text-[12px] text-[var(--text-tertiary)]">Te respondemos en menos de 48 horas.</p>
         </motion.div>
       </motion.div>
     </SectionShell>

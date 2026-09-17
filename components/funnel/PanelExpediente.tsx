@@ -73,7 +73,7 @@ export function PanelExpediente({
 
       {/* `aria-live`: quien usa lector de pantalla oye que su respuesta quedó registrada en el
           expediente, que es justo el mensaje de esta tarjeta — sin él, el cambio pasaba mudo. */}
-      <ul aria-live="polite" className={`mt-4 flex flex-col ${compacto ? 'gap-2' : 'gap-3'}`}>
+      <ul aria-live="polite" className={`mt-4 flex flex-col ${compacto ? 'gap-1.5' : 'gap-3'}`}>
         {visibles.map((fila) => {
           const lista = Boolean(fila.valor);
           return (

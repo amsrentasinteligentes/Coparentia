@@ -172,7 +172,7 @@ export function Chip({
       className={`flex min-h-14 w-full items-center gap-3 rounded-[var(--radius-button)] border px-4 py-3 text-left text-[16px] font-medium transition-colors duration-150 [touch-action:manipulation] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)] ${
         seleccionado
           ? 'border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_10%,transparent)] text-[var(--text-primary)] shadow-[0_4px_16px_color-mix(in_oklab,var(--accent)_22%,transparent)]'
-          : 'border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] bg-[var(--surface)] text-[var(--text-primary)] shadow-[0_2px_8px_rgb(6_12_24_/_0.45)]'
+          : 'border-[color-mix(in_oklab,var(--text-tertiary)_60%,transparent)] bg-[var(--surface)] text-[var(--text-primary)] shadow-[0_2px_8px_rgb(6_12_24_/_0.45)]'
       }`}
     >
       {icon}
@@ -213,7 +213,7 @@ export function CtaFunnel({
       // El foco de teclado global (globals/tokens.css) dibuja un anillo del color de ACENTO — y
       // este botón ya ES de color acento, así que el anillo se perdía sobre su propio relleno.
       // Aquí se fuerza un anillo de alto contraste para que navegar con teclado se vea.
-      className="flex h-14 w-full items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-[16px] font-semibold text-[var(--bg)] shadow-[0_8px_30px_color-mix(in_oklab,var(--accent)_28%,transparent)] transition-opacity duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--text-primary)] disabled:opacity-40 [touch-action:manipulation]"
+      className="flex h-14 w-full items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-[16px] font-semibold text-[var(--bg)] shadow-[0_8px_30px_color-mix(in_oklab,var(--accent)_28%,transparent)] transition-opacity duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--text-primary)] disabled:cursor-wait [touch-action:manipulation]"
     >
       {children}
     </motion.button>
@@ -253,27 +253,35 @@ export function ContenedorFunnel({ children }: { children: ReactNode }) {
    una pieza que muestra el producto. Aquí la pieza es el propio expediente construyéndose. ── */
 export function MarcoFunnel({ panel, children }: { panel?: ReactNode; children: ReactNode }) {
   return (
-    <div className="lg:grid lg:min-h-dvh lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1fr)]">
+    // Las dos columnas se centran como UNA UNIDAD (`content-center` centra la fila del grid en
+    // la ventana; `items-start` alinea las dos al mismo eje superior). Historia: centrar cada
+    // columna por su cuenta las dejaba arrancando a alturas distintas; anclarlas arriba alineó el
+    // eje pero dejó el 47% inferior de la ventana vacío en los pasos cortos (revisor, 5ª ronda).
+    // Con contenido más alto que la ventana la fila crece y no se recorta nada.
+    <div className="relative isolate lg:grid lg:min-h-dvh lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1fr)] lg:content-center lg:items-start">
       {panel && (
-        // Sin `aria-hidden`: el panel muestra las respuestas REALES de la persona (su expediente
-        // armándose), no decoración — esconderlo del lector de pantalla ocultaba contenido útil.
-        // `justify-start` con el MISMO padding superior que la columna de flujo: centrar cada
-        // columna por su cuenta las dejaba arrancando a alturas distintas (el titular izquierdo
-        // 125px más abajo que el derecho — sin eje común, como dos páginas pegadas) y, cuando el
-        // contenido superaba el alto de la ventana, el centrado recortaba el principio.
-        <aside
-          className="relative hidden overflow-hidden border-r border-[color-mix(in_oklab,var(--text-tertiary)_12%,transparent)] lg:flex lg:flex-col lg:justify-start lg:px-10 lg:pb-8 lg:pt-8 xl:px-16"
-          style={{
-            background:
-              'radial-gradient(900px 620px at 20% 0%, color-mix(in oklab, var(--accent) 15%, transparent) 0%, transparent 62%), ' +
-              'radial-gradient(620px 480px at 100% 100%, color-mix(in oklab, var(--accent) 10%, transparent) 0%, transparent 58%), ' +
-              'var(--surface)',
-          }}
-        >
-          <div className="mx-auto w-full max-w-[460px]">{panel}</div>
-        </aside>
+        <>
+          {/* El fondo del panel va en una capa aparte que cubre TODA la altura (0.85/1.85 del
+              ancho = 45.95%): si viviera en el <aside>, al centrar la fila quedaría sin pintar
+              arriba y abajo de él. */}
+          <div
+            aria-hidden="true"
+            className="absolute inset-y-0 left-0 -z-10 hidden w-[45.95%] border-r border-[color-mix(in_oklab,var(--text-tertiary)_12%,transparent)] lg:block"
+            style={{
+              background:
+                'radial-gradient(900px 620px at 20% 0%, color-mix(in oklab, var(--accent) 15%, transparent) 0%, transparent 62%), ' +
+                'radial-gradient(620px 480px at 100% 100%, color-mix(in oklab, var(--accent) 10%, transparent) 0%, transparent 58%), ' +
+                'var(--surface)',
+            }}
+          />
+          {/* Sin `aria-hidden`: el panel muestra las respuestas REALES de la persona (su expediente
+              armándose), no decoración — esconderlo del lector de pantalla ocultaba contenido útil. */}
+          <aside className="hidden lg:flex lg:flex-col lg:px-10 lg:py-8 xl:px-16">
+            <div className="mx-auto w-full max-w-[460px]">{panel}</div>
+          </aside>
+        </>
       )}
-      <div className="mx-auto flex min-h-dvh w-full max-w-[520px] flex-col px-4 pt-4 pb-[max(20px,env(safe-area-inset-bottom))] lg:max-w-[560px] lg:justify-start lg:px-10 lg:pb-8 lg:pt-8">
+      <div className="mx-auto flex min-h-dvh w-full max-w-[520px] flex-col px-4 pt-4 pb-[max(20px,env(safe-area-inset-bottom))] lg:min-h-0 lg:max-w-[560px] lg:px-10 lg:py-8">
         {children}
       </div>
     </div>
