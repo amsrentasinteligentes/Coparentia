@@ -97,9 +97,13 @@ export function Marcador({ children }: { children: ReactNode }) {
         backgroundRepeat: 'no-repeat',
         // Anclado al borde inferior de la caja inline (`0 100%`), el trazo quedaba ~6px por debajo
         // de las letras y se leía como una barra flotante suelta, no como un subrayado. Subirlo
-        // 0.14em lo pega a la base del texto en cualquier tamaño de fuente.
-        backgroundPosition: '0 calc(100% - 0.14em)',
-        backgroundSize: '100% 0.22em',
+        // lo pega a la base del texto en cualquier tamaño de fuente.
+        // ⚠️ Ajuste 2026-09-17 (revisor-visual): con 0.14em de subida y 0.22em de grosor, el trazo
+        // cruzaba el cuerpo de las letras con rasgo descendente ("WhatsApp") y se leía como TACHADO,
+        // no como resaltado — justo en el titular que más pesa del paywall. Más bajo y más fino:
+        // pasa por debajo de las descendentes y vuelve a leerse como subrayado.
+        backgroundPosition: '0 calc(100% - 0.04em)',
+        backgroundSize: '100% 0.16em',
         padding: '0 0.05em',
       }}
     >
@@ -221,6 +225,39 @@ export function ContenedorFunnel({ children }: { children: ReactNode }) {
   return (
     <div className="mx-auto flex min-h-dvh max-w-[520px] flex-col px-4 pt-4 pb-[max(20px,env(safe-area-inset-bottom))]">
       {children}
+    </div>
+  );
+}
+
+/* ── <MarcoFunnel> — MISMO flujo, DOS composiciones (2026-09-17) ───────────────────────────────
+   En celular: idéntico a <ContenedorFunnel> (columna única de 520px) — la experiencia móvil, que
+   es la que ya estaba pulida, no cambia ni un píxel.
+   En computador (≥1024px): dos columnas. A la izquierda un panel de marca fijo que sostiene el
+   contexto (qué es esto, qué llevas hecho, por qué confiar); a la derecha el flujo de siempre.
+   POR QUÉ: hasta ahora el funnel era una tira de 520px flotando en medio de una pantalla de
+   1440px — ~66% de la ventana en negro vacío. Es el patrón que usan las tres apps del nicho que
+   revisamos (Niddo, OurFamilyWizard, 2houses): el formulario nunca va solo, siempre convive con
+   una pieza que muestra el producto. Aquí la pieza es el propio expediente construyéndose. ── */
+export function MarcoFunnel({ panel, children }: { panel?: ReactNode; children: ReactNode }) {
+  return (
+    <div className="lg:grid lg:min-h-dvh lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1fr)]">
+      {panel && (
+        <aside
+          aria-hidden="true"
+          className="relative hidden overflow-hidden border-r border-[color-mix(in_oklab,var(--text-tertiary)_12%,transparent)] lg:flex lg:flex-col lg:justify-center lg:px-10 lg:py-12 xl:px-16"
+          style={{
+            background:
+              'radial-gradient(900px 620px at 20% 0%, color-mix(in oklab, var(--accent) 15%, transparent) 0%, transparent 62%), ' +
+              'radial-gradient(620px 480px at 100% 100%, color-mix(in oklab, var(--accent) 10%, transparent) 0%, transparent 58%), ' +
+              'var(--surface)',
+          }}
+        >
+          <div className="mx-auto w-full max-w-[460px]">{panel}</div>
+        </aside>
+      )}
+      <div className="mx-auto flex min-h-dvh w-full max-w-[520px] flex-col px-4 pt-4 pb-[max(20px,env(safe-area-inset-bottom))] lg:max-w-[560px] lg:justify-center lg:px-10 lg:py-12">
+        {children}
+      </div>
     </div>
   );
 }

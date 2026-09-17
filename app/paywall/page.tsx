@@ -15,7 +15,8 @@ import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { ChevronLeft, X, Check, ShieldCheck, Lock, FileCheck2, HeartHandshake } from 'lucide-react';
-import { BarraProgreso, CtaFunnel, FunnelHeader, Halo, Marcador, usePasoVariants } from '@/components/funnel/ui';
+import { BarraProgreso, CtaFunnel, FunnelHeader, Halo, MarcoFunnel, Marcador, usePasoVariants } from '@/components/funnel/ui';
+import { PanelExpediente, type FilaExpediente } from '@/components/funnel/PanelExpediente';
 import { obtenerTRM } from '@/lib/trm';
 import { aproximadoEnPesos } from '@/lib/formato-cop';
 
@@ -71,6 +72,9 @@ function CheckPlan({ activo }: { activo: boolean }) {
 }
 
 type Respuestas = {
+  // `rol` lo guarda el onboarding desde 2026-09-07 y aquí no se leía: hace falta para poder
+  // mostrar el expediente ya armado en el panel de computador con las palabras correctas.
+  rol?: 'paga' | 'recibe' | '';
   situacion: string;
   situacionOtra: string;
   preocupacion: string;
@@ -124,6 +128,11 @@ export default function Paywall() {
     try {
       const raw = sessionStorage.getItem('coparentia_onboarding');
       if (raw) setR(JSON.parse(raw));
+      // El plan que la persona ya había elegido se guardaba al salir al checkout, pero nunca se
+      // volvía a leer: quien volvía atrás encontraba otra vez el Anual preseleccionado, como si su
+      // elección no hubiera contado (defecto de flexibilidad, revisor-visual 2026-09-17).
+      const planGuardado = sessionStorage.getItem('coparentia_plan_elegido');
+      if (planGuardado === 'anual' || planGuardado === 'mensual') setPlan(planGuardado);
     } catch {}
   }, []);
 
@@ -157,8 +166,70 @@ export default function Paywall() {
     }, 6000);
   };
 
+  // Las mismas filas que la persona vio llenarse en el onboarding, ahora como recordatorio de lo
+  // que ya construyó: en computador el panel izquierdo deja de ser decoración y pasa a ser el
+  // argumento de venta más honesto que hay — su propio expediente, esperando activarse.
+  const filasExpediente: FilaExpediente[] = r
+    ? [
+        { label: 'Tu rol', valor: r.rol === 'paga' ? 'Pago la cuota' : r.rol === 'recibe' ? 'Recibo la cuota' : undefined },
+        { label: 'Tu situación', valor: r.situacion === 'Otra cosa' && r.situacionOtra ? r.situacionOtra : r.situacion || undefined },
+        { label: 'Lo que más te preocupa', valor: r.preocupacion || undefined },
+        { label: 'Meses a documentar', valor: r.metaMeses ? `${r.metaMeses} ${r.metaMeses === 1 ? 'mes' : 'meses'}` : undefined },
+        { label: 'Cuándo registras', valor: r.momento || undefined },
+      ].filter((f) => f.valor)
+    : [];
+
   return (
-    <div className="mx-auto flex min-h-dvh max-w-[520px] flex-col px-4 pt-4 pb-[max(20px,env(safe-area-inset-bottom))]">
+    <MarcoFunnel
+      panel={
+        <>
+          <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-[var(--accent)]">
+            {filasExpediente.length > 0 ? 'Tu expediente ya está armado' : 'Lo que vas a tener'}
+          </p>
+          <h2 className="mt-3 text-balance text-[28px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)]">
+            Falta un paso para que empiece a <Marcador>probar</Marcador> lo que pagas
+          </h2>
+          {filasExpediente.length > 0 ? (
+            <div className="mt-8">
+              <PanelExpediente filas={filasExpediente} />
+            </div>
+          ) : (
+            /* Sin respuestas del onboarding (entrada directa a /paywall) el panel no puede mostrar
+               un expediente real — y un mockup inventado sería exactamente lo que este avatar
+               castiga. En su lugar, los tres pilares comprobables del producto. */
+            <ul className="mt-8 flex flex-col gap-5">
+              {[
+                {
+                  icon: FileCheck2,
+                  titulo: 'Todo en un solo lugar',
+                  detalle: 'Cuota, gastos extra y autorizaciones, mes a mes, con su soporte adjunto.',
+                },
+                {
+                  icon: ShieldCheck,
+                  titulo: 'Respaldo probatorio',
+                  detalle: 'Cada comprobante queda fechado y asociado — listo para exportar en PDF foliado.',
+                },
+                {
+                  icon: HeartHandshake,
+                  titulo: 'Funciona sin la otra parte',
+                  detalle: 'Es tu expediente: no necesita que nadie más instale ni apruebe nada.',
+                },
+              ].map(({ icon: Icon, titulo, detalle }) => (
+                <li key={titulo} className="flex items-start gap-3">
+                  <span className="flex size-10 shrink-0 items-center justify-center rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--accent)_22%,transparent)] bg-[color-mix(in_oklab,var(--accent)_10%,transparent)]">
+                    <Icon size={20} color="var(--accent)" aria-hidden="true" />
+                  </span>
+                  <div>
+                    <p className="text-[15px] font-semibold text-[var(--text-primary)]">{titulo}</p>
+                    <p className="mt-1 text-[14px] leading-[1.6] text-[var(--text-secondary)]">{detalle}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </>
+      }
+    >
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-1">
           {/* "Volver" y "Cerrar" eran DOS círculos rellenos idénticos con consecuencias opuestas:
@@ -197,7 +268,9 @@ export default function Paywall() {
         </span>
       </div>
 
-      <div className="relative mt-4 flex flex-1 flex-col">
+      {/* `flex-1` sostiene el CTA abajo en celular; en computador la columna ya viene centrada por
+          el marco y estirarla reabriría el vacío que este rediseño cierra. */}
+      <div className="relative mt-4 flex flex-1 flex-col lg:flex-none">
         <AnimatePresence mode="wait" initial={false}>
           <motion.div key={paso} variants={variants} initial="enter" animate="center" exit="exit" className="flex flex-1 flex-col">
             {paso === 0 && (
@@ -209,7 +282,7 @@ export default function Paywall() {
           </motion.div>
         </AnimatePresence>
       </div>
-    </div>
+    </MarcoFunnel>
   );
 }
 
@@ -403,7 +476,11 @@ function Precio({
                   <PrecioContado valor={PLAN_ANUAL.precioMes} /><span className="text-[13px] font-normal text-[var(--text-secondary)]">/mes</span>
                 </span>
               </div>
-              <p className="mt-1 text-[13px] text-[var(--text-secondary)]">
+              {/* TERCER PLANO DE PROFUNDIDAD (2026-09-17, defecto #4 del revisor): la pantalla solo
+                  tenía fondo base y tarjeta elevada; FICHA-ARTE declara tres niveles. La referencia
+                  en pesos —dato de apoyo, no el precio— va sobre una superficie HUNDIDA: se
+                  distingue del precio principal sin agregar otro color ni otro tamaño de letra. */}
+              <p className="mt-2 rounded-[var(--radius-button)] bg-[color-mix(in_oklab,var(--bg)_55%,black)] px-3 py-2 text-[13px] text-[var(--text-secondary)] shadow-[inset_0_1px_2px_rgb(0_0_0_/_0.3)]">
                 {PLAN_ANUAL.totalAnual}
                 {trm && <span className="text-[var(--text-tertiary)]"> · ≈ {aproximadoEnPesos(PLAN_ANUAL.cobroAnual, trm)} COP</span>}
               </p>
@@ -436,7 +513,7 @@ function Precio({
             </div>
             {/* Solo la tarjeta Anual mostraba su total, así que el "ahorras US$30.88" no se podía
                 comprobar contra nada: faltaba el término de comparación. */}
-            <p className="mt-1 text-[13px] text-[var(--text-secondary)]">
+            <p className="mt-2 rounded-[var(--radius-button)] bg-[color-mix(in_oklab,var(--bg)_55%,black)] px-3 py-2 text-[13px] text-[var(--text-secondary)] shadow-[inset_0_1px_2px_rgb(0_0_0_/_0.3)]">
               {PLAN_MENSUAL.totalAnual}
               {trm && <span className="text-[var(--text-tertiary)]"> · ≈ {aproximadoEnPesos(PLAN_MENSUAL.cobroAnual, trm)} COP</span>}
             </p>
@@ -485,23 +562,33 @@ function Precio({
               'linear-gradient(to right, transparent, color-mix(in oklab, var(--accent) 38%, transparent), transparent)',
           }}
         />
-        {/* La garantía había perdido su NOMBRE al compactar esta franja, y nunca dijo cómo se
-            reclama: una promesa de protección sin mecánica no tranquiliza a quien ya desconfía. */}
-        {/* Dos renglones propios en vez de una fila que se parte: con `flex-wrap` el separador "·"
-            quedaba colgando solo al final del primer renglón. */}
-        <div className="mb-3 flex flex-col items-center gap-1 text-[13px] font-medium text-[var(--text-secondary)]">
-          <span className="flex items-center gap-1.5">
-            <ShieldCheck size={14} color="var(--accent)" aria-hidden="true" />
-            Garantía del Primer Expediente · 15 días
+        {/* PIE COMPACTADO (2026-09-17, defecto #1 del revisor-visual): eran cuatro bloques de texto
+            apilados sin jerarquía entre ellos —garantía, pago seguro, párrafo de reembolso, aviso de
+            renovación— y se leían como un muro legal justo donde hay que decidir. Ahora las dos
+            señales de confianza van en UNA línea, y el detalle del reembolso se despliega solo si
+            alguien lo busca (<details> nativo: cero JS, accesible por teclado). */}
+        <div className="mb-3 flex flex-col items-center gap-1.5 text-[13px] font-medium text-[var(--text-secondary)]">
+          <span className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-center">
+            <span className="flex items-center gap-1.5">
+              <ShieldCheck size={14} color="var(--accent)" aria-hidden="true" />
+              Garantía de 15 días
+            </span>
+            <span aria-hidden="true" className="text-[var(--text-tertiary)]">·</span>
+            <span className="flex items-center gap-1.5">
+              <Lock size={13} color="var(--accent)" aria-hidden="true" />
+              Pago seguro con Hotmart
+            </span>
           </span>
-          <span className="flex items-center gap-1.5">
-            <Lock size={13} color="var(--accent)" aria-hidden="true" />
-            Pago seguro con Hotmart
-          </span>
+          <details className="w-full text-center">
+            <summary className="cursor-pointer list-none text-[12px] text-[var(--text-tertiary)] underline-offset-2 [touch-action:manipulation] hover:underline">
+              Cómo funciona la garantía
+            </summary>
+            <p className="mt-2 text-[13px] leading-[1.5] text-[var(--text-secondary)]">
+              Es la Garantía del Primer Expediente: si en 15 días tu expediente no te sirve, escribes
+              a soporte y te devolvemos todo. Sin explicaciones.
+            </p>
+          </details>
         </div>
-        <p className="mb-3 text-center text-[13px] leading-[1.5] text-[var(--text-secondary)]">
-          Si en 15 días tu expediente no te sirve, escribes a soporte y te devolvemos todo. Sin explicaciones.
-        </p>
         <CtaFunnel onClick={onCta} disabled={yendo}>
           {yendo ? 'Abriendo…' : 'Empezar mis 7 días gratis'}
         </CtaFunnel>

@@ -36,13 +36,14 @@ import {
 import {
   BarraAtras,
   Chip,
-  ContenedorFunnel,
   CtaFunnel,
   FunnelHeader,
   Halo,
+  MarcoFunnel,
   Marcador,
   usePasoVariants,
 } from '@/components/funnel/ui';
+import { PanelExpediente, type FilaExpediente } from '@/components/funnel/PanelExpediente';
 
 type Rol = 'paga' | 'recibe' | '';
 
@@ -147,6 +148,28 @@ const VACIAS: Respuestas = {
   atribucion: '',
 };
 
+const CLAVE_ONBOARDING = 'coparentia_onboarding';
+
+// En celular el resumen va SOLO en las pantallas de puras opciones — son las que dejaban el tercio
+// inferior vacío. Los pasos con su propio botón al fondo (reconocimientos, la meta con slider, la
+// carga final) ya llenan la pantalla y su CTA no debe competir con nada debajo.
+const PASOS_CON_RESUMEN_MOVIL = [0, 1, 2, 3, 6, 7];
+
+/* Las respuestas, traducidas a las filas del expediente que se va armando (panel lateral en
+   computador, tarjeta compacta en celular). El orden es el de las preguntas: así la persona ve
+   avanzar su propio expediente pregunta a pregunta, en vez de mirar un espacio vacío. */
+function filasExpediente(r: Respuestas): FilaExpediente[] {
+  return [
+    { label: 'Tu rol', valor: r.rol === 'paga' ? 'Pago la cuota' : r.rol === 'recibe' ? 'Recibo la cuota' : undefined },
+    { label: 'Tu situación', valor: r.situacion === 'Otra cosa' && r.situacionOtra ? r.situacionOtra : r.situacion || undefined },
+    { label: 'Cómo está fijada', valor: r.fijacion || undefined },
+    { label: 'Lo que más te preocupa', valor: r.preocupacion || undefined },
+    { label: 'Meses a documentar', valor: r.metaMeses && r.momento ? `${r.metaMeses} ${r.metaMeses === 1 ? 'mes' : 'meses'}` : undefined },
+    { label: 'Cuándo registras', valor: r.momento || undefined },
+    { label: 'Cómo nos encontraste', valor: r.atribucion || undefined },
+  ];
+}
+
 // Pasos numerados solo para el % de la barra (7 preguntas reales + 2 reconocimientos + loading).
 const TOTAL_PASOS = 10;
 const PASO_LOADING = 9;
@@ -166,16 +189,47 @@ export default function Onboarding() {
   };
   const atras = (): void => setPaso((p) => Math.max(0, p - 1));
 
+  // Se retoman las respuestas de un intento anterior si las hay: quien cerró la pestaña a mitad
+  // de camino vuelve a encontrarlas, en vez de empezar de cero sin explicación.
   useEffect(() => {
-    if (paso === PASO_LOADING) {
-      try {
-        sessionStorage.setItem('coparentia_onboarding', JSON.stringify(r));
-      } catch {}
-    }
-  }, [paso, r]);
+    try {
+      const guardado = sessionStorage.getItem(CLAVE_ONBOARDING);
+      if (guardado) setR((prev) => ({ ...prev, ...(JSON.parse(guardado) as Partial<Respuestas>) }));
+    } catch {}
+  }, []);
+
+  // GUARDADO INCREMENTAL (2026-09-17). Antes esto solo corría en el paso 9 de 10: cerrar la
+  // pestaña en cualquier paso intermedio borraba TODAS las respuestas, sin aviso y sin forma de
+  // retomarlas (bug real encontrado por el revisor-visual). Ahora cada respuesta queda guardada
+  // en el momento en que se da — que es además lo que permite mostrar el expediente armándose.
+  useEffect(() => {
+    try {
+      sessionStorage.setItem(CLAVE_ONBOARDING, JSON.stringify(r));
+    } catch {}
+  }, [r]);
+
+  const filas = filasExpediente(r);
 
   return (
-    <ContenedorFunnel>
+    <MarcoFunnel
+      panel={
+        <>
+          <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-[var(--accent)]">
+            Tu expediente se está armando
+          </p>
+          <h2 className="mt-3 text-balance text-[28px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)]">
+            Cada respuesta le da forma a lo que vas a poder <Marcador>mostrar</Marcador>
+          </h2>
+          <p className="mt-3 text-[14px] leading-[1.6] text-[var(--text-secondary)]">
+            No es un cuestionario: es el índice de tu expediente. Lo que contestas define qué
+            registramos, con qué palabras y en qué formato sale tu PDF.
+          </p>
+          <div className="mt-8">
+            <PanelExpediente filas={filas} />
+          </div>
+        </>
+      }
+    >
       <FunnelHeader />
       {paso < PASO_LOADING && (
         <BarraAtras
@@ -186,7 +240,10 @@ export default function Onboarding() {
         />
       )}
 
-      <div className="relative mt-6 flex flex-1 flex-col">
+      {/* `flex-1` es lo correcto en celular (el paso ocupa lo que queda de alto y el CTA se ancla
+          abajo). En computador NO: la columna ya está centrada por el marco, así que estirar el
+          bloque volvía a abrir el hueco que este rediseño vino a cerrar. */}
+      <div className="relative mt-6 flex flex-1 flex-col lg:flex-none">
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
             key={paso}
@@ -225,7 +282,17 @@ export default function Onboarding() {
           </motion.div>
         </AnimatePresence>
       </div>
-    </ContenedorFunnel>
+
+      {/* EN CELULAR el panel de la izquierda no existe (no hay ancho), así que el expediente en
+          construcción va aquí abajo, compacto: es justo el tercio de pantalla que el revisor-visual
+          venía marcando como vacío en las pantallas de opciones. Se oculta en los pasos que ya
+          llenan la pantalla solos (reconocimientos y carga final) para no competir con su CTA. */}
+      {PASOS_CON_RESUMEN_MOVIL.includes(paso) && (
+        <div className="mt-6 lg:hidden">
+          <PanelExpediente filas={filas} compacto />
+        </div>
+      )}
+    </MarcoFunnel>
   );
 }
 
