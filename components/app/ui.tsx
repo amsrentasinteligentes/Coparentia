@@ -24,22 +24,32 @@ const DUR_BASE = 0.34;
    los dos que `env(safe-area-inset-bottom)` NO cubre (eso es para muescas/barra de gestos de iOS,
    no para esta diferencia). En vez de adivinar CUÁNDO pasa ese ajuste (se intentó con un empujón de
    scroll y no bastó), esto lo mide en tiempo real con `visualViewport` y corrige el menú siempre
-   que haga falta, sin importar el motivo del desajuste. */
+   que haga falta, sin importar el motivo del desajuste.
+
+   ⚠️ Corrección sobre el primer intento: escuchar el evento `scroll` de `visualViewport` (pensado
+   para cuando el teclado empuja la página) también disparaba con el scroll NORMAL de la pantalla,
+   y el menú se sentía "suelto" en vez de fijo (hallazgo del usuario, misma sesión). Ahora solo
+   escucha `resize` (el que de verdad indica que el navegador cambió cuánto espacio se reserva a sí
+   mismo), y espera 150ms de silencio antes de aplicar el nuevo valor — así no se mueve a mitad de
+   la animación de la propia barra del navegador, solo cuando ya se asentó. */
 function useDesajusteViewportVisual(): number {
   const [desajuste, setDesajuste] = useState(0);
   useEffect(() => {
     const vv = window.visualViewport;
     if (!vv) return;
+    let temporizador: ReturnType<typeof setTimeout>;
     const actualizar = () => {
-      const hueco = window.innerHeight - vv.height - vv.offsetTop;
-      setDesajuste(hueco > 0 ? Math.round(hueco) : 0);
+      clearTimeout(temporizador);
+      temporizador = setTimeout(() => {
+        const hueco = window.innerHeight - vv.height;
+        setDesajuste(hueco > 0 ? Math.round(hueco) : 0);
+      }, 150);
     };
     actualizar();
     vv.addEventListener('resize', actualizar);
-    vv.addEventListener('scroll', actualizar);
     return () => {
+      clearTimeout(temporizador);
       vv.removeEventListener('resize', actualizar);
-      vv.removeEventListener('scroll', actualizar);
     };
   }, []);
   return desajuste;
