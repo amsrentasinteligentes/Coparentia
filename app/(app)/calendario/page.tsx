@@ -82,7 +82,7 @@ export default function Calendario() {
   };
 
   return (
-    <ContenedorApp conBotonFlotante>
+    <ContenedorApp>
       <PageHeader titulo="Calendario" subtitulo="Tu registro de eventos — no depende de nadie más" />
 
       <div className="flex items-center justify-between">

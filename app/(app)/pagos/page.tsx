@@ -108,7 +108,7 @@ export default function Pagos() {
   const totalVisible = visibles.reduce((acc, p) => acc + p.monto, 0);
 
   return (
-    <ContenedorApp conBotonFlotante>
+    <ContenedorApp>
       <PageHeader titulo="Pagos y gastos" subtitulo={`${pagos.length} comprobantes en tu expediente`} />
 
       <div className="flex gap-2">

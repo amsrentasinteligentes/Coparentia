@@ -88,9 +88,96 @@ initialScale: 1, viewportFit: 'cover' }` — activa `env(safe-area-inset-*)` de 
 sitio. `components/app/ui.tsx`: el padding inferior del nav pasa de
 `env(safe-area-inset-bottom)` a `max(8px, env(safe-area-inset-bottom))` — respaldo mínimo para que
 nunca quede en 0 aunque algún navegador siga sin reportar el valor real.
-`tsc` ✓ · `build` ✓ · publicado (commit `11e2c7e`). Pantalla secundaria/fix transversal, sin ronda
-de revisor-visual — **verificación en el celular real del usuario, pendiente de confirmación tras
-este último push** (se le pidió cerrar y volver a abrir la pestaña para descartar caché vieja).
+`tsc` ✓ · `build` ✓ · publicado (commit `11e2c7e`).
+
+⚠️ **NO RESOLVIÓ el problema — el usuario lo confirmó con una prueba dirigida**: pidió cargar
+`coparentia.co/pagos` escribiendo la URL directo (no navegando desde adentro de la app, para
+descartar que fuera "solo pasa en cargas frescas") — Pagos se vio bien así, Inicio seguía mal. Esto
+descartó la teoría de la barra del navegador expandida en cualquier carga fresca: el problema es
+específico de Inicio, no de cómo se llega a la pantalla.
+
+**Causa real (segunda hipótesis, la que sí encajaba)**: Inicio es la única pantalla con un salto de
+alto MARCADO entre su estado de carga (esqueleto corto) y su contenido real (dashboard con anillo,
+2 tarjetas, evento próximo, lista de movimientos, botón flotante) — Pagos/Calendario no tienen ese
+mismo salto tan grande. Cuando el alto de la página crece de golpe SIN que la persona haga scroll,
+Android a veces no recalcula el espacio que le da a su propia barra hasta el primer gesto de scroll
+real — y hasta entonces, el menú fijo de abajo queda con las etiquetas tapadas.
+→ `app/(app)/inicio/page.tsx`: nuevo efecto que, apenas terminan de cargar los datos, empuja el
+scroll 1px hacia abajo y de vuelta (`window.scrollBy(0,1)` + `(0,-1)`, invisible para la persona) —
+el empujón mínimo que hace falta para que el navegador recalcule. `tsc` ✓ · `build` ✓ · publicado
+(commit `d881544`).
+
+⚠️ **TAMPOCO RESOLVIÓ — descartado con una prueba más fina**: el usuario probó en una pestaña de
+incógnito (sin historial/caché que pudiera confundir) y describió el momento exacto: "por un
+segundo se ve bien, pero inmediatamente ajusta pantalla y se pierden los nombres" — confirma que es
+un reajuste real del navegador justo al terminar de cargar, no algo heredado de una visita anterior.
+El empujón de scroll no alcanzaba a corregirlo a tiempo o en la forma correcta.
+
+**Arreglo definitivo (measure, don't guess)**: en vez de adivinar CUÁNDO ocurre el reajuste,
+`components/app/ui.tsx` ahora lo MIDE en vivo con la API del navegador `visualViewport` (el
+"viewport visual", lo que la persona ve de verdad, distinto del "viewport de diseño" donde vive
+`position: fixed` — la diferencia entre los dos es justo el hueco que Android no siempre reparte
+igual entre su propia barra y la página, y que `env(safe-area-inset-bottom)` no cubre, porque ese
+valor es para muescas/barra de gestos, no para esta diferencia). Nuevo hook
+`useDesajusteViewportVisual()`, usado por `<BottomNav>` Y `<BotonFlotante>` (el botón flotante podía
+tener el mismo problema, sin que nadie lo hubiera notado todavía) — corrige la posición de los dos
+en tiempo real, sin importar cuándo o por qué aparezca el desajuste. Se retiró el empujón de scroll
+del checkpoint anterior (quedó reemplazado, no sirve dejarlo). `tsc` ✓ · `build` ✓ · publicado
+(commit `4ab917c`).
+
+✅ **Las etiquetas del menú SÍ aparecieron desde el primer instante** — confirmado por el usuario.
+⚠️ **Pero apareció un efecto secundario real**: al hacer scroll normal en la pantalla, el menú se
+sentía "suelto" (no se quedaba fijo abajo). Causa: el listener de `scroll` de `visualViewport`
+(pensado para cuando el teclado empuja la página) también disparaba con el scroll NORMAL del
+contenido, recalculando la posición del menú en cada instante del gesto.
+→ Se quitó el listener de `scroll` (solo queda `resize`, que es el que de verdad indica que el
+navegador cambió su propio espacio) y se agregaron 150ms de espera antes de aplicar el valor nuevo
+— así no se mueve a mitad de la animación de la barra del navegador, solo cuando ya se asentó.
+`tsc` ✓ · `build` ✓ · publicado (commit `3ca121c`).
+
+⚠️ **TERCER intento, TAMPOCO resolvió** — el usuario probó de nuevo: las etiquetas volvieron a
+aparecer bien al entrar, pero esta vez el menú "se sintió suelto" al hacer scroll (no se quedaba
+fijo abajo). Tres rondas seguidas compensando el síntoma con CSS/JS (safe-area, viewport-fit,
+scroll-nudge, medir con `visualViewport` con y sin el listener de scroll) sin cerrarlo del todo —
+patrón ya visto antes en esta misma pantalla (Inicio, rondas de diseño de 2026-09-09/10: "el
+rendimiento por ronda está decreciendo"). El usuario pidió explícitamente una revisión de fondo,
+no otro parche más ("esto es vital porque proyecta una organización desde el inicio de la app").
+
+### Checkpoint (2026-09-17) — Arreglo DE RAÍZ del menú: deja de ser `position: fixed`
+En vez de seguir compensando CUÁNDO/CUÁNTO se desajusta un menú que "flota" sobre toda la pantalla
+(estrategia agotada tras 3 intentos), se cambió la estructura para que ese tipo de bug deje de ser
+POSIBLE — no depende más de que el navegador reparta bien el espacio entre su propia barra y la
+página.
+
+- `app/(app)/layout.tsx`: el shell pasa de "una columna que scrollea entera + nav flotando encima"
+  a una columna de altura EXACTA (`h-dvh flex flex-col`) con tres partes: el nav de arriba
+  (`AvisoSinConexion`, fijo por su cuenta, sin cambios), un `<main className="flex-1 overflow-y-
+  auto">` que es el ÚNICO que hace scroll, y `<BottomNav>` como hermano normal al final — ya no
+  vive "encima" de nada, vive DESPUÉS, en el flujo normal.
+- `components/app/ui.tsx`:
+  - `<BottomNav>`: pierde `position: fixed`/`inset-x-0`/`bottom` — pasa a ser un elemento normal
+    (`shrink-0`) dentro de la columna del shell. Se retiró el hook `useDesajusteViewportVisual`
+    (los 2 intentos anteriores), ya no hace falta.
+  - `<BotonFlotante>`: pasa de `position: fixed` a `position: sticky` DENTRO del área que hace
+    scroll (`bottom-4`), envuelto en un `div` `flex justify-end` para mantener la alineación a la
+    derecha que tenía. Sigue viéndose "siempre visible" mientras se hace scroll, pero por
+    mecanismo de `sticky` normal, no por posicionarse sobre toda la ventana.
+  - `<ContenedorApp>`: ya no necesita reservar colchón inferior calculado (`pb-[calc(96px/152px+
+    safe-area)]`) porque nada se monta ya encima del contenido — queda en un simple `pb-6`. Se
+    quita el prop `conBotonFlotante` (ya no cambia nada) de los 3 sitios que lo usaban (Inicio,
+    Pagos, Calendario).
+- **Verificado en vivo** (con sesión real, generando el código de acceso vía script de admin en
+  vez de depender de un correo — mismo mecanismo que ya usa `lib/email.ts`, sin exponer ningún
+  secreto): Inicio, Pagos y Calendario se ven y funcionan bien, incluido el modal de "Nuevo evento"
+  (que usa `<Portal>` para escapar del `relative isolate` de `ContenedorApp` — ese mecanismo NO se
+  tocó y sigue funcionando). `tsc` ✓ · `build` ✓ · publicado.
+
+⚠️ **Honestidad sobre el límite de esta verificación**: el navegador de este entorno no puede
+reproducir el comportamiento real de la barra de Chrome en Android (el bug original) — lo que se
+verificó es que la ESTRUCTURA nueva funciona correctamente (scroll contenido, nav fijo, botón
+sticky, modal). El argumento de por qué debería cerrar el bug de raíz es que el menú YA NO
+depende de ningún cálculo de espacio de navegador — pero la confirmación definitiva es la prueba
+del usuario en su celular real, pendiente.
 
 # ESTADO.md — Coparentia (nombre provisional: PensiónClara)
 

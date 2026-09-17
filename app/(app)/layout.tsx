@@ -55,10 +55,17 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
   }
 
   return (
-    <div className="min-h-dvh bg-[var(--bg)] text-[var(--text-primary)] [font-family:var(--font-body)]">
+    // SHELL DE ALTURA FIJA (2026-09-17, corrige de raíz el menú tapado en Android): antes el menú
+    // era `position: fixed` sobre TODA la pantalla, y en Inicio —la única con un salto de alto
+    // marcado entre su esqueleto de carga y su contenido real— Android a veces no repartía igual
+    // el espacio entre su propia barra y la página, dejando las etiquetas tapadas (3 intentos de
+    // compensarlo con CSS/JS no bastaron). Ahora el menú YA NO flota sobre nada: es un hermano fijo
+    // dentro de una columna de exactamente `100dvh`, y solo el contenido de en medio hace scroll.
+    // Ese tipo de bug deja de ser posible, en vez de seguir corrigiéndose después de que pasa.
+    <div className="flex h-dvh flex-col bg-[var(--bg)] text-[var(--text-primary)] [font-family:var(--font-body)]">
       <AvisoSinConexion />
       <RegistradorEventos />
-      {children}
+      <main className="min-h-0 flex-1 overflow-y-auto">{children}</main>
       <BottomNav />
     </div>
   );

@@ -15,46 +15,6 @@ import { useEffect, useState, type ReactNode } from 'react';
 const EASE_SERENO = [0.22, 0.61, 0.36, 1] as const;
 const DUR_BASE = 0.34;
 
-/* ── useDesajusteViewportVisual — el arreglo real del menú tapado en Android (hallazgo del
-   usuario, 2026-09-17: SOLO en Inicio, justo al terminar de cargar, "por un segundo se ve bien y
-   luego ajusta pantalla"). Causa de fondo: en Android, cuando una pantalla pasa de "más corta que
-   la ventana" (el esqueleto de carga) a "más alta, con scroll" (el dashboard real), el navegador
-   reserva espacio para su propia barra de forma distinta al "viewport de diseño" (donde vive
-   `position: fixed`) que al "viewport visual" (lo que la persona ve de verdad) — hay un hueco entre
-   los dos que `env(safe-area-inset-bottom)` NO cubre (eso es para muescas/barra de gestos de iOS,
-   no para esta diferencia). En vez de adivinar CUÁNDO pasa ese ajuste (se intentó con un empujón de
-   scroll y no bastó), esto lo mide en tiempo real con `visualViewport` y corrige el menú siempre
-   que haga falta, sin importar el motivo del desajuste.
-
-   ⚠️ Corrección sobre el primer intento: escuchar el evento `scroll` de `visualViewport` (pensado
-   para cuando el teclado empuja la página) también disparaba con el scroll NORMAL de la pantalla,
-   y el menú se sentía "suelto" en vez de fijo (hallazgo del usuario, misma sesión). Ahora solo
-   escucha `resize` (el que de verdad indica que el navegador cambió cuánto espacio se reserva a sí
-   mismo), y espera 150ms de silencio antes de aplicar el nuevo valor — así no se mueve a mitad de
-   la animación de la propia barra del navegador, solo cuando ya se asentó. */
-function useDesajusteViewportVisual(): number {
-  const [desajuste, setDesajuste] = useState(0);
-  useEffect(() => {
-    const vv = window.visualViewport;
-    if (!vv) return;
-    let temporizador: ReturnType<typeof setTimeout>;
-    const actualizar = () => {
-      clearTimeout(temporizador);
-      temporizador = setTimeout(() => {
-        const hueco = window.innerHeight - vv.height;
-        setDesajuste(hueco > 0 ? Math.round(hueco) : 0);
-      }, 150);
-    };
-    actualizar();
-    vv.addEventListener('resize', actualizar);
-    return () => {
-      clearTimeout(temporizador);
-      vv.removeEventListener('resize', actualizar);
-    };
-  }, []);
-  return desajuste;
-}
-
 const DESTINOS: { href: string; label: string; icon: LucideIcon }[] = [
   { href: '/inicio', label: 'Inicio', icon: Home },
   { href: '/pagos', label: 'Pagos', icon: Wallet },
@@ -153,17 +113,18 @@ function conMarcador(titulo: string, palabra?: string): ReactNode {
   );
 }
 
-/* ── <BottomNav> — nav fija al fondo, 4 destinos, ícono activo con fondo propio (nunca del
-   mismo color que su contenedor — regla anti-slop de tapar el ícono) ── */
+/* ── <BottomNav> — hermano de altura fija en el shell (`app/(app)/layout.tsx`), NO `position:
+   fixed`: tres intentos de compensar el menú "flotante" con CSS/JS (safe-area, viewport-fit,
+   scroll-nudge, medir con `visualViewport`) no bastaron para un bug real de Android en Inicio
+   (2026-09-17) — el menú dejó de flotar sobre la pantalla, así que ese tipo de bug ya no puede
+   pasar: nunca depende de que el navegador reparta bien el espacio con su propia barra. ── */
 export function BottomNav() {
   const pathname = usePathname();
   const reduce = useReducedMotion();
-  const desajuste = useDesajusteViewportVisual();
   return (
     <nav
       aria-label="Navegación principal"
-      style={{ bottom: desajuste }}
-      className="fixed inset-x-0 z-20 border-t border-[color-mix(in_oklab,var(--text-tertiary)_15%,transparent)] bg-[var(--surface)]/95 backdrop-blur [padding-bottom:max(8px,env(safe-area-inset-bottom))]"
+      className="shrink-0 border-t border-[color-mix(in_oklab,var(--text-tertiary)_15%,transparent)] bg-[var(--surface)]/95 backdrop-blur [padding-bottom:max(8px,env(safe-area-inset-bottom))]"
     >
       <div className="mx-auto flex max-w-[520px] items-stretch justify-around">
         {DESTINOS.map(({ href, label, icon: Icon }) => {
@@ -343,21 +304,25 @@ export function IconoCirculo({ icon: Icon, size = 20 }: { icon: LucideIcon; size
   );
 }
 
-/* ── <BotonFlotante> — acción primaria de la sección, siempre visible (proximidad, regla 12) ── */
+/* ── <BotonFlotante> — acción primaria de la sección, siempre visible (proximidad, regla 12).
+   `position: sticky` dentro del área que hace scroll (ya NO `fixed` sobre toda la pantalla): se
+   queda pegado a 16px del fondo de lo visible mientras se hace scroll, sin necesitar saber nada
+   del menú de abajo ni del espacio que reserve el navegador — mismo espíritu del arreglo de
+   `<BottomNav>` (2026-09-17). El envoltorio no bloquea clics fuera del botón (`pointer-events-none`
+   + `pointer-events-auto` solo en el botón), porque ocupa todo el ancho para poder alinearlo a la
+   derecha con `justify-end`. ── */
 export function BotonFlotante({ onClick, children }: { onClick: () => void; children: ReactNode }) {
-  // Mismo desajuste visual/layout que corrige <BottomNav> — sin esto, el botón podía quedar mal
-  // ubicado en el mismo momento (carga de Inicio) en el que el menú de abajo perdía sus etiquetas.
-  const desajuste = useDesajusteViewportVisual();
   return (
-    <motion.button
-      type="button"
-      onClick={onClick}
-      whileTap={{ scale: 0.96 }}
-      style={{ bottom: `calc(76px + env(safe-area-inset-bottom) + ${desajuste}px)` }}
-      className="fixed right-4 z-10 flex h-14 items-center gap-2 rounded-full bg-[var(--accent)] px-5 text-[15px] font-semibold text-[var(--bg)] shadow-[0_8px_24px_color-mix(in_oklab,var(--accent)_35%,transparent)] [touch-action:manipulation]"
-    >
-      {children}
-    </motion.button>
+    <div className="pointer-events-none sticky bottom-4 z-10 flex justify-end">
+      <motion.button
+        type="button"
+        onClick={onClick}
+        whileTap={{ scale: 0.96 }}
+        className="pointer-events-auto flex h-14 items-center gap-2 rounded-full bg-[var(--accent)] px-5 text-[15px] font-semibold text-[var(--bg)] shadow-[0_8px_24px_color-mix(in_oklab,var(--accent)_35%,transparent)] [touch-action:manipulation]"
+      >
+        {children}
+      </motion.button>
+    </div>
   );
 }
 
@@ -391,19 +356,14 @@ export function ErrorDeCarga({ onReintentar }: { onReintentar: () => void }) {
   );
 }
 
-/* ── <ContenedorApp> — shell de cada pantalla: min-h-dvh, padding lateral, espacio para el nav fijo ── */
-export function ContenedorApp({ children, conBotonFlotante = false }: { children: ReactNode; conBotonFlotante?: boolean }) {
+/* ── <ContenedorApp> — shell de cada pantalla: padding lateral + colchón inferior de respiro.
+   Ya NO reserva espacio para el nav ni para <BotonFlotante> (2026-09-17): el nav es un hermano de
+   altura fija fuera del área que hace scroll (`app/(app)/layout.tsx`) y el FAB usa `position:
+   sticky` en vez de `fixed` — ninguno de los dos se monta ya sobre el contenido, así que no hace
+   falta calcular cuánto colchón dejarles. */
+export function ContenedorApp({ children }: { children: ReactNode }) {
   return (
-    // El colchón inferior tenía 96px, suficiente para el nav fijo pero NO para el botón flotante,
-    // que llega a ~132px: en las pantallas con FAB se montaba encima de la última tarjeta de la
-    // lista y tapaba su contenido. `conBotonFlotante` sube el colchón solo donde hace falta.
-    <div
-      className={`relative isolate mx-auto min-h-dvh max-w-[520px] px-4 pt-[max(20px,env(safe-area-inset-top))] ${
-        conBotonFlotante
-          ? 'pb-[calc(152px+env(safe-area-inset-bottom))]'
-          : 'pb-[calc(96px+env(safe-area-inset-bottom))]'
-      }`}
-    >
+    <div className="relative isolate mx-auto max-w-[520px] px-4 pb-6 pt-[max(20px,env(safe-area-inset-top))]">
       {/* LUZ AMBIENTAL — el fondo de la app interna era un color liso en las cuatro secciones, y
           "profundidad" fue el eje que el revisor bajó una y otra vez. Esto no es decoración: es el
           3er nivel de profundidad que FICHA-ARTE declara (base / elevado / hundido) y que aquí
