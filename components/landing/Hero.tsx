@@ -80,33 +80,42 @@ export function Hero({
           )}
         </header>
 
-        {/* Carga inmediata: fade simple 300ms — el LCP manda (55 T4) */}
+        {/* HERO EN DOS COLUMNAS DESDE `lg` (2026-09-17) ───────────────────────────────────────
+            En celular sigue siendo la pila centrada de siempre. En computador pasa a copy a la
+            izquierda + producto a la derecha, que es como resuelven el hero las tres apps del
+            nicho (Niddo, OurFamilyWizard, 2houses): antes era una columna centrada con la captura
+            estirada a 720px — el UI de la app se veía al doble de su tamaño natural, como una
+            ampliación, y el primer viewport no mostraba ni un argumento completo.
+            Carga inmediata: fade simple 300ms — el LCP manda (55 T4). */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.3 }}
-          className="mx-auto flex max-w-[820px] flex-col items-center pt-10 text-center md:pt-16"
+          className="mx-auto flex max-w-[820px] flex-col items-center pt-10 text-center md:pt-16 lg:mx-0 lg:grid lg:max-w-none lg:grid-cols-[1.02fr_0.98fr] lg:items-center lg:gap-14 lg:pt-12 lg:text-left"
         >
-          {/* H1: bold completo por defecto; el acento lo pone el [acento] del copy */}
-          <h1 className="text-balance text-[40px] font-bold leading-[1.08] tracking-[-0.01em] text-[var(--text-primary)] [font-family:var(--font-display)] md:text-[60px]">
-            <MarkedCopy text={h1Marked} />
-          </h1>
+          <div className="flex flex-col items-center lg:items-start">
+            {/* H1: bold completo por defecto; el acento lo pone el [acento] del copy */}
+            <h1 className="text-balance text-[40px] font-bold leading-[1.08] tracking-[-0.01em] text-[var(--text-primary)] [font-family:var(--font-display)] md:text-[60px] lg:text-[52px] xl:text-[58px]">
+              <MarkedCopy text={h1Marked} />
+            </h1>
 
-          <p className="mt-4 max-w-[560px] text-[17px] leading-relaxed text-[var(--text-secondary)] md:text-[18px]">
-            <MarkedCopy text={subtitulo} />
-          </p>
+            <p className="mt-4 max-w-[560px] text-[17px] leading-relaxed text-[var(--text-secondary)] md:text-[18px]">
+              <MarkedCopy text={subtitulo} />
+            </p>
 
-          <div className="mt-6 w-full sm:w-auto">
-            <CtaButton href={ctaHref}>{ctaLabel}</CtaButton>
+            <div className="mt-6 w-full sm:w-auto">
+              <CtaButton href={ctaHref}>{ctaLabel}</CtaButton>
+            </div>
+
+            {/* Franja de prueba social: 8-12px bajo el CTA — SOLO números reales */}
+            {socialProof && (
+              <div className="mt-3 text-[13px] text-[var(--text-secondary)]">{socialProof}</div>
+            )}
           </div>
 
-          {/* Franja de prueba social: 8-12px bajo el CTA — SOLO números reales */}
-          {socialProof && (
-            <div className="mt-3 text-[13px] text-[var(--text-secondary)]">{socialProof}</div>
-          )}
-
-          {/* Visual del producto: asoma en el primer viewport e invita al scroll */}
-          <div className="mt-10 w-full max-w-[720px]">
+          {/* Visual del producto: asoma en el primer viewport e invita al scroll. En computador se
+              limita al ancho real de un teléfono para que la captura se lea a su tamaño natural. */}
+          <div className="mt-10 w-full max-w-[720px] lg:mt-0 lg:max-w-[380px] lg:justify-self-end">
             {visual ? (
               <div className="overflow-hidden rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--accent)_18%,transparent)] shadow-[var(--shadow-2)]">
                 {visual}
