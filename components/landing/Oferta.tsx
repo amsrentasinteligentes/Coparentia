@@ -96,7 +96,7 @@ function Features({ items, origen }: { items: string[]; origen: string }) {
 }
 
 export function Oferta({
-  kicker = 'LA OFERTA',
+  kicker = 'PLANES Y PRECIOS',
   tituloMarked,
   trialDias,
   anual,
@@ -148,9 +148,9 @@ export function Oferta({
         )}
 
         {/* Cards: ANUAL PRIMERO en el DOM — en mobile apilado arriba, nunca scroll horizontal */}
-        <div className="mx-auto mt-10 grid max-w-[880px] grid-cols-1 items-start gap-6 md:grid-cols-2">
+        <div className="mx-auto mt-10 grid max-w-[880px] grid-cols-1 items-stretch gap-6 md:grid-cols-2">
           {/* ── ANUAL (recomendado): hairline 2px + fondo acento sutil + sombra tintada ── */}
-          <motion.div variants={item} className="relative md:-translate-y-2">
+          <motion.div variants={item} className="relative">
             {anual.badge && (
               <span className="absolute -top-[10px] left-1/2 z-10 -translate-x-1/2 rounded-full border border-[color-mix(in_oklab,var(--accent)_25%,transparent)] bg-[var(--accent)] px-3 py-1 text-[11px] font-bold uppercase tracking-[0.06em] text-[var(--bg)]">
                 {anual.badge}

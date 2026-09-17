@@ -185,6 +185,9 @@ function filasExpediente(r: Respuestas): FilaExpediente[] {
 
 // Pasos numerados solo para el % de la barra (7 preguntas reales + 2 reconocimientos + loading).
 const TOTAL_PASOS = 10;
+// Los pasos que son PREGUNTA (los otros son reconocimientos y la carga): el contador dice
+// "Pregunta n de 7" porque eso es lo que la persona cuenta — "Paso 1 de 10" prometía 10 preguntas.
+const PASOS_PREGUNTA = [0, 1, 2, 3, 5, 6, 7];
 const PASO_LOADING = 9;
 
 export default function Onboarding() {
@@ -289,8 +292,9 @@ export default function Onboarding() {
       {paso < PASO_LOADING && (
         <BarraAtras
           porcentaje={((paso + 1) / TOTAL_PASOS) * 100}
-          pasoActual={paso + 1}
-          pasoTotal={TOTAL_PASOS}
+          pasoActual={PASOS_PREGUNTA.filter((p) => p <= paso).length}
+          pasoTotal={PASOS_PREGUNTA.length}
+          palabra="Pregunta"
           onAtras={atrasLocal ?? (paso === 0 ? () => router.push('/') : atras)}
         />
       )}
@@ -315,7 +319,10 @@ export default function Onboarding() {
           `mt-auto`. Con `flex-none` el bloque dejaba de estirarse y el sobrante caía al final de
           la pantalla como ~115px de fondo muerto — el revisor lo detectó en la ronda siguiente.
           En computador no estira: la columna ya la compone el marco. */}
-      <div className="relative mt-6 flex flex-1 flex-col lg:flex-none">
+      {/* En los pasos con tarjeta de resumen el bloque NO estira (`flex-none`): así el aire sobrante
+          se reparte arriba y abajo de la tarjeta (`my-auto`) en vez de quedar todo entre la caja de
+          contexto y la tarjeta. En los demás pasos sí estira, para anclar su CTA abajo. */}
+      <div className={`relative mt-6 flex flex-col ${PASOS_CON_RESUMEN_MOVIL.includes(paso) ? 'flex-none' : 'flex-1'} lg:flex-none`}>
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
             key={paso}
@@ -702,7 +709,9 @@ function PreguntaMeta({ valor, onFijar }: { valor: number; onFijar: (v: number) 
           step={1}
           value={n}
           onChange={(e) => setN(Number(e.target.value))}
-          className="mt-8 w-full accent-[var(--accent)]"
+          // Antes era el control nativo del navegador: el único elemento de todo el flujo fuera
+          // del kit (sin radio, sin sombra tintada). Pista fina + pulgar de acento con anillo.
+          className="mt-8 h-6 w-full cursor-pointer appearance-none bg-transparent [touch-action:manipulation] [&::-moz-range-thumb]:size-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:bg-[var(--accent)] [&::-moz-range-thumb]:shadow-[0_0_0_6px_color-mix(in_oklab,var(--accent)_20%,transparent)] [&::-moz-range-track]:h-1 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] [&::-webkit-slider-runnable-track]:h-1 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] [&::-webkit-slider-thumb]:-mt-2.5 [&::-webkit-slider-thumb]:size-6 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[var(--accent)] [&::-webkit-slider-thumb]:shadow-[0_0_0_6px_color-mix(in_oklab,var(--accent)_20%,transparent)] focus-visible:outline-none focus-visible:[&::-webkit-slider-thumb]:shadow-[0_0_0_8px_color-mix(in_oklab,var(--accent)_35%,transparent)]"
           aria-label="Meses de comprobantes a organizar"
         />
         <div className="mt-1 flex w-full justify-between text-[12px] tabular-nums text-[var(--text-tertiary)]">
@@ -912,7 +921,7 @@ function LoadingPlan({ respuestas, onListo }: { respuestas: Respuestas; onListo:
               ) : (
                 <span
                   className={`mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full border-2 ${
-                    enCurso ? 'border-[var(--accent)] animate-pulse' : 'border-[color-mix(in_oklab,var(--text-tertiary)_40%,transparent)]'
+                    enCurso ? 'border-[var(--accent)] motion-safe:animate-pulse' : 'border-[color-mix(in_oklab,var(--text-tertiary)_40%,transparent)]'
                   }`}
                 />
               )}

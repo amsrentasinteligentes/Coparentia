@@ -1,3 +1,11 @@
+### Checkpoint (2026-09-17, noche) — REDISEÑO landing/onboarding/paywall CERRADO en techo documentado
+Seis rondas de revisor-visual; final r6: landing 33/40·16/20·16/20, onboarding 30/40·16/20, paywall
+32/40·16/20·17/20. Craft pasa en las tres; usabilidad no llega a 36 y llevaba dos rondas sin subir →
+se cierra (detalle en el checkpoint "REDISEÑO EN CURSO" y en "Estado de los 3 gates"). Publicado en
+producción para que el usuario lo vea en celular y computador. Punto de restauración: `73151e8`.
+SIGUIENTE: el usuario decide si se queda con el rediseño; luego, prueba de cancelación/reembolso con
+la cuenta de Ivonne (pendiente de esta noche) y revisar que el correo de bienvenida llegue "Delivered".
+
 ### Checkpoint (2026-09-17) — Nueva sección "Asistencia Jurídica" (5to destino del nav)
 Pedido del usuario: una pantalla nueva para que el usuario escriba dudas legales (llegan por
 correo/WhatsApp) y para mover ahí la tarjeta de abogado patrocinado que vivía al final de
@@ -206,12 +214,37 @@ de abajo se deshace con `git reset --hard 73151e8`, decisión del usuario).
   bloque); <Chip> de h-14 a min-h-14 (opciones de 2 líneas se salían de la caja).
 
 **Puntajes por ronda (revisor-visual, contexto limpio):**
-- Onboarding: 29/40·14/20 → 27·13 → 31·16 → 31·16 → 30·16 → (r6 pendiente). Craft PASA desde la r3.
-- Paywall: 31/40·15/20·copy 18 → 27·14·17 → 33·16·18 → 32·14·18 → 30·14·16 → (r6 pendiente).
-- Landing: 37/40·17/20·18/20 (viejo, solo 375) → 34·15·17 (1440) → 32·15·15 → (r6 pendiente).
-⚠️ PATRÓN: cada ronda cierra TODOS los defectos de la anterior y el puntaje no sube — cada revisor
-(contexto limpio) encuentra defectos distintos que el anterior no registró. Cinco rondas oscilando
-entre 27 y 34. Si la r6 no llega a 36 se documenta el techo y se cierra el rediseño.
+- Onboarding: 29/40·14/20 → 27·13 → 31·16 → 31·16 → 30·16 → **30·16 (r6)**. Craft PASA.
+- Paywall: 31/40·15/20·copy 18 → 27·14·17 → 33·16·18 → 32·14·18 → 30·14·16 → **32·16·17 (r6)**. Craft y copy PASAN.
+- Landing: 37/40·17/20·18/20 (viejo, solo 375) → 34·15·17 (1440) → 32·15·15 → **33·16·16 (r6)**. Craft y copy PASAN.
+
+**TECHO DOCUMENTADO (2026-09-17, tras la r6) — el rediseño se CIERRA aquí.** Seis rondas: cada una
+corrigió el 100% de los defectos de la anterior (verificados uno a uno por el revisor siguiente) y la
+usabilidad se movió entre 27 y 34 sin tocar 36. Craft ya pasa en las tres pantallas; copy pasa en las
+dos que venden. Lo que queda son hallazgos NUEVOS de cada revisor (contexto limpio → mira distinto),
+no regresiones: es rendimiento decreciente, no una pantalla rota. Los defectos de la r6 que eran
+baratos se aplicaron igual (abajo); los que cambian decisiones del usuario o del SO quedan anotados
+como pendientes y NO se ejecutaron:
+- Landing r6 #2: mover la sección "Para abogados de familia" a /abogados — el usuario la pidió EN la
+  landing; se conserva. #5: CtaButton con next/link + estado "yendo" — pendiente menor.
+- Landing r6 #1 (fondo): reemplazar el PNG del hero por el componente real (anillo + conteo) — mejora
+  real pero es una pieza nueva; queda en la cola de pulido. Mínimo aplicado: la tarjeta es un enlace.
+- Onboarding r6 #4: FICHA-ARTE dice --text-secondary #7F93B3 y el código usa #a8bad6 (8.1:1) — drift
+  documentado; se mantiene el del código por contraste, actualizar la ficha cuando se reabra.
+- Paywall r6 menores: "Corregir" con área táctil 29px; CLS ~20px al llegar la TRM; spinner en
+  "Abriendo…"; el nombre completo de la garantía solo en el <details>.
+
+**Pulido aplicado tras la r6 (sin ronda 7 — verificado por medición, no por revisor):**
+- Onboarding: contador "Pregunta n de 7" (BarraAtras acepta `palabra`; PASOS_PREGUNTA=[0,1,2,3,5,6,7]);
+  tarjeta móvil con 0 respuestas = una línea ("7 preguntas · unos 2 minutos") y el bloque del paso
+  pasa a flex-none en los pasos con tarjeta para repartir el aire arriba y abajo; slider estilizado
+  con el kit (pista fina + pulgar de acento con anillo); motion-safe:animate-pulse; pb safe-area 24px.
+- Paywall: beneficio 3 → "Menos que un correo de tu abogado (≈US$100)" (el "desde Ajustes" no era
+  exacto); check alineado con el nombre del plan (mt-2, medido 2px de diferencia); titular con
+  guion no huérfano y acento solo en "queda fechado"; display 28px en los dos pasos; los tres
+  beneficios quedan sobre el bloque fijo al abrir a 375×812 (medido: 662 < 665).
+- Landing: kickers "CÓMO FUNCIONA" / "PLANES Y PRECIOS"; tarjetas de precio sin translate y con
+  items-stretch; Mensual con 4 bullets (incluye la garantía); la captura del hero es un <a> al CTA.
 
 **Cierre de la r5 (aplicado en el commit siguiente a 60db547):**
 - Kit: MarcoFunnel centra las dos columnas como UNIDAD (content-center + items-start; el fondo del
@@ -2235,6 +2268,15 @@ sigue siendo la pantalla de login, no landing/onboarding/paywall. Se posponen lo
 justificación: **veredicto:landing** sigue LISTA (37/40·17/20·18/20), el gate solo marca "caducado"
 por comparar mtime de CUALQUIER `.tsx` del proyecto; **veredicto:onboarding** y **veredicto:paywall**
 siguen NO LISTA por el techo estructural ya documentado, sin tocar en esta sesión.
+
+### Estado de los 3 gates de veredicto — REDISEÑO CERRADO EN TECHO DOCUMENTADO (2026-09-17)
+Seis rondas de revisor-visual (detalle y puntajes en el checkpoint "REDISEÑO EN CURSO"). Resultado
+final r6: **veredicto:landing** 33/40·16/20·16/20 · **veredicto:onboarding** 30/40·16/20 ·
+**veredicto:paywall** 32/40·16/20·17/20. Craft pasa en las tres; copy pasa en las dos que venden;
+usabilidad no llega a 36 en ninguna y llevaba dos rondas sin subir → se POSPONE la ronda 7 y el
+rediseño se cierra aquí (rendimiento decreciente documentado, mismo criterio que en las rondas
+2026-09-09/11). Los defectos baratos de la r6 se aplicaron y verificaron por medición; los que
+quedan están listados en ese checkpoint. Punto de restauración si al usuario no le gusta: `73151e8`.
 
 ### Estado de los 3 gates de veredicto — REDISEÑO, ronda 5 en curso (2026-09-17, commit 60db547)
 Las tres pantallas del dinero se están rediseñando a pedido del usuario ("ajusta todas las páginas

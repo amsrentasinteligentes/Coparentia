@@ -155,6 +155,7 @@ export default function Home() {
             'Sello de Confianza en cada comprobante',
             'Expediente exportable en PDF foliado',
             'Cancelas cuando quieras, sin permanencia',
+            'Garantía del Primer Expediente (15 días)',
           ],
         }}
       />

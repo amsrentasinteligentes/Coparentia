@@ -52,11 +52,14 @@ export function BarraAtras({
   onAtras,
   pasoActual,
   pasoTotal,
+  palabra = 'Paso',
 }: {
   porcentaje: number;
   onAtras?: () => void;
   pasoActual?: number;
   pasoTotal?: number;
+  /** "Paso" por defecto; el onboarding usa "Pregunta" (cuenta solo las preguntas). */
+  palabra?: string;
 }) {
   const router = useRouter();
   return (
@@ -71,7 +74,7 @@ export function BarraAtras({
       </button>
       <BarraProgreso porcentaje={porcentaje} />
       <span className="shrink-0 whitespace-nowrap text-right text-[12px] tabular-nums text-[var(--text-tertiary)]">
-        {pasoActual && pasoTotal ? `Paso ${pasoActual} de ${pasoTotal}` : `${Math.round(Math.max(6, Math.min(100, porcentaje)))}%`}
+        {pasoActual && pasoTotal ? `${palabra} ${pasoActual} de ${pasoTotal}` : `${Math.round(Math.max(6, Math.min(100, porcentaje)))}%`}
       </span>
     </div>
   );
@@ -281,7 +284,7 @@ export function MarcoFunnel({ panel, children }: { panel?: ReactNode; children: 
           </aside>
         </>
       )}
-      <div className="mx-auto flex min-h-dvh w-full max-w-[520px] flex-col px-4 pt-4 pb-[max(20px,env(safe-area-inset-bottom))] lg:min-h-0 lg:max-w-[560px] lg:px-10 lg:py-8">
+      <div className="mx-auto flex min-h-dvh w-full max-w-[520px] flex-col px-4 pt-4 pb-[max(24px,env(safe-area-inset-bottom))] lg:min-h-0 lg:max-w-[560px] lg:px-10 lg:py-8">
         {children}
       </div>
     </div>

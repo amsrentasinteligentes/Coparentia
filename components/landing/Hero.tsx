@@ -117,9 +117,15 @@ export function Hero({
               limita al ancho real de un teléfono para que la captura se lea a su tamaño natural. */}
           <div className="mt-10 w-full max-w-[720px] lg:mt-0 lg:max-w-[380px] lg:justify-self-end">
             {visual ? (
-              <div className="overflow-hidden rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--accent)_18%,transparent)] bg-[var(--bg)] pb-6 shadow-[var(--shadow-2)]">
+              /* La captura tiene filas que PARECEN tapables (el "›" del próximo evento): tocarla
+                 lleva al mismo destino que el CTA, nunca a nada (regla 11 de UX). */
+              <a
+                href={ctaHref}
+                aria-label={ctaLabel}
+                className="block overflow-hidden rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--accent)_18%,transparent)] bg-[var(--bg)] pb-6 shadow-[var(--shadow-2)] transition-transform duration-150 active:scale-[0.99]"
+              >
                 {visual}
-              </div>
+              </a>
             ) : (
               /* Placeholder HONESTO (55 §1.3): dashed + ratio fijo (CLS 0) + sugerencia.
                  Queda anotado como pendiente en ESTADO.md hasta montar el visual real. */

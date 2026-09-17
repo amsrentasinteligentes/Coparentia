@@ -43,7 +43,7 @@ export interface SolucionProps {
 }
 
 export function Solucion({
-  kicker = 'EL MECANISMO',
+  kicker = 'CÓMO FUNCIONA',
   tituloMarked,
   mecanismo,
   bigIdeaMarked,

@@ -71,6 +71,16 @@ export function PanelExpediente({
           no progreso. */}
       <p className="text-[13px] font-semibold text-[var(--text-primary)]">Tu expediente</p>
 
+      {/* En celular, con CERO respuestas, cuatro filas vacías + "y 3 más" ocupaban el 37% de la
+          vista sin un solo dato (revisor, 6ª ronda): se resume en una línea y las filas aparecen
+          desde la primera respuesta. En computador el panel sí muestra el índice completo. */}
+      {compacto && contestadas.length === 0 ? (
+        <p className="mt-2 text-[13px] text-[var(--text-tertiary)]">
+          {filas.length} preguntas · unos 2 minutos. Cada respuesta aparece aquí.
+        </p>
+      ) : (
+      <>
+
       {/* `aria-live`: quien usa lector de pantalla oye que su respuesta quedó registrada en el
           expediente, que es justo el mensaje de esta tarjeta — sin él, el cambio pasaba mudo. */}
       <ul aria-live="polite" className={`mt-4 flex flex-col ${compacto ? 'gap-1.5' : 'gap-3'}`}>
@@ -128,6 +138,8 @@ export function PanelExpediente({
         <p className="mt-3 text-[12px] text-[var(--text-tertiary)]">
           y {ocultas} {ocultas === 1 ? 'pregunta más' : 'preguntas más'}
         </p>
+      )}
+      </>
       )}
 
       <p className="mt-4 flex items-start gap-2 border-t border-[color-mix(in_oklab,var(--text-tertiary)_12%,transparent)] pt-4 text-[12px] leading-[1.5] text-[var(--text-tertiary)]">

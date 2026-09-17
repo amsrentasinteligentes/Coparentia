@@ -54,7 +54,7 @@ function CheckPlan({ activo }: { activo: boolean }) {
   return (
     <span
       aria-hidden="true"
-      className={`mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full border-2 transition-colors ${
+      className={`mt-2 flex size-5 shrink-0 items-center justify-center rounded-full border-2 transition-colors ${
         activo ? 'border-[var(--accent)] bg-[var(--accent)]' : 'border-[color-mix(in_oklab,var(--text-tertiary)_40%,transparent)] bg-transparent'
       }`}
     >
@@ -330,7 +330,7 @@ function ValorYPrueba({
 
   return (
     <div className="flex flex-1 flex-col">
-      <h1 className="relative text-balance text-[30px] font-bold leading-[1.12] text-[var(--text-primary)] [font-family:var(--font-display)]">
+      <h1 className="relative text-balance text-[28px] font-bold leading-[1.12] text-[var(--text-primary)] [font-family:var(--font-display)]">
         <Halo />
         Tu expediente está <span className="text-[var(--accent)]">listo para empezar</span>
       </h1>
@@ -456,13 +456,13 @@ function Precio({
         {/* El <Marcador> envolvía "captura de WhatsApp": a 375px esa frase cruza tres renglones y
             el subrayado se partía en tres trazos sueltos que parecían marcar palabras al azar.
             Marcando UNA sola palabra —la memorable— el trazo siempre cae entero en un renglón. */}
-        Una captura de WhatsApp <Marcador>se pierde</Marcador> — <span className="text-[var(--accent)]">tu expediente queda fechado</span>
+        Una captura de WhatsApp <Marcador>se pierde</Marcador>&nbsp;— tu expediente <span className="text-[var(--accent)]">queda fechado</span>
       </h1>
 
       {/* `radiogroup` + `aria-checked`: las dos tarjetas eran <button> sueltos y el check estaba
           marcado como decorativo, así que con lector de pantalla NINGÚN plan aparecía elegido —
           alguien ciego no podía saber qué está por contratar. */}
-      <div role="radiogroup" aria-label="Elige tu plan" className="mt-8 flex flex-col gap-3 lg:mt-6">
+      <div role="radiogroup" aria-label="Elige tu plan" className="mt-4 flex flex-col gap-2 lg:mt-6">
         <motion.button
           type="button"
           role="radio"
@@ -500,7 +500,7 @@ function Precio({
                   tenía fondo base y tarjeta elevada; FICHA-ARTE declara tres niveles. La referencia
                   en pesos —dato de apoyo, no el precio— va sobre una superficie HUNDIDA: se
                   distingue del precio principal sin agregar otro color ni otro tamaño de letra. */}
-              <p className="mt-2 rounded-[var(--radius-button)] bg-[var(--surface-2)] px-3 py-1.5 text-[13px] text-[var(--text-secondary)] shadow-[inset_0_1px_2px_rgb(0_0_0_/_0.3)]">
+              <p className="mt-1.5 rounded-[var(--radius-button)] bg-[var(--surface-2)] px-3 py-1 text-[13px] text-[var(--text-secondary)] shadow-[inset_0_1px_2px_rgb(0_0_0_/_0.3)]">
                 {PLAN_ANUAL.totalAnual}
                 {trm && <span className="block text-[var(--text-tertiary)] lg:ml-2 lg:inline">≈ {aproximadoEnPesos(PLAN_ANUAL.cobroAnual, trm)} COP</span>}
               </p>
@@ -533,7 +533,7 @@ function Precio({
             </div>
             {/* Solo la tarjeta Anual mostraba su total, así que el "ahorras US$30.88" no se podía
                 comprobar contra nada: faltaba el término de comparación. */}
-            <p className="mt-2 rounded-[var(--radius-button)] bg-[var(--surface-2)] px-3 py-1.5 text-[13px] text-[var(--text-secondary)] shadow-[inset_0_1px_2px_rgb(0_0_0_/_0.3)]">
+            <p className="mt-1.5 rounded-[var(--radius-button)] bg-[var(--surface-2)] px-3 py-1 text-[13px] text-[var(--text-secondary)] shadow-[inset_0_1px_2px_rgb(0_0_0_/_0.3)]">
               {PLAN_MENSUAL.totalAnual}
               {trm && <span className="block text-[var(--text-tertiary)] lg:ml-2 lg:inline">≈ {aproximadoEnPesos(PLAN_MENSUAL.cobroAnual, trm)} COP</span>}
             </p>
@@ -546,11 +546,11 @@ function Precio({
           la misma lista hace que la pantalla se sienta vacía de argumentos. Ahora responden lo que
           de verdad se pregunta EN EL MOMENTO DE PAGAR: cuánto cuesta en realidad, si sirve sin la
           otra parte, y qué pasa si me arrepiento. Los tres son hechos comprobables del producto. */}
-      <div className="mt-4 flex flex-col gap-2.5 lg:mt-3">
+      <div className="mt-3 flex flex-col gap-2">
         {[
           { icon: ShieldCheck, pre: 'Te sale a ', fuerte: costoDiario, post: ' al día.' },
           { icon: HeartHandshake, pre: 'Funciona ', fuerte: 'aunque la otra persona no la use', post: '.' },
-          { icon: FileCheck2, pre: 'Cancelas ', fuerte: 'cuando quieras', post: ', desde Ajustes.' },
+          { icon: FileCheck2, pre: 'Menos que ', fuerte: 'un correo de tu abogado', post: ' (≈US$100).' },
         ].map(({ icon: Icon, pre, fuerte, post }) => (
           <div key={fuerte} className="flex items-center gap-3">
             <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[color-mix(in_oklab,var(--accent)_12%,transparent)]">
@@ -571,7 +571,7 @@ function Precio({
           (a) señales de confianza JUNTAS sobre el CTA — garantía y pago seguro son lo mismo;
           (b) el CTA con su aviso de renovación (obligatorio, no se toca);
           (c) la salida y la letra chica, separadas 16px del resto para que no compitan. */}
-      <div className="mt-auto pt-6 lg:pt-4">
+      <div className="mt-auto pt-4">
         {/* Hairline degradada también aquí: existía solo en el paso 1, así que el sistema de
             profundidad cambiaba entre dos pantallas seguidas (defecto del revisor). */}
         <div
@@ -589,7 +589,7 @@ function Precio({
             alguien lo busca (<details> nativo: cero JS, accesible por teclado). */}
         {/* El detalle de la garantía queda FUERA del bloque fijo (se lee una vez, no hace falta
             tenerlo siempre a la vista); el nombre y el sello de pago seguro sí entran con el CTA. */}
-        <details className="mb-3 w-full text-center">
+        <details className="mb-2 w-full text-center">
           <summary className="cursor-pointer list-none text-[12px] text-[var(--text-tertiary)] underline-offset-2 [touch-action:manipulation] hover:underline">
             Cómo funciona la garantía
           </summary>
@@ -616,7 +616,7 @@ function Precio({
         <div className="sticky bottom-0 z-10 -mx-4 px-4 lg:static lg:mx-0 lg:px-0">
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute inset-x-0 bottom-full h-8 lg:hidden"
+            className="pointer-events-none absolute inset-x-0 bottom-full h-4 lg:hidden"
             style={{ background: 'linear-gradient(to top, var(--bg), transparent)' }}
           />
           {/* El pt-3 va AQUÍ, dentro del div con fondo: en el contenedor sticky dejaba una franja
@@ -645,7 +645,7 @@ function Precio({
               </p>
             )}
             <p className="mt-2 text-center text-[13px] text-[var(--text-secondary)]">
-              Hoy no pagas nada · Cancela cuando quieras
+              Hoy no pagas nada · Cancelas cuando quieras
             </p>
           </div>
         </div>
