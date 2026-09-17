@@ -121,7 +121,7 @@ export function BottomNav() {
   return (
     <nav
       aria-label="Navegación principal"
-      className="fixed inset-x-0 bottom-0 z-20 border-t border-[color-mix(in_oklab,var(--text-tertiary)_15%,transparent)] bg-[var(--surface)]/95 backdrop-blur [padding-bottom:env(safe-area-inset-bottom)]"
+      className="fixed inset-x-0 bottom-0 z-20 border-t border-[color-mix(in_oklab,var(--text-tertiary)_15%,transparent)] bg-[var(--surface)]/95 backdrop-blur [padding-bottom:max(8px,env(safe-area-inset-bottom))]"
     >
       <div className="mx-auto flex max-w-[520px] items-stretch justify-around">
         {DESTINOS.map(({ href, label, icon: Icon }) => {
