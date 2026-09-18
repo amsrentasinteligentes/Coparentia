@@ -2332,7 +2332,8 @@ siguen NO LISTA por el techo estructural ya documentado, sin tocar en esta sesi�
 (colchón para el FAB, blob recortado por su curva, verde de píldora 4.6:1, captions 11.5px + texto del primer
 mes, campana con punto solo si hay evento, chevron en "Ver todo", tap en accesos/nav/tarjetas, saludo en
 hora de Colombia). El isotipo gris queda como decisión de marca pendiente del usuario. Se pospone la r2
-hasta cerrar las etapas 2-3 (misma regla de una ronda por etapa). **veredicto:landing** (aprobada por el usuario,
+hasta cerrar las etapas 2-3 (misma regla de una ronda por etapa). ETAPA 1 PUBLICADA en producción el
+2026-09-18 a pedido del usuario (commit be82130) para que la vea en su celular antes de la etapa 2. **veredicto:landing** (aprobada por el usuario,
 techo documentado abajo), **veredicto:onboarding** y **veredicto:paywall** (techo documentado; siguen
 oscuros, fuera del alcance pedido) sin cambios.
 
