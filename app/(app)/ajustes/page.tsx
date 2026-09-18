@@ -269,58 +269,16 @@ export default function Ajustes() {
     <>
       <CabeceraApp />
       <ContenedorApp sinTope>
-        <TituloSeccion titulo="Perfil" subtitulo="Tu cuenta, tu cuota y tu suscripción." icon={UserRound} />
-
-        {/* TARJETA DE PERFIL (referencia Ref 3): avatar + correo + rol, y dos datos a la derecha */}
-        <Tarjeta className="mt-4">
-          <div className="flex items-center gap-3">
-            <span className="flex size-14 shrink-0 items-center justify-center rounded-full bg-[var(--accent)] text-[18px] font-extrabold text-[var(--on-accent,var(--bg))] [font-family:var(--font-display)]">{iniciales}</span>
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-[15px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">{correo || 'Tu cuenta'}</p>
-              <p className="text-[12px] text-[var(--text-secondary)]">Cuenta principal · Expediente propio</p>
-              <p className="mt-1 inline-flex items-center gap-1 rounded-full bg-[var(--surface-2)] px-2.5 py-1 text-[11px] font-bold text-[var(--accent-ink,var(--accent))]">
-                <ShieldCheck size={12} aria-hidden="true" /> Sello de Confianza activo
-              </p>
-            </div>
-          </div>
-          <div className="mt-3 grid grid-cols-2 gap-2">
-            <div className="rounded-[var(--radius-chip,14px)] bg-[var(--surface-2)] px-3 py-2.5">
-              <p className="text-[16px] font-extrabold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">{nComprobantes ?? '—'}</p>
-              <p className="text-[11px] text-[var(--text-secondary)]">comprobantes con Sello</p>
-            </div>
-            <div className="rounded-[var(--radius-chip,14px)] bg-[var(--surface-2)] px-3 py-2.5">
-              <p className="text-[16px] font-extrabold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">{cuota ? formatoCOP(cuota.montoMensual) : '—'}</p>
-              <p className="text-[11px] text-[var(--text-secondary)]">cuota mensual · día {cuota?.diaPago ?? '—'}</p>
-            </div>
-          </div>
-        </Tarjeta>
+        <TituloSeccion titulo="Cuota y cuenta" subtitulo="Tu cuota alimentaria, tu suscripción y el control de tu cuenta." icon={UserRound} />
 
         {/* EDICIÓN DE LA CUOTA — el dato del producto va primero (misma lógica de siempre). */}
         <h2 className="mt-6 text-[15px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">Tu cuota alimentaria</h2>
         <EditorCuota />
 
-        {/* LISTA "Ajustes y cuenta" (referencia): chips + flecha */}
-        <h2 className="mt-6 text-[15px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">Ajustes y cuenta</h2>
+        <h2 className="mt-6 text-[15px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">Tu suscripción</h2>
         <Tarjeta className="mt-3 py-1">
-          <FilaAjuste icon={CreditCard} titulo="Suscripción y pagos" detalle="Se administra en Hotmart: cancelar, cambiar de plan, facturas" href="https://sac.hotmart.com/" externo />
-          <FilaAjuste icon={Scale} tono="info" titulo="Asistencia jurídica" detalle="Escríbenos tu duda o contacta a un abogado" href="/asistencia" />
-          <FilaAjuste icon={LifeBuoy} tono="exito" titulo="Ayuda y soporte" detalle="soporte@coparentia.co · respondemos en menos de 48 h" href="mailto:soporte@coparentia.co" externo />
-          <FilaAjuste icon={ShieldCheck} titulo="Privacidad" detalle="Qué guardamos, dónde y cómo borrarlo" href="/privacidad" />
-          <FilaAjuste icon={FileText} titulo="Términos y condiciones" detalle="Condiciones de uso y reembolsos" href="/terminos" ultima />
+          <FilaAjuste icon={CreditCard} titulo="Suscripción y pagos" detalle="Se administra en Hotmart: cancelar, cambiar de plan, facturas" href="https://sac.hotmart.com/" externo ultima />
         </Tarjeta>
-
-        {/* Miembro desde · Plan (las dos tarjetitas de la referencia) */}
-        <div className="mt-3 grid grid-cols-2 gap-3">
-          <Tarjeta className="flex flex-col gap-2 p-3">
-            <IconoCirculo icon={CalendarCheck} size={18} />
-            <div className="min-w-0"><p className="text-[11px] text-[var(--text-secondary)]">Miembro desde</p><p className="text-[13px] font-extrabold capitalize leading-tight text-[var(--text-primary)]">{desde || '—'}</p></div>
-          </Tarjeta>
-          <Tarjeta className="flex flex-col gap-2 p-3">
-            <IconoCirculo icon={Crown} size={18} tono="pendiente" />
-            <div className="min-w-0"><p className="text-[11px] text-[var(--text-secondary)]">Plan actual</p><p className="text-[13px] font-extrabold leading-tight text-[var(--text-primary)]">Suscripción activa</p></div>
-          </Tarjeta>
-        </div>
-
         {/* Cómo cancelar: texto legal obligatorio (47), ahora bajo la lista */}
         <p className="mt-3 text-[12px] leading-[1.5] text-[var(--text-secondary)]">
           Para cancelar tu suscripción (deja de cobrarte desde el siguiente ciclo, no borra tu cuenta ni tus datos) entra al portal de compras de Hotmart con el correo con el que pagaste.

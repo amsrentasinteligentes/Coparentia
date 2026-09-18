@@ -1,8 +1,16 @@
 ### Checkpoint (2026-09-18) — PEDIDO NUEVO: pestaña PERFIL personalizable (ref-3 del usuario)
 El usuario pide una pestaña "Perfil" donde la persona personalice la app (nombre, foto, rol papá/mamá,
-hijos con nombre/edad/foto, nombre de la otra parte) para que se sienta cercana. Plan presentado; falta su
-decisión sobre el menú (5 pestañas ya): 1) Perfil reemplaza a Asistencia en el nav (recomendado; Asistencia
-queda en accesos de Inicio y en Perfil) o 2) Perfil solo desde el avatar. Requiere SQL en Supabase:
+hijos con nombre/edad/foto, nombre de la otra parte) para que se sienta cercana. Decisión del usuario: Perfil como 6ª PESTAÑA independiente al lado de Asistencia (se le advirtió el tope
+de 5; a 375px cada destino mide 69px con etiquetas de 10px — cabe). CONSTRUIDO (2026-09-18, sin publicar
+hasta correr el SQL): supabase/perfil-familia.sql (columnas rol_familiar/avatar_path/otro_progenitor_nombre
+en profiles con grant update acotado, tabla hijos con RLS + tope de 8 por trigger, bucket privado
+"perfiles" 3MB solo imágenes con políticas por carpeta), lib/perfil.ts (perfil, avatar, hijos, URLs
+firmadas 1h, edadTexto, nombreCorto), app/(app)/perfil/page.tsx (tarjeta editable nombre/rol/otra
+parte + foto, Mi familia con alta/edición/foto/borrado de hijos, lista Ajustes y cuenta, miembro/plan,
+cerrar sesión), nav de 6, CabeceraApp con foto/iniciales del nombre (respaldo por correo), SaludoApp
+"Hola, {nombre}". Ajustes pasa a "Cuota y cuenta" (editor de cuota, suscripción, eliminar cuenta).
+Pendiente: que el usuario ejecute el SQL en Supabase → verificar /perfil con datos reales → publicar.
+Siguiente paso natural (no pedido aún): usar hijos/otra parte en etiquetas del calendario y portada del PDF. Requiere SQL en Supabase:
 columnas en profiles (rol_familiar, avatar_path, otro_progenitor_nombre — con grant update solo a esas
 columnas), tabla hijos (RLS por user_id) y bucket "perfiles" con políticas por carpeta del usuario.
 EXCEPCIÓN a la orden "no tocar el interior": este pedido viene del propio usuario (Perfil + saludo con

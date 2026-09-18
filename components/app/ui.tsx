@@ -7,7 +7,8 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion, useReducedMotion } from 'motion/react';
-import { Home, Wallet, CalendarDays, FolderOpen, Scale, CloudOff, Check, Bell, ChevronDown, type LucideIcon } from 'lucide-react';
+import { Home, Wallet, CalendarDays, FolderOpen, Scale, CloudOff, Check, Bell, ChevronDown, UserRound, type LucideIcon } from 'lucide-react';
+import { obtenerPerfil, urlFoto, nombreCorto } from '@/lib/perfil';
 import { crearClienteSupabase } from '@/lib/supabase/client';
 import React, { useEffect, useState, type ReactNode } from 'react';
 
@@ -22,6 +23,10 @@ const DESTINOS: { href: string; label: string; icon: LucideIcon }[] = [
   { href: '/calendario', label: 'Calendario', icon: CalendarDays },
   { href: '/expediente', label: 'Expediente', icon: FolderOpen },
   { href: '/asistencia', label: 'Asistencia', icon: Scale },
+  // 6ª pestaña por decisión explícita del usuario (2026-09-18): "una pestaña independiente al lado
+  // de Asistencia". Se le advirtió que 6 supera el tope de 5 del SO; a 375px cada destino queda en
+  // ~62px, con etiquetas de 10px que aún caben ("Calendario", "Expediente", "Asistencia").
+  { href: '/perfil', label: 'Perfil', icon: UserRound },
 ];
 
 /* ── <NumeroContado> — un número héroe cuenta desde 0 hasta su valor al aparecer (baseline 2 de
@@ -134,7 +139,7 @@ export function BottomNav() {
             <Link
               key={href}
               href={href}
-              className="flex min-w-[64px] flex-1 flex-col items-center gap-1 pb-1 pt-2.5 text-[11px] font-semibold transition-transform duration-100 active:scale-95 [touch-action:manipulation]"
+              className="flex min-w-0 flex-1 flex-col items-center gap-1 pb-1 pt-2.5 text-[10px] font-semibold transition-transform duration-100 active:scale-95 [touch-action:manipulation] sm:text-[11px]"
               aria-current={activo ? 'page' : undefined}
             >
               {/* Referencia del usuario (2026-09-18): el destino activo va en azul con el ícono
@@ -406,16 +411,25 @@ export function ContenedorApp({ children, conFab = false, sinTope = false }: { c
    sesión (no hay nombre en el perfil); si no hay sesión aún, muestra un círculo neutro. ── */
 export function CabeceraApp({ aviso = false }: { aviso?: boolean }) {
   const [iniciales, setIniciales] = useState<string>('');
+  const [foto, setFoto] = useState<string | null>(null);
   useEffect(() => {
     let vigente = true;
-    crearClienteSupabase()
-      .auth.getUser()
-      .then(({ data }) => {
+    obtenerPerfil()
+      .then(async (p) => {
         if (!vigente) return;
-        const correo = data.user?.email ?? '';
-        setIniciales(correo ? correo.slice(0, 2).toUpperCase() : '');
+        const base = p.nombre ? p.nombre.trim().split(/\s+/).map((x) => x[0]).slice(0, 2).join('') : p.email.slice(0, 2);
+        setIniciales(base.toUpperCase());
+        const u = await urlFoto(p.avatarPath);
+        if (vigente) setFoto(u);
       })
-      .catch(() => {});
+      // Si el perfil aún no se puede leer (p. ej. la base de datos sin la migración de Perfil), las
+      // iniciales salen del correo de la sesión: la cabecera nunca queda con un punto vacío.
+      .catch(async () => {
+        try {
+          const { data } = await crearClienteSupabase().auth.getUser();
+          if (vigente && data.user?.email) setIniciales(data.user.email.slice(0, 2).toUpperCase());
+        } catch {}
+      });
     return () => {
       vigente = false;
     };
@@ -434,8 +448,12 @@ export function CabeceraApp({ aviso = false }: { aviso?: boolean }) {
           <Bell size={20} aria-hidden="true" />
           {aviso && <span aria-hidden="true" className="absolute right-2 top-2 size-2 rounded-full bg-[var(--accent)] ring-2 ring-[var(--surface)]" />}
         </Link>
-        <Link href="/ajustes" aria-label="Tu cuenta y ajustes" className="flex items-center gap-1 rounded-full bg-[var(--surface-2)] py-1 pl-1 pr-2 [touch-action:manipulation]">
-          <span className="flex size-7 items-center justify-center rounded-full bg-[var(--accent)] text-[11px] font-bold text-[var(--on-accent)]">{iniciales || '·'}</span>
+        <Link href="/perfil" aria-label="Tu perfil" className="flex items-center gap-1 rounded-full bg-[var(--surface-2)] py-1 pl-1 pr-2 [touch-action:manipulation]">
+          {foto ? (
+            <img src={foto} alt="" className="size-7 rounded-full object-cover" />
+          ) : (
+            <span className="flex size-7 items-center justify-center rounded-full bg-[var(--accent)] text-[11px] font-bold text-[var(--on-accent)]">{iniciales || '·'}</span>
+          )}
           <ChevronDown size={14} className="text-[var(--accent-ink,var(--accent))]" aria-hidden="true" />
         </Link>
       </div>
@@ -447,7 +465,14 @@ export function CabeceraApp({ aviso = false }: { aviso?: boolean }) {
    El saludo cambia por hora del día (no hay nombre en el perfil; "Hola, {correo}" sonaba a spam). ── */
 export function SaludoApp({ linea }: { linea: string }) {
   const h = Number(new Intl.DateTimeFormat('es-CO', { hour: 'numeric', hour12: false, timeZone: 'America/Bogota' }).format(new Date()));
-  const saludo = h < 12 ? 'Buenos días' : h < 19 ? 'Buenas tardes' : 'Buenas noches';
+  const [nombre, setNombre] = useState('');
+  useEffect(() => {
+    let vigente = true;
+    obtenerPerfil().then((p) => { if (vigente) setNombre(nombreCorto(p.nombre)); }).catch(() => {});
+    return () => { vigente = false; };
+  }, []);
+  // Con nombre (puesto en Perfil) el saludo es personal, como en la referencia; sin él, por hora.
+  const saludo = nombre ? `Hola, ${nombre}` : h < 12 ? 'Buenos días' : h < 19 ? 'Buenas tardes' : 'Buenas noches';
   return (
     <section className="relative overflow-hidden rounded-b-[24px] bg-[var(--surface)] px-4 pb-4 pt-1">
       <div className="pointer-events-none absolute right-0 top-0 h-[112px] w-[164px] overflow-hidden blob" aria-hidden="true">
