@@ -1,3 +1,22 @@
+### Checkpoint (2026-09-18) — El usuario APRUEBA la landing clara y pide llevar ese estilo AL INTERIOR DE LA APP
+Decisión del usuario (cambia la orden anterior de "no tocar el interior"): "me gustó muchísimo" la landing
+clara; quiere la misma paleta/identidad dentro de la app y adjuntó 3 capturas de referencia (mockups de una
+app "Coparentia" en claro: Inicio con saludo + próximo evento + 2 tarjetas de cifras + 4 accesos + actividad
+reciente; Calendario con puntos de colores por categoría; Pagos y cuota con estados Pagado/Pendiente/
+Programado). Son REFERENCIA VISUAL COMPLETA → protocolo RÉPLICA FIEL (16/54): extraer tabla (hex, fuente,
+radios, sombras, layout), replicar la pantalla clave (Inicio) al lado de la captura, test de fidelidad,
+aprobación, y recién después construir pantalla por pantalla. El CONTENIDO sigue siendo el de Coparentia
+(COP, expediente, Sello de Confianza) — de la referencia se toma el ESTILO, no sus funciones (mensajes,
+entregas, MXN). 4ª referencia recibida: Perfil/Ajustes (foto + rol, 2 cifras, "Mi familia" con hijos, lista de ajustes
+con chip azul + flecha, tarjetas Miembro desde / Plan, "Cerrar sesión" en rojo suave) → mapea a Ajustes.
+Las 4 imágenes están en docs/referencias/ (ref-1-inicio, ref-2-calendario, ref-3-pagos, ref-4-perfil).
+RÉPLICA FIEL de Inicio hecha: `replica-fiel.html` (raíz, kit abc-v2; copia servible public/dev/replica-fiel.html),
+captura docs/revisiones/replica-fiel-inicio.png. Tokens extraídos por muestreo: bg #EDF0F7, tarjetas #FFF,
+chips #EBF1FD, azul #1A63DC, marino #0B2A57, sec #5B6B85, ok #22A06B/#DFF5EA, morado #6C4AB6/#E9E2FB,
+radios 18/14, Figtree + Nunito Sans. Pendiente: aprobación del usuario (igualita / ajustar / otra).
+Antes: que el usuario guardara las 4 imágenes en docs/referencias/ para embeberlas en
+la réplica y poder medir la fidelidad. Landing clara: APROBADA por el usuario ("podemos dejarla así").
+
 ### Checkpoint (2026-09-18) — PÁGINA DE VENTAS CLARA "Cuidado en calma" construida, con fotos, publicada
 El usuario pidió un rediseño profundo SOLO de la landing (el interior de la app, onboarding y paywall
 NO se tocan). Referencia parcial (2houses/Niddo/OFW) → A/B/C (direcciones-abc.html) → eligió la C →

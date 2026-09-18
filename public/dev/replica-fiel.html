@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="es" data-kit="abc-v2">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Réplica fiel — Inicio de Coparentia en claro (referencia del usuario)</title>
+<!-- ============================================================================
+  KIT-ABC-V2 en modo RÉPLICA FIEL (16 → "REFERENCIA = CONTRATO"; 54 Regla Dura #0):
+  UN solo frame con la pantalla clave del INTERIOR de la app (Inicio) replicando el estilo de
+  la captura del usuario (/dev/ref/ref-1-inicio.jpeg), con la captura AL LADO para
+  comparar. El estilo NO se reinterpreta: se copia (tabla de extracción abajo). Solo cambia el
+  CONTENIDO: datos reales de Coparentia (cuota en COP, comprobantes, Sello de Confianza, los 5
+  destinos reales del nav). Fuentes: las de la landing clara (Figtree + Nunito Sans) — la
+  referencia usa una sans redondeada equivalente; así landing y app comparten identidad.
+  Marcador data-kit="abc-v2" intacto (el hook lo verifica).
+============================================================================= -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@500;600;700;800&family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: radial-gradient(1100px 520px at 12% -6%, #ffffff, transparent 62%), linear-gradient(180deg, #eef0f4, #e6e8ee);
+    color: #1c1c1f; font-family: 'Segoe UI', system-ui, sans-serif; padding: 32px 20px 64px;
+  }
+  .cabecera { max-width: 1180px; margin: 0 auto 8px; }
+  .cabecera h1 { font-size: 26px; font-weight: 700; letter-spacing: -0.01em; }
+  .cabecera p.sub { margin-top: 6px; font-size: 14px; color: #55555c; max-width: 80ch; line-height: 1.5; }
+  .salidas { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+  .salidas span { display: inline-flex; align-items: center; gap: 6px; border: 1px solid #c9c9cf; border-radius: 999px; padding: 6px 12px; font-size: 12.5px; font-weight: 600; color: #3a3a40; background: #f7f7f8; }
+  .salidas b { color: #1c1c1f; }
+
+  .comparativa { max-width: 1180px; margin: 28px auto 0; display: grid; gap: 40px; grid-template-columns: 1fr 1fr 1fr; align-items: start; }
+  @media (max-width: 1000px) { .comparativa { grid-template-columns: 1fr; } }
+  .columna > h2 { font-size: 13px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #55555c; margin-bottom: 12px; text-align: center; }
+  .referencia img { display: block; width: 100%; max-width: 330px; margin: 0 auto; border-radius: 22px; box-shadow: 0 24px 60px rgb(20 18 24 / 0.28); }
+
+  /* ── Tabla de extracción (16, primera sección) ── */
+  .meta { background: #f7f7f8; border: 1px solid #d9d9de; border-radius: 14px; padding: 18px; font-size: 13px; line-height: 1.55; color: #3a3a40; }
+  .meta h3 { font-size: 15px; font-weight: 700; color: #1c1c1f; margin-bottom: 8px; }
+  .meta table { width: 100%; border-collapse: collapse; font-size: 12.5px; margin-top: 6px; }
+  .meta td { padding: 5px 6px; border-top: 1px solid #e3e3e8; vertical-align: top; }
+  .meta td:first-child { color: #6a6a72; white-space: nowrap; width: 34%; }
+  .meta code { font-family: ui-monospace, monospace; font-size: 12px; }
+  .paleta { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+  .paleta span { width: 26px; height: 26px; border-radius: 999px; box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.10), 0 1px 3px rgb(0 0 0 / 0.12); }
+  .especimen { margin-top: 12px; border-top: 1px solid #d9d9de; padding-top: 12px; }
+  .especimen .esp-display { font-family: 'Figtree', monospace; font-size: 21px; font-weight: 800; letter-spacing: -0.01em; }
+  .especimen .esp-body { font-family: 'Nunito Sans', monospace; margin-top: 4px; font-size: 13.5px; color: #3a3a40; }
+
+  /* ═══════════ TOKENS EXTRAÍDOS DE LA REFERENCIA (no inventados) ═══════════ */
+  .app {
+    --bg: #edf0f7;            /* fondo de página: gris-azul claro (muestra #edf0f7) */
+    --surface: #ffffff;       /* tarjetas blancas */
+    --surface-2: #ebf1fd;     /* chips de ícono azul claro (muestra #ebf1fd) */
+    --primary: #1a63dc;       /* azul de acción (barra #217af5 / nav activo #0458cd → punto medio AA) */
+    --primary-2: #4f8fe8;     /* azul claro de degradés */
+    --text-1: #0b2a57;        /* azul marino de títulos */
+    --text-2: #5b6b85;        /* texto secundario */
+    --text-3: #9aa6b8;        /* nav inactivo / captions */
+    --border: #e3e9f2;
+    --ok: #22a06b;  --ok-bg: #dff5ea;        /* píldora "Pagada" (muestra #3a9075 / #d7f9eb) */
+    --warn: #d98a1e; --warn-bg: #fdf1dc;     /* "Pendiente" */
+    --info: #6c4ab6; --info-bg: #e9e2fb;     /* chip morado (muestra #e9e2fb) */
+    --radius-card: 18px; --radius-chip: 14px;
+    --font-display: 'Figtree', monospace; --font-body: 'Nunito Sans', monospace;
+    --shadow: 0 1px 2px rgb(11 42 87 / 0.05), 0 8px 24px -12px rgb(11 42 87 / 0.18);
+  }
+
+  /* ── Chasis de teléfono REAL ── */
+  .telefono { width: 330px; margin: 0 auto; aspect-ratio: 9 / 19.5; border: 10px solid #101014; border-radius: 46px; box-shadow: 0 24px 60px rgb(20 18 24 / 0.28); overflow: hidden; position: relative; display: flex; flex-direction: column; background: var(--bg); font-family: var(--font-body); color: var(--text-1); }
+  .statusbar { display: flex; align-items: center; justify-content: space-between; padding: 12px 22px 6px; font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; background: var(--surface); }
+  .statusbar .der { display: flex; align-items: center; gap: 5px; }
+  .home-indicator { position: absolute; bottom: 7px; left: 50%; transform: translateX(-50%); width: 116px; height: 5px; border-radius: 999px; background: var(--text-1); opacity: 0.85; }
+  .pantalla { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+  .scroll { flex: 1; overflow: hidden; padding: 0 14px 12px; }
+
+  .top { display: flex; align-items: center; justify-content: space-between; padding: 6px 16px 10px; background: var(--surface); }
+  .marca { display: flex; align-items: center; gap: 8px; }
+  .marca img { width: 30px; height: 30px; object-fit: contain; }
+  .marca b { font-family: var(--font-display); font-size: 19px; font-weight: 800; color: var(--text-1); letter-spacing: -0.01em; }
+  .marca small { display: block; font-size: 9.5px; color: var(--text-2); margin-top: -2px; }
+  .top .acciones { display: flex; align-items: center; gap: 10px; }
+  .campana { position: relative; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; color: var(--text-1); }
+  .campana i { position: absolute; top: 5px; right: 6px; width: 7px; height: 7px; border-radius: 999px; background: var(--primary); border: 1.5px solid #fff; }
+  .avatar { display: flex; align-items: center; gap: 4px; padding: 4px 8px 4px 4px; border-radius: 999px; background: var(--surface-2); font-size: 11px; font-weight: 700; color: var(--primary); }
+  .avatar span { width: 24px; height: 24px; border-radius: 999px; background: var(--primary); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 10px; }
+
+  .saludo { position: relative; overflow: hidden; background: var(--surface); padding: 4px 16px 12px; border-bottom-left-radius: 22px; border-bottom-right-radius: 22px; min-height: 104px; }
+  .saludo h1 { font-family: var(--font-display); font-size: 22px; font-weight: 800; color: var(--primary); letter-spacing: -0.01em; }
+  .saludo p { margin-top: 2px; font-size: 12px; color: var(--text-2); max-width: 150px; line-height: 1.35; }
+  .saludo .foto { position: absolute; right: -6px; top: -6px; width: 156px; height: 112px; border-radius: 58% 42% 55% 45% / 48% 60% 40% 52%; overflow: hidden; }
+  .saludo .foto img { width: 100%; height: 100%; object-fit: cover; object-position: 60% 30%; }
+  .saludo .foto::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, #fff 0%, transparent 38%); }
+
+  .card { background: var(--surface); border-radius: var(--radius-card); box-shadow: var(--shadow); padding: 10px 12px; margin-top: 8px; }
+  .chip { width: 36px; height: 36px; border-radius: var(--radius-chip); display: flex; align-items: center; justify-content: center; flex-shrink: 0; background: var(--surface-2); color: var(--primary); }
+  .chip.ok { background: var(--ok-bg); color: var(--ok); }
+  .chip.info { background: var(--info-bg); color: var(--info); }
+  .evento { display: flex; align-items: center; gap: 12px; }
+  .evento .t { flex: 1; min-width: 0; }
+  .evento .t b { display: block; font-family: var(--font-display); font-size: 13px; font-weight: 700; }
+  .evento .t span { display: block; font-size: 11.5px; color: var(--text-2); }
+  .evento .t em { display: block; font-style: normal; font-size: 11.5px; font-weight: 700; color: var(--primary); margin-top: 2px; }
+  .evento .t em small { font-weight: 400; color: var(--text-2); margin-left: 6px; }
+  .flecha { color: var(--text-3); }
+
+  .cifras { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
+  .cifra { background: var(--surface); border-radius: var(--radius-card); box-shadow: var(--shadow); padding: 10px; }
+  .cifra .head { display: flex; align-items: center; justify-content: space-between; } .cifra .head2 { display: flex; align-items: flex-start; justify-content: space-between; gap: 6px; }
+  .cifra .lbl { font-size: 11px; font-weight: 700; color: var(--text-1); line-height: 1.2; }
+  .pill { display: inline-flex; align-items: center; gap: 4px; margin-top: 5px; padding: 2px 8px; border-radius: 999px; font-size: 10.5px; font-weight: 700; }
+  .pill.ok { background: var(--ok-bg); color: var(--ok); }
+  .cifra .num { margin-top: 6px; font-family: var(--font-display); font-size: 16px; font-weight: 800; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; }
+  .cifra .num small { font-size: 11px; font-weight: 700; color: var(--text-2); margin-left: 3px; }
+  .cifra .cap { font-size: 9.5px; color: var(--text-2); margin-top: 2px; }
+  .barra { margin-top: 8px; height: 6px; border-radius: 999px; background: #d8e3f0; overflow: hidden; }
+  .barra i { display: block; height: 100%; width: 60%; border-radius: 999px; background: var(--primary); }
+
+  .accesos { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 8px; background: var(--surface); border-radius: var(--radius-card); box-shadow: var(--shadow); padding: 10px 6px; }
+  .acceso { display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 10px; font-weight: 700; color: var(--text-1); }
+  .acceso .chip { width: 42px; height: 42px; }
+
+  .actividad h2 { display: flex; align-items: center; justify-content: space-between; font-family: var(--font-display); font-size: 14px; font-weight: 800; }
+  .actividad h2 a { font-size: 11px; font-weight: 700; color: var(--primary); text-decoration: none; }
+  .fila { display: flex; align-items: center; gap: 10px; padding: 7px 0; border-top: 1px solid var(--border); }
+  .fila:first-of-type { border-top: 0; }
+  .fila .chip { width: 30px; height: 30px; border-radius: 10px; }
+  .fila .t { flex: 1; min-width: 0; }
+  .fila .t b { display: block; font-size: 11.5px; font-weight: 700; }
+  .fila .t span { display: block; font-size: 10px; color: var(--text-2); }
+  .fila time { font-size: 10px; color: var(--text-2); text-align: right; line-height: 1.3; }
+
+  .banner { margin-top: 8px; display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: var(--radius-card); background: linear-gradient(120deg, #e0effc, #f3f8ff); border: 1px solid #d5e5fb; }
+  .banner b { display: block; font-size: 12px; font-weight: 800; }
+  .banner span { display: block; font-size: 10.5px; color: var(--text-2); }
+
+  .tabbar { display: flex; justify-content: space-around; align-items: stretch; padding: 8px 6px 20px; background: var(--surface); border-top: 1px solid var(--border); }
+  .tabbar a { display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 9.5px; font-weight: 700; color: var(--text-3); text-decoration: none; position: relative; }
+  .tabbar a.activa { color: var(--primary); }
+  .tabbar a.activa::after { content: ''; width: 5px; height: 5px; border-radius: 999px; background: var(--primary); margin-top: 1px; }
+
+  .pie { max-width: 1180px; margin: 40px auto 0; font-size: 12.5px; color: #6a6a72; border-top: 1px solid #d0d0d6; padding-top: 14px; line-height: 1.6; }
+</style>
+</head>
+<body>
+<header class="cabecera">
+  <h1>Réplica fiel — el Inicio de Coparentia con el estilo de tu referencia</h1>
+  <p class="sub">A la izquierda tu captura (Ref 1); en el centro la pantalla de Inicio de Coparentia con ESE estilo copiado —
+    mismos colores, misma composición, mismas formas — pero con lo que la app realmente muestra: tu cuota en pesos,
+    tus comprobantes, el Sello de Confianza y las cinco secciones reales. A la derecha, de dónde salió cada valor.</p>
+  <div class="salidas" role="list">
+    <span role="listitem"><b>1 · Es igualita</b> → construyo el interior completo así</span>
+    <span role="listitem"><b>2 · Ajustar un detalle</b> («el azul más fuerte», «más grande el saludo»)</span>
+    <span role="listitem"><b>3 · Otra interpretación</b> de la misma referencia</span>
+  </div>
+</header>
+
+<div class="comparativa">
+  <section class="columna referencia">
+    <h2>Tu referencia (Ref 1)</h2>
+    <img src="/dev/ref/ref-1-inicio.jpeg" alt="Captura de referencia del usuario: pantalla de inicio en claro">
+  </section>
+
+  <section class="columna app">
+    <h2>Inicio de Coparentia, replicado</h2>
+    <div class="telefono">
+      <div class="statusbar"><span>9:41</span><span class="der">
+        <svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor"><rect x="0" y="7" width="3" height="4" rx="0.8"/><rect x="4.5" y="5" width="3" height="6" rx="0.8"/><rect x="9" y="3" width="3" height="8" rx="0.8"/><rect x="13.5" y="0.5" width="3" height="10.5" rx="0.8"/></svg>
+        <svg width="25" height="12" viewBox="0 0 25 12"><rect x="0.5" y="0.5" width="21" height="11" rx="3" fill="none" stroke="currentColor" opacity="0.4"/><rect x="2" y="2" width="15" height="8" rx="1.6" fill="currentColor"/><rect x="22.5" y="3.8" width="2" height="4.4" rx="1" fill="currentColor" opacity="0.4"/></svg>
+      </span></div>
+      <div class="pantalla">
+        <div class="top">
+          <div class="marca"><img src="/logo-isotipo.png" alt=""><div><b>Coparentia</b><small>Tu expediente, en confianza.</small></div></div>
+          <div class="acciones">
+            <span class="campana"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg><i></i></span>
+            <span class="avatar"><span>CA</span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg></span>
+          </div>
+        </div>
+        <div class="saludo">
+          <div class="foto"><img src="/fotos/hero-mama-hijo-celular.jpg" alt=""></div>
+          <h1>Hola, Carlos</h1>
+          <p>Tu expediente está al día. Nada pendiente hoy.</p>
+        </div>
+
+        <div class="scroll">
+          <div class="card evento">
+            <span class="chip"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M8 2v4M16 2v4M3 9h18"/></svg></span>
+            <div class="t"><b>Próximo evento</b><span>Fin de semana con papá</span><em>Sáb 10 de sept, 9:00 a. m.<small>Visita</small></em></div>
+            <svg class="flecha" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>
+          </div>
+
+          <div class="cifras">
+            <div class="cifra">
+              <div class="head"><span class="chip ok"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="3"/><path d="M2 10h20"/></svg></span><svg class="flecha" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m9 6 6 6-6 6"/></svg></div>
+              <div class="lbl" style="margin-top:8px">Cuota alimentaria</div>
+              <span class="pill ok"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Pagada</span>
+              <div class="num">$450.000<small>COP</small></div>
+              <div class="cap">Septiembre 2026 · con Sello</div>
+            </div>
+            <div class="cifra">
+              <div class="head"><span class="chip"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></span><svg class="flecha" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m9 6 6 6-6 6"/></svg></div>
+              <div class="lbl" style="margin-top:8px">Gastos extra del mes</div>
+              <div class="num" style="margin-top:12px">$180.000<small>COP</small></div>
+              <div class="barra"><i></i></div>
+              <div class="cap">1 de 2 autorizados · natación</div>
+            </div>
+          </div>
+
+          <div class="accesos">
+            <a class="acceso"><span class="chip"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="3"/><path d="M2 10h20"/></svg></span>Pagos</a>
+            <a class="acceso"><span class="chip"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M8 2v4M16 2v4M3 9h18"/></svg></span>Calendario</a>
+            <a class="acceso"><span class="chip"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 15l2 2 4-4"/></svg></span>Expediente</a>
+            <a class="acceso"><span class="chip"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 11V3H8v8M3 21h18M12 3v18M2 11l4-6 4 6M14 11l4-6 4 6"/></svg></span>Asistencia</a>
+          </div>
+
+          <div class="card actividad">
+            <h2>Actividad reciente <a>Ver todo ›</a></h2>
+            <div class="fila"><span class="chip ok"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><div class="t"><b>Comprobante con Sello de Confianza</b><span>Cuota de septiembre · $450.000</span></div><time>Hoy<br>10:24 a. m.</time></div>
+            <div class="fila"><span class="chip"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M8 2v4M16 2v4M3 9h18"/></svg></span><div class="t"><b>Visita registrada</b><span>Fin de semana con papá · sáb 10</span></div><time>Ayer<br>6:18 p. m.</time></div>
+            <div class="fila"><span class="chip info"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></span><div class="t"><b>Gasto extra autorizado</b><span>Matrícula natación · $180.000</span></div><time>1 sept<br>4:03 p. m.</time></div>
+          </div>
+
+          <div class="banner">
+            <span class="chip" style="width:36px;height:36px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="m9 12 2 2 4-4"/></svg></span>
+            <div><b>Tu expediente, listo para mostrar</b><span>3 comprobantes con Sello · PDF disponible</span></div>
+          </div>
+        </div>
+
+        <nav class="tabbar">
+          <a class="activa"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="m3 10 9-7 9 7v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/></svg>Inicio</a>
+          <a><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="3"/><path d="M2 10h20"/></svg>Pagos</a>
+          <a><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M8 2v4M16 2v4M3 9h18"/></svg>Calendario</a>
+          <a><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>Expediente</a>
+          <a><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 11V3H8v8M3 21h18M12 3v18M2 11l4-6 4 6M14 11l4-6 4 6"/></svg>Asistencia</a>
+        </nav>
+      </div>
+      <div class="home-indicator"></div>
+    </div>
+  </section>
+
+  <section class="columna">
+    <h2>De dónde sale cada valor</h2>
+    <div class="meta">
+      <h3>Tabla de extracción (medida en tu captura)</h3>
+      <table>
+        <tr><td>Fondo de página</td><td><code>#EDF0F7</code> gris-azul muy claro</td></tr>
+        <tr><td>Tarjetas</td><td>blanco <code>#FFFFFF</code>, esquinas 18px, sombra suave azulada</td></tr>
+        <tr><td>Azul de acción</td><td><code>#1A63DC</code> (barra <code>#217AF5</code>, nav <code>#0458CD</code>)</td></tr>
+        <tr><td>Chips de ícono</td><td>azul claro <code>#EBF1FD</code>, 14px; verde <code>#DFF5EA</code>; morado <code>#E9E2FB</code></td></tr>
+        <tr><td>Estados</td><td>Pagada verde <code>#22A06B</code> · Pendiente ámbar · Programado azul</td></tr>
+        <tr><td>Texto</td><td>marino <code>#0B2A57</code> · secundario <code>#5B6B85</code> · nav inactivo <code>#9AA6B8</code></td></tr>
+        <tr><td>Letra</td><td>sans redondeada — se usan Figtree + Nunito Sans (las de la página de ventas) para una sola identidad</td></tr>
+        <tr><td>Composición</td><td>cabecera con logo + campana + avatar · saludo con foto en forma orgánica · tarjeta de próximo evento · 2 cifras con píldora de estado · 4 accesos · actividad reciente · banner · nav de 5 con punto activo</td></tr>
+        <tr><td>Contenido</td><td>el de Coparentia: cuota en COP, comprobantes con Sello, expediente, las 5 secciones reales</td></tr>
+      </table>
+      <div class="paleta" aria-hidden="true">
+        <span style="background:#edf0f7"></span><span style="background:#ffffff"></span><span style="background:#ebf1fd"></span>
+        <span style="background:#1a63dc"></span><span style="background:#0b2a57"></span><span style="background:#5b6b85"></span>
+        <span style="background:#22a06b"></span><span style="background:#d98a1e"></span><span style="background:#6c4ab6"></span>
+      </div>
+      <div class="especimen">
+        <p class="esp-display">Figtree — AaBbÑñ 0123</p>
+        <p class="esp-body">Nunito Sans — El veloz murciélago hindú comía feliz cardillo y kiwi.</p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<footer class="pie">
+  Réplica fiel (16 → REFERENCIA = CONTRATO): el estilo se copia, no se mejora ni se reinterpreta; se extiende solo donde la
+  referencia no muestra algo, con su mismo sistema. Diferencias deliberadas: el contenido (Coparentia no tiene mensajes ni
+  entregas; sí cuota, comprobantes, Sello y asistencia jurídica) y la tipografía (la de la página de ventas, para una sola
+  identidad). Marcador data-kit="abc-v2" intacto. Tras la aprobación, la FICHA-ARTE cambia de modo oscuro a claro para toda la app.
+</footer>
+</body>
+</html>
