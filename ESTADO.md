@@ -22,7 +22,10 @@ fondos semánticos, CabeceraApp logo+campana+avatar, SaludoApp con foto, Accesos
 reconstruido con la composición de la referencia (próximo evento, cuota con estado, meses con barra,
 4 accesos, actividad reciente, banner del Sello). Las demás pantallas heredan los tokens claros y siguen
 funcionales con su composición vieja hasta sus etapas (2: Pagos + Calendario · 3: Expediente, Asistencia,
-Ajustes). El onboarding/paywall/entrar siguen oscuros (fuera del alcance pedido).
+Ajustes). El onboarding/paywall/entrar siguen oscuros (fuera del alcance pedido). ORDEN DEL USUARIO (2026-09-18):
+"aún no debemos hacer cambios al interior de la app" → el interior queda CONGELADO tal como está
+(6 pantallas claras publicadas); no se tocan ni el onboarding/paywall ni ninguna pantalla interna hasta
+nueva orden.
 Antes: que el usuario guardara las 4 imágenes en docs/referencias/ para embeberlas en
 la réplica y poder medir la fidelidad. Landing clara: APROBADA por el usuario ("podemos dejarla así").
 
