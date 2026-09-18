@@ -68,6 +68,12 @@ export function truncarMarcado(texto: string, maxPalabras: number): string {
         salida += parte;
         continue;
       }
+      // Un signo suelto (el punto final que queda tras un [/b], un guion) NO es una palabra:
+      // contarlo truncaba subtítulos de exactamente 14 palabras y dejaba un "…" tras la última.
+      if (!/[\p{L}\p{N}]/u.test(parte)) {
+        salida += parte;
+        continue;
+      }
       if (palabras >= maxPalabras) {
         let cierre = '';
         for (let i = abiertos.length - 1; i >= 0; i--) cierre += `[/${abiertos[i]}]`;

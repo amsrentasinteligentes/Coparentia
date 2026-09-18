@@ -119,17 +119,20 @@ export function IconChip({ icon: Icono, tone = 'accent' }: { icon: LucideIcon; t
 export function Hairline({
   emphasis = false,
   surface = 'surface',
+  radio = 'card',
   className = '',
   children,
 }: {
   emphasis?: boolean;
   surface?: 'surface' | 'surface-2' | 'bg';
+  /** 'button' para chips/píldoras: una sola forma de chip por página. */
+  radio?: 'card' | 'button';
   className?: string;
   children: ReactNode;
 }) {
   return (
     <div
-      className={`rounded-[var(--radius-card)] ${className}`}
+      className={`${radio === 'button' ? 'rounded-[var(--radius-button)]' : 'rounded-[var(--radius-card)]'} ${className}`}
       style={{
         border: `${emphasis ? 2 : 1}px solid transparent`,
         background:
@@ -290,11 +293,22 @@ export function CtaButton({
   /** 'outline' — plan secundario (ej. "Elegir mensual"), nunca compite con el CTA principal. */
   variant?: 'solid' | 'outline';
 }) {
+  // Feedback inmediato al tocar (heurística 1): la navegación completa a /onboarding tarda y sin
+  // esto el botón parecía muerto durante ese instante. `yendo` atenúa el botón hasta que la
+  // página cambia; si el navegador vuelve atrás (bfcache), se limpia.
+  const [yendo, setYendo] = useState(false);
+  useEffect(() => {
+    const limpiar = () => setYendo(false);
+    window.addEventListener('pageshow', limpiar);
+    return () => window.removeEventListener('pageshow', limpiar);
+  }, []);
   return (
     <motion.a
       whileTap={{ scale: 0.97 }}
       href={href}
-      className={`inline-flex items-center justify-center rounded-[var(--radius-button)] px-8 text-[17px] font-semibold transition-colors duration-150 [touch-action:manipulation] ${
+      onClick={() => setYendo(true)}
+      aria-busy={yendo || undefined}
+      className={`inline-flex items-center justify-center rounded-[var(--radius-button)] px-8 text-[17px] font-semibold transition-[colors,opacity] duration-150 [touch-action:manipulation] ${yendo ? 'opacity-80' : ''} ${
         variant === 'outline'
           ? 'border border-[color-mix(in_oklab,var(--accent)_45%,transparent)] text-[var(--accent)] hover:bg-[var(--chip-bg)]'
           : 'cta-solid bg-[var(--accent)] text-[var(--on-accent)] shadow-[0_8px_30px_color-mix(in_oklab,var(--accent)_25%,transparent)] hover:bg-[color-mix(in_oklab,var(--accent)_88%,var(--text-primary))]'
@@ -449,7 +463,7 @@ export function FotoLugar({
     <div
       role="img"
       aria-label={`Espacio para fotografía: ${descripcion}`}
-      className={`relative flex items-start justify-end overflow-hidden p-3 ${forma === 'redonda' ? 'rounded-[var(--radius-card)]' : forma} ${className}`}
+      className={`relative flex items-start justify-center overflow-hidden p-3 ${forma === 'redonda' ? 'rounded-[var(--radius-card)]' : forma} ${className}`}
       style={{
         background:
           'radial-gradient(120% 80% at 30% 20%, rgb(255 255 255 / 0.45), transparent 60%), ' +
@@ -457,7 +471,7 @@ export function FotoLugar({
       }}
     >
       <Camera size={28} strokeWidth={1.6} aria-hidden="true" className="absolute left-1/2 top-[44%] -translate-x-1/2 -translate-y-1/2 text-white/70" />
-      <span className="relative max-w-[88%] rounded-[12px] bg-black/30 px-2.5 py-1 text-left text-[11px] font-semibold leading-snug text-white/95 backdrop-blur-[2px]">
+      <span className="relative mt-[12%] max-w-[70%] rounded-[12px] bg-black/30 px-2.5 py-1 text-center text-[11px] font-semibold leading-snug text-white/95 backdrop-blur-[2px]">
         {descripcion}
       </span>
     </div>

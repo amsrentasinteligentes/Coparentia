@@ -2284,6 +2284,13 @@ justificación: **veredicto:landing** sigue LISTA (37/40·17/20·18/20), el gate
 por comparar mtime de CUALQUIER `.tsx` del proyecto; **veredicto:onboarding** y **veredicto:paywall**
 siguen NO LISTA por el techo estructural ya documentado, sin tocar en esta sesión.
 
+### Estado de los 3 gates de veredicto — LANDING CLARA, revisor r2 en curso (2026-09-17 noche, commit ecb6e6b)
+**veredicto:landing**: variante clara r1 = 33/40 · 14/20 · 17/20, FIDELIDAD FIEL (0/6). Sus 5 defectos
+quedaron corregidos en ecb6e6b (escena del hero, dispositivo en más sectores, cierre AA, ficha con hex
+reales, botón del kit en abogados) y la r2 está corriendo. Veredicto en disco = r1 (NO LISTA) hasta que llegue.
+**veredicto:onboarding** y **veredicto:paywall**: sin cambios (techo documentado abajo; el usuario pidió
+no tocarlos). Pendiente del usuario: decidir la fuente de las fotos (banco con licencia vs. propias).
+
 ### Estado de los 3 gates de veredicto — REDISEÑO CERRADO EN TECHO DOCUMENTADO (2026-09-17)
 Seis rondas de revisor-visual (detalle y puntajes en el checkpoint "REDISEÑO EN CURSO"). Resultado
 final r6: **veredicto:landing** 33/40·16/20·16/20 · **veredicto:onboarding** 30/40·16/20 ·

@@ -78,7 +78,7 @@ export function Solucion({
 
         {/* El chip del mecanismo bautizado — hairline + <Accent> (55 §4) */}
         <motion.div variants={item} className="mt-4">
-          <Hairline surface="bg" className="w-fit">
+          <Hairline surface="bg" radio="button" className="w-fit">
             <span className="block px-4 py-2 text-[15px] font-semibold">
               <Accent>{mecanismo}</Accent>
             </span>

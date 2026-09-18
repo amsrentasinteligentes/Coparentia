@@ -25,7 +25,7 @@
   /* ── TEXTO: tinta azul-marino de la marca, tres escalones (AA sobre blanco y sobre --bg) ── */
   --text-primary: #14233a;   /* 14.6:1 sobre blanco */
   --text-secondary: #4b5c78; /* 6.9:1 sobre blanco · 6.3:1 sobre --bg */
-  --text-tertiary: #667891;  /* 4.6:1 sobre blanco · 4.3:1 sobre --bg (solo labels 11-13px) */
+  --text-tertiary: #5b6d88;  /* 5.5:1 sobre blanco · 4.9:1 sobre --bg · 4.5:1 sobre --surface-2 */
 
   /* ── MARCA: el mismo azul de Coparentia, un paso más profundo para pasar AA sobre claro.
         #5B93E8 (el de la app) mide 2.9:1 sobre blanco — se usa solo como 2ª nota en degradés. ── */

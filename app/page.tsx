@@ -11,7 +11,7 @@
 
 import { useEffect, useState } from 'react';
 import { Figtree, Nunito_Sans } from 'next/font/google';
-import { MessageCircleWarning, ReceiptText, ShieldAlert, CalendarClock, CalendarDays, Home as HomeIcon, ListChecks, CreditCard, Upload } from 'lucide-react';
+import { MessageCircleWarning, ReceiptText, ShieldAlert, CalendarDays, Home as HomeIcon, ListChecks, CreditCard, Upload } from 'lucide-react';
 import { obtenerTRM } from '@/lib/trm';
 import { aproximadoEnPesos } from '@/lib/formato-cop';
 import { Hero } from '@/components/landing/Hero';
@@ -66,7 +66,7 @@ export default function Home() {
         // Promesa en dos tiempos (FICHA-AVATAR: dolor = caos de gastos + acusaciones; deseo = paz):
         // primero lo concreto que se resuelve, después lo que la persona quiere sentir.
         h1Marked="Menos discusiones por dinero. [acento]Más calma[/acento] para tus hijos."
-        subtitleMarked="Cada gasto de tus hijos, con comprobante y fecha, en [b]un solo lugar[/b]."
+        subtitleMarked="Tus comprobantes con fecha, en un solo lugar, [b]sin depender de la otra persona[/b]."
         ctaLabel={CTA_LABEL}
         ctaHref={CTA_HREF}
         socialProof={<span>7 días gratis · Garantía de 15 días</span>}
@@ -82,8 +82,9 @@ export default function Home() {
       <Problema
         titulo="¿Te suena?"
         preguntas={[
-          { icon: MessageCircleWarning, textoMarked: '¿Te reclaman pagos que [b]ya hiciste[/b] y no encuentras el comprobante?' },
-          { icon: CalendarClock, textoMarked: '¿No tienes clara tu fecha de pago o cuándo aumenta tu cuota?' },
+          // Dolor ★ #1 de FICHA-AVATAR, con sus palabras: "por más que pago… me tratan de mala paga".
+          { icon: MessageCircleWarning, textoMarked: '¿Por más que pagas te siguen tratando de [b]"mala paga"[/b]?' },
+          { icon: ReceiptText, textoMarked: '¿Te reclaman pagos que [b]ya hiciste[/b] y no encuentras el comprobante?' },
           { icon: ReceiptText, textoMarked: '¿Te piden dinero para gastos "urgentes" sin ningún soporte?' },
           { icon: ShieldAlert, textoMarked: '¿Vives con miedo a una demanda que no sabrías cómo responder?' },
         ]}
@@ -154,7 +155,7 @@ export default function Home() {
         }}
         anual={{
           nombre: 'Anual',
-          badge: 'AHORRAS 25%',
+          badge: '3 MESES GRATIS',
           precioMes: 'US$7.42',
           totalAnual: 'Se cobra US$89 al año',
           ahorro: '3 meses gratis',
@@ -176,8 +177,8 @@ export default function Home() {
           // Antes repetía 4 de los 5 bullets del plan anual y el diferenciador real se diluía.
           // Ahora dice solo en qué se diferencia: mismas funciones, sin compromiso de 12 meses.
           features: [
+            'Todas las funciones del plan Anual',
             'Sello de Confianza en cada comprobante',
-            'Expediente exportable en PDF foliado',
             'Cancelas cuando quieras, sin permanencia',
             'Garantía del Primer Expediente (15 días)',
           ],
