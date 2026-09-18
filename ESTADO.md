@@ -1,3 +1,20 @@
+### Checkpoint (2026-09-18, tarde) — GASTOS Y EVENTOS POR HIJO (pedido explícito del usuario)
+El usuario cargó a su hija en Perfil y pidió: "si hay 2 o 3 hijos, agrupar los gastos por cada hijo para
+que las cuentas queden claras". Construido y verificado (tsc ✓ build ✓ preview con sesión real ✓;
+sin revisor — cambio dentro de pantallas ya aprobadas):
+- SQL `supabase/hijos-en-registros.sql` (EJECUTADO por el usuario, Success): `hijo_id` en pagos y eventos
+  (FK a hijos, on delete set null, índice) + trigger `validar_hijo_propio` (security definer, revoke from
+  public) que impide colgar un registro de un hijo ajeno.
+- `lib/datos.ts`: Pago/Evento con `hijoId`/`hijoNombre` (select `*, hijos(nombre)`).
+- `components/app/SelectorHijo.tsx`: chips "¿Para quién?" (hijos + Todos); con 1 hijo se preselecciona en
+  gasto extra; sin hijos invita a Perfil. Usado en ModalRegistro (Pagos) y ModalEvento (Calendario).
+- Pagos: tarjeta "Gastos extra por hijo" (solo con ≥2 hijos, año en curso, toca → filtra), chips de filtro
+  por hijo (Todos · nombres · Sin asignar), nombre del hijo en cada fila. La cuota alimentaria es "de todos".
+- Calendario/Inicio: "Cita médica · Sofía" en filas, próximo evento y actividad reciente.
+- PDF: sección "Partes" (titular + rol, hijos con edad, otra parte), hijo junto al concepto y en el anexo,
+  tabla "Gastos extra por hijo". Perfil/hijos fallan en silencio → el PDF sale igual sin nombres.
+Sigue pendiente: validación con Ivonne → cancelación/reembolso; logo plano azul si llega.
+
 ### Checkpoint (2026-09-18, cierre) — Sesión de rediseño claro COMPLETA y confirmada por el usuario
 El usuario confirmó en su celular: landing clara, interior claro (6 pestañas: Inicio, Pagos, Calendario,
 Expediente, Asistencia, Perfil), logo nuevo (isotipo + horizontal), modales en claro ("ya se ve bien claro").

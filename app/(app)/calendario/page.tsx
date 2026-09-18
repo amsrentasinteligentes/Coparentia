@@ -14,6 +14,8 @@ import { ChevronLeft, ChevronRight, Plus, X, Users, HeartPulse, Plane, Trophy, G
 import { ContenedorApp, Tarjeta, IconoCirculo, BotonFlotante, ErrorDeCarga, CabeceraApp, TituloSeccion } from '@/components/app/ui';
 import { VisorImagen } from '@/components/app/VisorImagen';
 import { Portal } from '@/components/app/Portal';
+import { SelectorHijo, useHijos, type ValorHijo } from '@/components/app/SelectorHijo';
+import { type Hijo } from '@/lib/perfil';
 import { type Evento, type TipoEvento, obtenerEventos, agregarEvento, obtenerUrlArchivo, formatoFechaLarga, formatoFechaCorta, validarArchivoAdjunto } from '@/lib/datos';
 import { hoyEnColombia } from '@/lib/fecha';
 
@@ -59,6 +61,8 @@ export default function Calendario() {
   const [mesActual, setMesActual] = useState(() => new Date());
   const [modalAbierto, setModalAbierto] = useState(false);
   const [fechaModal, setFechaModal] = useState<string | undefined>(undefined);
+  // Hijos del perfil: cada evento puede quedar a nombre de uno ("Cita médica · Sofía").
+  const { hijos } = useHijos();
 
   // Igual que en Inicio y Pagos: un fallo de red mostraba el mes VACÍO, indistinguible de
   // "no tienes eventos registrados".
@@ -177,6 +181,7 @@ export default function Calendario() {
       <AnimatePresence>
         {modalAbierto && (
           <ModalEvento
+            hijos={hijos}
             fechaInicial={fechaModal}
             onCerrar={() => setModalAbierto(false)}
             onGuardado={(nuevo) => {
@@ -223,7 +228,10 @@ function TarjetaEvento({ evento: e }: { evento: Evento }) {
       </div>
       <IconoCirculo icon={Icon} />
       <div className="min-w-0 flex-1">
-        <p className="truncate text-[13px] text-[var(--text-secondary)]">{LABEL[e.tipo]}</p>
+        <p className="truncate text-[13px] text-[var(--text-secondary)]">
+          {LABEL[e.tipo]}
+          {e.hijoNombre && <span className="font-semibold text-[var(--accent-ink,var(--accent))]"> · {e.hijoNombre}</span>}
+        </p>
         <p className="truncate text-[14px] font-medium text-[var(--text-primary)]">{e.titulo}</p>
         {e.documentoAdjunto && (
           <p className="mt-0.5 flex items-center gap-1 text-[12px] text-[var(--accent)]">
@@ -353,15 +361,19 @@ function CalendarioMes({
 }
 
 function ModalEvento({
+  hijos,
   onCerrar,
   onGuardado,
   fechaInicial,
 }: {
+  hijos: Hijo[];
   onCerrar: () => void;
   onGuardado: (e: Evento) => void;
   fechaInicial?: string;
 }) {
   const [tipo, setTipo] = useState<TipoEvento>('visita');
+  // Con un solo hijo se preselecciona; con varios, la persona elige (o deja "Todos").
+  const [hijoId, setHijoId] = useState<ValorHijo>(hijos.length === 1 ? hijos[0].id : null);
   const [titulo, setTitulo] = useState('');
   const [fecha, setFecha] = useState(fechaInicial ?? hoyEnColombia());
   const [documento, setDocumento] = useState<File | null>(null);
@@ -378,6 +390,7 @@ function ModalEvento({
         tipo,
         titulo: titulo.trim(),
         fecha,
+        hijoId: hijoId ?? undefined,
         ...(documento ? { documentoAdjunto: documento.name } : {}),
       },
       documento ?? undefined
@@ -427,6 +440,8 @@ function ModalEvento({
             );
           })}
         </div>
+
+        <SelectorHijo hijos={hijos} valor={hijoId} onCambio={setHijoId} textoTodos="Todos" ocultarSinHijos />
 
         <label className="mt-4 block text-[13px] font-medium text-[var(--text-secondary)]">Título</label>
         <input

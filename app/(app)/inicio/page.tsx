@@ -528,7 +528,7 @@ function Dashboard() {
                       <p className="truncate text-[13px] text-[var(--text-secondary)]">{proximoEvento.titulo}</p>
                       <p className="mt-0.5 text-[13px] font-bold text-[var(--accent-ink,var(--accent))]">
                         {formatoFechaCorta(proximoEvento.fecha)}
-                        <span className="ml-2 font-normal text-[var(--text-secondary)]">{LABEL_EVENTO[proximoEvento.tipo]}</span>
+                        <span className="ml-2 font-normal text-[var(--text-secondary)]">{LABEL_EVENTO[proximoEvento.tipo]}{proximoEvento.hijoNombre ? ` · ${proximoEvento.hijoNombre}` : ''}</span>
                       </p>
                     </>
                   ) : (
@@ -619,7 +619,7 @@ function Dashboard() {
                       <IconoCirculo icon={p.tipo === 'cuota' ? Check : ReceiptText} size={16} tono={p.tipo === 'cuota' ? 'exito' : 'info'} />
                       <div className="min-w-0 flex-1">
                         <p className="truncate text-[13px] font-bold text-[var(--text-primary)]">{p.tipo === 'cuota' ? 'Cuota con Sello de Confianza' : 'Gasto extra registrado'}</p>
-                        <p className="truncate text-[11.5px] text-[var(--text-secondary)]">{p.concepto} · {formatoCOP(p.monto)}</p>
+                        <p className="truncate text-[11.5px] text-[var(--text-secondary)]">{p.hijoNombre ? `${p.hijoNombre} · ` : ''}{p.concepto} · {formatoCOP(p.monto)}</p>
                       </div>
                       <time className="shrink-0 text-right text-[11.5px] leading-tight text-[var(--text-secondary)]">{formatoFechaCorta(p.fecha)}</time>
                     </li>

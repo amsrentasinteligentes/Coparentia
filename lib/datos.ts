@@ -26,6 +26,10 @@ export interface Pago {
   tipo: TipoMovimiento;
   comprobanteNombre: string;
   comprobantePath?: string; // ruta real en Supabase Storage (bucket "comprobantes")
+  // A qué hijo corresponde (tabla hijos de Perfil). Sin hijo = general / todos. Pedido del usuario
+  // (2026-09-18): con 2-3 hijos, los gastos deben poder agruparse por cada uno.
+  hijoId?: string;
+  hijoNombre?: string;
 }
 
 export interface Autorizacion {
@@ -45,7 +49,20 @@ export interface Evento {
   nota?: string;
   documentoAdjunto?: string; // nombre real del archivo subido (fórmula médica, permiso, etc.)
   documentoAdjuntoPath?: string; // ruta real en Supabase Storage (bucket "comprobantes")
+  hijoId?: string;
+  hijoNombre?: string;
 }
+
+// PostgREST devuelve la relación embebida como objeto (FK a una fila) o, según la versión, como
+// arreglo de una fila: se aceptan ambas formas para no depender del detalle.
+type HijoEmbebido = { nombre: string } | { nombre: string }[] | null | undefined;
+function nombreHijo(h: HijoEmbebido): string | undefined {
+  if (!h) return undefined;
+  return Array.isArray(h) ? h[0]?.nombre : h.nombre;
+}
+// Columnas de pagos/eventos + el nombre del hijo (la RLS de hijos garantiza que solo llegan los propios).
+const COLUMNAS_PAGO = '*, hijos(nombre)';
+const COLUMNAS_EVENTO = '*, hijos(nombre)';
 
 // Anota una acción real en event_log (36-ANALITICA-Y-EVENTOS.md) — es lo que el panel de
 // administración lee en "Uso de la app". Nunca bloquea ni rompe la acción principal: si el
@@ -76,6 +93,8 @@ function mapPago(row: {
   tipo: TipoMovimiento;
   comprobante_nombre: string;
   comprobante_path: string | null;
+  hijo_id?: string | null;
+  hijos?: HijoEmbebido;
 }): Pago {
   return {
     id: row.id,
@@ -85,6 +104,8 @@ function mapPago(row: {
     tipo: row.tipo,
     comprobanteNombre: row.comprobante_nombre,
     comprobantePath: row.comprobante_path ?? undefined,
+    hijoId: row.hijo_id ?? undefined,
+    hijoNombre: nombreHijo(row.hijos),
   };
 }
 
@@ -114,6 +135,8 @@ function mapEvento(row: {
   nota: string | null;
   documento_adjunto: string | null;
   documento_adjunto_path: string | null;
+  hijo_id?: string | null;
+  hijos?: HijoEmbebido;
 }): Evento {
   return {
     id: row.id,
@@ -123,6 +146,8 @@ function mapEvento(row: {
     nota: row.nota ?? undefined,
     documentoAdjunto: row.documento_adjunto ?? undefined,
     documentoAdjuntoPath: row.documento_adjunto_path ?? undefined,
+    hijoId: row.hijo_id ?? undefined,
+    hijoNombre: nombreHijo(row.hijos),
   };
 }
 
@@ -225,7 +250,7 @@ export async function obtenerPagos(): Promise<Pago[]> {
   const { supabase, userId } = await usuarioActual();
   const { data, error } = await supabase
     .from('pagos')
-    .select('*')
+    .select(COLUMNAS_PAGO)
     .eq('user_id', userId)
     .order('fecha', { ascending: false });
   // Antes se ignoraba `error` y se devolvía `[]`: si la consulta fallaba (red caída, sesión
@@ -290,7 +315,7 @@ export async function obtenerUrlArchivo(ruta: string): Promise<string | null> {
   return data.signedUrl;
 }
 
-export async function agregarPago(pago: Omit<Pago, 'id' | 'comprobantePath'>, archivo: File): Promise<Pago> {
+export async function agregarPago(pago: Omit<Pago, 'id' | 'comprobantePath' | 'hijoNombre'>, archivo: File): Promise<Pago> {
   const { supabase, userId } = await usuarioActual();
   const rutaComprobante = await subirArchivoPrivado(userId, 'pagos', archivo);
   const { data, error } = await supabase
@@ -303,8 +328,9 @@ export async function agregarPago(pago: Omit<Pago, 'id' | 'comprobantePath'>, ar
       tipo: pago.tipo,
       comprobante_nombre: pago.comprobanteNombre,
       comprobante_path: rutaComprobante,
+      hijo_id: pago.hijoId ?? null,
     })
-    .select()
+    .select(COLUMNAS_PAGO)
     .single();
   if (error || !data) throw error ?? new Error('No se pudo guardar el pago.');
   registrarEvento(supabase, userId, 'pago_agregado');
@@ -344,7 +370,7 @@ export async function obtenerEventos(): Promise<Evento[]> {
   const { supabase, userId } = await usuarioActual();
   const { data, error } = await supabase
     .from('eventos')
-    .select('*')
+    .select(COLUMNAS_EVENTO)
     .eq('user_id', userId)
     .order('fecha', { ascending: true });
   // Mismo criterio que en obtenerPagos: un fallo NUNCA se disfraza de "no hay nada".
@@ -353,7 +379,7 @@ export async function obtenerEventos(): Promise<Evento[]> {
 }
 
 export async function agregarEvento(
-  evento: Omit<Evento, 'id' | 'documentoAdjuntoPath'>,
+  evento: Omit<Evento, 'id' | 'documentoAdjuntoPath' | 'hijoNombre'>,
   archivo?: File
 ): Promise<Evento> {
   const { supabase, userId } = await usuarioActual();
@@ -368,8 +394,9 @@ export async function agregarEvento(
       nota: evento.nota ?? null,
       documento_adjunto: evento.documentoAdjunto ?? null,
       documento_adjunto_path: rutaDocumento,
+      hijo_id: evento.hijoId ?? null,
     })
-    .select()
+    .select(COLUMNAS_EVENTO)
     .single();
   if (error || !data) throw error ?? new Error('No se pudo guardar el evento.');
   registrarEvento(supabase, userId, 'evento_agregado');

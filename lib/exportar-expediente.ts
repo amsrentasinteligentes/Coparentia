@@ -34,6 +34,7 @@ import {
   formatoFechaLarga,
 } from '@/lib/datos';
 import { hoyEnColombia } from '@/lib/fecha';
+import { obtenerPerfil, obtenerHijos, edadTexto, type Perfil, type Hijo } from '@/lib/perfil';
 
 const ETIQUETA_ESTADO: Record<EstadoAutorizacion, string> = {
   aprobada: 'Aprobada',
@@ -96,11 +97,15 @@ export async function exportarExpedientePdf(
 ): Promise<ResultadoExportacion> {
   onProgreso?.('Reuniendo tu expediente…');
 
-  const [{ jsPDF }, titulo, pagos, autorizaciones] = await Promise.all([
+  // Perfil e hijos son opcionales en el PDF: si no cargan (perfil sin llenar, red), el expediente
+  // sale igual — solo sin los nombres. Nunca se cae la exportación por un dato de cortesía.
+  const [{ jsPDF }, titulo, pagos, autorizaciones, perfil, hijos] = await Promise.all([
     import('jspdf'),
     obtenerTitulo(),
     obtenerPagos(),
     obtenerAutorizaciones(),
+    obtenerPerfil().catch((): Perfil | null => null),
+    obtenerHijos().catch((): Hijo[] => []),
   ]);
 
   const ordenados = [...pagos].sort((a, b) => a.fecha.localeCompare(b.fecha));
@@ -159,6 +164,40 @@ export async function exportarExpedientePdf(
     ordenados.length > 0
       ? `${formatoFechaLarga(ordenados[0].fecha)} — ${formatoFechaLarga(ordenados[ordenados.length - 1].fecha)}`
       : 'Sin registros todavía';
+
+  /* ── QUIÉNES — el titular, sus hijos y la otra parte (nombres que la persona puso en Perfil).
+     Es lo primero que un abogado o un juez necesita ubicar: de quién es este expediente y a
+     favor de qué menores. Solo se imprime lo que existe. */
+  const filasQuienes: [string, string][] = [];
+  if (perfil?.nombre) {
+    const rol = perfil.rolFamiliar === 'papa' ? ' (padre)' : perfil.rolFamiliar === 'mama' ? ' (madre)' : '';
+    filasQuienes.push(['Titular del expediente', `${perfil.nombre}${rol}`]);
+  }
+  if (hijos.length > 0) {
+    const lista = hijos
+      .map((h) => {
+        const edad = edadTexto(h.fechaNacimiento);
+        return edad ? `${h.nombre} (${edad})` : h.nombre;
+      })
+      .join(', ');
+    filasQuienes.push([hijos.length === 1 ? 'Hijo/a' : 'Hijos', lista]);
+  }
+  if (perfil?.otroProgenitorNombre) filasQuienes.push(['Otra parte', perfil.otroProgenitorNombre]);
+  if (filasQuienes.length > 0) {
+    titular('Partes');
+    filasQuienes.forEach(([etiqueta, valor]) => {
+      const lineas: string[] = doc.splitTextToSize(valor, ANCHO_UTIL - 260);
+      salto(16 * lineas.length);
+      doc.setTextColor(110);
+      doc.text(etiqueta, MARGEN, y);
+      doc.setTextColor(20);
+      doc.setFont('helvetica', 'bold');
+      doc.text(lineas, MARGEN + 260, y);
+      doc.setFont('helvetica', 'normal');
+      y += 16 * lineas.length;
+    });
+    y += 12;
+  }
 
   titular('Resumen');
   const filasResumen: [string, string][] = [
@@ -229,8 +268,9 @@ export async function exportarExpedientePdf(
       if (esFoto) numeroAnexo += 1;
       doc.setTextColor(40);
       doc.text(formatoFechaLarga(p.fecha), MARGEN, y);
-      // El concepto se recorta para no invadir la columna del monto.
-      doc.text(doc.splitTextToSize(p.concepto, 200)[0], MARGEN + 110, y);
+      // El concepto (con el hijo, si lo tiene) se recorta para no invadir la columna del monto.
+      const conceptoConHijo = p.hijoNombre ? `${p.concepto} — ${p.hijoNombre}` : p.concepto;
+      doc.text(doc.splitTextToSize(conceptoConHijo, 200)[0], MARGEN + 110, y);
       doc.text(formatoCOP(p.monto), MARGEN + 330, y);
       doc.setTextColor(110);
       doc.text(
@@ -242,6 +282,38 @@ export async function exportarExpedientePdf(
     });
   }
   y += 12;
+
+  /* ── GASTOS EXTRA POR HIJO — con hijos cargados, la cuenta de cada uno por separado (pedido
+     del usuario 2026-09-18: "que las cuentas puedan quedar claras"). La cuota alimentaria es de
+     todos y no se reparte aquí. */
+  const extras = ordenados.filter((p) => p.tipo === 'gasto_extra');
+  if (hijos.length > 0 && extras.length > 0) {
+    titular('Gastos extra por hijo');
+    doc.setTextColor(110);
+    doc.setFontSize(9);
+    doc.text('Hijo/a', MARGEN, y);
+    doc.text('Gastos', MARGEN + 260, y);
+    doc.text('Total', MARGEN + 330, y);
+    y += 14;
+    doc.setFontSize(10);
+    const filasHijos: [string, number, number][] = hijos.map((h) => {
+      const suyos = extras.filter((p) => p.hijoId === h.id);
+      return [h.nombre, suyos.length, suyos.reduce((acc, p) => acc + p.monto, 0)];
+    });
+    const sinHijo = extras.filter((p) => !p.hijoId);
+    if (sinHijo.length > 0) filasHijos.push(['Sin hijo asignado (comunes)', sinHijo.length, sinHijo.reduce((acc, p) => acc + p.monto, 0)]);
+    filasHijos.forEach(([nombre, cantidad, total]) => {
+      salto(16);
+      doc.setTextColor(40);
+      doc.text(doc.splitTextToSize(nombre, 240)[0], MARGEN, y);
+      doc.text(String(cantidad), MARGEN + 260, y);
+      doc.setFont('helvetica', 'bold');
+      doc.text(formatoCOP(total), MARGEN + 330, y);
+      doc.setFont('helvetica', 'normal');
+      y += 16;
+    });
+    y += 12;
+  }
 
   /* ── AUTORIZACIONES ─────────────────────────────────────────────────────── */
   titular('Autorizaciones y controversias');
@@ -347,7 +419,7 @@ export async function exportarExpedientePdf(
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(10);
     doc.setTextColor(60);
-    doc.text(`${formatoFechaLarga(p.fecha)} · ${p.concepto} · ${formatoCOP(p.monto)}`, MARGEN, y);
+    doc.text(`${formatoFechaLarga(p.fecha)} · ${p.concepto}${p.hijoNombre ? ` · ${p.hijoNombre}` : ''} · ${formatoCOP(p.monto)}`, MARGEN, y);
     y += 14;
     doc.setTextColor(140);
     doc.setFontSize(9);

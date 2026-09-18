@@ -7,12 +7,14 @@
 import { useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'motion/react';
-import { Upload, ShieldCheck, FileCheck2, X, ChevronRight, Sparkles, CalendarDays, CreditCard, BarChart3, ReceiptText, Wallet } from 'lucide-react';
+import { Upload, ShieldCheck, FileCheck2, X, ChevronRight, Sparkles, CalendarDays, CreditCard, BarChart3, ReceiptText, Wallet, Users } from 'lucide-react';
 import { ContenedorApp, Tarjeta, IconoCirculo, BotonFlotante, ErrorDeCarga, CabeceraApp, Pildora, TituloSeccion } from '@/components/app/ui';
 import { VisorImagen } from '@/components/app/VisorImagen';
 import { Portal } from '@/components/app/Portal';
 import { SelloConfianza } from '@/components/app/SelloConfianza';
 import { VistaPreviaArchivo } from '@/components/app/VistaPreviaArchivo';
+import { SelectorHijo, useHijos, inicialHijo, type ValorHijo } from '@/components/app/SelectorHijo';
+import { type Hijo } from '@/lib/perfil';
 import {
   type Pago,
   type Titulo,
@@ -31,11 +33,18 @@ import { leerMontoDeRecibo } from '@/lib/ocr-recibo';
 import { comprimirParaLectura } from '@/lib/comprimir-imagen';
 
 type Filtro = 'todos' | TipoMovimiento;
+// Filtro por hijo dentro de la lista: 'todos' · id de un hijo · 'sin' (registros sin hijo asignado).
+type FiltroHijo = 'todos' | 'sin' | string;
 
 export default function Pagos() {
   const [pagos, setPagos] = useState<Pago[]>([]);
   const [titulo, setTitulo] = useState<Titulo | null>(null);
   const [filtro, setFiltro] = useState<Filtro>('todos');
+  // Hijos del perfil: con 2 o más, los gastos se agrupan y filtran por cada uno (pedido del
+  // usuario 2026-09-18: "que las cuentas puedan quedar claras").
+  const { hijos } = useHijos();
+  const [filtroHijo, setFiltroHijo] = useState<FiltroHijo>('todos');
+  const variosHijos = hijos.length >= 2;
   const parametros = useSearchParams();
   // Se abre solo cuando se llega desde el boton de Inicio, para no cobrar dos toques por una
   // sola intencion.
@@ -104,7 +113,22 @@ export default function Pagos() {
 
   const visibles = pagos
     .filter((p) => filtro === 'todos' || p.tipo === filtro)
+    .filter((p) => filtroHijo === 'todos' || (filtroHijo === 'sin' ? !p.hijoId : p.hijoId === filtroHijo))
     .sort((a, b) => b.fecha.localeCompare(a.fecha));
+
+  // Cuentas por hijo (solo gastos extra: la cuota alimentaria es de todos). Año en curso.
+  const anioEnCurso = String(anioEnColombia());
+  const extrasDelAnio = pagos.filter((p) => p.tipo === 'gasto_extra' && p.fecha.startsWith(anioEnCurso));
+  const porHijo = hijos.map((h) => {
+    const suyos = extrasDelAnio.filter((p) => p.hijoId === h.id);
+    return { hijo: h, cantidad: suyos.length, total: suyos.reduce((acc, p) => acc + p.monto, 0) };
+  });
+  const sinAsignar = extrasDelAnio.filter((p) => !p.hijoId);
+  const totalSinAsignar = sinAsignar.reduce((acc, p) => acc + p.monto, 0);
+  const verGastosDe = (v: FiltroHijo): void => {
+    setFiltro('gasto_extra');
+    setFiltroHijo(v);
+  };
 
   const totalVisible = visibles.reduce((acc, p) => acc + p.monto, 0);
 
@@ -194,6 +218,45 @@ export default function Pagos() {
               </Tarjeta>
             </div>
 
+            {/* GASTOS POR HIJO — con 2 o más hijos, cada uno con su cuenta del año (pedido del usuario).
+                Tocar una fila filtra la lista de abajo a los gastos de ese hijo. */}
+            {variosHijos && (
+              <Tarjeta indice={3} className="mt-3">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-[15px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">Gastos extra por hijo</h2>
+                  <p className="text-[12px] text-[var(--text-secondary)]">{anioEnCurso}</p>
+                </div>
+                <ul className="mt-1 flex flex-col">
+                  {porHijo.map(({ hijo, cantidad, total }, i) => (
+                    <li key={hijo.id} className={i > 0 ? 'border-t border-[color-mix(in_oklab,var(--text-tertiary)_16%,transparent)]' : ''}>
+                      <button type="button" onClick={() => verGastosDe(hijo.id)} className="flex w-full items-center gap-3 py-2.5 text-left [touch-action:manipulation]">
+                        <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[color-mix(in_oklab,var(--accent)_12%,transparent)] text-[13px] font-bold text-[var(--accent-ink,var(--accent))]">{inicialHijo(hijo.nombre)}</span>
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate text-[13.5px] font-bold text-[var(--text-primary)]">{hijo.nombre}</p>
+                          <p className="text-[11.5px] text-[var(--text-secondary)]">{cantidad === 0 ? 'Sin gastos este año' : cantidad === 1 ? '1 gasto extra' : `${cantidad} gastos extra`}</p>
+                        </div>
+                        <p className="shrink-0 text-[13.5px] font-extrabold tabular-nums text-[var(--text-primary)]">{formatoCOP(total)}</p>
+                        <ChevronRight size={16} className="shrink-0 text-[var(--text-tertiary)]" aria-hidden="true" />
+                      </button>
+                    </li>
+                  ))}
+                  {sinAsignar.length > 0 && (
+                    <li className="border-t border-[color-mix(in_oklab,var(--text-tertiary)_16%,transparent)]">
+                      <button type="button" onClick={() => verGastosDe('sin')} className="flex w-full items-center gap-3 py-2.5 text-left [touch-action:manipulation]">
+                        <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[var(--surface-2)] text-[var(--text-secondary)]"><Users size={16} aria-hidden="true" /></span>
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate text-[13.5px] font-bold text-[var(--text-primary)]">Sin hijo asignado</p>
+                          <p className="text-[11.5px] text-[var(--text-secondary)]">{sinAsignar.length === 1 ? '1 gasto extra' : `${sinAsignar.length} gastos extra`} · comunes o anteriores</p>
+                        </div>
+                        <p className="shrink-0 text-[13.5px] font-extrabold tabular-nums text-[var(--text-primary)]">{formatoCOP(totalSinAsignar)}</p>
+                        <ChevronRight size={16} className="shrink-0 text-[var(--text-tertiary)]" aria-hidden="true" />
+                      </button>
+                    </li>
+                  )}
+                </ul>
+              </Tarjeta>
+            )}
+
             {/* SEGMENTOS (referencia: Cuotas · Gastos · Historial) */}
             <div role="tablist" aria-label="Filtrar registros" className="mt-4 grid grid-cols-3 gap-1 rounded-[var(--radius-button)] bg-[var(--surface-2)] p-1">
               {([
@@ -206,7 +269,7 @@ export default function Pagos() {
                   type="button"
                   role="tab"
                   aria-selected={filtro === valor}
-                  onClick={() => setFiltro(valor)}
+                  onClick={() => { setFiltro(valor); setFiltroHijo('todos'); }}
                   className={`h-9 rounded-[var(--radius-button)] text-[13px] font-bold transition-colors duration-150 [touch-action:manipulation] ${
                     filtro === valor ? 'bg-[var(--accent)] text-[var(--on-accent,var(--bg))] shadow-[var(--shadow-1)]' : 'text-[var(--accent-ink,var(--accent))]'
                   }`}
@@ -216,11 +279,34 @@ export default function Pagos() {
               ))}
             </div>
 
+            {/* FILTRO POR HIJO (regla 14 del SO: el filtro activo se ve resaltado) */}
+            {variosHijos && filtro !== 'cuota' && (
+              <div role="tablist" aria-label="Filtrar por hijo" className="mt-3 flex gap-2 overflow-x-auto pb-0.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                {([{ v: 'todos' as FiltroHijo, l: 'Todos' }, ...hijos.map((h) => ({ v: h.id as FiltroHijo, l: h.nombre })), { v: 'sin' as FiltroHijo, l: 'Sin asignar' }]).map(({ v, l }) => (
+                  <button
+                    key={v}
+                    type="button"
+                    role="tab"
+                    aria-selected={filtroHijo === v}
+                    onClick={() => setFiltroHijo(v)}
+                    className={`h-9 shrink-0 rounded-[var(--radius-chip,999px)] border px-3 text-[12.5px] font-semibold transition-colors duration-150 [touch-action:manipulation] ${
+                      filtroHijo === v ? 'border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_10%,transparent)] text-[var(--accent-ink,var(--accent))]' : 'border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] text-[var(--text-secondary)]'
+                    }`}
+                  >
+                    {l}
+                  </button>
+                ))}
+              </div>
+            )}
+
             {/* LISTA — dentro de una tarjeta, filas con chip, mes/fecha, monto y estado */}
-            <Tarjeta indice={3} className="mt-3">
+            <Tarjeta indice={4} className="mt-3">
               <div className="flex items-center justify-between">
-                <h2 className="text-[15px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">
+                <h2 className="truncate text-[15px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">
                   {filtro === 'cuota' ? 'Detalle de cuotas' : filtro === 'gasto_extra' ? 'Gastos extra' : 'Historial'}
+                  {filtroHijo !== 'todos' && (
+                    <span className="font-semibold text-[var(--accent-ink,var(--accent))]"> · {filtroHijo === 'sin' ? 'sin asignar' : hijos.find((h) => h.id === filtroHijo)?.nombre}</span>
+                  )}
                 </h2>
                 <p className="text-[12px] text-[var(--text-secondary)]">{visibles.length} · {formatoCOP(totalVisible)}</p>
               </div>
@@ -228,7 +314,7 @@ export default function Pagos() {
                 <div className="flex flex-col items-center py-6 text-center">
                   <IconoCirculo icon={filtro === 'gasto_extra' ? FileCheck2 : ShieldCheck} size={22} />
                   <p className="mt-3 text-[14px] font-bold text-[var(--text-primary)]">
-                    {filtro === 'todos' ? 'Todavía no hay comprobantes' : filtro === 'cuota' ? 'Ninguna cuota registrada aún' : 'Ningún gasto extra aún'}
+                    {filtroHijo !== 'todos' ? 'Nada registrado con este filtro' : filtro === 'todos' ? 'Todavía no hay comprobantes' : filtro === 'cuota' ? 'Ninguna cuota registrada aún' : 'Ningún gasto extra aún'}
                   </p>
                   <p className="mt-1 max-w-[30ch] text-[13px] text-[var(--text-secondary)]">
                     Toca "Registrar", sube la foto del comprobante y queda fechado con el Sello de Confianza.
@@ -243,7 +329,10 @@ export default function Pagos() {
                         <IconoCirculo icon={esCuota ? CalendarDays : ReceiptText} size={18} tono={esCuota ? 'accent' : 'info'} />
                         <div className="min-w-0 flex-1">
                           <p className="truncate text-[13.5px] font-bold text-[var(--text-primary)]">{p.concepto}</p>
-                          <p className="truncate text-[11.5px] text-[var(--text-secondary)]">Registrado el {formatoFechaLarga(p.fecha)}</p>
+                          <p className="truncate text-[11.5px] text-[var(--text-secondary)]">
+                            {p.hijoNombre && <span className="font-semibold text-[var(--accent-ink,var(--accent))]">{p.hijoNombre} · </span>}
+                            Registrado el {formatoFechaLarga(p.fecha)}
+                          </p>
                         </div>
                         <p className="shrink-0 text-[13.5px] font-extrabold tabular-nums text-[var(--text-primary)]">{formatoCOP(p.monto)}</p>
                         <Pildora texto={esCuota ? 'Sello' : 'Extra'} tono={esCuota ? 'exito' : 'neutro'} />
@@ -282,11 +371,11 @@ export default function Pagos() {
 
             {/* CIFRAS DE CIERRE — pagos este año y comprobantes con Sello */}
             <div className="mt-3 grid grid-cols-2 gap-3">
-              <Tarjeta indice={4} className="flex items-center gap-3">
+              <Tarjeta indice={5} className="flex items-center gap-3">
                 <IconoCirculo icon={BarChart3} />
                 <div><p className="text-[11.5px] text-[var(--text-secondary)]">Cuotas este año</p><p className="text-[17px] font-extrabold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">{cuotasDelAnio}</p></div>
               </Tarjeta>
-              <Tarjeta indice={5} className="flex items-center gap-3">
+              <Tarjeta indice={6} className="flex items-center gap-3">
                 <IconoCirculo icon={ShieldCheck} tono="exito" />
                 <div><p className="text-[11.5px] text-[var(--text-secondary)]">Con Sello</p><p className="text-[17px] font-extrabold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">{pagos.length}</p></div>
               </Tarjeta>
@@ -303,6 +392,7 @@ export default function Pagos() {
       <AnimatePresence>
         {modalAbierto && (
           <ModalRegistro
+            hijos={hijos}
             onCerrar={() => setModalAbierto(false)}
             onGuardado={(nuevo) => {
               setPagos((prev) => [nuevo, ...prev]);
@@ -330,8 +420,12 @@ export default function Pagos() {
   );
 }
 
-function ModalRegistro({ onCerrar, onGuardado }: { onCerrar: () => void; onGuardado: (p: Pago) => void }) {
+function ModalRegistro({ hijos, onCerrar, onGuardado }: { hijos: Hijo[]; onCerrar: () => void; onGuardado: (p: Pago) => void }) {
   const [tipo, setTipo] = useState<TipoMovimiento>('cuota');
+  // Con un solo hijo, un gasto extra se le asigna solo (cero toques); la cuota es de todos.
+  // Mientras la persona no toque el selector, el valor se DERIVA del tipo (sin efectos).
+  const [hijoElegido, setHijoElegido] = useState<ValorHijo | undefined>(undefined);
+  const hijoId: ValorHijo = hijoElegido !== undefined ? hijoElegido : tipo === 'gasto_extra' && hijos.length === 1 ? hijos[0].id : null;
   const [monto, setMonto] = useState('');
   const [concepto, setConcepto] = useState('');
   const [archivo, setArchivo] = useState<File | null>(null);
@@ -407,6 +501,7 @@ function ModalRegistro({ onCerrar, onGuardado }: { onCerrar: () => void; onGuard
         concepto: concepto.trim(),
         tipo,
         comprobanteNombre: archivo.name,
+        hijoId: hijoId ?? undefined,
       },
       archivo
     )
@@ -461,6 +556,14 @@ function ModalRegistro({ onCerrar, onGuardado }: { onCerrar: () => void; onGuard
             </button>
           ))}
         </div>
+
+        <SelectorHijo
+          hijos={hijos}
+          valor={hijoId}
+          onCambio={setHijoElegido}
+          textoTodos="Todos"
+          ocultarSinHijos={tipo === 'cuota'}
+        />
 
         <label className="mt-4 block text-[13px] font-medium text-[var(--text-secondary)]">Concepto</label>
         <input
