@@ -45,11 +45,11 @@ export function Faq({ kicker = 'PREGUNTAS', titulo = 'Lo que quizá te estás pr
         initial="hidden"
         whileInView="visible"
         viewport={VIEWPORT_ONCE}
-        className="mx-auto max-w-[680px]"
+        className="mx-auto max-w-[680px] xl:max-w-[820px]"
       >
         <motion.div variants={item} className="mb-8">
           <Kicker>{kicker}</Kicker>
-          <h2 className="text-balance text-[30px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)] md:text-[40px]">
+          <h2 className="text-balance text-[30px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)] md:text-[40px] xl:text-[46px]">
             {titulo}
           </h2>
         </motion.div>

@@ -38,12 +38,12 @@ export function Problema({ titulo, preguntas, id }: ProblemaProps) {
         initial="hidden"
         whileInView="visible"
         viewport={VIEWPORT_ONCE}
-        className="mx-auto max-w-[620px] lg:max-w-[760px]"
+        className="mx-auto max-w-[620px] lg:max-w-[760px] xl:max-w-[900px]"
       >
         {titulo && (
           <motion.h2
             variants={item}
-            className="mb-8 text-balance text-[30px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)] md:text-[40px]"
+            className="mb-8 text-balance text-[30px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)] md:text-[40px] xl:text-[46px]"
           >
             {titulo}
           </motion.h2>
@@ -56,7 +56,7 @@ export function Problema({ titulo, preguntas, id }: ProblemaProps) {
               className="flex items-start gap-4 rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--text-tertiary)_22%,transparent)] bg-[var(--bg)] p-4 shadow-[var(--shadow-1)]"
             >
               <IconChip icon={p.icon} tone="muted" />
-              <p className="pt-2 text-[17px] font-medium leading-snug text-[var(--text-primary)]">
+              <p className="pt-2 text-[17px] font-medium leading-snug text-[var(--text-primary)] xl:text-[19px]">
                 <MarkedCopy text={p.textoMarked} />
               </p>
             </motion.li>

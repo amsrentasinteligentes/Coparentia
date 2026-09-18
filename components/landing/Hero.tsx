@@ -91,7 +91,7 @@ export function Hero({
         }}
       />
 
-      <div className="mx-auto w-full max-w-[1140px] px-5">
+      <div className="mx-auto w-full max-w-[1140px] xl:max-w-[1280px] 2xl:max-w-[1400px] px-5">
         {/* Header 64px: marca a la izquierda; en computador enlaces de sección + CTA chico;
             en celular SOLO "Entrar" terciario (19). */}
         <header className="flex h-16 items-center justify-between gap-4">
@@ -104,7 +104,7 @@ export function Hero({
               <a
                 key={l.href}
                 href={l.href}
-                className="hidden px-3 py-3 text-[14px] font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] md:inline-block"
+                className="hidden px-3 py-3 text-[14px] font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] md:inline-block xl:text-[16px]"
               >
                 {l.label}
               </a>
@@ -134,11 +134,11 @@ export function Hero({
         >
           <div className="flex flex-col items-center lg:items-start">
             {/* H1: bold completo por defecto; el acento lo pone el [acento] del copy */}
-            <h1 className="text-balance text-[34px] font-extrabold leading-[1.08] tracking-[-0.02em] text-[var(--text-primary)] [font-family:var(--font-display)] md:text-[56px] lg:text-[52px] xl:text-[58px]">
+            <h1 className="text-balance text-[34px] font-extrabold leading-[1.08] tracking-[-0.02em] text-[var(--text-primary)] [font-family:var(--font-display)] md:text-[56px] lg:text-[54px] xl:text-[64px] 2xl:text-[70px]">
               <MarkedCopy text={h1Marked} />
             </h1>
 
-            <p className="mt-5 max-w-[560px] text-[17px] leading-relaxed text-[var(--text-secondary)] md:text-[18px]">
+            <p className="mt-5 max-w-[600px] text-[17px] leading-relaxed text-[var(--text-secondary)] md:text-[18px] xl:text-[21px]">
               <MarkedCopy text={subtitulo} />
             </p>
 
@@ -148,13 +148,13 @@ export function Hero({
 
             {/* Franja de prueba social: 8-12px bajo el CTA — SOLO números reales */}
             {socialProof && (
-              <div className="mt-3 text-[13px] text-[var(--text-secondary)]">{socialProof}</div>
+              <div className="mt-3 text-[13px] text-[var(--text-secondary)] xl:text-[15px]">{socialProof}</div>
             )}
           </div>
 
           {/* LA ESCENA: forma orgánica + foto + captura + burbuja. Alto fijo por breakpoint para
               que no haya salto de layout (CLS 0) mientras cargan las imágenes. */}
-          <div className="relative mt-10 h-[340px] w-full max-w-[420px] sm:h-[400px] lg:mt-0 lg:h-[480px] lg:max-w-none lg:justify-self-end">
+          <div className="relative mt-10 h-[340px] w-full max-w-[420px] sm:h-[400px] lg:mt-0 lg:h-[480px] lg:max-w-none xl:h-[540px] lg:justify-self-end">
             <Blob className="-right-10 -top-6 h-[92%] w-[88%]" opacidad={0.14} />
             {foto && (
               <div className="absolute right-0 top-0 h-[66%] w-[74%] overflow-hidden blob shadow-[var(--shadow-2)]">
@@ -201,7 +201,7 @@ export function Hero({
             {pilares.slice(0, 3).map((p) => (
               <li
                 key={p}
-                className="flex items-center gap-3 rounded-[var(--radius-button)] bg-[var(--surface)] px-5 py-4 text-[15px] font-semibold text-[var(--text-primary)] shadow-[var(--shadow-1)]"
+                className="flex items-center gap-3 rounded-[var(--radius-button)] bg-[var(--surface)] px-5 py-4 text-[15px] font-semibold text-[var(--text-primary)] shadow-[var(--shadow-1)] xl:py-5 xl:text-[17px]"
               >
                 <CheckCustom />
                 {p}

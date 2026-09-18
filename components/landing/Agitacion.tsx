@@ -39,14 +39,14 @@ export function Agitacion({ frases, contraste, id }: AgitacionProps) {
         initial="hidden"
         whileInView="visible"
         viewport={VIEWPORT_ONCE}
-        className="mx-auto max-w-[620px] lg:max-w-[760px]"
+        className="mx-auto max-w-[620px] lg:max-w-[760px] xl:max-w-[900px]"
       >
         <div className="flex flex-col gap-4">
           {frases.map((f, i) => (
             <motion.p
               key={i}
               variants={item}
-              className="text-[17px] leading-[1.6] text-[var(--text-secondary)]"
+              className="text-[17px] leading-[1.6] text-[var(--text-secondary)] xl:text-[19px]"
             >
               <MarkedCopy text={f} />
             </motion.p>

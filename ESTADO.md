@@ -4,6 +4,9 @@ NO se tocan). Referencia parcial (2houses/Niddo/OFW) → A/B/C (direcciones-abc.
 construida con tokens propios (components/landing/tokens-claro.css, envoltorio .tema-claro), fotos de
 Unsplash elegidas por él (A hero, E Cómo funciona) en public/fotos/, publicada en coparentia.co.
 Revisor: 4 rondas (33·14·17 → 31·16·16), FIEL, craft pasa; usabilidad en techo documentado (ver gates).
+Ajuste pedido por el usuario al verla en su computador (2026-09-18): franjas laterales muy anchas y letra
+pequeña → contenedor 1140 → 1280 (xl) / 1400 (2xl), columnas de lectura ensanchadas en xl, H1 64/70px,
+cuerpo 19-21px, H2 46px, menú 16px, píldoras 17px, botones 64px en xl. Celular sin cambios (verificado).
 Restore point del rediseño claro: commit 97a02e5 (última landing oscura). Pendientes: prueba de
 cancelación/reembolso con la cuenta de Ivonne; correo de bienvenida "Delivered".
 

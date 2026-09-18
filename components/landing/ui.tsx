@@ -252,7 +252,7 @@ export function SectionShell({
       className={`${pt} ${pb} ${className}`}
       style={{ background: mesh, borderTop }}
     >
-      <div className="mx-auto w-full max-w-[1140px] px-5">{children}</div>
+      <div className="mx-auto w-full max-w-[1140px] xl:max-w-[1280px] 2xl:max-w-[1400px] px-5">{children}</div>
     </section>
   );
 }
@@ -308,11 +308,11 @@ export function CtaButton({
       href={href}
       onClick={() => setYendo(true)}
       aria-busy={yendo || undefined}
-      className={`inline-flex items-center justify-center rounded-[var(--radius-button)] px-8 text-[17px] font-semibold transition-[colors,opacity] duration-150 [touch-action:manipulation] ${yendo ? 'opacity-80' : ''} ${
+      className={`inline-flex items-center justify-center rounded-[var(--radius-button)] px-8 text-[17px] font-semibold transition-[colors,opacity] xl:px-10 xl:text-[18px] duration-150 [touch-action:manipulation] ${yendo ? 'opacity-80' : ''} ${
         variant === 'outline'
           ? 'border border-[color-mix(in_oklab,var(--accent)_45%,transparent)] text-[var(--accent-ink)] hover:bg-[var(--chip-bg)]'
           : 'cta-solid bg-[var(--accent)] text-[var(--on-accent)] shadow-[0_8px_30px_color-mix(in_oklab,var(--accent)_25%,transparent)] hover:bg-[color-mix(in_oklab,var(--accent)_88%,var(--text-primary))]'
-      } ${alto === 56 ? 'h-14' : 'h-[52px]'} ${fullMobile ? 'w-full sm:w-auto' : ''}`}
+      } ${alto === 56 ? 'h-14 xl:h-16' : 'h-[52px] xl:h-14'} ${fullMobile ? 'w-full sm:w-auto' : ''}`}
     >
       {children}
     </motion.a>
