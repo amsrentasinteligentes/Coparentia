@@ -3,8 +3,14 @@
 // Landing de Coparentia — 10 secciones canónicas (19-PAGINA-DE-VENTAS.md), construidas con el
 // kit de components/landing/. Copy trazado a FICHA-AVATAR.md, tokens a FICHA-ARTE.md.
 // Copy fuente: docs/copy/landing.md.
+//
+// VARIANTE CLARA "Cuidado en calma" (2026-09-17): SOLO esta página va en claro (decisión del
+// usuario tras el A/B/C — FICHA-ARTE.md, "Variante CLARA de la PÁGINA DE VENTAS"). El envoltorio
+// `.tema-claro` redefine los tokens del kit (components/landing/tokens-claro.css); el interior de
+// la app, el onboarding y el paywall siguen oscuros y no se tocan.
 
 import { useEffect, useState } from 'react';
+import { Figtree, Nunito_Sans } from 'next/font/google';
 import { MessageCircleWarning, ReceiptText, ShieldAlert, CalendarClock, CalendarDays, Home as HomeIcon, ListChecks, CreditCard, Upload } from 'lucide-react';
 import { obtenerTRM } from '@/lib/trm';
 import { aproximadoEnPesos } from '@/lib/formato-cop';
@@ -19,7 +25,11 @@ import { Faq } from '@/components/landing/Faq';
 import { CtaFinal } from '@/components/landing/CtaFinal';
 import { AnuncioAbogados } from '@/components/landing/AnuncioAbogados';
 import { FooterLegal } from '@/components/landing/FooterLegal';
-import { StickyCtaMobile } from '@/components/landing/ui';
+import { FotoLugar, StickyCtaMobile } from '@/components/landing/ui';
+
+// Tipografía de la variante clara — se carga SOLO en esta ruta (next/font hace subset + self-host).
+const figtree = Figtree({ variable: '--font-figtree', subsets: ['latin'], weight: ['500', '700', '800'] });
+const nunitoSans = Nunito_Sans({ variable: '--font-nunito-sans', subsets: ['latin'], weight: ['400', '600', '700'] });
 
 // Modelo 2 (onboarding-first, default B2C de 02C): el CTA lleva a /onboarding,
 // nunca al checkout desde el hero.
@@ -42,18 +52,29 @@ export default function Home() {
   }, []);
 
   return (
-    <div id="main" className="min-h-dvh bg-[var(--bg)] text-[var(--text-primary)] [font-family:var(--font-body)]">
+    <div id="main" className={`tema-claro ${figtree.variable} ${nunitoSans.variable} min-h-dvh bg-[var(--bg)] text-[var(--text-primary)] [font-family:var(--font-body)]`}>
       {/* 1. HERO */}
       <Hero
         appName="Coparentia"
         logo={<img src="/logo-isotipo.png" alt="" aria-hidden="true" className="size-6 object-contain" />}
         loginHref="/entrar"
-        h1Marked="Tu cuota, [acento]pagada y probada[/acento]"
-        subtitleMarked="El Sello de Confianza convierte tus comprobantes en un expediente [b]listo para mostrar[/b]"
+        navLinks={[
+          { label: 'Cómo funciona', href: '#como-funciona' },
+          { label: 'Planes', href: '#oferta' },
+          { label: 'Para abogados', href: '#abogados' },
+        ]}
+        // Promesa en dos tiempos (FICHA-AVATAR: dolor = caos de gastos + acusaciones; deseo = paz):
+        // primero lo concreto que se resuelve, después lo que la persona quiere sentir.
+        h1Marked="Menos discusiones por dinero. [acento]Más calma[/acento] para tus hijos."
+        subtitleMarked="Cada gasto de tus hijos, con comprobante y fecha, en [b]un solo lugar[/b]."
         ctaLabel={CTA_LABEL}
         ctaHref={CTA_HREF}
-        socialProof={<span>7 días de prueba gratis — cancela cuando quieras</span>}
-        visual={<img src="/hero-visual-inicio.png" alt="Tu expediente: anillo de avance, total registrado y próximo evento" className="w-full" />}
+        socialProof={<span>7 días gratis · Garantía de 15 días</span>}
+        visual={<img src="/frame-inicio.png" alt="Pantalla de inicio de Coparentia: tu expediente con el avance del mes, el total registrado y los últimos movimientos" className="w-full" />}
+        foto={<FotoLugar descripcion="Foto: mamá e hijo sonriendo con el celular" className="h-full w-full" forma="redonda" />}
+        // "10 minutos" es el tiempo medido del onboarding + primer comprobante (guía "Tu primer
+        // expediente en 10 minutos" del stack de valor) — no una cifra de marketing inventada.
+        burbuja={{ titulo: 'Tu primer expediente', dato: 'Listo en 10 minutos' }}
       />
 
       {/* 2. PROBLEMA */}
@@ -84,6 +105,7 @@ export default function Home() {
 
       {/* 4. SOLUCIÓN */}
       <Solucion
+        id="como-funciona"
         tituloMarked="Tu prueba, [acento]lista antes de que te pidan[/acento]"
         mecanismo="el Sello de Confianza"
         bigIdeaMarked="No es que no pagues — es que no tienes cómo [b]probarlo[/b]. El Sello de Confianza convierte cada comprobante en una prueba fechada y organizada."
@@ -210,7 +232,7 @@ export default function Home() {
 
       {/* SECCIÓN EXTRA (fuera de la estructura canónica de 19, pedida por el usuario):
           audiencia distinta — abogados de familia que quieren anunciarse en la app. */}
-      <AnuncioAbogados contactoEmail="alianzas@coparentia.co" />
+      <AnuncioAbogados id="abogados" contactoEmail="alianzas@coparentia.co" />
 
       {/* 10. FOOTER LEGAL */}
       <FooterLegal

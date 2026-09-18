@@ -3,7 +3,22 @@ Seis rondas de revisor-visual; final r6: landing 33/40·16/20·16/20, onboarding
 32/40·16/20·17/20. Craft pasa en las tres; usabilidad no llega a 36 y llevaba dos rondas sin subir →
 se cierra (detalle en el checkpoint "REDISEÑO EN CURSO" y en "Estado de los 3 gates"). Publicado en
 producción para que el usuario lo vea en celular y computador. Punto de restauración: `73151e8`.
-SIGUIENTE: el usuario decide si se queda con el rediseño; luego, prueba de cancelación/reembolso con
+DECISIÓN DEL USUARIO (2026-09-17, noche): le GUSTA el interior de la app y el rediseño del funnel —
+**el diseño del interior de la app NO se toca** hasta nueva orden. Pide un cambio de diseño PROFUNDO
+solo para la landing; está pendiente su respuesta a la pregunta 1/2/3 (misma identidad con otra
+composición / identidad nueva / réplica de una referencia visual). Nada se construye sin esa respuesta.
+El usuario respondió con REFERENCIA PARCIAL (capturas de 2houses, Niddo, OurFamilyWizard): página CLARA,
+empática, fotos de familias + capturas de la app, azul Coparentia solo en sectores, mensaje "gastos
+controlados + mente en calma". → Protocolo A/B/C del 54 ejecutado: `direcciones-abc.html` (raíz; copia
+servible en `public/dev/direcciones-abc.html`; la comparativa ORIGINAL de la identidad se conservó como
+`direcciones-abc-identidad-original.html`). Tres interpretaciones fieles: A "Calma editorial" (Spectral +
+Plex, marfil, collage), B "Cercana y directa" (Sora + Manrope, blanco + bloques marino), C "Cuidado en
+calma" (Figtree + Nunito Sans, azul-gris + formas orgánicas). Fuentes verificadas clase por clase
+(document.fonts.check). Captura: docs/revisiones/direcciones-abc-landing.png. Fotos = placeholders
+honestos (se eligen con licencia con el usuario). NADA construido en la landing real todavía.
+EL USUARIO ELIGIÓ LA C ("Cuidado en calma"). Anotado en FICHA-ARTE.md (sección "Variante CLARA de la
+PÁGINA DE VENTAS"). SIGUIENTE: presentar el plan de construcción (>5 archivos → plan + OK) y construir la landing clara
+(tokens.css propios de la landing; el funnel y la app interna NO cambian); luego, prueba de cancelación/reembolso con
 la cuenta de Ivonne (pendiente de esta noche) y revisar que el correo de bienvenida llegue "Delivered".
 
 ### Checkpoint (2026-09-17) — Nueva sección "Asistencia Jurídica" (5to destino del nav)

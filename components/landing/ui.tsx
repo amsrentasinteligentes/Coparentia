@@ -17,7 +17,7 @@ import {
   animate,
   type Variants,
 } from 'motion/react';
-import { Check, X } from 'lucide-react';
+import { Camera, Check, X } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 /* ── <CountUp> — cifra héroe que cuenta desde 0 al entrar en viewport (eje
@@ -63,7 +63,7 @@ export function CountUp({ text, durationMs = 900 }: { text: string; durationMs?:
 export function Accent({ children }: { children: ReactNode }) {
   return (
     <span
-      className="text-[var(--accent)] [box-decoration-break:clone] [-webkit-box-decoration-break:clone]"
+      className="accent-word text-[var(--accent)] [box-decoration-break:clone] [-webkit-box-decoration-break:clone]"
       style={{
         // Mismo subrayado nativo que el <Marcador> del funnel (2026-09-17): antes era un gradiente
         // por porcentaje del alto de línea, que en el H1 del hero (40px en celular, 58px en
@@ -73,7 +73,7 @@ export function Accent({ children }: { children: ReactNode }) {
         // …salvo aquí: en un H1 de 40-58px los huecos del skip-ink se ven como una raya partida en
         // guiones (revisor, 4ª ronda). En display se dibuja continuo y un pelo más fino.
         textDecorationLine: 'underline',
-        textDecorationColor: 'color-mix(in oklab, var(--accent) 40%, transparent)',
+        textDecorationColor: 'var(--accent-underline)',
         textDecorationThickness: '0.10em',
         textUnderlineOffset: '0.12em',
         textDecorationSkipInk: 'none',
@@ -297,7 +297,7 @@ export function CtaButton({
       className={`inline-flex items-center justify-center rounded-[var(--radius-button)] px-8 text-[17px] font-semibold transition-colors duration-150 [touch-action:manipulation] ${
         variant === 'outline'
           ? 'border border-[color-mix(in_oklab,var(--accent)_45%,transparent)] text-[var(--accent)] hover:bg-[var(--chip-bg)]'
-          : 'bg-[var(--accent)] text-[var(--bg)] shadow-[0_8px_30px_color-mix(in_oklab,var(--accent)_25%,transparent)] hover:bg-[color-mix(in_oklab,var(--accent)_88%,var(--text-primary))]'
+          : 'cta-solid bg-[var(--accent)] text-[var(--on-accent)] shadow-[0_8px_30px_color-mix(in_oklab,var(--accent)_25%,transparent)] hover:bg-[color-mix(in_oklab,var(--accent)_88%,var(--text-primary))]'
       } ${alto === 56 ? 'h-14' : 'h-[52px]'} ${fullMobile ? 'w-full sm:w-auto' : ''}`}
     >
       {children}
@@ -389,7 +389,7 @@ export function StickyCtaMobile({
           <motion.a
             whileTap={{ scale: 0.97 }}
             href={ofertaVista ? href : `#${ofertaId}`}
-            className="flex h-12 flex-1 items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-[16px] font-semibold text-[var(--bg)] [touch-action:manipulation]"
+            className="flex h-12 flex-1 items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-[16px] font-semibold text-[var(--on-accent)] [touch-action:manipulation]"
           >
             {ofertaVista ? labelComercial : labelPre}
           </motion.a>
@@ -404,5 +404,62 @@ export function StickyCtaMobile({
         </motion.div>
       )}
     </AnimatePresence>
+  );
+}
+
+/* ── <Blob> — forma orgánica en degradé de marca (dispositivo ownable de la variante clara
+   "Cuidado en calma"): enmarca lo humano (fotos) y da profundidad sin un solo rectángulo.
+   Puramente decorativo → aria-hidden. La forma (border-radius orgánico) vive en tokens-claro.css. ── */
+export function Blob({
+  className = '',
+  variante = 'a',
+  opacidad = 0.16,
+}: {
+  className?: string;
+  /** dos siluetas distintas para que dos formas juntas no se vean clonadas */
+  variante?: 'a' | 'b';
+  opacidad?: number;
+}) {
+  return (
+    <span
+      aria-hidden="true"
+      className={`pointer-events-none absolute ${variante === 'a' ? 'blob' : 'blob-b'} ${className}`}
+      style={{
+        background: 'linear-gradient(150deg, var(--accent-2), var(--accent-deep, var(--accent)))',
+        opacity: opacidad,
+      }}
+    />
+  );
+}
+
+/* ── <FotoLugar> — marcador de posición HONESTO de una fotografía (55 §1.3): bloque con tono
+   cálido, ícono y la descripción exacta de la foto que va ahí. Se reemplaza por una foto con
+   licencia (Unsplash/Pexels) elegida con el usuario — nunca se publica como si fuera la foto. ── */
+export function FotoLugar({
+  descripcion,
+  className = '',
+  forma = 'blob',
+}: {
+  /** "Foto: mamá e hijo revisando el celular en el sofá" — concreta, para poder buscarla. */
+  descripcion: string;
+  className?: string;
+  forma?: 'blob' | 'blob-b' | 'redonda';
+}) {
+  return (
+    <div
+      role="img"
+      aria-label={`Espacio para fotografía: ${descripcion}`}
+      className={`relative flex items-end overflow-hidden p-3 ${forma === 'redonda' ? 'rounded-[var(--radius-card)]' : forma} ${className}`}
+      style={{
+        background:
+          'radial-gradient(120% 80% at 30% 20%, rgb(255 255 255 / 0.45), transparent 60%), ' +
+          'linear-gradient(160deg, var(--foto-1), var(--foto-2))',
+      }}
+    >
+      <Camera size={28} strokeWidth={1.6} aria-hidden="true" className="absolute left-1/2 top-[44%] -translate-x-1/2 -translate-y-1/2 text-white/70" />
+      <span className="relative rounded-full bg-black/30 px-2.5 py-1 text-[11px] font-semibold text-white/95 backdrop-blur-[2px]">
+        {descripcion}
+      </span>
+    </div>
   );
 }

@@ -1,0 +1,98 @@
+/* ============================================================================
+   TOKENS CLAROS DE LA PÁGINA DE VENTAS — "Cuidado en calma" (opción C del A/B/C,
+   elegida por el usuario el 2026-09-17; FICHA-ARTE.md → "Variante CLARA de la
+   PÁGINA DE VENTAS"). Referencia parcial del usuario: 2houses / Niddo /
+   OurFamilyWizard → claro, empático, fotos, capturas de la app, azul en sectores.
+
+   ALCANCE: SOLO la landing (app/page.tsx envuelve todo en `.tema-claro`). El
+   interior de la app, el onboarding, el paywall y el login conservan el tema
+   oscuro de tokens.css sin cambios — orden explícita del usuario.
+
+   CÓMO FUNCIONA: redefine los MISMOS tokens que consume el kit de landing, así
+   los componentes cambian de piel sin bifurcar código. Lo que el kit no podía
+   expresar con tokens (texto sobre acento, subrayado del <Accent>, el bloque de
+   cierre en azul) se resuelve con las variables nuevas de abajo.
+   ============================================================================ */
+
+.tema-claro {
+  color-scheme: light;
+
+  /* ── SUPERFICIES: azul-gris muy claro (base) / blanco (elevada) / un paso más azul (hundida) ── */
+  --bg: #f3f7fc;
+  --surface: #ffffff;
+  --surface-2: #e7eef8;
+
+  /* ── TEXTO: tinta azul-marino de la marca, tres escalones (AA sobre blanco y sobre --bg) ── */
+  --text-primary: #14233a;   /* 14.6:1 sobre blanco */
+  --text-secondary: #4b5c78; /* 6.9:1 sobre blanco · 6.3:1 sobre --bg */
+  --text-tertiary: #667891;  /* 4.6:1 sobre blanco · 4.3:1 sobre --bg (solo labels 11-13px) */
+
+  /* ── MARCA: el mismo azul de Coparentia, un paso más profundo para pasar AA sobre claro.
+        #5B93E8 (el de la app) mide 2.9:1 sobre blanco — se usa solo como 2ª nota en degradés. ── */
+  --accent: #2f6fdc;         /* 4.7:1 sobre blanco · 4.5:1 sobre --bg — botones y palabra clave */
+  --accent-2: #5b93e8;       /* la nota clara del degradé (accent → accent-2) y los halos */
+  --accent-deep: #2757a8;    /* la nota profunda del degradé de las formas orgánicas */
+  --on-accent: #ffffff;      /* texto sobre botones de acento (en oscuro era --bg) */
+  --accent-underline: transparent; /* el <Accent> no subraya en esta variante: solo color */
+
+  /* ── FORMA: todo curvo (dispositivo de la dirección C) ── */
+  --radius-card: 22px;
+  --radius-button: 999px;
+
+  /* ── TIPOGRAFÍA: Figtree (display, redondeada) + Nunito Sans (cuerpo) — cargadas con next/font
+        en app/page.tsx; las variables --font-figtree / --font-nunito-sans las pone ese archivo. ── */
+  --font-display: var(--font-figtree), 'Segoe UI', sans-serif;
+  --font-body: var(--font-nunito-sans), 'Segoe UI', sans-serif;
+
+  /* ── SOMBRAS: tintadas de azul-marino, suaves, dos capas ── */
+  --shadow-1: 0 1px 2px rgb(20 40 80 / 0.06), 0 10px 28px -14px rgb(20 40 80 / 0.22);
+  --shadow-2: 0 24px 56px -20px rgb(20 40 80 / 0.28);
+
+  /* ── BLOQUE DE CIERRE: el "sector azul" de la página (degradé de marca, texto blanco) ── */
+  --cta-final-bg: linear-gradient(150deg, var(--accent-2), var(--accent-deep));
+  --cta-final-text: #ffffff;
+  --cta-final-text-2: rgb(255 255 255 / 0.84);
+  --cta-final-text-3: rgb(255 255 255 / 0.7);
+
+  /* ── Marcador de foto (<FotoLugar>): tono cálido de piel/madera, para que el hueco se lea humano ── */
+  --foto-1: #e3c2ad;
+  --foto-2: #9a6d5a;
+
+  background: var(--bg);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+}
+
+/* Que el fondo del documento (lo que se ve al rebotar el scroll en celular) también sea claro
+   mientras la landing está montada — el <body> global sigue siendo oscuro para el resto. */
+html:has(.tema-claro) {
+  background: #f3f7fc;
+}
+html:has(.tema-claro) body {
+  background: #f3f7fc;
+}
+
+/* El botón principal dentro del bloque de cierre azul se invierte: blanco con texto de acento. */
+.tema-claro #cta-final .cta-solid {
+  background: #ffffff;
+  color: var(--accent);
+  box-shadow: 0 12px 30px -10px rgb(20 40 80 / 0.35);
+}
+.tema-claro #cta-final .cta-solid:hover {
+  background: #eef3fb;
+}
+
+/* Dentro del bloque azul la palabra en acento no puede ir en acento (azul sobre azul): va en
+   blanco con un subrayado blanco al 55% que conserva el énfasis. */
+.tema-claro #cta-final .accent-word {
+  color: var(--cta-final-text);
+  --accent-underline: rgb(255 255 255 / 0.55);
+}
+
+/* Forma orgánica (blob) — el marco de todo lo humano en esta dirección. */
+.tema-claro .blob {
+  border-radius: 58% 42% 55% 45% / 48% 60% 40% 52%;
+}
+.tema-claro .blob-b {
+  border-radius: 42% 58% 45% 55% / 60% 40% 60% 40%;
+}

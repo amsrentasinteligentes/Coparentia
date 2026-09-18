@@ -152,7 +152,7 @@ export function Oferta({
           {/* ── ANUAL (recomendado): hairline 2px + fondo acento sutil + sombra tintada ── */}
           <motion.div variants={item} className="relative">
             {anual.badge && (
-              <span className="absolute -top-[10px] left-1/2 z-10 -translate-x-1/2 rounded-full border border-[color-mix(in_oklab,var(--accent)_25%,transparent)] bg-[var(--accent)] px-3 py-1 text-[11px] font-bold uppercase tracking-[0.06em] text-[var(--bg)]">
+              <span className="absolute -top-[10px] left-1/2 z-10 -translate-x-1/2 rounded-full border border-[color-mix(in_oklab,var(--accent)_25%,transparent)] bg-[var(--accent)] px-3 py-1 text-[11px] font-bold uppercase tracking-[0.06em] text-[var(--on-accent)]">
                 {anual.badge}
               </span>
             )}

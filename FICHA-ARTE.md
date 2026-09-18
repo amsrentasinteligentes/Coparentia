@@ -80,4 +80,24 @@
   estática que se use más adelante (ej. EB Garamond, Atkinson Hyperlegible ya se habían escrito
   correctamente con punto y coma).
 
+## Variante CLARA de la PÁGINA DE VENTAS (decisión del usuario, 2026-09-17 noche)
+- Alcance: SOLO la landing (app/page.tsx + components/landing/*). El interior de la app, el onboarding,
+  el paywall y el login conservan el brand kit oscuro de arriba SIN cambios (orden explícita del usuario).
+- Referencia PARCIAL del usuario: capturas de 2houses.com/es, niddoapp.com/es y ourfamilywizard.com →
+  fondo claro, fotos reales de familias, capturas de la app flotando, azul Coparentia en sectores,
+  mensaje "gastos controlados + mente en calma", tono empático.
+- Protocolo A/B/C (referencia parcial → 3 interpretaciones fieles): `direcciones-abc.html` (raíz) —
+  A Calma editorial (Spectral+Plex, marfil, collage) · B Cercana y directa (Sora+Manrope, blanco +
+  bloques marino) · **C Cuidado en calma (ELEGIDA por el usuario: "vamos con la C")**.
+  Captura verificada: docs/revisiones/direcciones-abc-landing.png (fuentes clase por clase OK).
+- Tokens de la variante C (landing): --bg #F3F7FC · --surface #FFFFFF · --text-1 #14233A ·
+  --text-2 #5A6B85 · --accent #3F7FE6 · --accent-deep #2757A8 (degradé 150° accent→deep) ·
+  radios 22px tarjetas / 999px botones y píldoras · display Figtree 700-800 · body Nunito Sans 400-700.
+- Dispositivo ownable de la landing: FORMAS ORGÁNICAS (blobs `border-radius: 58% 42% 55% 45% / 48% 60%
+  40% 52%`) en degradé azul que enmarcan las fotos; burbuja de dato con cola; todo curvo.
+- Fotos: marcadores honestos hasta elegir con el usuario fotos con licencia (Unsplash/Pexels).
+  PROHIBIDO reutilizar las fotos de las apps de referencia.
+- Continuidad de marca entre landing clara y app oscura: mismo logo, misma familia de azul
+  (#3F7FE6 es el #5B93E8 oscurecido para pasar AA sobre claro: 4.6:1 sobre #F3F7FC).
+
 ## Idioma UI: Español (LATAM, neutro) · Fecha de cierre de la ficha: 2026-09-07 · Aprobada por el usuario: SÍ

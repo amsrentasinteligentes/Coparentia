@@ -50,7 +50,9 @@ export function CtaFinal({
       id={id}
       aria-label="Empieza hoy"
       className="relative overflow-hidden py-20 md:py-24"
-      style={{ background: 'var(--surface)' }}
+      // En el tema oscuro: superficie elevada con halo. En la landing clara (tokens-claro.css):
+      // degradé de marca con texto blanco — el "sector azul" que pidió el usuario.
+      style={{ background: 'var(--cta-final-bg, var(--surface))' }}
     >
       {/* Profundidad también en el bloque invertido: radial sutil del acento */}
       <div
@@ -71,14 +73,14 @@ export function CtaFinal({
       >
         <motion.h2
           variants={item}
-          className="text-balance text-[30px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)] md:text-[44px]"
+          className="text-balance text-[30px] font-bold leading-[1.15] text-[var(--cta-final-text,var(--text-primary))] [font-family:var(--font-display)] md:text-[44px]"
         >
           <MarkedCopy text={h2Marked} />
         </motion.h2>
 
         <motion.p
           variants={item}
-          className="mt-4 max-w-[520px] text-[17px] leading-relaxed text-[var(--text-secondary)]"
+          className="mt-4 max-w-[520px] text-[17px] leading-relaxed text-[var(--cta-final-text-2,var(--text-secondary))]"
         >
           <MarkedCopy text={futurePacingMarked} />
         </motion.p>
@@ -93,7 +95,7 @@ export function CtaFinal({
         {recap && (
           <motion.p
             variants={item}
-            className="mt-3 text-[13px] text-[var(--text-tertiary)]"
+            className="mt-3 text-[13px] text-[var(--cta-final-text-3,var(--text-tertiary))]"
           >
             {recap}
           </motion.p>
@@ -102,7 +104,7 @@ export function CtaFinal({
         {psMarked !== undefined && (
           <motion.p
             variants={item}
-            className="mt-10 max-w-[520px] border-l-2 border-[var(--accent)] pl-4 text-left text-[15px] italic leading-[1.6] text-[var(--text-secondary)]"
+            className="mt-10 max-w-[520px] border-l-2 border-[var(--cta-final-text-3,var(--accent))] pl-4 text-left text-[15px] italic leading-[1.6] text-[var(--cta-final-text-2,var(--text-secondary))]"
           >
             <MarkedCopy text={psMarked} />
           </motion.p>
