@@ -24,5 +24,19 @@ export function Portal({ children }: { children: ReactNode }) {
   useEffect(() => setMontado(true), []);
 
   if (!montado) return null;
-  return createPortal(children, document.body);
+  // TEMA (2026-09-18, bug real del usuario): al montar en <body>, el modal quedaba FUERA del
+  // envoltorio `.tema-app-claro` del layout y heredaba los tokens oscuros de :root — 'Nuevo evento'
+  // y 'Nuevo registro' abrían con el diseño viejo. Se copian al portal la clase del tema y las
+  // clases de fuente (next/font pone variables CSS en clases `__variable_…`); `display: contents`
+  // deja que los hijos `fixed` se posicionen igual que antes y solo aporta la herencia de tokens.
+  const raiz = document.querySelector('.tema-app-claro');
+  const clases = raiz
+    ? raiz.className.split(/s+/).filter((c) => c === 'tema-app-claro' || c.includes('variable')).join(' ')
+    : '';
+  return createPortal(
+    <div className={clases} style={{ display: 'contents' }}>
+      {children}
+    </div>,
+    document.body
+  );
 }

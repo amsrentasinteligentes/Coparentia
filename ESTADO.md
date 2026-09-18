@@ -13,7 +13,12 @@ SQL ejecutado por el usuario en Supabase (Success) el 2026-09-18. Verificado en 
 dueño: guardar nombre/rol/otra parte ✓, alta de hijo con edad calculada ✓, borrado ✓, saludo "Hola, {nombre}"
 e iniciales del nombre en la cabecera ✓ (datos de prueba retirados; queda rol=papá). Captura
 docs/revisiones/perfil-375.png (sin revisor: pantalla secundaria). PUBLICADO.
-Siguiente paso natural (no pedido aún): usar hijos/otra parte en etiquetas del calendario y portada del PDF. Requiere SQL en Supabase:
+Siguiente paso natural (no pedido aún): usar hijos/otra parte en etiquetas del calendario y portada del PDF.
+BUG REAL reportado por el usuario (2026-09-18): los modales "Nuevo evento" y "Nuevo registro" abrían con el
+tema OSCURO — <Portal> los monta en <body>, fuera del envoltorio .tema-app-claro. Fix en Portal.tsx: el
+portal envuelve a sus hijos en un div con la clase del tema + las clases de fuente de next/font (copiadas
+del root) con display:contents. Verificado en Pagos y Calendario; también cubre visor de imagen, Sello y
+AcuerdoCuota. Requiere SQL en Supabase:
 columnas en profiles (rol_familiar, avatar_path, otro_progenitor_nombre — con grant update solo a esas
 columnas), tabla hijos (RLS por user_id) y bucket "perfiles" con políticas por carpeta del usuario.
 EXCEPCIÓN a la orden "no tocar el interior": este pedido viene del propio usuario (Perfil + saludo con
