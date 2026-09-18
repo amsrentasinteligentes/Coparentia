@@ -51,11 +51,11 @@ export function Garantia({ nombre, condicionMarked, pisoLegal, icon: Icono = Shi
               <h2 className="text-balance text-[22px] font-bold leading-tight [font-family:var(--font-display)]">
                 <Accent>{nombre}</Accent>
               </h2>
-              <p className="max-w-[44ch] text-[15px] leading-[1.6] text-[var(--text-secondary)]">
+              <p className="max-w-[44ch] text-[15px] leading-[1.6] text-[var(--text-secondary)] lg:text-[17px]">
                 <MarkedCopy text={condicionMarked} />
               </p>
               {pisoLegal && (
-                <p className="flex items-center gap-1.5 text-[13px] text-[var(--text-tertiary)]">
+                <p className="flex items-center gap-1.5 text-[13px] text-[var(--text-tertiary)] lg:text-[15px]">
                   <Lock size={14} aria-hidden="true" />
                   {pisoLegal}
                 </p>

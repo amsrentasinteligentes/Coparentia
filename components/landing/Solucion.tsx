@@ -67,11 +67,11 @@ export function Solucion({
         initial="hidden"
         whileInView="visible"
         viewport={VIEWPORT_ONCE}
-        className="mx-auto max-w-[780px] xl:max-w-[940px]"
+        className="mx-auto max-w-[780px] lg:max-w-[940px]"
       >
         <motion.div variants={item}>
           <Kicker>{kicker}</Kicker>
-          <h2 className="text-balance text-[30px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)] md:text-[40px] xl:text-[46px]">
+          <h2 className="text-balance text-[30px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)] md:text-[40px] lg:text-[46px]">
             <MarkedCopy text={tituloMarked} />
           </h2>
         </motion.div>
@@ -79,13 +79,13 @@ export function Solucion({
         {/* El chip del mecanismo bautizado — hairline + <Accent> (55 §4) */}
         <motion.div variants={item} className="mt-4">
           <Hairline surface="bg" radio="button" className="w-fit">
-            <span className="block px-4 py-2 text-[15px] font-semibold [--accent:var(--accent-ink)]">
+            <span className="block px-4 py-2 text-[15px] font-semibold [--accent:var(--accent-ink)] lg:text-[17px]">
               <Accent>{mecanismo}</Accent>
             </span>
           </Hairline>
         </motion.div>
 
-        <motion.p variants={item} className="mt-5 max-w-[620px] text-[17px] leading-relaxed text-[var(--text-secondary)] md:text-[18px] xl:text-[20px]">
+        <motion.p variants={item} className="mt-5 max-w-[620px] text-[17px] leading-relaxed text-[var(--text-secondary)] md:text-[18px] lg:text-[20px]">
           <MarkedCopy text={bigIdeaMarked} />
         </motion.p>
 
@@ -104,13 +104,13 @@ export function Solucion({
             <motion.li key={i} variants={item} className="flex items-start gap-4 md:flex-col">
               <span
                 aria-hidden="true"
-                className="flex size-11 shrink-0 items-center justify-center rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--accent)_22%,transparent)] bg-[var(--chip-bg)] text-[17px] font-bold tabular-nums text-[var(--accent)]"
+                className="flex size-11 shrink-0 items-center justify-center rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--accent)_22%,transparent)] bg-[var(--chip-bg)] text-[17px] font-bold tabular-nums text-[var(--accent)] lg:text-[19px]"
               >
                 {String(i + 1).padStart(2, '0')}
               </span>
               <div className="pt-1 md:pt-0">
-                <h3 className="text-[16px] font-semibold text-[var(--text-primary)]">{p.titulo}</h3>
-                <p className="mt-1 text-[15px] leading-snug text-[var(--text-secondary)]">{p.detalle}</p>
+                <h3 className="text-[16px] font-semibold text-[var(--text-primary)] lg:text-[18px]">{p.titulo}</h3>
+                <p className="mt-1 text-[15px] leading-snug text-[var(--text-secondary)] lg:text-[17px]">{p.detalle}</p>
               </div>
             </motion.li>
           ))}
@@ -122,16 +122,16 @@ export function Solucion({
               {antesDespues.anilloAntes !== undefined && (
                 <div className="relative shrink-0">
                   <MiniRing value={antesDespues.anilloAntes} tone="muted" />
-                  <span className="absolute inset-0 flex items-center justify-center text-[15px] font-bold tabular-nums text-[var(--text-secondary)] [font-family:var(--font-display)]">
+                  <span className="absolute inset-0 flex items-center justify-center text-[15px] font-bold tabular-nums text-[var(--text-secondary)] [font-family:var(--font-display)] lg:text-[17px]">
                     {antesDespues.anilloAntes}%
                   </span>
                 </div>
               )}
               <div>
-                <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-[var(--text-tertiary)]">
+                <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-[var(--text-tertiary)] lg:text-[13px]">
                   {antesDespues.labelAntes}
                 </p>
-                <p className="mt-2 text-[15px] leading-snug text-[var(--text-secondary)]">{antesDespues.antes}</p>
+                <p className="mt-2 text-[15px] leading-snug text-[var(--text-secondary)] lg:text-[17px]">{antesDespues.antes}</p>
               </div>
             </div>
             {/* El "después" con acento sutil de fondo (4-6%) */}
@@ -139,16 +139,16 @@ export function Solucion({
               {antesDespues.anilloDespues !== undefined && (
                 <div className="relative shrink-0">
                   <MiniRing value={antesDespues.anilloDespues} tone="accent" />
-                  <span className="absolute inset-0 flex items-center justify-center text-[15px] font-bold tabular-nums text-[var(--accent-ink)] [font-family:var(--font-display)]">
+                  <span className="absolute inset-0 flex items-center justify-center text-[15px] font-bold tabular-nums text-[var(--accent-ink)] [font-family:var(--font-display)] lg:text-[17px]">
                     {antesDespues.anilloDespues}%
                   </span>
                 </div>
               )}
               <div>
-                <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-[var(--accent-ink)]">
+                <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-[var(--accent-ink)] lg:text-[13px]">
                   {antesDespues.labelDespues}
                 </p>
-                <p className="mt-2 text-[15px] font-medium leading-snug text-[var(--text-primary)]">
+                <p className="mt-2 text-[15px] font-medium leading-snug text-[var(--text-primary)] lg:text-[17px]">
                   {antesDespues.despues}
                 </p>
               </div>

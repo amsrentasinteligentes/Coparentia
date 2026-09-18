@@ -83,7 +83,7 @@ export function CtaFinal({
 
         <motion.p
           variants={item}
-          className="mt-4 max-w-[520px] text-[17px] leading-relaxed text-[var(--cta-final-text-2,var(--text-secondary))]"
+          className="mt-4 max-w-[520px] text-[17px] leading-relaxed text-[var(--cta-final-text-2,var(--text-secondary))] lg:text-[19px]"
         >
           <MarkedCopy text={futurePacingMarked} />
         </motion.p>
@@ -98,7 +98,7 @@ export function CtaFinal({
         {recap && (
           <motion.p
             variants={item}
-            className="mt-3 text-[13px] text-[var(--cta-final-text-3,var(--text-tertiary))]"
+            className="mt-3 text-[13px] text-[var(--cta-final-text-3,var(--text-tertiary))] lg:text-[15px]"
           >
             {recap}
           </motion.p>
@@ -107,7 +107,7 @@ export function CtaFinal({
         {psMarked !== undefined && (
           <motion.p
             variants={item}
-            className="mt-10 max-w-[520px] border-l-2 border-[var(--cta-final-text-3,var(--accent))] pl-4 text-left text-[15px] italic leading-[1.6] text-[var(--cta-final-text-2,var(--text-secondary))]"
+            className="mt-10 max-w-[520px] border-l-2 border-[var(--cta-final-text-3,var(--accent))] pl-4 text-left text-[15px] italic leading-[1.6] text-[var(--cta-final-text-2,var(--text-secondary))] lg:text-[17px]"
           >
             <MarkedCopy text={psMarked} />
           </motion.p>

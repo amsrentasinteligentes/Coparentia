@@ -52,7 +52,7 @@ export function AnuncioAbogados({ contactoEmail, id = 'para-abogados' }: Anuncio
           <h2 className="text-balance text-[24px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)] md:text-[32px]">
             Sé el abogado que aparece cuando lo necesitan
           </h2>
-          <p className="mx-auto mt-3 max-w-[52ch] text-[15px] leading-relaxed text-[var(--text-secondary)]">
+          <p className="mx-auto mt-3 max-w-[52ch] text-[15px] leading-relaxed text-[var(--text-secondary)] lg:text-[17px]">
             Los padres que usan Coparentia documentan su caso mes a mes y, cuando necesitan
             un abogado de familia, lo buscan desde la misma app. Anúnciate y sé tú quien aparece
             en ese momento.
@@ -64,8 +64,8 @@ export function AnuncioAbogados({ contactoEmail, id = 'para-abogados' }: Anuncio
             <motion.div key={i} variants={item} className="flex flex-col items-center gap-3 text-center sm:items-start sm:text-left">
               <IconChip icon={b.icon} tone="accent" />
               <div>
-                <h3 className="text-[15px] font-semibold text-[var(--text-primary)]">{b.titulo}</h3>
-                <p className="mt-1 text-[13px] leading-snug text-[var(--text-secondary)]">{b.detalle}</p>
+                <h3 className="text-[15px] font-semibold text-[var(--text-primary)] lg:text-[17px]">{b.titulo}</h3>
+                <p className="mt-1 text-[13px] leading-snug text-[var(--text-secondary)] lg:text-[15px]">{b.detalle}</p>
               </div>
             </motion.div>
           ))}
@@ -75,7 +75,7 @@ export function AnuncioAbogados({ contactoEmail, id = 'para-abogados' }: Anuncio
           <CtaButton href={`mailto:${contactoEmail}?subject=${encodeURIComponent('Quiero anunciarme en Coparentia')}`} variant="outline" fullMobile={false}>
             Quiero anunciarme como abogado
           </CtaButton>
-          <p className="text-[12px] text-[var(--text-tertiary)]">Te respondemos en menos de 48 horas.</p>
+          <p className="text-[12px] text-[var(--text-tertiary)] lg:text-[13px]">Te respondemos en menos de 48 horas.</p>
         </motion.div>
       </motion.div>
     </SectionShell>

@@ -29,10 +29,10 @@ export function FooterLegal({ appName, logo, enlaces, soporteEmail, anio }: Foot
   const year = anio ?? new Date().getFullYear();
   return (
     <footer className="py-8 md:py-12">
-      <div className="mx-auto w-full max-w-[1140px] xl:max-w-[1280px] 2xl:max-w-[1400px] px-5">
+      <div className="mx-auto w-full max-w-[1140px] lg:max-w-[1280px] 2lg:max-w-[1400px] px-5">
         {/* Fila 1: marca chica + enlaces legales */}
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-          <p className="flex items-center gap-2 text-[14px] font-semibold text-[var(--text-secondary)]">
+          <p className="flex items-center gap-2 text-[14px] font-semibold text-[var(--text-secondary)] lg:text-[16px]">
             {logo ?? <span aria-hidden="true" className="size-5 rounded-[6px] bg-[var(--text-tertiary)]" />}
             {appName}
           </p>
@@ -48,7 +48,7 @@ export function FooterLegal({ appName, logo, enlaces, soporteEmail, anio }: Foot
                   {/* py-3 = área táctil ≥44px sin líneas pegadas */}
                   <a
                     href={e.href}
-                    className="px-1 py-3 text-[13px] text-[var(--text-tertiary)] underline-offset-4 hover:text-[var(--text-secondary)] hover:underline"
+                    className="px-1 py-3 text-[13px] text-[var(--text-tertiary)] underline-offset-4 hover:text-[var(--text-secondary)] hover:underline lg:text-[15px]"
                   >
                     {e.label}
                   </a>
@@ -59,7 +59,7 @@ export function FooterLegal({ appName, logo, enlaces, soporteEmail, anio }: Foot
         </div>
 
         {/* Fila 2: copyright + soporte */}
-        <p className="mt-3 text-[13px] text-[var(--text-tertiary)]">
+        <p className="mt-3 text-[13px] text-[var(--text-tertiary)] lg:text-[15px]">
           © {year} {appName} ·{' '}
           <a href={`mailto:${soporteEmail}`} className="py-3 underline-offset-4 hover:underline">
             {soporteEmail}

@@ -87,7 +87,7 @@ export function Accent({ children }: { children: ReactNode }) {
 /* ── <Kicker> — caps 12px/600 tracking +0.08em en acento (máx 1 por sección) ── */
 export function Kicker({ children }: { children: ReactNode }) {
   return (
-    <p className="mb-3 text-[12px] font-semibold uppercase tracking-[0.08em] text-[var(--accent-ink)]">
+    <p className="mb-3 text-[12px] font-semibold uppercase tracking-[0.08em] text-[var(--accent-ink)] lg:text-[13px]">
       {children}
     </p>
   );
@@ -252,7 +252,7 @@ export function SectionShell({
       className={`${pt} ${pb} ${className}`}
       style={{ background: mesh, borderTop }}
     >
-      <div className="mx-auto w-full max-w-[1140px] xl:max-w-[1280px] 2xl:max-w-[1400px] px-5">{children}</div>
+      <div className="mx-auto w-full max-w-[1140px] lg:max-w-[1280px] 2lg:max-w-[1400px] px-5">{children}</div>
     </section>
   );
 }
@@ -308,11 +308,11 @@ export function CtaButton({
       href={href}
       onClick={() => setYendo(true)}
       aria-busy={yendo || undefined}
-      className={`inline-flex items-center justify-center rounded-[var(--radius-button)] px-8 text-[17px] font-semibold transition-[colors,opacity] xl:px-10 xl:text-[18px] duration-150 [touch-action:manipulation] ${yendo ? 'opacity-80' : ''} ${
+      className={`inline-flex items-center justify-center rounded-[var(--radius-button)] px-8 text-[17px] font-semibold transition-[colors,opacity] lg:px-10 lg:text-[18px] duration-150 [touch-action:manipulation] ${yendo ? 'opacity-80' : ''} ${
         variant === 'outline'
           ? 'border border-[color-mix(in_oklab,var(--accent)_45%,transparent)] text-[var(--accent-ink)] hover:bg-[var(--chip-bg)]'
           : 'cta-solid bg-[var(--accent)] text-[var(--on-accent)] shadow-[0_8px_30px_color-mix(in_oklab,var(--accent)_25%,transparent)] hover:bg-[color-mix(in_oklab,var(--accent)_88%,var(--text-primary))]'
-      } ${alto === 56 ? 'h-14 xl:h-16' : 'h-[52px] xl:h-14'} ${fullMobile ? 'w-full sm:w-auto' : ''}`}
+      } ${alto === 56 ? 'h-14 lg:h-16' : 'h-[52px] lg:h-14'} ${fullMobile ? 'w-full sm:w-auto' : ''}`}
     >
       {children}
     </motion.a>
@@ -403,7 +403,7 @@ export function StickyCtaMobile({
           <motion.a
             whileTap={{ scale: 0.97 }}
             href={ofertaVista ? href : `#${ofertaId}`}
-            className="flex h-12 flex-1 items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-[16px] font-semibold text-[var(--on-accent)] [touch-action:manipulation]"
+            className="flex h-12 flex-1 items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-[16px] font-semibold text-[var(--on-accent)] [touch-action:manipulation] lg:text-[18px]"
           >
             {ofertaVista ? labelComercial : labelPre}
           </motion.a>
@@ -471,7 +471,7 @@ export function FotoLugar({
       }}
     >
       <Camera size={28} strokeWidth={1.6} aria-hidden="true" className="absolute left-1/2 top-[44%] -translate-x-1/2 -translate-y-1/2 text-white/70" />
-      <span className="relative mt-[12%] max-w-[70%] rounded-[var(--radius-button)] bg-black/30 px-2.5 py-1 text-center text-[11px] font-semibold leading-snug text-white/95 backdrop-blur-[2px]">
+      <span className="relative mt-[12%] max-w-[70%] rounded-[var(--radius-button)] bg-black/30 px-2.5 py-1 text-center text-[11px] font-semibold leading-snug text-white/95 backdrop-blur-[2px] lg:text-[12px]">
         {descripcion}
       </span>
     </div>

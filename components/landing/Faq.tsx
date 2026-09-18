@@ -45,11 +45,11 @@ export function Faq({ kicker = 'PREGUNTAS', titulo = 'Lo que quizá te estás pr
         initial="hidden"
         whileInView="visible"
         viewport={VIEWPORT_ONCE}
-        className="mx-auto max-w-[680px] xl:max-w-[820px]"
+        className="mx-auto max-w-[680px] lg:max-w-[820px]"
       >
         <motion.div variants={item} className="mb-8">
           <Kicker>{kicker}</Kicker>
-          <h2 className="text-balance text-[30px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)] md:text-[40px] xl:text-[46px]">
+          <h2 className="text-balance text-[30px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)] md:text-[40px] lg:text-[46px]">
             {titulo}
           </h2>
         </motion.div>
@@ -73,7 +73,7 @@ export function Faq({ kicker = 'PREGUNTAS', titulo = 'Lo que quizá te estás pr
                   onClick={() => setAbierto(estaAbierto ? null : i)}
                   className="flex min-h-14 w-full items-center justify-between gap-4 py-4 text-left [touch-action:manipulation]"
                 >
-                  <span className="text-[16px] font-semibold text-[var(--text-primary)]">{it.pregunta}</span>
+                  <span className="text-[16px] font-semibold text-[var(--text-primary)] lg:text-[18px]">{it.pregunta}</span>
                   <ChevronDown
                     size={20}
                     aria-hidden="true"
@@ -90,7 +90,7 @@ export function Faq({ kicker = 'PREGUNTAS', titulo = 'Lo que quizá te estás pr
                   transition={{ duration: reduce ? 0 : 0.28, ease: [0.16, 1, 0.3, 1] }}
                   className="overflow-hidden"
                 >
-                  <p className="pb-5 pr-9 text-[15px] leading-relaxed text-[var(--text-secondary)]">
+                  <p className="pb-5 pr-9 text-[15px] leading-relaxed text-[var(--text-secondary)] lg:text-[17px]">
                     <MarkedCopy text={it.respuestaMarked} />
                   </p>
                 </motion.div>

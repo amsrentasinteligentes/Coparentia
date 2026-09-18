@@ -39,14 +39,14 @@ export function Agitacion({ frases, contraste, id }: AgitacionProps) {
         initial="hidden"
         whileInView="visible"
         viewport={VIEWPORT_ONCE}
-        className="mx-auto max-w-[620px] lg:max-w-[760px] xl:max-w-[900px]"
+        className="mx-auto max-w-[620px] lg:max-w-[760px] lg:max-w-[900px]"
       >
         <div className="flex flex-col gap-4">
           {frases.map((f, i) => (
             <motion.p
               key={i}
               variants={item}
-              className="text-[17px] leading-[1.6] text-[var(--text-secondary)] xl:text-[19px]"
+              className="text-[17px] leading-[1.6] text-[var(--text-secondary)] lg:text-[19px]"
             >
               <MarkedCopy text={f} />
             </motion.p>
@@ -59,16 +59,16 @@ export function Agitacion({ frases, contraste, id }: AgitacionProps) {
               {contraste.anilloHoy !== undefined && (
                 <div className="relative shrink-0">
                   <MiniRing value={contraste.anilloHoy} tone="muted" />
-                  <span className="absolute inset-0 flex items-center justify-center text-[15px] font-bold tabular-nums text-[var(--text-secondary)] [font-family:var(--font-display)]">
+                  <span className="absolute inset-0 flex items-center justify-center text-[15px] font-bold tabular-nums text-[var(--text-secondary)] [font-family:var(--font-display)] lg:text-[17px]">
                     {contraste.anilloHoy}%
                   </span>
                 </div>
               )}
               <div>
-                <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-[var(--text-tertiary)]">
+                <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-[var(--text-tertiary)] lg:text-[13px]">
                   {contraste.labelHoy}
                 </p>
-                <p className="mt-2 text-[15px] leading-snug text-[var(--text-primary)]">{contraste.hoy}</p>
+                <p className="mt-2 text-[15px] leading-snug text-[var(--text-primary)] lg:text-[17px]">{contraste.hoy}</p>
               </div>
             </div>
             {/* "si nada cambia": más apagado/frío — el peso lo pone el copy, no el rojo */}
@@ -76,16 +76,16 @@ export function Agitacion({ frases, contraste, id }: AgitacionProps) {
               {contraste.anilloFuturo !== undefined && (
                 <div className="relative shrink-0">
                   <MiniRing value={contraste.anilloFuturo} tone="muted" />
-                  <span className="absolute inset-0 flex items-center justify-center text-[15px] font-bold tabular-nums text-[var(--text-secondary)] [font-family:var(--font-display)]">
+                  <span className="absolute inset-0 flex items-center justify-center text-[15px] font-bold tabular-nums text-[var(--text-secondary)] [font-family:var(--font-display)] lg:text-[17px]">
                     {contraste.anilloFuturo}%
                   </span>
                 </div>
               )}
               <div>
-                <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-[var(--text-tertiary)]">
+                <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-[var(--text-tertiary)] lg:text-[13px]">
                   {contraste.labelFuturo}
                 </p>
-                <p className="mt-2 text-[15px] leading-snug text-[var(--text-secondary)]">{contraste.futuro}</p>
+                <p className="mt-2 text-[15px] leading-snug text-[var(--text-secondary)] lg:text-[17px]">{contraste.futuro}</p>
               </div>
             </div>
           </motion.div>

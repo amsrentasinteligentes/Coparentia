@@ -62,10 +62,10 @@ function Precio({ plan }: { plan: PlanOferta }) {
         <span className="text-[36px] font-bold leading-none tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
           <CountUp text={plan.precioMes} />
         </span>
-        <span className="text-[14px] text-[var(--text-secondary)]">{plan.sufijo ?? '/mes'}</span>
+        <span className="text-[14px] text-[var(--text-secondary)] lg:text-[16px]">{plan.sufijo ?? '/mes'}</span>
       </p>
       {plan.descomposicionDia && (
-        <p className="mt-1 text-[13px] text-[var(--text-secondary)]">{plan.descomposicionDia}</p>
+        <p className="mt-1 text-[13px] text-[var(--text-secondary)] lg:text-[15px]">{plan.descomposicionDia}</p>
       )}
     </div>
   );
@@ -77,7 +77,7 @@ function Features({ items, origen }: { items: string[]; origen: string }) {
   return (
     <ul className="mt-5 flex flex-col gap-3">
       {items.map((f, i) => (
-        <li key={i} className="flex items-start gap-3 text-[15px] leading-snug text-[var(--text-primary)]">
+        <li key={i} className="flex items-start gap-3 text-[15px] leading-snug text-[var(--text-primary)] lg:text-[17px]">
           <CheckCustom />
           <span>{f}</span>
         </li>
@@ -104,7 +104,7 @@ export function Oferta({
       <motion.div variants={contenedor} initial="hidden" whileInView="visible" viewport={VIEWPORT_ONCE}>
         <motion.div variants={item} className="mx-auto max-w-[620px] text-center">
           <Kicker>{kicker}</Kicker>
-          <h2 className="text-balance text-[30px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)] md:text-[40px] xl:text-[46px]">
+          <h2 className="text-balance text-[30px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)] md:text-[40px] lg:text-[46px]">
             <MarkedCopy text={tituloMarked} />
           </h2>
         </motion.div>
@@ -118,7 +118,7 @@ export function Oferta({
           >
             <ul className="flex flex-col gap-3">
               {stack.lineas.map((l, i) => (
-                <li key={i} className="flex items-start justify-between gap-4 text-[15px]">
+                <li key={i} className="flex items-start justify-between gap-4 text-[15px] lg:text-[17px]">
                   <span className="flex items-start gap-3 text-[var(--text-primary)]">
                     <CheckCustom />
                     <span>{l.resultado}</span>
@@ -128,29 +128,29 @@ export function Oferta({
               ))}
             </ul>
             <div className="mt-4 border-t border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] pt-4 text-right">
-              <p className="text-[14px] text-[var(--text-secondary)]">
+              <p className="text-[14px] text-[var(--text-secondary)] lg:text-[16px]">
                 Valor total: <span className="tabular-nums line-through">{stack.totalTachado}</span>
               </p>
               {stack.nota && (
-                <p className="mt-1 text-[16px] font-semibold text-[var(--text-primary)]">{stack.nota}</p>
+                <p className="mt-1 text-[16px] font-semibold text-[var(--text-primary)] lg:text-[18px]">{stack.nota}</p>
               )}
             </div>
           </motion.div>
         )}
 
         {/* Cards: ANUAL PRIMERO en el DOM — en mobile apilado arriba, nunca scroll horizontal */}
-        <div className="mx-auto mt-10 grid max-w-[880px] grid-cols-1 items-stretch xl:max-w-[1000px] gap-6 md:grid-cols-2">
+        <div className="mx-auto mt-10 grid max-w-[880px] grid-cols-1 items-stretch lg:max-w-[1000px] gap-6 md:grid-cols-2">
           {/* ── ANUAL (recomendado): hairline 2px + fondo acento sutil + sombra tintada ── */}
           <motion.div variants={item} className="relative">
             {anual.badge && (
-              <span className="absolute -top-[10px] left-1/2 z-10 -translate-x-1/2 rounded-full border border-[color-mix(in_oklab,var(--accent)_25%,transparent)] bg-[var(--accent)] px-3 py-1 text-[11px] font-bold uppercase tracking-[0.06em] text-[var(--on-accent)]">
+              <span className="absolute -top-[10px] left-1/2 z-10 -translate-x-1/2 rounded-full border border-[color-mix(in_oklab,var(--accent)_25%,transparent)] bg-[var(--accent)] px-3 py-1 text-[11px] font-bold uppercase tracking-[0.06em] text-[var(--on-accent)] lg:text-[12px]">
                 {anual.badge}
               </span>
             )}
             <Hairline emphasis surface="surface" className="shadow-[0_12px_36px_color-mix(in_oklab,var(--accent)_16%,transparent)]">
               <div className="rounded-[var(--radius-card)] bg-[color-mix(in_oklab,var(--accent)_5%,transparent)] p-6 md:p-7">
                 <div className="flex items-center justify-between gap-3">
-                  <h3 className="text-[18px] font-semibold text-[var(--text-primary)]">{anual.nombre}</h3>
+                  <h3 className="text-[18px] font-semibold text-[var(--text-primary)] lg:text-[20px]">{anual.nombre}</h3>
                 </div>
                 <div className="mt-4">
                   <Precio plan={anual} />
@@ -158,11 +158,11 @@ export function Oferta({
                       real). El resto —cuándo se cobra, la referencia en pesos— va en tertiary, como
                       contexto que no compite. Antes eran 4 renglones de dinero al mismo nivel y el
                       ojo apurado no sabía cuál era el número que importa (defecto del revisor). */}
-                  <p className="mt-1 text-[14px] font-semibold text-[var(--text-primary)]">{anual.totalAnual}</p>
-                  <p className="mt-0.5 text-[12px] text-[var(--text-tertiary)]">
+                  <p className="mt-1 text-[14px] font-semibold text-[var(--text-primary)] lg:text-[16px]">{anual.totalAnual}</p>
+                  <p className="mt-0.5 text-[12px] text-[var(--text-tertiary)] lg:text-[13px]">
                     Se cobra al terminar la prueba{refCopAnual ? ` · ${refCopAnual}` : ''}
                   </p>
-                  {anual.ahorro && <p className="mt-2 text-[15px] font-semibold text-[var(--accent)]">{anual.ahorro}</p>}
+                  {anual.ahorro && <p className="mt-2 text-[15px] font-semibold text-[var(--accent)] lg:text-[17px]">{anual.ahorro}</p>}
                 </div>
                 <Features items={anual.features} origen="Oferta → anual" />
                 <div className="mt-6">
@@ -170,7 +170,7 @@ export function Oferta({
                     {anual.ctaLabel}
                   </CtaButton>
                   {trialDias !== undefined && (
-                    <p className="mt-2 text-center text-[13px] text-[var(--text-secondary)]">Incluye {trialDias} días de prueba, sin cobro</p>
+                    <p className="mt-2 text-center text-[13px] text-[var(--text-secondary)] lg:text-[15px]">Incluye {trialDias} días de prueba, sin cobro</p>
                   )}
                 </div>
               </div>
@@ -183,7 +183,7 @@ export function Oferta({
             className="rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--text-tertiary)_28%,transparent)] bg-[var(--surface)] p-6 shadow-[var(--shadow-1)] md:p-7"
           >
             <div className="flex items-center justify-between gap-3">
-              <h3 className="text-[18px] font-semibold text-[var(--text-primary)]">{mensual.nombre}</h3>
+              <h3 className="text-[18px] font-semibold text-[var(--text-primary)] lg:text-[20px]">{mensual.nombre}</h3>
             </div>
             <div className="mt-4">
               <Precio plan={mensual} />
@@ -194,7 +194,7 @@ export function Oferta({
                 {mensual.ctaLabel}
               </CtaButton>
               {trialDias !== undefined && (
-                <p className="mt-2 text-center text-[13px] text-[var(--text-secondary)]">Incluye {trialDias} días de prueba, sin cobro</p>
+                <p className="mt-2 text-center text-[13px] text-[var(--text-secondary)] lg:text-[15px]">Incluye {trialDias} días de prueba, sin cobro</p>
               )}
             </div>
           </motion.div>

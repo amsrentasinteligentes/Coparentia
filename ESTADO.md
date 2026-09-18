@@ -7,6 +7,9 @@ Revisor: 4 rondas (33·14·17 → 31·16·16), FIEL, craft pasa; usabilidad en t
 Ajuste pedido por el usuario al verla en su computador (2026-09-18): franjas laterales muy anchas y letra
 pequeña → contenedor 1140 → 1280 (xl) / 1400 (2xl), columnas de lectura ensanchadas en xl, H1 64/70px,
 cuerpo 19-21px, H2 46px, menú 16px, píldoras 17px, botones 64px en xl. Celular sin cambios (verificado).
+Segunda pasada (el usuario seguía viendo la letra pequeña; su computador mide ~1300px CSS): TODOS los
+textos de la landing suben un escalón desde lg (≥1024): 11→12, 12→13, 13→15, 14→16, 15→17, 16→18,
+17→19, 18→20; las variantes xl pasaron a lg. 54 textos escalados por script; celular intacto (34/17px).
 Restore point del rediseño claro: commit 97a02e5 (última landing oscura). Pendientes: prueba de
 cancelación/reembolso con la cuenta de Ivonne; correo de bienvenida "Delivered".
 

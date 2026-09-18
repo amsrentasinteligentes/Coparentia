@@ -123,7 +123,7 @@ export function AppPorDentro({
       <motion.div variants={contenedor} initial="hidden" whileInView="visible" viewport={VIEWPORT_ONCE}>
         <motion.div variants={item} className="mx-auto max-w-[620px] text-center">
           <Kicker>{kicker}</Kicker>
-          <h2 className="text-balance text-[30px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)] md:text-[40px] xl:text-[46px]">
+          <h2 className="text-balance text-[30px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)] md:text-[40px] lg:text-[46px]">
             <MarkedCopy text={tituloMarked} />
           </h2>
         </motion.div>
@@ -171,13 +171,13 @@ export function AppPorDentro({
                           <f.iconoPlaceholder size={22} strokeWidth={2} color="var(--text-secondary)" aria-hidden="true" />
                         </span>
                       )}
-                      <span className="text-center text-[14px] font-medium text-[var(--text-secondary)]">
+                      <span className="text-center text-[14px] font-medium text-[var(--text-secondary)] lg:text-[16px]">
                         {f.nombrePantalla ?? f.label}
                       </span>
                     </div>
                   )}
                 </div>
-                <p className="mt-3 text-center text-[13px] font-medium text-[var(--text-secondary)]">
+                <p className="mt-3 text-center text-[13px] font-medium text-[var(--text-secondary)] lg:text-[15px]">
                   {f.label}
                 </p>
               </div>
