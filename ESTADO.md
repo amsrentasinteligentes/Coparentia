@@ -2345,8 +2345,14 @@ Soporte, Privacidad, Términos —, tarjetitas Miembro desde / Plan, Cerrar sesi
 cuenta al final); Expediente (tarjeta del PDF en degradé de marca, sin engranaje: los ajustes van por el
 avatar de la cabecera); Asistencia (cabecera + título de sección, textarea sobre superficie hundida,
 WhatsApp en acento). Medidas a 375 sin revisor (pantallas secundarias; capturas ajustes-375.png,
-expediente-375.png, asistencia-375.png). INTERIOR CLARO COMPLETO en las 6 pantallas. Pendientes:
-ronda final del revisor en Inicio (r2) si el usuario la quiere; logo azul (decisión de marca);
+expediente-375.png, asistencia-375.png). INTERIOR CLARO COMPLETO en las 6 pantallas. LOGO NUEVO (2026-09-18): el usuario entregó un isotipo nuevo (círculo plateado con la familia + infinito,
+fondo transparente) → instalado en public/logo-isotipo.png, app/icon.png y app/favicon.ico (originales y
+el anterior en docs/marca/). El horizontal ("Coparentia" cromado) venía con el damero de transparencia
+PINTADO en la imagen (RGB sin alfa) → no sirve para web; se pidió el archivo con transparencia real. En la
+UI el wordmark sigue tipografiado (Figtree) junto al isotipo. Opinión dada al usuario: el símbolo es
+bueno; el acabado cromado 3D choca con la interfaz plana y clara y se ensucia a 32px — recomendada una
+versión plana en el azul de marca para UI/favicon. Pendientes:
+ronda final del revisor en Inicio (r2) si el usuario la quiere;
 onboarding/paywall/entrar siguen oscuros (fuera del alcance pedido). Limpieza: la landing tenía clases
 `2lg:` inválidas y duplicados lg:text por el escalado automático — corregidas. **veredicto:landing** (aprobada por el usuario,
 techo documentado abajo), **veredicto:onboarding** y **veredicto:paywall** (techo documentado; siguen
