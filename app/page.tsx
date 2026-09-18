@@ -25,7 +25,7 @@ import { Faq } from '@/components/landing/Faq';
 import { CtaFinal } from '@/components/landing/CtaFinal';
 import { AnuncioAbogados } from '@/components/landing/AnuncioAbogados';
 import { FooterLegal } from '@/components/landing/FooterLegal';
-import { FotoLugar, StickyCtaMobile } from '@/components/landing/ui';
+import { StickyCtaMobile } from '@/components/landing/ui';
 
 // Tipografía de la variante clara — se carga SOLO en esta ruta (next/font hace subset + self-host).
 const figtree = Figtree({ variable: '--font-figtree', subsets: ['latin'], weight: ['500', '700', '800'] });
@@ -71,7 +71,9 @@ export default function Home() {
         ctaHref={CTA_HREF}
         socialProof={<span>7 días gratis · Garantía de 15 días</span>}
         visual={<img src="/frame-inicio.png" alt="Pantalla de inicio de Coparentia: tu expediente con el avance del mes, el total registrado y los últimos movimientos" className="w-full" />}
-        foto={<FotoLugar descripcion="Foto: mamá e hijo sonriendo con el celular" className="h-full w-full" forma="redonda" />}
+        // Fotos de Unsplash (licencia Unsplash: uso comercial libre) elegidas por el usuario el 2026-09-18
+        // (opciones A y E de public/dev/fotos-propuesta.html), optimizadas a 1200px en public/fotos/.
+        foto={<img src="/fotos/hero-mama-hijo-celular.jpg" alt="Mamá e hijo sonriendo mientras miran el celular en el sofá" className="h-full w-full object-cover object-[60%_35%]" width={1200} height={675} />}
         // "10 minutos" es el tiempo medido del onboarding + primer comprobante (guía "Tu primer
         // expediente en 10 minutos" del stack de valor) — no una cifra de marketing inventada.
         burbuja={{ titulo: 'Tu primer expediente', dato: 'Listo en 10 minutos' }}
@@ -108,7 +110,7 @@ export default function Home() {
       {/* 4. SOLUCIÓN */}
       <Solucion
         id="como-funciona"
-        foto={<FotoLugar descripcion="Foto: papá guardando un recibo desde el celular" className="h-full w-full" forma="redonda" />}
+        foto={<img src="/fotos/solucion-papa-hija.jpg" alt="Papá e hija riendo juntos" className="h-full w-full object-cover object-[50%_40%]" width={1200} height={800} loading="lazy" />}
         tituloMarked="Tu prueba, [acento]lista antes de que te pidan[/acento]"
         mecanismo="el Sello de Confianza"
         bigIdeaMarked="No es que no pagues — es que no tienes cómo [b]probarlo[/b]. El Sello de Confianza convierte cada comprobante en una prueba fechada y organizada."
