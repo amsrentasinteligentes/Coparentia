@@ -508,9 +508,9 @@ function Dashboard() {
           marca + saludo con foto, tarjeta de próximo evento, dos cifras con estado, cuatro accesos,
           actividad reciente y banner del Sello. El <PageHeader> con el marcador del tema oscuro
           queda para las demás pantallas hasta que lleguen sus etapas. */}
-      <CabeceraApp />
+      <CabeceraApp aviso={Boolean(proximoEvento)} />
       <SaludoApp linea={lineaSaludo} />
-      <ContenedorApp>
+      <ContenedorApp conFab sinTope>
         {falloCarga ? (
           <ErrorDeCarga onReintentar={() => setIntentoDatos((n) => n + 1)} />
         ) : cargando ? (
@@ -518,7 +518,7 @@ function Dashboard() {
         ) : (
           <>
             {/* PRÓXIMO EVENTO — la tarjeta más alta de la referencia. Sin evento, invita al calendario. */}
-            <Link href="/calendario" className="block [touch-action:manipulation]">
+            <Link href="/calendario" className="block transition-transform duration-100 active:scale-[0.99] [touch-action:manipulation]">
               <Tarjeta className="flex items-center gap-3">
                 <IconoCirculo icon={proximoEvento ? ICONO_EVENTO[proximoEvento.tipo] : CalendarClock} size={22} grande />
                 <div className="min-w-0 flex-1">
@@ -541,7 +541,7 @@ function Dashboard() {
 
             {/* DOS CIFRAS — la cuota del mes con su estado y los meses probados. */}
             <div className="mt-3 grid grid-cols-2 gap-3">
-              <Link href="/pagos" className="block [touch-action:manipulation]">
+              <Link href="/pagos" className="block transition-transform duration-100 active:scale-[0.99] [touch-action:manipulation]">
                 <Tarjeta indice={1} className="h-full">
                   <div className="flex items-start justify-between">
                     <IconoCirculo icon={ShieldCheck} tono={estadoDelMes.tono === 'exito' ? 'exito' : estadoDelMes.tono === 'alerta' ? 'pendiente' : 'accent'} />
@@ -552,12 +552,12 @@ function Dashboard() {
                   <p className="mt-2 text-[17px] font-extrabold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
                     {titulo ? <NumeroContado valor={titulo.montoMensual} formato={formatoCOP} /> : '—'}
                   </p>
-                  <p className="mt-0.5 text-[10.5px] text-[var(--text-secondary)]">
+                  <p className="mt-0.5 text-[11.5px] text-[var(--text-secondary)]">
                     {titulo ? `Mes actual · día ${titulo.diaPago}` : 'Cuota sin definir'}
                   </p>
                 </Tarjeta>
               </Link>
-              <Link href="/expediente" className="block [touch-action:manipulation]">
+              <Link href="/expediente" className="block transition-transform duration-100 active:scale-[0.99] [touch-action:manipulation]">
                 <Tarjeta indice={2} className="h-full">
                   <div className="flex items-start justify-between">
                     <span className="relative flex shrink-0">
@@ -588,8 +588,9 @@ function Dashboard() {
                       transition={{ duration: reduce ? 0 : 0.7, ease: [0.22, 0.61, 0.36, 1] }}
                     />
                   </div>
-                  <p className="mt-1 text-[10.5px] text-[var(--text-secondary)]">
-                    {metaMeses === 12 ? 'de los últimos 12 meses' : 'meses que lleva tu expediente'} · {formatoCOP(totalRegistrado)}
+                  {/* El primer mes "1 de 1" con barra llena no dice nada: se nombra el hito en su lugar. */}
+                  <p className="mt-1 text-[11.5px] text-[var(--text-secondary)]">
+                    {metaMeses === 1 ? 'Primer mes registrado' : metaMeses === 12 ? 'de los últimos 12 meses' : 'meses que lleva tu expediente'} · {formatoCOP(totalRegistrado)}
                   </p>
                 </Tarjeta>
               </Link>
@@ -601,7 +602,7 @@ function Dashboard() {
             <Tarjeta indice={3} className="mt-3">
               <div className="flex items-center justify-between">
                 <h2 className="text-[15px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">Actividad reciente</h2>
-                <Link href="/pagos" className="text-[12px] font-bold text-[var(--accent-ink,var(--accent))] [touch-action:manipulation]">Ver todo ›</Link>
+                <Link href="/pagos" className="inline-flex items-center gap-0.5 text-[12px] font-bold text-[var(--accent-ink,var(--accent))] [touch-action:manipulation]">Ver todo<ChevronRight size={14} aria-hidden="true" /></Link>
               </div>
               {ultimosPagos.length === 0 ? (
                 <div className="flex flex-col items-center py-6 text-center">
@@ -620,7 +621,7 @@ function Dashboard() {
                         <p className="truncate text-[13px] font-bold text-[var(--text-primary)]">{p.tipo === 'cuota' ? 'Cuota con Sello de Confianza' : 'Gasto extra registrado'}</p>
                         <p className="truncate text-[11.5px] text-[var(--text-secondary)]">{p.concepto} · {formatoCOP(p.monto)}</p>
                       </div>
-                      <time className="shrink-0 text-right text-[10.5px] leading-tight text-[var(--text-secondary)]">{formatoFechaCorta(p.fecha)}</time>
+                      <time className="shrink-0 text-right text-[11.5px] leading-tight text-[var(--text-secondary)]">{formatoFechaCorta(p.fecha)}</time>
                     </li>
                   ))}
                 </ul>

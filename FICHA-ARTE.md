@@ -81,8 +81,14 @@
   correctamente con punto y coma).
 
 ## Variante CLARA de la PÁGINA DE VENTAS (decisión del usuario, 2026-09-17 noche)
-- Alcance: SOLO la landing (app/page.tsx + components/landing/*). El interior de la app, el onboarding,
-  el paywall y el login conservan el brand kit oscuro de arriba SIN cambios (orden explícita del usuario).
+- Alcance inicial: SOLO la landing. ACTUALIZACIÓN 2026-09-18: el usuario aprobó la landing clara y pidió
+  llevar el estilo AL INTERIOR DE LA APP con 4 capturas de referencia (docs/referencias/ref-1..4) →
+  réplica fiel de Inicio aprobada → el interior (Inicio, Pagos, Calendario, Expediente, Asistencia,
+  Ajustes) pasa a CLARO con tokens-app-claro.css (valores MEDIDOS en ref-1: bg #EDF0F7, tarjetas #FFF,
+  chips #EBF1FD, azul #1A63DC, marino #0B2A57, verde #157A4F/#DFF5EA, morado #6C4AB6/#E9E2FB, radios
+  18/14/999, Figtree + Nunito Sans). Onboarding, paywall y /entrar siguen oscuros hasta que el usuario
+  pida esa etapa. Pendiente de marca: el isotipo actual es gris metálico (se ve apagado sobre claro);
+  la referencia lleva un logo azul — decisión del usuario si se rediseña.
 - Referencia PARCIAL del usuario: capturas de 2houses.com/es, niddoapp.com/es y ourfamilywizard.com →
   fondo claro, fotos reales de familias, capturas de la app flotando, azul Coparentia en sectores,
   mensaje "gastos controlados + mente en calma", tono empático.

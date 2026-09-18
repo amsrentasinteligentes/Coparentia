@@ -134,7 +134,7 @@ export function BottomNav() {
             <Link
               key={href}
               href={href}
-              className="flex min-w-[64px] flex-1 flex-col items-center gap-1 pb-1 pt-2.5 text-[11px] font-semibold [touch-action:manipulation]"
+              className="flex min-w-[64px] flex-1 flex-col items-center gap-1 pb-1 pt-2.5 text-[11px] font-semibold transition-transform duration-100 active:scale-95 [touch-action:manipulation]"
               aria-current={activo ? 'page' : undefined}
             >
               {/* Referencia del usuario (2026-09-18): el destino activo va en azul con el ícono
@@ -376,9 +376,9 @@ export function ErrorDeCarga({ onReintentar }: { onReintentar: () => void }) {
    altura fija fuera del área que hace scroll (`app/(app)/layout.tsx`) y el FAB usa `position:
    sticky` en vez de `fixed` — ninguno de los dos se monta ya sobre el contenido, así que no hace
    falta calcular cuánto colchón dejarles. */
-export function ContenedorApp({ children }: { children: ReactNode }) {
+export function ContenedorApp({ children, conFab = false, sinTope = false }: { children: ReactNode; conFab?: boolean; sinTope?: boolean }) {
   return (
-    <div className="relative isolate mx-auto max-w-[520px] px-4 pb-6 pt-[max(20px,env(safe-area-inset-top))]">
+    <div className={`relative isolate mx-auto max-w-[520px] px-4 ${conFab ? 'pb-24' : 'pb-6'} ${sinTope ? 'pt-3' : 'pt-[max(20px,env(safe-area-inset-top))]'}`}>
       {/* LUZ AMBIENTAL — el fondo de la app interna era un color liso en las cuatro secciones, y
           "profundidad" fue el eje que el revisor bajó una y otra vez. Esto no es decoración: es el
           3er nivel de profundidad que FICHA-ARTE declara (base / elevado / hundido) y que aquí
@@ -401,7 +401,7 @@ export function ContenedorApp({ children }: { children: ReactNode }) {
    lema, campana con punto y avatar con iniciales. Vive fuera del padding del contenedor para que
    su fondo blanco toque los bordes, como en la captura. Las iniciales salen del correo de la
    sesión (no hay nombre en el perfil); si no hay sesión aún, muestra un círculo neutro. ── */
-export function CabeceraApp() {
+export function CabeceraApp({ aviso = false }: { aviso?: boolean }) {
   const [iniciales, setIniciales] = useState<string>('');
   useEffect(() => {
     let vigente = true;
@@ -429,7 +429,7 @@ export function CabeceraApp() {
       <div className="flex items-center gap-2">
         <Link href="/calendario" aria-label="Próximos eventos" className="relative flex size-10 items-center justify-center rounded-full text-[var(--text-primary)] [touch-action:manipulation]">
           <Bell size={20} aria-hidden="true" />
-          <span aria-hidden="true" className="absolute right-2 top-2 size-2 rounded-full bg-[var(--accent)] ring-2 ring-[var(--surface)]" />
+          {aviso && <span aria-hidden="true" className="absolute right-2 top-2 size-2 rounded-full bg-[var(--accent)] ring-2 ring-[var(--surface)]" />}
         </Link>
         <Link href="/ajustes" aria-label="Tu cuenta y ajustes" className="flex items-center gap-1 rounded-full bg-[var(--surface-2)] py-1 pl-1 pr-2 [touch-action:manipulation]">
           <span className="flex size-7 items-center justify-center rounded-full bg-[var(--accent)] text-[11px] font-bold text-[var(--on-accent)]">{iniciales || '·'}</span>
@@ -443,11 +443,11 @@ export function CabeceraApp() {
 /* ── <SaludoApp> — saludo grande en azul con la foto del usuario (su referencia) en forma orgánica.
    El saludo cambia por hora del día (no hay nombre en el perfil; "Hola, {correo}" sonaba a spam). ── */
 export function SaludoApp({ linea }: { linea: string }) {
-  const h = new Date().getHours();
+  const h = Number(new Intl.DateTimeFormat('es-CO', { hour: 'numeric', hour12: false, timeZone: 'America/Bogota' }).format(new Date()));
   const saludo = h < 12 ? 'Buenos días' : h < 19 ? 'Buenas tardes' : 'Buenas noches';
   return (
     <section className="relative overflow-hidden rounded-b-[24px] bg-[var(--surface)] px-4 pb-4 pt-1">
-      <div className="pointer-events-none absolute -right-3 -top-2 h-[122px] w-[172px] overflow-hidden blob" aria-hidden="true">
+      <div className="pointer-events-none absolute right-0 top-0 h-[112px] w-[164px] overflow-hidden blob" aria-hidden="true">
         <img src="/fotos/app-familia-abrazo.jpg" alt="" className="h-full w-full object-cover object-[55%_40%]" />
         <span className="absolute inset-0" style={{ background: 'linear-gradient(90deg, var(--surface) 0%, transparent 40%)' }} />
       </div>
@@ -462,7 +462,7 @@ export function AccesosRapidos({ items }: { items: { href: string; label: string
   return (
     <nav aria-label="Accesos rápidos" className="mt-3 grid grid-cols-4 gap-2 rounded-[var(--radius-card)] bg-[var(--surface)] px-2 py-3 shadow-[var(--shadow-1)]">
       {items.slice(0, 4).map(({ href, label, icon }) => (
-        <Link key={href} href={href} className="flex flex-col items-center gap-1.5 py-1 text-[11px] font-bold text-[var(--text-primary)] [touch-action:manipulation]">
+        <Link key={href} href={href} className="flex flex-col items-center gap-1.5 py-1 text-[11px] font-bold text-[var(--text-primary)] transition-transform duration-100 active:scale-95 [touch-action:manipulation]">
           <IconoCirculo icon={icon} size={22} grande />
           {label}
         </Link>

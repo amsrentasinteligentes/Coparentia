@@ -2327,6 +2327,15 @@ justificación: **veredicto:landing** sigue LISTA (37/40·17/20·18/20), el gate
 por comparar mtime de CUALQUIER `.tsx` del proyecto; **veredicto:onboarding** y **veredicto:paywall**
 siguen NO LISTA por el techo estructural ya documentado, sin tocar en esta sesión.
 
+### Estado de los gates — INTERIOR CLARO etapa 1, revisor de pantalla-principal en curso (2026-09-18, commit c3a50a4)
+**veredicto:pantalla-principal**: Inicio claro r1 = 28/40 · 12/20, FIEL (0/6). Sus 5 defectos se corrigieron
+(colchón para el FAB, blob recortado por su curva, verde de píldora 4.6:1, captions 11.5px + texto del primer
+mes, campana con punto solo si hay evento, chevron en "Ver todo", tap en accesos/nav/tarjetas, saludo en
+hora de Colombia). El isotipo gris queda como decisión de marca pendiente del usuario. Se pospone la r2
+hasta cerrar las etapas 2-3 (misma regla de una ronda por etapa). **veredicto:landing** (aprobada por el usuario,
+techo documentado abajo), **veredicto:onboarding** y **veredicto:paywall** (techo documentado; siguen
+oscuros, fuera del alcance pedido) sin cambios.
+
 ### Estado de los 3 gates de veredicto — LANDING CLARA CERRADA en techo documentado (2026-09-18)
 **veredicto:landing** (variante clara, 4 rondas): r1 33·14·17 → r2 33·15·17 → r3 33·16·17 → r4 31·16·16,
 FIEL a la opción C elegida. Craft PASA (16). Usabilidad 31-33 en cuatro rondas: mismo patrón de techo

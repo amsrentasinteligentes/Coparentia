@@ -32,7 +32,7 @@
   --accent-underline: transparent;
 
   /* ── SEMÁNTICOS (de la referencia): verde Pagada, ámbar Pendiente, morado informativo, rojo ── */
-  --status-success: #1f8f60;      /* 4.6:1 sobre blanco (píldora sobre #DFF5EA: 4.2:1 en 11px bold) */
+  --status-success: #157a4f;      /* 5.9:1 sobre blanco · 4.6:1 sobre #DFF5EA (píldora 11px bold) */
   --status-success-bg: #dff5ea;
   --status-warning: #b9731a;      /* 4.5:1 sobre blanco */
   --status-warning-bg: #fdf1dc;
