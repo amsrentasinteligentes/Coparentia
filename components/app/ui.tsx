@@ -7,7 +7,8 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion, useReducedMotion } from 'motion/react';
-import { Home, Wallet, CalendarDays, FolderOpen, Scale, CloudOff, Check, type LucideIcon } from 'lucide-react';
+import { Home, Wallet, CalendarDays, FolderOpen, Scale, CloudOff, Check, Bell, ChevronDown, type LucideIcon } from 'lucide-react';
+import { crearClienteSupabase } from '@/lib/supabase/client';
 import { useEffect, useState, type ReactNode } from 'react';
 
 /* Motion signature de FICHA-ARTE.md, en un solo lugar: ease-out suave, 340ms base, sin springs
@@ -124,7 +125,7 @@ export function BottomNav() {
   return (
     <nav
       aria-label="Navegación principal"
-      className="shrink-0 border-t border-[color-mix(in_oklab,var(--text-tertiary)_15%,transparent)] bg-[var(--surface)]/95 backdrop-blur [padding-bottom:max(8px,env(safe-area-inset-bottom))]"
+      className="shrink-0 border-t border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] bg-[var(--surface)] [padding-bottom:max(8px,env(safe-area-inset-bottom))]"
     >
       <div className="mx-auto flex max-w-[520px] items-stretch justify-around">
         {DESTINOS.map(({ href, label, icon: Icon }) => {
@@ -133,29 +134,32 @@ export function BottomNav() {
             <Link
               key={href}
               href={href}
-              className="flex min-w-[64px] flex-1 flex-col items-center gap-1 py-2.5 text-[11px] font-medium [touch-action:manipulation]"
+              className="flex min-w-[64px] flex-1 flex-col items-center gap-1 pb-1 pt-2.5 text-[11px] font-semibold [touch-action:manipulation]"
               aria-current={activo ? 'page' : undefined}
             >
-              {/* La píldora activa se DESLIZA entre destinos (layoutId) en vez de aparecer y
-                  desaparecer: es la baseline "transición entre tabs" del SO, que faltaba — antes
-                  solo había un `transition-colors`. Spring 220/26 = el compilado de FICHA-ARTE. */}
-              <span className="relative flex size-9 items-center justify-center">
-                {activo && (
-                  <motion.span
-                    layoutId="nav-pildora-activa"
-                    transition={reduce ? { duration: 0 } : { type: 'spring', stiffness: 220, damping: 26 }}
-                    className="absolute inset-0 rounded-full bg-[color-mix(in_oklab,var(--accent)_16%,transparent)]"
-                  />
-                )}
+              {/* Referencia del usuario (2026-09-18): el destino activo va en azul con el ícono
+                  RELLENO y un punto debajo de la etiqueta; el punto se desliza entre destinos
+                  (layoutId) — la baseline "transición entre tabs" del SO. */}
+              <span className="relative flex size-7 items-center justify-center">
                 <Icon
-                  size={20}
-                  strokeWidth={activo ? 2.4 : 2}
+                  size={22}
+                  strokeWidth={activo ? 2 : 1.9}
                   color={activo ? 'var(--accent)' : 'var(--text-tertiary)'}
+                  fill={activo ? 'color-mix(in oklab, var(--accent) 22%, transparent)' : 'none'}
                   className="relative"
                   aria-hidden="true"
                 />
               </span>
               <span className={activo ? 'text-[var(--accent)]' : 'text-[var(--text-tertiary)]'}>{label}</span>
+              <span className="relative flex h-2 w-2 items-center justify-center">
+                {activo && (
+                  <motion.span
+                    layoutId="nav-punto-activo"
+                    transition={reduce ? { duration: 0 } : { type: 'spring', stiffness: 220, damping: 26 }}
+                    className="absolute size-1.5 rounded-full bg-[var(--accent)]"
+                  />
+                )}
+              </span>
             </Link>
           );
         })}
@@ -223,7 +227,7 @@ export function Tarjeta({
       initial={reduce ? false : { opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: DUR_BASE, ease: EASE_SERENO, delay: reduce ? 0 : indice * 0.05 }}
-      className={`relative rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--text-tertiary)_16%,transparent)] bg-[var(--surface)] p-4 shadow-[var(--shadow-1)] ${className}`}
+      className={`relative rounded-[var(--radius-card)] bg-[var(--surface)] p-4 shadow-[var(--shadow-1)] ${className}`}
     >
       {/* HAIRLINE DEGRADADA — FICHA-ARTE.md la declara parte del kit de profundidad ("hairline
           degradada + sombra tintada suave") y no existía en ninguna pantalla; el revisor lo marcó
@@ -256,7 +260,7 @@ export function TarjetaSkeleton({ filas = 3 }: { filas?: number }) {
       {Array.from({ length: filas }).map((_, i) => (
         <div
           key={i}
-          className={`flex items-center gap-3 rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--text-tertiary)_16%,transparent)] bg-[var(--surface)] p-4 ${pulso}`}
+          className={`flex items-center gap-3 rounded-[var(--radius-card)] bg-[var(--surface)] p-4 ${pulso}`}
         >
           <div className="size-10 shrink-0 rounded-full bg-[color-mix(in_oklab,var(--text-tertiary)_16%,transparent)]" />
           <div className="min-w-0 flex-1">
@@ -271,9 +275,9 @@ export function TarjetaSkeleton({ filas = 3 }: { filas?: number }) {
 
 type TonoPildora = 'exito' | 'pendiente' | 'alerta' | 'neutro';
 const TONOS: Record<TonoPildora, { bg: string; texto: string }> = {
-  exito: { bg: 'color-mix(in oklab, var(--status-success) 18%, transparent)', texto: 'var(--status-success)' },
-  pendiente: { bg: 'color-mix(in oklab, var(--status-warning) 18%, transparent)', texto: 'var(--status-warning)' },
-  alerta: { bg: 'color-mix(in oklab, var(--status-error) 18%, transparent)', texto: 'var(--status-error)' },
+  exito: { bg: 'var(--status-success-bg, color-mix(in oklab, var(--status-success) 18%, transparent))', texto: 'var(--status-success)' },
+  pendiente: { bg: 'var(--status-warning-bg, color-mix(in oklab, var(--status-warning) 18%, transparent))', texto: 'var(--status-warning)' },
+  alerta: { bg: 'var(--status-error-bg, color-mix(in oklab, var(--status-error) 18%, transparent))', texto: 'var(--status-error)' },
   neutro: { bg: 'color-mix(in oklab, var(--text-tertiary) 16%, transparent)', texto: 'var(--text-secondary)' },
 };
 
@@ -283,7 +287,7 @@ export function Pildora({ texto, tono }: { texto: string; tono: TonoPildora }) {
   const t = TONOS[tono];
   return (
     <span
-      className="inline-flex shrink-0 items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.04em]"
+      className="inline-flex shrink-0 items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-bold"
       style={{ backgroundColor: t.bg, color: t.texto }}
     >
       {/* FICHA-ARTE fija "éxito" en el MISMO azul de marca y resuelve la ambigüedad con el ícono,
@@ -296,10 +300,21 @@ export function Pildora({ texto, tono }: { texto: string; tono: TonoPildora }) {
 }
 
 /* ── <IconoCirculo> — chip de ícono premium (fondo acento 10-14%), nunca emoji ── */
-export function IconoCirculo({ icon: Icon, size = 20 }: { icon: LucideIcon; size?: number }) {
+type TonoChip = 'accent' | 'exito' | 'info' | 'pendiente';
+const TONOS_CHIP: Record<TonoChip, { bg: string; color: string }> = {
+  accent: { bg: 'var(--chip-bg)', color: 'var(--accent)' },
+  exito: { bg: 'var(--status-success-bg, color-mix(in oklab, var(--status-success) 16%, transparent))', color: 'var(--status-success)' },
+  info: { bg: 'var(--status-info-bg, color-mix(in oklab, var(--accent) 12%, transparent))', color: 'var(--status-info, var(--accent))' },
+  pendiente: { bg: 'var(--status-warning-bg, color-mix(in oklab, var(--status-warning) 16%, transparent))', color: 'var(--status-warning)' },
+};
+export function IconoCirculo({ icon: Icon, size = 20, tono = 'accent', grande = false }: { icon: LucideIcon; size?: number; tono?: TonoChip; grande?: boolean }) {
+  const t = TONOS_CHIP[tono];
   return (
-    <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-[color-mix(in_oklab,var(--accent)_12%,transparent)]">
-      <Icon size={size} color="var(--accent)" aria-hidden="true" />
+    <span
+      className={`flex shrink-0 items-center justify-center rounded-[var(--radius-chip,999px)] ${grande ? 'size-12' : 'size-10'}`}
+      style={{ background: t.bg, color: t.color }}
+    >
+      <Icon size={size} color="currentColor" aria-hidden="true" />
     </span>
   );
 }
@@ -318,7 +333,7 @@ export function BotonFlotante({ onClick, children }: { onClick: () => void; chil
         type="button"
         onClick={onClick}
         whileTap={{ scale: 0.96 }}
-        className="pointer-events-auto flex h-14 items-center gap-2 rounded-full bg-[var(--accent)] px-5 text-[15px] font-semibold text-[var(--bg)] shadow-[0_8px_24px_color-mix(in_oklab,var(--accent)_35%,transparent)] [touch-action:manipulation]"
+        className="pointer-events-auto flex h-14 items-center gap-2 rounded-full bg-[var(--accent)] px-5 text-[15px] font-semibold text-[var(--on-accent,var(--bg))] shadow-[0_8px_24px_color-mix(in_oklab,var(--accent)_35%,transparent)] [touch-action:manipulation]"
       >
         {children}
       </motion.button>
@@ -374,10 +389,84 @@ export function ContenedorApp({ children }: { children: ReactNode }) {
         className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[320px]"
         style={{
           background:
-            'radial-gradient(ellipse 130% 100% at 50% 0%, color-mix(in oklab, var(--accent) 9%, transparent) 0%, transparent 72%)',
+            'radial-gradient(ellipse 130% 100% at 50% 0%, color-mix(in oklab, var(--accent) 5%, transparent) 0%, transparent 72%)',
         }}
       />
       {children}
     </div>
+  );
+}
+
+/* ── <CabeceraApp> — la cabecera de la referencia del usuario (2026-09-18): logo + nombre con
+   lema, campana con punto y avatar con iniciales. Vive fuera del padding del contenedor para que
+   su fondo blanco toque los bordes, como en la captura. Las iniciales salen del correo de la
+   sesión (no hay nombre en el perfil); si no hay sesión aún, muestra un círculo neutro. ── */
+export function CabeceraApp() {
+  const [iniciales, setIniciales] = useState<string>('');
+  useEffect(() => {
+    let vigente = true;
+    crearClienteSupabase()
+      .auth.getUser()
+      .then(({ data }) => {
+        if (!vigente) return;
+        const correo = data.user?.email ?? '';
+        setIniciales(correo ? correo.slice(0, 2).toUpperCase() : '');
+      })
+      .catch(() => {});
+    return () => {
+      vigente = false;
+    };
+  }, []);
+  return (
+    <header className="flex items-center justify-between bg-[var(--surface)] px-4 pb-2 pt-[max(10px,env(safe-area-inset-top))]">
+      <Link href="/inicio" className="flex items-center gap-2 [touch-action:manipulation]">
+        <img src="/logo-isotipo.png" alt="" aria-hidden="true" className="size-8 object-contain" />
+        <span>
+          <span className="block text-[18px] font-extrabold leading-none tracking-[-0.01em] text-[var(--text-primary)] [font-family:var(--font-display)]">Coparentia</span>
+          <span className="mt-0.5 block text-[10px] text-[var(--text-secondary)]">Tu expediente, en confianza.</span>
+        </span>
+      </Link>
+      <div className="flex items-center gap-2">
+        <Link href="/calendario" aria-label="Próximos eventos" className="relative flex size-10 items-center justify-center rounded-full text-[var(--text-primary)] [touch-action:manipulation]">
+          <Bell size={20} aria-hidden="true" />
+          <span aria-hidden="true" className="absolute right-2 top-2 size-2 rounded-full bg-[var(--accent)] ring-2 ring-[var(--surface)]" />
+        </Link>
+        <Link href="/ajustes" aria-label="Tu cuenta y ajustes" className="flex items-center gap-1 rounded-full bg-[var(--surface-2)] py-1 pl-1 pr-2 [touch-action:manipulation]">
+          <span className="flex size-7 items-center justify-center rounded-full bg-[var(--accent)] text-[11px] font-bold text-[var(--on-accent)]">{iniciales || '·'}</span>
+          <ChevronDown size={14} className="text-[var(--accent-ink,var(--accent))]" aria-hidden="true" />
+        </Link>
+      </div>
+    </header>
+  );
+}
+
+/* ── <SaludoApp> — saludo grande en azul con la foto del usuario (su referencia) en forma orgánica.
+   El saludo cambia por hora del día (no hay nombre en el perfil; "Hola, {correo}" sonaba a spam). ── */
+export function SaludoApp({ linea }: { linea: string }) {
+  const h = new Date().getHours();
+  const saludo = h < 12 ? 'Buenos días' : h < 19 ? 'Buenas tardes' : 'Buenas noches';
+  return (
+    <section className="relative overflow-hidden rounded-b-[24px] bg-[var(--surface)] px-4 pb-4 pt-1">
+      <div className="pointer-events-none absolute -right-3 -top-2 h-[122px] w-[172px] overflow-hidden blob" aria-hidden="true">
+        <img src="/fotos/app-familia-abrazo.jpg" alt="" className="h-full w-full object-cover object-[55%_40%]" />
+        <span className="absolute inset-0" style={{ background: 'linear-gradient(90deg, var(--surface) 0%, transparent 40%)' }} />
+      </div>
+      <h1 className="relative text-[26px] font-extrabold leading-tight tracking-[-0.01em] text-[var(--accent)] [font-family:var(--font-display)]">{saludo}</h1>
+      <p className="relative mt-1 max-w-[52%] text-[13px] leading-snug text-[var(--text-secondary)]">{linea}</p>
+    </section>
+  );
+}
+
+/* ── <AccesosRapidos> — la fila de 4 accesos de la referencia: chip grande + etiqueta. ── */
+export function AccesosRapidos({ items }: { items: { href: string; label: string; icon: LucideIcon }[] }) {
+  return (
+    <nav aria-label="Accesos rápidos" className="mt-3 grid grid-cols-4 gap-2 rounded-[var(--radius-card)] bg-[var(--surface)] px-2 py-3 shadow-[var(--shadow-1)]">
+      {items.slice(0, 4).map(({ href, label, icon }) => (
+        <Link key={href} href={href} className="flex flex-col items-center gap-1.5 py-1 text-[11px] font-bold text-[var(--text-primary)] [touch-action:manipulation]">
+          <IconoCirculo icon={icon} size={22} grande />
+          {label}
+        </Link>
+      ))}
+    </nav>
   );
 }

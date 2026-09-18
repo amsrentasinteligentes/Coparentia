@@ -110,7 +110,7 @@ export default function Expediente() {
           disabled={generando}
           onClick={exportarPdf}
           whileTap={{ scale: 0.98 }}
-          className="mt-4 flex h-14 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] bg-[var(--accent)] text-[16px] font-semibold text-[var(--bg)] transition-opacity disabled:opacity-60 [touch-action:manipulation]"
+          className="mt-4 flex h-14 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] bg-[var(--accent)] text-[16px] font-semibold text-[var(--on-accent,var(--bg))] transition-opacity disabled:opacity-60 [touch-action:manipulation]"
         >
           <Download size={18} aria-hidden="true" />
           {generando ? progreso || 'Preparando…' : 'Exportar expediente'}

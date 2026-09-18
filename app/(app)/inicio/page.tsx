@@ -7,13 +7,12 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { motion, useReducedMotion } from 'motion/react';
-import { Upload, Check, CalendarClock, ShieldCheck, ChevronRight, FileCheck2, Globe } from 'lucide-react';
-import { MiniRing } from '@/components/landing/ui';
+import { Upload, Check, CalendarClock, ShieldCheck, ChevronRight, FileCheck2, Globe, Wallet, CalendarDays, FolderOpen, Scale, ReceiptText } from 'lucide-react';
 import { VistaPreviaArchivo } from '@/components/app/VistaPreviaArchivo';
 import { BarraAtras, Halo } from '@/components/funnel/ui';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ContenedorApp, PageHeader, Tarjeta, IconoCirculo, Pildora, TarjetaSkeleton, NumeroContado, ErrorDeCarga, BotonFlotante } from '@/components/app/ui';
+import { ContenedorApp, PageHeader, Tarjeta, IconoCirculo, Pildora, TarjetaSkeleton, NumeroContado, ErrorDeCarga, BotonFlotante, CabeceraApp, SaludoApp, AccesosRapidos } from '@/components/app/ui';
 import {
   type Titulo,
   type Pago,
@@ -30,6 +29,13 @@ import {
   validarArchivoAdjunto,
 } from '@/lib/datos';
 import { hoyEnColombia, mesEnColombia, diaDelMesEnColombia } from '@/lib/fecha';
+
+const ACCESOS = [
+  { href: '/pagos', label: 'Pagos', icon: Wallet },
+  { href: '/calendario', label: 'Calendario', icon: CalendarDays },
+  { href: '/expediente', label: 'Expediente', icon: FolderOpen },
+  { href: '/asistencia', label: 'Asistencia', icon: Scale },
+];
 
 const ICONO_EVENTO = { visita: CalendarClock, medica: ShieldCheck, vacaciones: CalendarClock, extracurricular: CalendarClock, salida_pais: Globe } as const;
 const LABEL_EVENTO = { visita: 'Visita', medica: 'Cita médica', vacaciones: 'Vacaciones', extracurricular: 'Actividad', salida_pais: 'Salida del país' } as const;
@@ -248,7 +254,7 @@ function PrimerosPasos({ onListo }: { onListo: () => void }) {
             disabled={!tituloValido}
             onClick={confirmarTitulo}
             whileTap={{ scale: 0.97 }}
-            className="mt-8 flex h-14 w-full items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-[16px] font-semibold text-[var(--bg)] transition-opacity disabled:opacity-40 [touch-action:manipulation]"
+            className="mt-8 flex h-14 w-full items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-[16px] font-semibold text-[var(--on-accent,var(--bg))] transition-opacity disabled:opacity-40 [touch-action:manipulation]"
           >
             Guardar y continuar
           </motion.button>
@@ -301,7 +307,7 @@ function PrimerosPasos({ onListo }: { onListo: () => void }) {
               type="button"
               onClick={() => subirComprobante(archivo)}
               whileTap={{ scale: 0.97 }}
-              className="mt-4 flex h-14 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] bg-[var(--accent)] text-[16px] font-semibold text-[var(--bg)] [touch-action:manipulation]"
+              className="mt-4 flex h-14 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] bg-[var(--accent)] text-[16px] font-semibold text-[var(--on-accent,var(--bg))] [touch-action:manipulation]"
             >
               <ShieldCheck size={18} aria-hidden="true" />
               Guardar en mi expediente
@@ -311,7 +317,7 @@ function PrimerosPasos({ onListo }: { onListo: () => void }) {
               type="button"
               onClick={() => inputRef.current?.click()}
               whileTap={{ scale: 0.97 }}
-              className="mt-8 flex h-14 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] bg-[var(--accent)] text-[16px] font-semibold text-[var(--bg)] [touch-action:manipulation]"
+              className="mt-8 flex h-14 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] bg-[var(--accent)] text-[16px] font-semibold text-[var(--on-accent,var(--bg))] [touch-action:manipulation]"
             >
               <Upload size={18} aria-hidden="true" />
               Elegir archivo
@@ -367,7 +373,7 @@ function Revelacion({ onContinuar }: { onContinuar: () => void }) {
         type="button"
         onClick={onContinuar}
         whileTap={{ scale: 0.97 }}
-        className="mt-8 flex h-14 w-full items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-[16px] font-semibold text-[var(--bg)] [touch-action:manipulation]"
+        className="mt-8 flex h-14 w-full items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-[16px] font-semibold text-[var(--on-accent,var(--bg))] [touch-action:manipulation]"
       >
         Ir a mi expediente
       </motion.button>
@@ -484,165 +490,167 @@ function Dashboard() {
   const proximoEvento = eventos.filter((e) => e.fecha >= hoy).sort((a, b) => a.fecha.localeCompare(b.fecha))[0];
   const ultimosPagos = [...pagos].sort((a, b) => b.fecha.localeCompare(a.fecha)).slice(0, 3);
 
+  // Línea del saludo: responde la pregunta diaria ("¿voy al día?") en una frase humana.
+  const lineaSaludo = cargando || falloCarga
+    ? 'Revisando tu expediente…'
+    : cuotaDelMesRegistrada
+      ? 'Tu expediente está al día. Nada pendiente hoy.'
+      : yaVencio
+        ? 'La cuota de este mes aún no tiene comprobante.'
+        : `Recuerda registrar la cuota antes del día ${titulo?.diaPago ?? '—'}.`;
+
+  const gastosExtraMes = pagos.filter((p) => p.tipo !== 'cuota' && p.fecha.slice(0, 7) === mesActual);
+  const totalExtraMes = gastosExtraMes.reduce((acc, p) => acc + p.monto, 0);
+
   return (
-    <ContenedorApp>
-      {/* El <Marcador> de marca no existía en NINGUNA pantalla de la app interna, solo en el
-          funnel: aquí el sello de identidad entra sobre la palabra que da nombre al producto. */}
-      {/* La cuota ahora SE PUEDE editar (Ajustes), así que el dato lleva a donde se cambia: sin
-          este atajo, la pantalla muestra un número que parece fijo y la edición queda escondida
-          detrás del engranaje de Expediente, donde nadie la buscaría. */}
-      <PageHeader
-        titulo="Tu expediente"
-        palabraClave="expediente"
-        halo
-        subtitulo={
-          titulo ? (
-            <Link href="/ajustes" className="inline-flex items-center gap-1 [touch-action:manipulation]">
-              Cuota de {formatoCOP(titulo.montoMensual)} · día {titulo.diaPago}
-              <ChevronRight size={14} className="text-[var(--text-tertiary)]" aria-hidden="true" />
-            </Link>
-          ) : undefined
-        }
-      />
-
-      {falloCarga ? (
-        <ErrorDeCarga onReintentar={() => setIntentoDatos((n) => n + 1)} />
-      ) : cargando ? (
-        <TarjetaSkeleton filas={3} />
-      ) : (
-        <>
-          <Tarjeta destacada className="flex items-center gap-4">
-            <span className="relative flex shrink-0">
-              {/* CELEBRACIÓN N2 de FICHA-ARTE ("anillo que se completa con luz suave"): un pulso
-                  que se expande UNA vez, solo cuando se acaba de sumar un mes nuevo — nunca por
-                  abrir la app. Sin esto, alcanzar un mes más no producía ninguna señal. */}
-              {celebrar && !reduce && (
-                <motion.span
-                  aria-hidden="true"
-                  initial={{ scale: 0.8, opacity: 0.6 }}
-                  animate={{ scale: 1.7, opacity: 0 }}
-                  transition={{ duration: 1.2, ease: [0.22, 0.61, 0.36, 1] }}
-                  className="absolute inset-0 rounded-full border-2 border-[var(--accent)]"
-                />
-              )}
-              <MiniRing value={progreso} size={64} stroke={6} />
-            </span>
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center justify-between gap-2">
-                <p className="text-[13px] text-[var(--text-secondary)]">Meses con registro</p>
-                <Pildora texto={estadoDelMes.texto} tono={estadoDelMes.tono} />
-              </div>
-              <p className="text-[22px] font-bold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
-                <NumeroContado valor={Math.min(mesesConRegistro, metaMeses)} />{' '}
-                <span className="text-[15px] font-normal text-[var(--text-secondary)]">de {metaMeses}</span>
-              </p>
-              {/* El "de N" ahora significa algo, así que se explica de dónde sale. */}
-              <p className="mt-0.5 text-[12px] text-[var(--text-tertiary)]">
-                {metaMeses === 12 ? 'de los últimos 12 meses' : 'meses que lleva tu expediente'}
-              </p>
-            </div>
-          </Tarjeta>
-
-          <div className="mt-3 grid grid-cols-2 gap-3">
-            <Tarjeta indice={1}>
-              <p className="text-[13px] text-[var(--text-secondary)]">Total registrado</p>
-              <p className="mt-1 text-[19px] font-bold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
-                <NumeroContado valor={totalRegistrado} formato={formatoCOP} />
-              </p>
-            </Tarjeta>
-            <Tarjeta indice={2}>
-              <p className="text-[13px] text-[var(--text-secondary)]">Comprobantes</p>
-              <p className="mt-1 text-[19px] font-bold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
-                <NumeroContado valor={pagos.length} />
-              </p>
-            </Tarjeta>
-          </div>
-        </>
-      )}
-
-      {/* TODO lo que sigue depende de los mismos datos: si la carga falló, mostrarlo sería volver
-          a decir la mentira que <ErrorDeCarga> acaba de desmentir arriba ("Todavía no hay
-          movimientos" cuando en realidad no se pudieron traer). El error tapa el dashboard entero,
-          no solo su primera mitad. */}
-      {!falloCarga && !cargando && (
-        <>
-      {/* Sin evento próximo la tarjeta simplemente DESAPARECÍA: la pantalla cambiaba de forma sin
-          explicar nada, y se perdía la oportunidad de invitar a usar el calendario. */}
-      {!proximoEvento && (
-        <Link href="/calendario" className="mt-3 block [touch-action:manipulation]">
-          <Tarjeta className="flex items-center gap-3">
-            <IconoCirculo icon={CalendarClock} />
-            <div className="min-w-0 flex-1">
-              <p className="text-[13px] text-[var(--text-secondary)]">Sin eventos próximos</p>
-              <p className="text-[14px] font-medium text-[var(--text-primary)]">Agenda una visita o una cita</p>
-            </div>
-            <ChevronRight size={16} className="shrink-0 text-[var(--text-tertiary)]" aria-hidden="true" />
-          </Tarjeta>
-        </Link>
-      )}
-
-      {proximoEvento && (
-        <Link href="/calendario" className="mt-3 block [touch-action:manipulation]">
-          <Tarjeta className="flex items-center gap-3">
-            <IconoCirculo icon={ICONO_EVENTO[proximoEvento.tipo]} />
-            <div className="flex-1">
-              <p className="text-[13px] text-[var(--text-secondary)]">Próximo · {LABEL_EVENTO[proximoEvento.tipo]}</p>
-              <p className="text-[15px] font-semibold text-[var(--text-primary)]">{proximoEvento.titulo}</p>
-            </div>
-            <div className="text-right">
-              <p className="text-[13px] font-medium text-[var(--accent)]">{formatoFechaCorta(proximoEvento.fecha)}</p>
-              <ChevronRight size={16} className="ml-auto mt-1 text-[var(--text-tertiary)]" aria-hidden="true" />
-            </div>
-          </Tarjeta>
-        </Link>
-      )}
-
-      <div className="mt-6 flex items-center justify-between">
-        <h2 className="text-[17px] font-semibold text-[var(--text-primary)]">Últimos movimientos</h2>
-        <Link href="/pagos" className="text-[13px] font-medium text-[var(--accent)] [touch-action:manipulation]">
-          Ver todos
-        </Link>
-      </div>
-      <div className="mt-3 flex flex-col gap-3">
-        {/* Faltaba el estado vacío: sin registros, el título "Últimos movimientos" quedaba solo,
-            colgando sobre la nada, sin decir qué hacer (regla 7 del SO). */}
-        {ultimosPagos.length === 0 ? (
-          <Tarjeta className="flex flex-col items-center py-8 text-center">
-            <IconoCirculo icon={FileCheck2} size={22} />
-            <p className="mt-3 text-[14px] font-medium text-[var(--text-primary)]">Todavía no hay movimientos</p>
-            <p className="mt-1 max-w-[30ch] text-[13px] text-[var(--text-secondary)]">
-              Cada comprobante que subas queda fechado aquí, listo para mostrar cuando lo necesites.
-            </p>
-          </Tarjeta>
+    <>
+      {/* COMPOSICIÓN DE LA REFERENCIA DEL USUARIO (réplica fiel aprobada 2026-09-18): cabecera de
+          marca + saludo con foto, tarjeta de próximo evento, dos cifras con estado, cuatro accesos,
+          actividad reciente y banner del Sello. El <PageHeader> con el marcador del tema oscuro
+          queda para las demás pantallas hasta que lleguen sus etapas. */}
+      <CabeceraApp />
+      <SaludoApp linea={lineaSaludo} />
+      <ContenedorApp>
+        {falloCarga ? (
+          <ErrorDeCarga onReintentar={() => setIntentoDatos((n) => n + 1)} />
+        ) : cargando ? (
+          <TarjetaSkeleton filas={3} />
         ) : (
-          ultimosPagos.map((p, i) => (
-            <Tarjeta key={p.id} indice={i} className="flex items-center gap-3">
-              <IconoCirculo icon={p.tipo === 'cuota' ? ShieldCheck : FileCheck2} />
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-[14px] font-medium text-[var(--text-primary)]">{p.concepto}</p>
-                <p className="truncate text-[12px] text-[var(--text-tertiary)]">{formatoFechaLarga(p.fecha)}</p>
+          <>
+            {/* PRÓXIMO EVENTO — la tarjeta más alta de la referencia. Sin evento, invita al calendario. */}
+            <Link href="/calendario" className="block [touch-action:manipulation]">
+              <Tarjeta className="flex items-center gap-3">
+                <IconoCirculo icon={proximoEvento ? ICONO_EVENTO[proximoEvento.tipo] : CalendarClock} size={22} grande />
+                <div className="min-w-0 flex-1">
+                  <p className="text-[15px] font-bold text-[var(--text-primary)] [font-family:var(--font-display)]">Próximo evento</p>
+                  {proximoEvento ? (
+                    <>
+                      <p className="truncate text-[13px] text-[var(--text-secondary)]">{proximoEvento.titulo}</p>
+                      <p className="mt-0.5 text-[13px] font-bold text-[var(--accent-ink,var(--accent))]">
+                        {formatoFechaCorta(proximoEvento.fecha)}
+                        <span className="ml-2 font-normal text-[var(--text-secondary)]">{LABEL_EVENTO[proximoEvento.tipo]}</span>
+                      </p>
+                    </>
+                  ) : (
+                    <p className="text-[13px] text-[var(--text-secondary)]">Sin eventos próximos · agenda una visita o una cita</p>
+                  )}
+                </div>
+                <ChevronRight size={18} className="shrink-0 text-[var(--text-tertiary)]" aria-hidden="true" />
+              </Tarjeta>
+            </Link>
+
+            {/* DOS CIFRAS — la cuota del mes con su estado y los meses probados. */}
+            <div className="mt-3 grid grid-cols-2 gap-3">
+              <Link href="/pagos" className="block [touch-action:manipulation]">
+                <Tarjeta indice={1} className="h-full">
+                  <div className="flex items-start justify-between">
+                    <IconoCirculo icon={ShieldCheck} tono={estadoDelMes.tono === 'exito' ? 'exito' : estadoDelMes.tono === 'alerta' ? 'pendiente' : 'accent'} />
+                    <ChevronRight size={16} className="text-[var(--text-tertiary)]" aria-hidden="true" />
+                  </div>
+                  <p className="mt-3 text-[12px] font-bold text-[var(--text-primary)]">Cuota alimentaria</p>
+                  <div className="mt-1.5"><Pildora texto={estadoDelMes.texto} tono={estadoDelMes.tono} /></div>
+                  <p className="mt-2 text-[17px] font-extrabold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
+                    {titulo ? <NumeroContado valor={titulo.montoMensual} formato={formatoCOP} /> : '—'}
+                  </p>
+                  <p className="mt-0.5 text-[10.5px] text-[var(--text-secondary)]">
+                    {titulo ? `Mes actual · día ${titulo.diaPago}` : 'Cuota sin definir'}
+                  </p>
+                </Tarjeta>
+              </Link>
+              <Link href="/expediente" className="block [touch-action:manipulation]">
+                <Tarjeta indice={2} className="h-full">
+                  <div className="flex items-start justify-between">
+                    <span className="relative flex shrink-0">
+                      {celebrar && !reduce && (
+                        <motion.span
+                          aria-hidden="true"
+                          initial={{ scale: 0.8, opacity: 0.6 }}
+                          animate={{ scale: 1.7, opacity: 0 }}
+                          transition={{ duration: 1.2, ease: [0.22, 0.61, 0.36, 1] }}
+                          className="absolute inset-0 rounded-[var(--radius-chip,999px)] border-2 border-[var(--accent)]"
+                        />
+                      )}
+                      <IconoCirculo icon={FileCheck2} />
+                    </span>
+                    <ChevronRight size={16} className="text-[var(--text-tertiary)]" aria-hidden="true" />
+                  </div>
+                  <p className="mt-3 text-[12px] font-bold text-[var(--text-primary)]">Meses con registro</p>
+                  <p className="mt-2 text-[17px] font-extrabold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
+                    <NumeroContado valor={Math.min(mesesConRegistro, metaMeses)} />
+                    <span className="ml-1 text-[12px] font-bold text-[var(--text-secondary)]">de {metaMeses}</span>
+                  </p>
+                  {/* Barra de avance de la referencia (en vez del anillo del tema oscuro). */}
+                  <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-[color-mix(in_oklab,var(--accent)_16%,transparent)]" role="progressbar" aria-valuenow={progreso} aria-valuemin={0} aria-valuemax={100}>
+                    <motion.span
+                      className="block h-full rounded-full bg-[var(--accent)]"
+                      initial={reduce ? false : { width: 0 }}
+                      animate={{ width: `${progreso}%` }}
+                      transition={{ duration: reduce ? 0 : 0.7, ease: [0.22, 0.61, 0.36, 1] }}
+                    />
+                  </div>
+                  <p className="mt-1 text-[10.5px] text-[var(--text-secondary)]">
+                    {metaMeses === 12 ? 'de los últimos 12 meses' : 'meses que lleva tu expediente'} · {formatoCOP(totalRegistrado)}
+                  </p>
+                </Tarjeta>
+              </Link>
+            </div>
+
+            <AccesosRapidos items={ACCESOS} />
+
+            {/* ACTIVIDAD RECIENTE — últimos comprobantes con su fecha. */}
+            <Tarjeta indice={3} className="mt-3">
+              <div className="flex items-center justify-between">
+                <h2 className="text-[15px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">Actividad reciente</h2>
+                <Link href="/pagos" className="text-[12px] font-bold text-[var(--accent-ink,var(--accent))] [touch-action:manipulation]">Ver todo ›</Link>
               </div>
-              <p className="shrink-0 text-[14px] font-semibold tabular-nums text-[var(--text-primary)]">{formatoCOP(p.monto)}</p>
+              {ultimosPagos.length === 0 ? (
+                <div className="flex flex-col items-center py-6 text-center">
+                  <IconoCirculo icon={FileCheck2} size={22} />
+                  <p className="mt-3 text-[14px] font-bold text-[var(--text-primary)]">Todavía no hay movimientos</p>
+                  <p className="mt-1 max-w-[30ch] text-[13px] text-[var(--text-secondary)]">
+                    Cada comprobante que subas queda fechado aquí, listo para mostrar cuando lo necesites.
+                  </p>
+                </div>
+              ) : (
+                <ul className="mt-2 flex flex-col">
+                  {ultimosPagos.map((p, i) => (
+                    <li key={p.id} className={`flex items-center gap-3 py-2.5 ${i > 0 ? 'border-t border-[color-mix(in_oklab,var(--text-tertiary)_16%,transparent)]' : ''}`}>
+                      <IconoCirculo icon={p.tipo === 'cuota' ? Check : ReceiptText} size={16} tono={p.tipo === 'cuota' ? 'exito' : 'info'} />
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-[13px] font-bold text-[var(--text-primary)]">{p.tipo === 'cuota' ? 'Cuota con Sello de Confianza' : 'Gasto extra registrado'}</p>
+                        <p className="truncate text-[11.5px] text-[var(--text-secondary)]">{p.concepto} · {formatoCOP(p.monto)}</p>
+                      </div>
+                      <time className="shrink-0 text-right text-[10.5px] leading-tight text-[var(--text-secondary)]">{formatoFechaCorta(p.fecha)}</time>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </Tarjeta>
-          ))
+
+            {/* BANNER del Sello — el cierre de la referencia, con datos reales. */}
+            <Link href="/expediente" className="block [touch-action:manipulation]">
+              <div className="mt-3 flex items-center gap-3 rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--accent)_18%,transparent)] px-3 py-3" style={{ background: 'linear-gradient(120deg, color-mix(in oklab, var(--accent) 12%, var(--surface)), var(--surface))' }}>
+                <IconoCirculo icon={ShieldCheck} size={18} />
+                <div className="min-w-0 flex-1">
+                  <p className="text-[13px] font-extrabold text-[var(--text-primary)]">Tu expediente, listo para mostrar</p>
+                  <p className="text-[11.5px] text-[var(--text-secondary)]">
+                    {pagos.length} {pagos.length === 1 ? 'comprobante' : 'comprobantes'} con Sello
+                    {gastosExtraMes.length > 0 ? ` · ${formatoCOP(totalExtraMes)} en gastos extra este mes` : ' · PDF disponible'}
+                  </p>
+                </div>
+                <ChevronRight size={16} className="shrink-0 text-[var(--text-tertiary)]" aria-hidden="true" />
+              </div>
+            </Link>
+          </>
         )}
-      </div>
 
-        </>
-      )}
-
-      {/* La acción primaria vivía al final del scroll: dejaba de verse apenas la lista crecía, y
-          rompía el patrón del propio kit — Pagos y Calendario usan <BotonFlotante> ("acción
-          primaria de la sección, SIEMPRE visible"). Ahora Inicio se comporta igual que sus
-          hermanas y el botón está siempre a la mano. */}
-      {/* Llevaba a /pagos, donde había que tocar OTRO botón idéntico para lo mismo: dos toques
-          para una sola intención. El parámetro abre el formulario directo. */}
-      {!falloCarga && !cargando && (
-        <BotonFlotante onClick={() => router.push('/pagos?registrar=1')}>
-          <Upload size={18} aria-hidden="true" />
-          Registrar
-        </BotonFlotante>
-      )}
-    </ContenedorApp>
+        {!falloCarga && !cargando && (
+          <BotonFlotante onClick={() => router.push('/pagos?registrar=1')}>
+            <Upload size={18} aria-hidden="true" />
+            Registrar
+          </BotonFlotante>
+        )}
+      </ContenedorApp>
+    </>
   );
 }

@@ -293,7 +293,7 @@ function CalendarioMes({
               onClick={() => onDiaClick(fecha)}
               className={`flex aspect-square flex-col items-center justify-center gap-1 rounded-[var(--radius-button)] text-[13px] font-medium [touch-action:manipulation] ${
                 esHoy
-                  ? 'bg-[var(--accent)] text-[var(--bg)]'
+                  ? 'bg-[var(--accent)] text-[var(--on-accent,var(--bg))]'
                   : 'text-[var(--text-primary)] hover:bg-[color-mix(in_oklab,var(--text-tertiary)_10%,transparent)]'
               }`}
             >
@@ -303,7 +303,7 @@ function CalendarioMes({
                   <span
                     key={idx}
                     className="size-1.5 rounded-full"
-                    style={{ backgroundColor: esHoy ? 'var(--bg)' : 'var(--accent)' }}
+                    style={{ backgroundColor: esHoy ? 'var(--on-accent, var(--bg))' : 'var(--accent)' }}
                   />
                 ))}
               </span>
@@ -449,7 +449,7 @@ function ModalEvento({
           type="button"
           disabled={!titulo.trim() || guardando}
           onClick={guardar}
-          className="mt-5 flex h-14 w-full items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-[16px] font-semibold text-[var(--bg)] transition-opacity disabled:opacity-40 [touch-action:manipulation]"
+          className="mt-5 flex h-14 w-full items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-[16px] font-semibold text-[var(--on-accent,var(--bg))] transition-opacity disabled:opacity-40 [touch-action:manipulation]"
         >
           {guardando ? 'Guardando…' : 'Guardar evento'}
         </button>

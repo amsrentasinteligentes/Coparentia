@@ -177,7 +177,7 @@ export function AcuerdoCuota() {
                 whileTap={{ scale: 0.98 }}
                 onClick={guardar}
                 disabled={guardando}
-                className="flex h-11 flex-1 items-center justify-center gap-2 rounded-[var(--radius-button)] bg-[var(--accent)] text-[13.5px] font-semibold text-[var(--bg)] transition-opacity disabled:opacity-60 [touch-action:manipulation]"
+                className="flex h-11 flex-1 items-center justify-center gap-2 rounded-[var(--radius-button)] bg-[var(--accent)] text-[13.5px] font-semibold text-[var(--on-accent,var(--bg))] transition-opacity disabled:opacity-60 [touch-action:manipulation]"
               >
                 {guardando ? 'Guardando…' : 'Guardar acuerdo'}
               </motion.button>
@@ -235,7 +235,7 @@ export function AcuerdoCuota() {
                   whileTap={{ scale: 0.98 }}
                   onClick={guardar}
                   disabled={guardando}
-                  className="flex h-11 flex-1 items-center justify-center gap-2 rounded-[var(--radius-button)] bg-[var(--accent)] text-[13.5px] font-semibold text-[var(--bg)] transition-opacity disabled:opacity-60 [touch-action:manipulation]"
+                  className="flex h-11 flex-1 items-center justify-center gap-2 rounded-[var(--radius-button)] bg-[var(--accent)] text-[13.5px] font-semibold text-[var(--on-accent,var(--bg))] transition-opacity disabled:opacity-60 [touch-action:manipulation]"
                 >
                   {guardando ? 'Guardando…' : 'Reemplazar acuerdo'}
                 </motion.button>

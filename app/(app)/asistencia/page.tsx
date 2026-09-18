@@ -67,7 +67,7 @@ export default function Asistencia() {
           disabled={!habilitado}
           onClick={enviarPorCorreo}
           whileTap={{ scale: 0.98 }}
-          className="mt-3 flex h-14 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] bg-[var(--accent)] text-[16px] font-semibold text-[var(--bg)] transition-opacity disabled:opacity-60 [touch-action:manipulation]"
+          className="mt-3 flex h-14 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] bg-[var(--accent)] text-[16px] font-semibold text-[var(--on-accent,var(--bg))] transition-opacity disabled:opacity-60 [touch-action:manipulation]"
         >
           <Send size={18} aria-hidden="true" />
           {estado === 'enviando' ? 'Enviando…' : 'Enviar consulta'}

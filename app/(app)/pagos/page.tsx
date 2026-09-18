@@ -493,7 +493,7 @@ function ModalRegistro({ onCerrar, onGuardado }: { onCerrar: () => void; onGuard
           type="button"
           disabled={procesando}
           onClick={guardar}
-          className="mt-5 flex h-14 w-full items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-[16px] font-semibold text-[var(--bg)] transition-opacity disabled:opacity-40 [touch-action:manipulation]"
+          className="mt-5 flex h-14 w-full items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-[16px] font-semibold text-[var(--on-accent,var(--bg))] transition-opacity disabled:opacity-40 [touch-action:manipulation]"
         >
           {procesando ? 'Aplicando el Sello de Confianza…' : 'Guardar registro'}
         </button>

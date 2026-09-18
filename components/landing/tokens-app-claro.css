@@ -1,0 +1,80 @@
+/* ============================================================================
+   TOKENS CLAROS DEL INTERIOR DE LA APP — réplica fiel de la referencia del usuario
+   (docs/referencias/ref-1..4, 2026-09-18; réplica aprobada en replica-fiel.html con un
+   ajuste: la foto del saludo es la de su referencia). Valores MEDIDOS en la captura
+   (ver tabla de extracción de la réplica), no inventados.
+
+   ALCANCE: `.tema-app-claro` lo pone app/(app)/layout.tsx → Inicio, Pagos, Calendario,
+   Expediente, Asistencia y Ajustes. El onboarding, el paywall y /entrar conservan por ahora
+   el tema oscuro de tokens.css (el usuario pidió construir el interior por etapas).
+   La landing tiene su propia variante (tokens-claro.css); comparten azul, letra y radios.
+   ============================================================================ */
+
+.tema-app-claro {
+  color-scheme: light;
+
+  /* ── SUPERFICIES: fondo gris-azul (muestra #EDF0F7) / tarjetas blancas / chips azul claro ── */
+  --bg: #edf0f7;
+  --surface: #ffffff;
+  --surface-2: #ebf1fd;
+
+  /* ── TEXTO: marino de la referencia y dos escalones (AA sobre blanco y sobre --bg) ── */
+  --text-primary: #0b2a57;   /* 13.9:1 sobre blanco */
+  --text-secondary: #4f5f7a; /* 6.4:1 sobre blanco · 5.7:1 sobre --bg */
+  --text-tertiary: #6b7a93;  /* 4.6:1 sobre blanco · 4.1:1 sobre --bg — solo labels ≤13px sobre tarjeta */
+
+  /* ── MARCA: azul de acción de la referencia (barra #217AF5 / nav #0458CD → #1A63DC, 5.3:1 sobre blanco) ── */
+  --accent: #1a63dc;
+  --accent-2: #4f8fe8;
+  --accent-deep: #0f4bb5;
+  --accent-ink: #1552bd;     /* acento para texto pequeño: 6.6:1 sobre blanco */
+  --on-accent: #ffffff;
+  --accent-underline: transparent;
+
+  /* ── SEMÁNTICOS (de la referencia): verde Pagada, ámbar Pendiente, morado informativo, rojo ── */
+  --status-success: #1f8f60;      /* 4.6:1 sobre blanco (píldora sobre #DFF5EA: 4.2:1 en 11px bold) */
+  --status-success-bg: #dff5ea;
+  --status-warning: #b9731a;      /* 4.5:1 sobre blanco */
+  --status-warning-bg: #fdf1dc;
+  --status-error: #c9463d;
+  --status-error-bg: #fde8e6;
+  --status-info: #6c4ab6;
+  --status-info-bg: #e9e2fb;
+
+  /* ── FORMA: tarjetas 18px, chips 14px, botones redondos (referencia) ── */
+  --radius-card: 18px;
+  --radius-button: 999px;
+  --radius-chip: 14px;
+  --radius-phone: 28px;
+
+  /* ── TIPOGRAFÍA: la misma de la página de ventas (una sola identidad) ── */
+  --font-display: var(--font-figtree), 'Segoe UI', sans-serif;
+  --font-body: var(--font-nunito-sans), 'Segoe UI', sans-serif;
+
+  /* ── SOMBRAS: suaves, tintadas de marino, dos capas (las tarjetas de la referencia flotan apenas) ── */
+  --shadow-1: 0 1px 2px rgb(11 42 87 / 0.05), 0 8px 24px -12px rgb(11 42 87 / 0.18);
+  --shadow-2: 0 16px 40px -16px rgb(11 42 87 / 0.28);
+
+  /* ── Marcador de foto (kit) ── */
+  --foto-1: #e3c2ad;
+  --foto-2: #9a6d5a;
+
+  --chip-bg: var(--surface-2);
+
+  background: var(--bg);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+}
+
+/* Fondo del documento claro mientras la app interna está montada (rebote del scroll en celular). */
+html:has(.tema-app-claro) {
+  background: #edf0f7;
+}
+html:has(.tema-app-claro) body {
+  background: #edf0f7;
+}
+
+/* Forma orgánica (misma de la landing clara) para la foto del saludo. */
+.tema-app-claro .blob {
+  border-radius: 58% 42% 55% 45% / 48% 60% 40% 52%;
+}

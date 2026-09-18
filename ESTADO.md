@@ -13,7 +13,16 @@ Las 4 imágenes están en docs/referencias/ (ref-1-inicio, ref-2-calendario, ref
 RÉPLICA FIEL de Inicio hecha: `replica-fiel.html` (raíz, kit abc-v2; copia servible public/dev/replica-fiel.html),
 captura docs/revisiones/replica-fiel-inicio.png. Tokens extraídos por muestreo: bg #EDF0F7, tarjetas #FFF,
 chips #EBF1FD, azul #1A63DC, marino #0B2A57, sec #5B6B85, ok #22A06B/#DFF5EA, morado #6C4AB6/#E9E2FB,
-radios 18/14, Figtree + Nunito Sans. Pendiente: aprobación del usuario (igualita / ajustar / otra).
+radios 18/14, Figtree + Nunito Sans. APROBADA por el usuario con un ajuste (usar la foto de SU referencia en vez de la de mamá e hijo →
+recortada de ref-1 a public/fotos/app-familia-abrazo.jpg; es de baja resolución porque viene de una
+captura — pedirle el original si lo tiene). ETAPA 1 CONSTRUIDA (2026-09-18): tokens-app-claro.css con
+`.tema-app-claro` en app/(app)/layout.tsx (+ Figtree/Nunito Sans por next/font); kit del interior en
+claro (BottomNav con ícono relleno + punto activo, Tarjeta sin borde, IconoCirculo con tonos, Píldora con
+fondos semánticos, CabeceraApp logo+campana+avatar, SaludoApp con foto, AccesosRapidos); Inicio
+reconstruido con la composición de la referencia (próximo evento, cuota con estado, meses con barra,
+4 accesos, actividad reciente, banner del Sello). Las demás pantallas heredan los tokens claros y siguen
+funcionales con su composición vieja hasta sus etapas (2: Pagos + Calendario · 3: Expediente, Asistencia,
+Ajustes). El onboarding/paywall/entrar siguen oscuros (fuera del alcance pedido).
 Antes: que el usuario guardara las 4 imágenes en docs/referencias/ para embeberlas en
 la réplica y poder medir la fidelidad. Landing clara: APROBADA por el usuario ("podemos dejarla así").
 

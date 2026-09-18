@@ -184,7 +184,7 @@ function EditorCuota() {
         onClick={guardar}
         disabled={guardando || !valido || !hayCambios}
         whileTap={{ scale: 0.98 }}
-        className="mt-4 flex h-12 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] bg-[var(--accent)] text-[15px] font-semibold text-[var(--bg)] transition-opacity disabled:opacity-40 [touch-action:manipulation]"
+        className="mt-4 flex h-12 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] bg-[var(--accent)] text-[15px] font-semibold text-[var(--on-accent,var(--bg))] transition-opacity disabled:opacity-40 [touch-action:manipulation]"
       >
         {guardando ? 'Guardando…' : guardado && !hayCambios ? 'Guardado' : 'Guardar cambios'}
       </motion.button>

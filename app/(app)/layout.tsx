@@ -1,10 +1,16 @@
 import type { ReactNode } from 'react';
+import { Figtree, Nunito_Sans } from 'next/font/google';
 import { redirect } from 'next/navigation';
 import { BottomNav } from '@/components/app/ui';
 import { AvisoSinConexion } from '@/components/app/AvisoSinConexion';
 import { RegistradorEventos } from '@/components/app/RegistradorEventos';
 import { crearClienteSupabaseServidor } from '@/lib/supabase/server';
 import { tieneAccesoCompleto, type Status } from '@/lib/membership-fsm';
+
+// Tipografía del interior claro (la misma de la página de ventas): next/font la sirve desde el
+// propio dominio con subset latino; las variables las consume components/landing/tokens-app-claro.css.
+const figtree = Figtree({ variable: '--font-figtree', subsets: ['latin'], weight: ['500', '600', '700', '800'] });
+const nunitoSans = Nunito_Sans({ variable: '--font-nunito-sans', subsets: ['latin'], weight: ['400', '600', '700', '800'] });
 
 // SHELL de la app interna: altura dinámica de viewport + nav al fondo (regla 43 §13).
 // Sesión 6: gate de sesión REAL con Supabase Auth — sin sesión válida, no se entra.
@@ -62,7 +68,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
     // compensarlo con CSS/JS no bastaron). Ahora el menú YA NO flota sobre nada: es un hermano fijo
     // dentro de una columna de exactamente `100dvh`, y solo el contenido de en medio hace scroll.
     // Ese tipo de bug deja de ser posible, en vez de seguir corrigiéndose después de que pasa.
-    <div className="flex h-dvh flex-col bg-[var(--bg)] text-[var(--text-primary)] [font-family:var(--font-body)]">
+    <div className={`tema-app-claro ${figtree.variable} ${nunitoSans.variable} flex h-dvh flex-col bg-[var(--bg)] text-[var(--text-primary)] [font-family:var(--font-body)]`}>
       <AvisoSinConexion />
       <RegistradorEventos />
       <main className="min-h-0 flex-1 overflow-y-auto">{children}</main>
