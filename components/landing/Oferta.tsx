@@ -9,7 +9,6 @@
 // El destino de los CTAs sigue al MODELO de 02C (checkout vs /onboarding).
 
 import { motion } from 'motion/react';
-import { Star } from 'lucide-react';
 import { CheckCustom, CountUp, CtaButton, Hairline, Kicker, SectionShell, useReveal, VIEWPORT_ONCE } from './ui';
 import { MarkedCopy, warnCopy, warnRango } from './MarkedCopy';
 
@@ -36,8 +35,9 @@ export interface OfertaProps {
   anual: PlanOferta & {
     /** "Se cobra $X/año" — OBLIGATORIO: el total nunca se esconde (52 §2). */
     totalAnual: string;
-    /** Ahorro en meses ("2 meses gratis") — el elemento más ruidoso tras el CTA. */
-    ahorro: string;
+    /** Ahorro en meses ("2 meses gratis"). Si ya va en el badge, NO se pasa: decirlo dos veces en
+        la misma card confundía "3 meses gratis" con los "7 días gratis" (revisor, clara r3). */
+    ahorro?: string;
     badge?: string;
   };
   mensual: PlanOferta;
@@ -53,15 +53,6 @@ export interface OfertaProps {
   };
   /** default 'oferta' — lo observa StickyCtaMobile. */
   id?: string;
-}
-
-function TrialBadge({ dias }: { dias: number }) {
-  return (
-    <span className="inline-flex w-fit items-center gap-1.5 rounded-full bg-[color-mix(in_oklab,var(--accent)_13%,transparent)] px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.06em] text-[var(--accent)]">
-      <Star size={12} strokeWidth={2.5} aria-hidden="true" />
-      {dias} días gratis
-    </span>
-  );
 }
 
 function Precio({ plan }: { plan: PlanOferta }) {
@@ -160,7 +151,6 @@ export function Oferta({
               <div className="rounded-[var(--radius-card)] bg-[color-mix(in_oklab,var(--accent)_5%,transparent)] p-6 md:p-7">
                 <div className="flex items-center justify-between gap-3">
                   <h3 className="text-[18px] font-semibold text-[var(--text-primary)]">{anual.nombre}</h3>
-                  {trialDias !== undefined && <TrialBadge dias={trialDias} />}
                 </div>
                 <div className="mt-4">
                   <Precio plan={anual} />
@@ -172,13 +162,16 @@ export function Oferta({
                   <p className="mt-0.5 text-[12px] text-[var(--text-tertiary)]">
                     Tras los 7 días gratis{refCopAnual ? ` · ${refCopAnual}` : ''}
                   </p>
-                  <p className="mt-2 text-[15px] font-semibold text-[var(--accent)]">{anual.ahorro}</p>
+                  {anual.ahorro && <p className="mt-2 text-[15px] font-semibold text-[var(--accent)]">{anual.ahorro}</p>}
                 </div>
                 <Features items={anual.features} origen="Oferta → anual" />
                 <div className="mt-6">
                   <CtaButton href={anual.ctaHref} fullMobile>
                     {anual.ctaLabel}
                   </CtaButton>
+                  {trialDias !== undefined && (
+                    <p className="mt-2 text-center text-[13px] text-[var(--text-secondary)]">Incluye {trialDias} días de prueba, sin cobro</p>
+                  )}
                 </div>
               </div>
             </Hairline>
@@ -191,7 +184,6 @@ export function Oferta({
           >
             <div className="flex items-center justify-between gap-3">
               <h3 className="text-[18px] font-semibold text-[var(--text-primary)]">{mensual.nombre}</h3>
-              {trialDias !== undefined && <TrialBadge dias={trialDias} />}
             </div>
             <div className="mt-4">
               <Precio plan={mensual} />
@@ -201,6 +193,9 @@ export function Oferta({
               <CtaButton href={mensual.ctaHref} variant="outline" fullMobile>
                 {mensual.ctaLabel}
               </CtaButton>
+              {trialDias !== undefined && (
+                <p className="mt-2 text-center text-[13px] text-[var(--text-secondary)]">Incluye {trialDias} días de prueba, sin cobro</p>
+              )}
             </div>
           </motion.div>
         </div>

@@ -2284,10 +2284,16 @@ justificación: **veredicto:landing** sigue LISTA (37/40·17/20·18/20), el gate
 por comparar mtime de CUALQUIER `.tsx` del proyecto; **veredicto:onboarding** y **veredicto:paywall**
 siguen NO LISTA por el techo estructural ya documentado, sin tocar en esta sesión.
 
-### Estado de los 3 gates de veredicto — LANDING CLARA, revisor r2 en curso (2026-09-17 noche, commit ecb6e6b)
-**veredicto:landing**: variante clara r1 = 33/40 · 14/20 · 17/20, FIDELIDAD FIEL (0/6). Sus 5 defectos
-quedaron corregidos en ecb6e6b (escena del hero, dispositivo en más sectores, cierre AA, ficha con hex
-reales, botón del kit en abogados) y la r2 está corriendo. Veredicto en disco = r1 (NO LISTA) hasta que llegue.
+### Estado de los 3 gates de veredicto — LANDING CLARA r3 = 33·16·17, a la espera de las fotos (2026-09-18)
+**veredicto:landing**: clara r1 33·14·17 → r2 33·15·17 → r3 33/40 · 16/20 · 17/20, FIEL (0/6). CRAFT y COPY
+ya PASAN; usabilidad lleva tres rondas clavada en 33 con el MISMO desglose (h1:3 h2:3 h3:4 h4:3 h5:3 h6:4
+h7:3 h8:3 h9:3 h10:4) — techo del mismo tipo que el de la variante oscura. Los 5 defectos de la r3 se
+corrigieron igual (un solo "gratis" por card + trial como texto bajo el CTA, burbuja del hero desde --accent
+(4.7:1), H1 34px en móvil, un solo verbo en los CTAs de planes, --radius-phone, ficha con #5B6D88).
+Se POSPONE la r4 hasta colocar las fotos reales (cambian el hero y Solución): una sola ronda final con
+la página completa, en vez de dos. Veredicto en disco = r3 (NO LISTA). Fotos: el usuario eligió opción 1 (banco con licencia); propuesta
+de 6 fotos de Unsplash en public/dev/fotos-propuesta.html (captura docs/revisiones/fotos-propuesta.png),
+pendiente su elección de 2.
 **veredicto:onboarding** y **veredicto:paywall**: sin cambios (techo documentado abajo; el usuario pidió
 no tocarlos). Pendiente del usuario: decidir la fuente de las fotos (banco con licencia vs. propias).
 

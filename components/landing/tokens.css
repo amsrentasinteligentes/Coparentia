@@ -43,6 +43,7 @@
   /* ── FORMA ── */
   --radius-card: 14px;
   --radius-button: 10px;
+  --radius-phone: 30px;       /* marco de teléfono (captura de la app): un solo radio para todos */
 
   /* ── TIPOGRAFÍA (cargada por next/font en app/layout.tsx — nunca link manual a Google Fonts) ── */
   --font-display: var(--font-spectral), Georgia, serif;

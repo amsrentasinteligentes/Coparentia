@@ -471,7 +471,7 @@ export function FotoLugar({
       }}
     >
       <Camera size={28} strokeWidth={1.6} aria-hidden="true" className="absolute left-1/2 top-[44%] -translate-x-1/2 -translate-y-1/2 text-white/70" />
-      <span className="relative mt-[12%] max-w-[70%] rounded-[12px] bg-black/30 px-2.5 py-1 text-center text-[11px] font-semibold leading-snug text-white/95 backdrop-blur-[2px]">
+      <span className="relative mt-[12%] max-w-[70%] rounded-[var(--radius-button)] bg-black/30 px-2.5 py-1 text-center text-[11px] font-semibold leading-snug text-white/95 backdrop-blur-[2px]">
         {descripcion}
       </span>
     </div>

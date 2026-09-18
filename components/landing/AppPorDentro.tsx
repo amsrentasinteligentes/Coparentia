@@ -145,7 +145,7 @@ export function AppPorDentro({
                   ref={(el) => {
                     frameRefs.current[i] = el;
                   }}
-                  className="relative aspect-[9/19.5] w-[250px] overflow-hidden rounded-[30px] border-[5px] shadow-[var(--shadow-2)]"
+                  className="relative aspect-[9/19.5] w-[250px] overflow-hidden rounded-[var(--radius-phone)] border-[5px] shadow-[var(--shadow-2)]"
                   style={{ borderColor: 'color-mix(in oklab, var(--text-primary) 90%, var(--accent))' }}
                 >
                   {f.src ? (

@@ -38,6 +38,7 @@
   /* ── FORMA: todo curvo (dispositivo de la dirección C) ── */
   --radius-card: 22px;
   --radius-button: 999px;
+  --radius-phone: 28px;
 
   /* ── TIPOGRAFÍA: Figtree (display, redondeada) + Nunito Sans (cuerpo) — cargadas con next/font
         en app/page.tsx; las variables --font-figtree / --font-nunito-sans las pone ese archivo. ── */

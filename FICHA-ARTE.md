@@ -92,7 +92,7 @@
   Captura verificada: docs/revisiones/direcciones-abc-landing.png (fuentes clase por clase OK).
 - Tokens de la variante C (landing) — FUENTE DE VERDAD: components/landing/tokens-claro.css:
   --bg #F3F7FC · --surface #FFFFFF · --surface-2 #E7EEF8 · --text-primary #14233A ·
-  --text-secondary #4B5C78 (6.9:1 sobre blanco) · --text-tertiary #667891 (4.6:1) ·
+  --text-secondary #4B5C78 (6.9:1 sobre blanco) · --text-tertiary #5B6D88 (4.9:1 sobre --bg, 4.5:1 sobre --surface-2) ·
   --accent #2F6FDC (4.7:1 sobre blanco, 4.5:1 sobre --bg) · --accent-2 #5B93E8 (solo degradés/halos:
   mide 2.9:1 sobre blanco, NO sirve para texto ni botones) · --accent-deep #2757A8 ·
   radios 22px tarjetas / 999px botones y píldoras · display Figtree 700-800 · body Nunito Sans 400-700.

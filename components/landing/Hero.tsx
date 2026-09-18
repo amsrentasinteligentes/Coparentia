@@ -134,7 +134,7 @@ export function Hero({
         >
           <div className="flex flex-col items-center lg:items-start">
             {/* H1: bold completo por defecto; el acento lo pone el [acento] del copy */}
-            <h1 className="text-balance text-[38px] font-extrabold leading-[1.06] tracking-[-0.02em] text-[var(--text-primary)] [font-family:var(--font-display)] md:text-[56px] lg:text-[52px] xl:text-[58px]">
+            <h1 className="text-balance text-[34px] font-extrabold leading-[1.08] tracking-[-0.02em] text-[var(--text-primary)] [font-family:var(--font-display)] md:text-[56px] lg:text-[52px] xl:text-[58px]">
               <MarkedCopy text={h1Marked} />
             </h1>
 
@@ -167,13 +167,13 @@ export function Hero({
               <a
                 href={ctaHref}
                 aria-label={ctaLabel}
-                className="absolute bottom-0 left-0 block w-[38%] max-w-[180px] overflow-hidden rounded-[26px] border-[5px] border-[color-mix(in_oklab,var(--text-primary)_92%,var(--accent))] bg-[var(--text-primary)] shadow-[var(--shadow-2)] transition-transform duration-150 active:scale-[0.99] lg:bottom-4 lg:left-[4%]"
+                className="absolute bottom-0 left-0 block w-[38%] max-w-[180px] overflow-hidden rounded-[var(--radius-phone)] border-[5px] border-[color-mix(in_oklab,var(--text-primary)_92%,var(--accent))] bg-[var(--text-primary)] shadow-[var(--shadow-2)] transition-transform duration-150 active:scale-[0.99] lg:bottom-4 lg:left-[4%]"
               >
                 {visual}
               </a>
             ) : (
               /* Placeholder HONESTO (55 §1.3): dashed + sugerencia. */
-              <div className="absolute bottom-0 left-[14%] flex aspect-[9/19] w-[46%] max-w-[210px] flex-col items-center justify-center gap-3 rounded-[26px] border-2 border-dashed border-[color-mix(in_oklab,var(--text-tertiary)_45%,transparent)] bg-[var(--surface)] px-4">
+              <div className="absolute bottom-0 left-[14%] flex aspect-[9/19] w-[46%] max-w-[210px] flex-col items-center justify-center gap-3 rounded-[var(--radius-phone)] border-2 border-dashed border-[color-mix(in_oklab,var(--text-tertiary)_45%,transparent)] bg-[var(--surface)] px-4">
                 <Camera size={20} color="var(--text-secondary)" aria-hidden="true" />
                 <p className="text-center text-[13px] font-medium leading-snug text-[var(--text-secondary)]">
                   Sugerencia: {visualPlaceholderSugerencia}
@@ -182,10 +182,12 @@ export function Hero({
             )}
             {burbuja && (
               <div
-                className="absolute bottom-2 right-0 w-[48%] max-w-[220px] rounded-[26px] rounded-bl-[8px] px-5 py-4 text-left text-[var(--on-accent)] shadow-[0_18px_40px_-14px_color-mix(in_oklab,var(--accent-deep,var(--accent))_60%,transparent)] lg:bottom-6 lg:right-2"
-                style={{ background: 'linear-gradient(150deg, var(--accent-2), var(--accent-deep, var(--accent)))' }}
+                className="absolute bottom-2 right-0 w-[48%] max-w-[220px] rounded-[var(--radius-card)] rounded-bl-[8px] px-5 py-4 text-left text-[var(--on-accent)] shadow-[0_18px_40px_-14px_color-mix(in_oklab,var(--accent-deep,var(--accent))_60%,transparent)] lg:bottom-6 lg:right-2"
+                // Desde --accent (4.7:1 con blanco), no desde la nota clara: con #5b93e8 el 12px al 85%
+                // medía 2.8:1 (revisor, clara r3) — mismo fallo ya corregido en el bloque de cierre.
+                style={{ background: 'linear-gradient(150deg, var(--accent), var(--accent-deep, var(--accent)))' }}
               >
-                <p className="text-[12px] font-semibold opacity-85">{burbuja.titulo}</p>
+                <p className="text-[12px] font-semibold">{burbuja.titulo}</p>
                 <p className="mt-1 text-[22px] font-extrabold leading-[1.1] [font-family:var(--font-display)] md:text-[26px]">
                   {burbuja.dato}
                 </p>

@@ -158,8 +158,7 @@ export default function Home() {
           badge: '3 MESES GRATIS',
           precioMes: 'US$7.42',
           totalAnual: 'Se cobra US$89 al año',
-          ahorro: '3 meses gratis',
-          ctaLabel: 'Empezar mis 7 días gratis',
+          ctaLabel: 'Crear mi expediente gratis',
           ctaHref: '/onboarding?plan=anual',
           features: [
             'Sello de Confianza en cada comprobante',
@@ -172,15 +171,15 @@ export default function Home() {
         mensual={{
           nombre: 'Mensual',
           precioMes: 'US$9.99',
-          ctaLabel: 'Elegir mensual',
+          ctaLabel: 'Crear mi expediente · mensual',
           ctaHref: '/onboarding?plan=mensual',
           // Antes repetía 4 de los 5 bullets del plan anual y el diferenciador real se diluía.
           // Ahora dice solo en qué se diferencia: mismas funciones, sin compromiso de 12 meses.
           features: [
             'Todas las funciones del plan Anual',
-            'Sello de Confianza en cada comprobante',
             'Cancelas cuando quieras, sin permanencia',
             'Garantía del Primer Expediente (15 días)',
+            'Sin compromiso de 12 meses',
           ],
         }}
       />
