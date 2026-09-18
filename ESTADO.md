@@ -18,10 +18,10 @@ BUG REAL reportado por el usuario (2026-09-18): los modales "Nuevo evento" y "Nu
 tema OSCURO — <Portal> los monta en <body>, fuera del envoltorio .tema-app-claro. Fix en Portal.tsx: el
 portal envuelve a sus hijos en un div con la clase del tema + las clases de fuente de next/font (copiadas
 del root) con display:contents. Verificado en Pagos y Calendario; también cubre visor de imagen, Sello y
-AcuerdoCuota. ⚠️ DESPLIEGUE TRABADO: los commits 24653a4 y 1a0e6bd (empty, para forzar) NO generaron
-deployment en Vercel (la API de GitHub no muestra ninguno después de 06fb81d, 16:49Z) — el usuario
-debe revisar Vercel → Deployments (Error/Queued) o hacer Redeploy. Hasta entonces producción sigue
-con los modales oscuros. Requiere SQL en Supabase:
+AcuerdoCuota. Falsa alarma de despliegue: la API pública de GitHub dejó de listar deployments, pero el panel de Vercel
+(captura del usuario) muestra 24653a4 Ready en Production. Lo que el usuario veía era la versión
+anterior cacheada en el navegador del celular. Lección: para verificar despliegues, mirar Vercel, no la
+API de deployments de GitHub. Requiere SQL en Supabase:
 columnas en profiles (rol_familiar, avatar_path, otro_progenitor_nombre — con grant update solo a esas
 columnas), tabla hijos (RLS por user_id) y bucket "perfiles" con políticas por carpeta del usuario.
 EXCEPCIÓN a la orden "no tocar el interior": este pedido viene del propio usuario (Perfil + saludo con
