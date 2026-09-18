@@ -9,7 +9,10 @@ firmadas 1h, edadTexto, nombreCorto), app/(app)/perfil/page.tsx (tarjeta editabl
 parte + foto, Mi familia con alta/edición/foto/borrado de hijos, lista Ajustes y cuenta, miembro/plan,
 cerrar sesión), nav de 6, CabeceraApp con foto/iniciales del nombre (respaldo por correo), SaludoApp
 "Hola, {nombre}". Ajustes pasa a "Cuota y cuenta" (editor de cuota, suscripción, eliminar cuenta).
-Pendiente: que el usuario ejecute el SQL en Supabase → verificar /perfil con datos reales → publicar.
+SQL ejecutado por el usuario en Supabase (Success) el 2026-09-18. Verificado en local con la cuenta del
+dueño: guardar nombre/rol/otra parte ✓, alta de hijo con edad calculada ✓, borrado ✓, saludo "Hola, {nombre}"
+e iniciales del nombre en la cabecera ✓ (datos de prueba retirados; queda rol=papá). Captura
+docs/revisiones/perfil-375.png (sin revisor: pantalla secundaria). PUBLICADO.
 Siguiente paso natural (no pedido aún): usar hijos/otra parte en etiquetas del calendario y portada del PDF. Requiere SQL en Supabase:
 columnas en profiles (rol_familiar, avatar_path, otro_progenitor_nombre — con grant update solo a esas
 columnas), tabla hijos (RLS por user_id) y bucket "perfiles" con políticas por carpeta del usuario.
