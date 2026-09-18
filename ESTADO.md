@@ -25,7 +25,9 @@ funcionales con su composición vieja hasta sus etapas (2: Pagos + Calendario ·
 Ajustes). El onboarding/paywall/entrar siguen oscuros (fuera del alcance pedido). ORDEN DEL USUARIO (2026-09-18):
 "aún no debemos hacer cambios al interior de la app" → el interior queda CONGELADO tal como está
 (6 pantallas claras publicadas); no se tocan ni el onboarding/paywall ni ninguna pantalla interna hasta
-nueva orden.
+nueva orden. Prueba de cancelación/reembolso con la cuenta de Ivonne: POSPUESTA por decisión del
+usuario — primero quiere que Ivonne use la app como cliente real (validación de uso) y solo después
+cancelar; mientras tanto su suscripción debe seguir activa.
 Antes: que el usuario guardara las 4 imágenes en docs/referencias/ para embeberlas en
 la réplica y poder medir la fidelidad. Landing clara: APROBADA por el usuario ("podemos dejarla así").
 
