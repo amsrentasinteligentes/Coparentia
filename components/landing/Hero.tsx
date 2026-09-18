@@ -28,6 +28,8 @@ export interface HeroProps {
   appName: string;
   /** Logo real del proyecto; sin él, marca mínima con el acento. */
   logo?: ReactNode;
+  /** true cuando el logo ya incluye el nombre (horizontal): no se repite el texto al lado. */
+  marcaSoloLogo?: boolean;
   loginHref?: string;
   loginLabel?: string;
   /** Enlaces de sección (solo computador): "Cómo funciona", "Planes"… máx 4. */
@@ -59,6 +61,7 @@ export interface HeroProps {
 export function Hero({
   appName,
   logo,
+  marcaSoloLogo = false,
   loginHref,
   loginLabel = 'Entrar',
   navLinks = [],
@@ -97,7 +100,7 @@ export function Hero({
         <header className="flex h-16 items-center justify-between gap-4">
           <a href="/" className="flex items-center gap-2 text-[16px] font-semibold text-[var(--text-primary)] lg:text-[18px]">
             {logo ?? <span aria-hidden="true" className="size-6 rounded-[8px] bg-[var(--accent)]" />}
-            {appName}
+            {!marcaSoloLogo && appName}
           </a>
           <nav aria-label="Secciones" className="flex items-center gap-1 md:gap-2">
             {navLinks.slice(0, 4).map((l) => (

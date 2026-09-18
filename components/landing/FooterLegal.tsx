@@ -18,6 +18,8 @@ export interface EnlaceLegal {
 export interface FooterLegalProps {
   appName: string;
   logo?: ReactNode;
+  /** true cuando el logo ya incluye el nombre (horizontal). */
+  marcaSoloLogo?: boolean;
   /** Privacidad · Términos · Reembolsos · Aviso de IA (si aplica) — con 47. */
   enlaces: EnlaceLegal[];
   /** Email REAL que alguien lee. */
@@ -25,7 +27,7 @@ export interface FooterLegalProps {
   anio?: number;
 }
 
-export function FooterLegal({ appName, logo, enlaces, soporteEmail, anio }: FooterLegalProps) {
+export function FooterLegal({ appName, logo, marcaSoloLogo = false, enlaces, soporteEmail, anio }: FooterLegalProps) {
   const year = anio ?? new Date().getFullYear();
   return (
     <footer className="py-8 md:py-12">
@@ -34,7 +36,7 @@ export function FooterLegal({ appName, logo, enlaces, soporteEmail, anio }: Foot
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <p className="flex items-center gap-2 text-[14px] font-semibold text-[var(--text-secondary)] lg:text-[16px]">
             {logo ?? <span aria-hidden="true" className="size-5 rounded-[6px] bg-[var(--text-tertiary)]" />}
-            {appName}
+            {!marcaSoloLogo && appName}
           </p>
           <nav aria-label="Enlaces legales">
             <ul className="flex flex-wrap items-center gap-x-1 gap-y-0">

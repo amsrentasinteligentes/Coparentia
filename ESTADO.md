@@ -2347,8 +2347,9 @@ avatar de la cabecera); Asistencia (cabecera + título de sección, textarea sob
 WhatsApp en acento). Medidas a 375 sin revisor (pantallas secundarias; capturas ajustes-375.png,
 expediente-375.png, asistencia-375.png). INTERIOR CLARO COMPLETO en las 6 pantallas. LOGO NUEVO (2026-09-18): el usuario entregó un isotipo nuevo (círculo plateado con la familia + infinito,
 fondo transparente) → instalado en public/logo-isotipo.png, app/icon.png y app/favicon.ico (originales y
-el anterior en docs/marca/). El horizontal ("Coparentia" cromado) venía con el damero de transparencia
-PINTADO en la imagen (RGB sin alfa) → no sirve para web; se pidió el archivo con transparencia real. En la
+el anterior en docs/marca/). El usuario entregó luego el horizontal con transparencia REAL → public/logo-horizontal.webp (800px, 57KB);
+va en la cabecera y el pie de la landing (props `marcaSoloLogo` en Hero/FooterLegal para no repetir el
+nombre en texto). En la app interna se mantiene isotipo + nombre tipografiado (más nítido a 32px). En la
 UI el wordmark sigue tipografiado (Figtree) junto al isotipo. Opinión dada al usuario: el símbolo es
 bueno; el acabado cromado 3D choca con la interfaz plana y clara y se ensucia a 32px — recomendada una
 versión plana en el azul de marca para UI/favicon. Pendientes:

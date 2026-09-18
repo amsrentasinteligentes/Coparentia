@@ -56,7 +56,8 @@ export default function Home() {
       {/* 1. HERO */}
       <Hero
         appName="Coparentia"
-        logo={<img src="/logo-isotipo.png" alt="" aria-hidden="true" className="size-6 object-contain" />}
+        logo={<img src="/logo-horizontal.webp" alt="Coparentia" className="h-10 w-auto object-contain lg:h-12" />}
+        marcaSoloLogo
         loginHref="/entrar"
         navLinks={[
           { label: 'Cómo funciona', href: '#como-funciona' },
@@ -247,7 +248,8 @@ export default function Home() {
       {/* 10. FOOTER LEGAL */}
       <FooterLegal
         appName="Coparentia"
-        logo={<img src="/logo-isotipo.png" alt="" aria-hidden="true" className="size-5 object-contain" />}
+        logo={<img src="/logo-horizontal.webp" alt="Coparentia" className="h-7 w-auto object-contain" />}
+        marcaSoloLogo
         soporteEmail="soporte@coparentia.co"
         enlaces={[
           { label: 'Privacidad', href: '/privacidad' },
