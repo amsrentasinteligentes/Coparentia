@@ -252,7 +252,7 @@ export function SectionShell({
       className={`${pt} ${pb} ${className}`}
       style={{ background: mesh, borderTop }}
     >
-      <div className="mx-auto w-full max-w-[1140px] lg:max-w-[1280px] 2lg:max-w-[1400px] px-5">{children}</div>
+      <div className="mx-auto w-full max-w-[1140px] lg:max-w-[1280px] 2xl:max-w-[1400px] px-5">{children}</div>
     </section>
   );
 }

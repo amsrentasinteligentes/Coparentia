@@ -8,8 +8,8 @@
 
 import { useState } from 'react';
 import { motion } from 'motion/react';
-import { MessageCircle, Send } from 'lucide-react';
-import { ContenedorApp, PageHeader, Tarjeta, IconoCirculo } from '@/components/app/ui';
+import { MessageCircle, Send, Scale } from 'lucide-react';
+import { ContenedorApp, Tarjeta, IconoCirculo, CabeceraApp, TituloSeccion } from '@/components/app/ui';
 import { AbogadoDestacado } from '@/components/app/AbogadoDestacado';
 import { enviarConsulta } from './acciones';
 
@@ -42,13 +42,15 @@ export default function Asistencia() {
   }`;
 
   return (
-    <ContenedorApp>
-      <PageHeader titulo="Asistencia Jurídica" subtitulo="Escríbenos tu duda, te respondemos por correo" />
+    <>
+      <CabeceraApp />
+      <ContenedorApp sinTope>
+      <TituloSeccion titulo="Asistencia jurídica" subtitulo="Escríbenos tu duda: te respondemos por correo o WhatsApp." icon={Scale} />
 
-      <Tarjeta destacada>
+      <Tarjeta className="mt-4">
         <div className="flex items-center gap-3">
           <IconoCirculo icon={MessageCircle} size={18} />
-          <p className="text-[14px] font-medium text-[var(--text-primary)]">¿Qué necesitas resolver?</p>
+          <p className="text-[15px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">¿Qué necesitas resolver?</p>
         </div>
 
         <textarea
@@ -59,7 +61,7 @@ export default function Asistencia() {
           }}
           placeholder="Ej.: mi expareja lleva 2 meses sin pagar la cuota, ¿qué puedo hacer?"
           rows={3}
-          className="mt-3 w-full resize-none rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--surface)] p-4 text-[15px] leading-relaxed text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)]"
+          className="mt-3 w-full resize-none rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--surface-2)] p-4 text-[15px] leading-relaxed text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)]"
         />
 
         <motion.button
@@ -77,7 +79,7 @@ export default function Asistencia() {
           href={enlaceWhatsapp}
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-2 flex h-12 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] text-[14px] font-medium text-[var(--text-secondary)] [touch-action:manipulation]"
+          className="mt-2 flex h-12 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--accent)_35%,transparent)] text-[14px] font-bold text-[var(--accent-ink,var(--accent))] [touch-action:manipulation]"
         >
           O escríbenos por WhatsApp
         </a>
@@ -95,6 +97,7 @@ export default function Asistencia() {
       {/* Espacio publicitario para abogados de familia — mudado aquí desde Expediente: este es el
           momento donde el usuario ya está pensando en hablar con un abogado de verdad. */}
       <AbogadoDestacado />
-    </ContenedorApp>
+      </ContenedorApp>
+    </>
   );
 }

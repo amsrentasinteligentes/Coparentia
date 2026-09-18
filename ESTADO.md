@@ -2339,7 +2339,16 @@ del mes, segmentos Cuotas/Gastos/Historial, lista con chip/monto/píldora dentro
 de cierre) y Calendario (ref-2: mes con flechas dentro de la tarjeta, puntos y leyenda por categoría con
 tokens --cat-*, agenda de hoy/próximos, cifras por tipo). Ambas medidas a 375 sin revisor (pantallas
 secundarias; capturas docs/revisiones/pagos-375.png y calendario-375.png). Nota: ref-3 es Perfil y
-ref-4 es Pagos (archivos renombrados). Falta ETAPA 3: Expediente, Asistencia, Ajustes (ref-3). **veredicto:landing** (aprobada por el usuario,
+ref-4 es Pagos (archivos renombrados). ETAPA 3 CONSTRUIDA (2026-09-18): Ajustes → "Perfil" (ref-3: avatar + correo + Sello activo, 2 datos,
+editor de cuota, lista "Ajustes y cuenta" con chips y flechas — Suscripción/Hotmart, Asistencia,
+Soporte, Privacidad, Términos —, tarjetitas Miembro desde / Plan, Cerrar sesión en rojo suave, eliminar
+cuenta al final); Expediente (tarjeta del PDF en degradé de marca, sin engranaje: los ajustes van por el
+avatar de la cabecera); Asistencia (cabecera + título de sección, textarea sobre superficie hundida,
+WhatsApp en acento). Medidas a 375 sin revisor (pantallas secundarias; capturas ajustes-375.png,
+expediente-375.png, asistencia-375.png). INTERIOR CLARO COMPLETO en las 6 pantallas. Pendientes:
+ronda final del revisor en Inicio (r2) si el usuario la quiere; logo azul (decisión de marca);
+onboarding/paywall/entrar siguen oscuros (fuera del alcance pedido). Limpieza: la landing tenía clases
+`2lg:` inválidas y duplicados lg:text por el escalado automático — corregidas. **veredicto:landing** (aprobada por el usuario,
 techo documentado abajo), **veredicto:onboarding** y **veredicto:paywall** (techo documentado; siguen
 oscuros, fuera del alcance pedido) sin cambios.
 

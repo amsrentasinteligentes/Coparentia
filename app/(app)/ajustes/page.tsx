@@ -8,10 +8,10 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'motion/react';
-import { ArrowLeft, LogOut, ExternalLink, Trash2, AlertTriangle } from 'lucide-react';
+import { LogOut, ExternalLink, Trash2, AlertTriangle, UserRound, CreditCard, LifeBuoy, ShieldCheck, FileText, Scale, ChevronRight, CalendarCheck, Crown, type LucideIcon } from 'lucide-react';
 import Link from 'next/link';
-import { ContenedorApp, Tarjeta, IconoCirculo, TarjetaSkeleton, ErrorDeCarga } from '@/components/app/ui';
-import { type Titulo, obtenerTitulo, guardarTitulo } from '@/lib/datos';
+import { ContenedorApp, Tarjeta, IconoCirculo, TarjetaSkeleton, ErrorDeCarga, CabeceraApp, TituloSeccion } from '@/components/app/ui';
+import { type Titulo, obtenerTitulo, guardarTitulo, obtenerPagos, formatoCOP } from '@/lib/datos';
 import { hoyEnColombia } from '@/lib/fecha';
 import { crearClienteSupabase } from '@/lib/supabase/client';
 import { eliminarMiCuenta } from './acciones';
@@ -197,9 +197,49 @@ function EditorCuota() {
   );
 }
 
+/* ── <FilaAjuste> — fila de la lista "Ajustes y cuenta" de la referencia: chip + título +
+   subtítulo + flecha. Enlace interno, externo o acción. ── */
+function FilaAjuste({ icon, tono = 'accent', titulo, detalle, href, externo = false, onClick, ultima = false }: {
+  icon: LucideIcon; tono?: 'accent' | 'exito' | 'info' | 'pendiente'; titulo: string; detalle: string;
+  href?: string; externo?: boolean; onClick?: () => void; ultima?: boolean;
+}) {
+  const contenido = (
+    <>
+      <IconoCirculo icon={icon} size={18} tono={tono} />
+      <span className="min-w-0 flex-1 text-left">
+        <span className="block text-[14px] font-bold text-[var(--text-primary)]">{titulo}</span>
+        <span className="block truncate text-[12px] text-[var(--text-secondary)]">{detalle}</span>
+      </span>
+      {externo ? <ExternalLink size={16} className="shrink-0 text-[var(--text-tertiary)]" aria-hidden="true" /> : <ChevronRight size={18} className="shrink-0 text-[var(--text-tertiary)]" aria-hidden="true" />}
+    </>
+  );
+  const clase = `flex w-full items-center gap-3 py-3 transition-transform duration-100 active:scale-[0.99] [touch-action:manipulation] ${ultima ? '' : 'border-b border-[color-mix(in_oklab,var(--text-tertiary)_16%,transparent)]'}`;
+  if (onClick) return <button type="button" onClick={onClick} className={clase}>{contenido}</button>;
+  if (externo) return <a href={href} target="_blank" rel="noopener noreferrer" className={clase}>{contenido}</a>;
+  return <Link href={href ?? '#'} className={clase}>{contenido}</Link>;
+}
+
 export default function Ajustes() {
   const router = useRouter();
   const [saliendo, setSaliendo] = useState(false);
+  // Datos del perfil (referencia Ref 3): correo, iniciales, desde cuándo, cuota y comprobantes.
+  const [correo, setCorreo] = useState('');
+  const [desde, setDesde] = useState('');
+  const [nComprobantes, setNComprobantes] = useState<number | null>(null);
+  const [cuota, setCuota] = useState<Titulo | null>(null);
+  useEffect(() => {
+    let vigente = true;
+    crearClienteSupabase().auth.getUser().then(({ data }) => {
+      if (!vigente || !data.user) return;
+      setCorreo(data.user.email ?? '');
+      if (data.user.created_at) {
+        setDesde(new Intl.DateTimeFormat('es-CO', { month: 'long', year: 'numeric', timeZone: 'America/Bogota' }).format(new Date(data.user.created_at)));
+      }
+    }).catch(() => {});
+    Promise.all([obtenerPagos(), obtenerTitulo()]).then(([p, t]) => { if (vigente) { setNComprobantes(p.length); setCuota(t); } }).catch(() => {});
+    return () => { vigente = false; };
+  }, []);
+  const iniciales = correo ? correo.slice(0, 2).toUpperCase() : '·';
   const [confirmandoBorrado, setConfirmandoBorrado] = useState(false);
   const [borrando, setBorrando] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -226,58 +266,79 @@ export default function Ajustes() {
   };
 
   return (
-    <ContenedorApp>
-      <div className="flex items-center gap-3 pb-6 pt-2">
-        <Link href="/expediente" aria-label="Volver al expediente" className="flex size-9 items-center justify-center [touch-action:manipulation]">
-          <ArrowLeft size={20} color="var(--text-primary)" aria-hidden="true" />
-        </Link>
-        <h1 className="text-[22px] font-bold text-[var(--text-primary)] [font-family:var(--font-display)]">Ajustes</h1>
-      </div>
+    <>
+      <CabeceraApp />
+      <ContenedorApp sinTope>
+        <TituloSeccion titulo="Perfil" subtitulo="Tu cuenta, tu cuota y tu suscripción." icon={UserRound} />
 
-      {/* EDICIÓN DE LA CUOTA. Primeros pasos promete "puedes ajustarlo cuando quieras", pero hasta
-          ahora `guardarTitulo` solo se llamaba una vez, durante el alta: la cuota quedaba
-          congelada y la promesa era falsa en la interfaz. Va de PRIMERA en Ajustes porque es el
-          dato del producto (la suscripción y la cuenta son administración). */}
-      <h2 className="text-[13px] font-semibold uppercase tracking-[0.06em] text-[var(--text-tertiary)]">Tu cuota alimentaria</h2>
-      <EditorCuota />
+        {/* TARJETA DE PERFIL (referencia Ref 3): avatar + correo + rol, y dos datos a la derecha */}
+        <Tarjeta className="mt-4">
+          <div className="flex items-center gap-3">
+            <span className="flex size-14 shrink-0 items-center justify-center rounded-full bg-[var(--accent)] text-[18px] font-extrabold text-[var(--on-accent,var(--bg))] [font-family:var(--font-display)]">{iniciales}</span>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-[15px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">{correo || 'Tu cuenta'}</p>
+              <p className="text-[12px] text-[var(--text-secondary)]">Cuenta principal · Expediente propio</p>
+              <p className="mt-1 inline-flex items-center gap-1 rounded-full bg-[var(--surface-2)] px-2.5 py-1 text-[11px] font-bold text-[var(--accent-ink,var(--accent))]">
+                <ShieldCheck size={12} aria-hidden="true" /> Sello de Confianza activo
+              </p>
+            </div>
+          </div>
+          <div className="mt-3 grid grid-cols-2 gap-2">
+            <div className="rounded-[var(--radius-chip,14px)] bg-[var(--surface-2)] px-3 py-2.5">
+              <p className="text-[16px] font-extrabold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">{nComprobantes ?? '—'}</p>
+              <p className="text-[11px] text-[var(--text-secondary)]">comprobantes con Sello</p>
+            </div>
+            <div className="rounded-[var(--radius-chip,14px)] bg-[var(--surface-2)] px-3 py-2.5">
+              <p className="text-[16px] font-extrabold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">{cuota ? formatoCOP(cuota.montoMensual) : '—'}</p>
+              <p className="text-[11px] text-[var(--text-secondary)]">cuota mensual · día {cuota?.diaPago ?? '—'}</p>
+            </div>
+          </div>
+        </Tarjeta>
 
-      <h2 className="mt-8 text-[13px] font-semibold uppercase tracking-[0.06em] text-[var(--text-tertiary)]">Tu suscripción</h2>
-      <Tarjeta className="mt-3">
-        <p className="text-[14px] font-medium text-[var(--text-primary)]">Cómo cancelar</p>
-        <p className="mt-1.5 text-[13.5px] leading-[1.5] text-[var(--text-secondary)]">
-          Tu suscripción se compra y se administra desde Hotmart. Para cancelarla (deja de cobrarte
-          desde el siguiente ciclo, no borra tu cuenta ni tus datos), entra al portal de compras de
-          Hotmart con el correo con el que pagaste:
-        </p>
-        <a
-          href="https://sac.hotmart.com/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="mt-3 flex h-11 items-center justify-center gap-2 rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] text-[14px] font-medium text-[var(--text-primary)] [touch-action:manipulation]"
-        >
-          Ir al portal de compras de Hotmart
-          <ExternalLink size={15} aria-hidden="true" />
-        </a>
-      </Tarjeta>
+        {/* EDICIÓN DE LA CUOTA — el dato del producto va primero (misma lógica de siempre). */}
+        <h2 className="mt-6 text-[15px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">Tu cuota alimentaria</h2>
+        <EditorCuota />
 
-      <h2 className="mt-8 text-[13px] font-semibold uppercase tracking-[0.06em] text-[var(--text-tertiary)]">Tu cuenta</h2>
-      <Tarjeta className="mt-3 flex items-center gap-3">
-        <IconoCirculo icon={LogOut} />
-        <div className="min-w-0 flex-1">
-          <p className="text-[14px] font-medium text-[var(--text-primary)]">Cerrar sesión</p>
-          <p className="text-[12.5px] text-[var(--text-tertiary)]">Puedes volver a entrar cuando quieras con tu correo.</p>
+        {/* LISTA "Ajustes y cuenta" (referencia): chips + flecha */}
+        <h2 className="mt-6 text-[15px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">Ajustes y cuenta</h2>
+        <Tarjeta className="mt-3 py-1">
+          <FilaAjuste icon={CreditCard} titulo="Suscripción y pagos" detalle="Se administra en Hotmart: cancelar, cambiar de plan, facturas" href="https://sac.hotmart.com/" externo />
+          <FilaAjuste icon={Scale} tono="info" titulo="Asistencia jurídica" detalle="Escríbenos tu duda o contacta a un abogado" href="/asistencia" />
+          <FilaAjuste icon={LifeBuoy} tono="exito" titulo="Ayuda y soporte" detalle="soporte@coparentia.co · respondemos en menos de 48 h" href="mailto:soporte@coparentia.co" externo />
+          <FilaAjuste icon={ShieldCheck} titulo="Privacidad" detalle="Qué guardamos, dónde y cómo borrarlo" href="/privacidad" />
+          <FilaAjuste icon={FileText} titulo="Términos y condiciones" detalle="Condiciones de uso y reembolsos" href="/terminos" ultima />
+        </Tarjeta>
+
+        {/* Miembro desde · Plan (las dos tarjetitas de la referencia) */}
+        <div className="mt-3 grid grid-cols-2 gap-3">
+          <Tarjeta className="flex flex-col gap-2 p-3">
+            <IconoCirculo icon={CalendarCheck} size={18} />
+            <div className="min-w-0"><p className="text-[11px] text-[var(--text-secondary)]">Miembro desde</p><p className="text-[13px] font-extrabold capitalize leading-tight text-[var(--text-primary)]">{desde || '—'}</p></div>
+          </Tarjeta>
+          <Tarjeta className="flex flex-col gap-2 p-3">
+            <IconoCirculo icon={Crown} size={18} tono="pendiente" />
+            <div className="min-w-0"><p className="text-[11px] text-[var(--text-secondary)]">Plan actual</p><p className="text-[13px] font-extrabold leading-tight text-[var(--text-primary)]">Suscripción activa</p></div>
+          </Tarjeta>
         </div>
+
+        {/* Cómo cancelar: texto legal obligatorio (47), ahora bajo la lista */}
+        <p className="mt-3 text-[12px] leading-[1.5] text-[var(--text-secondary)]">
+          Para cancelar tu suscripción (deja de cobrarte desde el siguiente ciclo, no borra tu cuenta ni tus datos) entra al portal de compras de Hotmart con el correo con el que pagaste.
+        </p>
+
+        {/* CERRAR SESIÓN — fila roja suave de la referencia */}
         <button
           type="button"
           onClick={cerrarSesion}
           disabled={saliendo}
-          className="flex h-11 shrink-0 items-center rounded-[var(--radius-button)] px-3 text-[13.5px] font-medium text-[var(--accent)] transition-opacity disabled:opacity-50 [touch-action:manipulation]"
+          className="mt-4 flex w-full items-center gap-3 rounded-[var(--radius-card)] bg-[var(--status-error-bg,color-mix(in_oklab,var(--status-error)_12%,transparent))] px-4 py-3.5 text-left transition-opacity disabled:opacity-60 [touch-action:manipulation]"
         >
-          {saliendo ? 'Saliendo…' : 'Salir'}
+          <span className="flex size-10 shrink-0 items-center justify-center rounded-[var(--radius-chip,999px)] bg-[var(--surface)] text-[var(--status-error)]"><LogOut size={18} aria-hidden="true" /></span>
+          <span className="flex-1 text-[14px] font-bold text-[var(--status-error)]">{saliendo ? 'Saliendo…' : 'Cerrar sesión'}</span>
+          <ChevronRight size={18} className="text-[var(--status-error)]" aria-hidden="true" />
         </button>
-      </Tarjeta>
 
-      <Tarjeta className="mt-3 border-[color-mix(in_oklab,var(--status-error)_30%,transparent)]">
+      <Tarjeta className="mt-6 border border-[color-mix(in_oklab,var(--status-error)_30%,transparent)]">
         <div className="flex items-center gap-3">
           <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-[color-mix(in_oklab,var(--status-error)_14%,transparent)]">
             <AlertTriangle size={20} color="var(--status-error)" aria-hidden="true" />
@@ -348,6 +409,7 @@ export default function Ajustes() {
         </a>
         .
       </p>
-    </ContenedorApp>
+      </ContenedorApp>
+    </>
   );
 }

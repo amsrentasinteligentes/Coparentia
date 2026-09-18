@@ -91,7 +91,7 @@ export function Hero({
         }}
       />
 
-      <div className="mx-auto w-full max-w-[1140px] lg:max-w-[1280px] 2lg:max-w-[1400px] px-5">
+      <div className="mx-auto w-full max-w-[1140px] lg:max-w-[1280px] 2xl:max-w-[1400px] px-5">
         {/* Header 64px: marca a la izquierda; en computador enlaces de sección + CTA chico;
             en celular SOLO "Entrar" terciario (19). */}
         <header className="flex h-16 items-center justify-between gap-4">
@@ -134,7 +134,7 @@ export function Hero({
         >
           <div className="flex flex-col items-center lg:items-start">
             {/* H1: bold completo por defecto; el acento lo pone el [acento] del copy */}
-            <h1 className="text-balance text-[34px] font-extrabold leading-[1.08] tracking-[-0.02em] text-[var(--text-primary)] [font-family:var(--font-display)] md:text-[56px] lg:text-[54px] lg:text-[64px] 2lg:text-[70px]">
+            <h1 className="text-balance text-[34px] font-extrabold leading-[1.08] tracking-[-0.02em] text-[var(--text-primary)] [font-family:var(--font-display)] md:text-[56px] lg:text-[64px] 2xl:text-[70px]">
               <MarkedCopy text={h1Marked} />
             </h1>
 
@@ -154,7 +154,7 @@ export function Hero({
 
           {/* LA ESCENA: forma orgánica + foto + captura + burbuja. Alto fijo por breakpoint para
               que no haya salto de layout (CLS 0) mientras cargan las imágenes. */}
-          <div className="relative mt-10 h-[340px] w-full max-w-[420px] sm:h-[400px] lg:mt-0 lg:h-[480px] lg:max-w-none lg:h-[540px] lg:justify-self-end">
+          <div className="relative mt-10 h-[340px] w-full max-w-[420px] sm:h-[400px] lg:mt-0 lg:h-[540px] lg:max-w-none lg:justify-self-end">
             <Blob className="-right-10 -top-6 h-[92%] w-[88%]" opacidad={0.14} />
             {foto && (
               <div className="absolute right-0 top-0 h-[66%] w-[74%] overflow-hidden blob shadow-[var(--shadow-2)]">

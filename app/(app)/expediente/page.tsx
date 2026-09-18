@@ -5,10 +5,9 @@
 // promesa vacía: al tocar "Exportar" se descarga un archivo real y utilizable.
 
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
 import { motion } from 'motion/react';
-import { Download, FileCheck2, Scale, Settings } from 'lucide-react';
-import { ContenedorApp, PageHeader, Tarjeta, IconoCirculo, Pildora, ErrorDeCarga } from '@/components/app/ui';
+import { Download, FileCheck2, Scale, FolderOpen } from 'lucide-react';
+import { ContenedorApp, Tarjeta, IconoCirculo, Pildora, ErrorDeCarga, CabeceraApp, TituloSeccion } from '@/components/app/ui';
 import { exportarExpedientePdf } from '@/lib/exportar-expediente';
 import { AcuerdoCuota } from '@/components/app/AcuerdoCuota';
 import {
@@ -83,34 +82,30 @@ export default function Expediente() {
   const pendientes = autorizaciones.filter((a) => a.estado === 'pendiente').length;
 
   return (
-    <ContenedorApp>
-      <PageHeader
+    <>
+      {/* Los ajustes ya no viven detrás del engranaje de esta pantalla: la cabecera de marca
+          (avatar → Perfil) los hace accesibles desde cualquier sección. */}
+      <CabeceraApp aviso={pendientes > 0} />
+      <ContenedorApp sinTope>
+      <TituloSeccion
         titulo="Expediente"
-        subtitulo={pendientes > 0 ? `${pendientes} autorización(es) pendiente(s)` : 'Todo al día'}
-        accion={
-          <Link
-            href="/ajustes"
-            aria-label="Ajustes"
-            className="flex size-11 items-center justify-center rounded-full text-[var(--text-secondary)] [touch-action:manipulation]"
-          >
-            <Settings size={20} aria-hidden="true" />
-          </Link>
-        }
+        subtitulo={pendientes > 0 ? `${pendientes} ${pendientes === 1 ? 'autorización pendiente' : 'autorizaciones pendientes'}` : 'Todo al día · listo para exportar'}
+        icon={FolderOpen}
       />
 
-      <Tarjeta destacada className="items-center text-center">
-        <IconoCirculo icon={FileCheck2} size={24} />
-        <p className="mt-3 text-[16px] font-semibold text-[var(--text-primary)]">Reporte en 1 clic</p>
-        <p className="mt-1 text-[13px] text-[var(--text-secondary)]">
-          Tu expediente en PDF foliado, <strong className="text-[var(--text-primary)]">con las fotos de cada
-          comprobante adentro</strong> — listo para tu abogado o conciliador.
+      {/* TARJETA DEL PDF — el "sector azul" de la referencia dentro de la app: degradé de marca */}
+      <Tarjeta className="mt-4 items-center text-center" style={{ background: 'linear-gradient(150deg, var(--accent), var(--accent-deep, var(--accent)))', color: 'var(--on-accent, var(--bg))' }}>
+        <span className="mx-auto flex size-12 items-center justify-center rounded-[var(--radius-chip,999px)] bg-white/15"><FileCheck2 size={24} aria-hidden="true" /></span>
+        <p className="mt-3 text-[17px] font-extrabold [font-family:var(--font-display)]">Tu expediente en PDF, en 1 toque</p>
+        <p className="mt-1 text-[13px] opacity-90">
+          Foliado y <strong>con la foto de cada comprobante adentro</strong> — listo para tu abogado o conciliador.
         </p>
         <motion.button
           type="button"
           disabled={generando}
           onClick={exportarPdf}
           whileTap={{ scale: 0.98 }}
-          className="mt-4 flex h-14 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] bg-[var(--accent)] text-[16px] font-semibold text-[var(--on-accent,var(--bg))] transition-opacity disabled:opacity-60 [touch-action:manipulation]"
+          className="mt-4 flex h-14 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] bg-[var(--surface)] text-[16px] font-bold text-[var(--accent)] shadow-[var(--shadow-1)] transition-opacity disabled:opacity-60 [touch-action:manipulation]"
         >
           <Download size={18} aria-hidden="true" />
           {generando ? progreso || 'Preparando…' : 'Exportar expediente'}
@@ -120,7 +115,7 @@ export default function Expediente() {
             la exportación puede tardar bastante con un expediente grande: sin decir POR CUÁL va,
             una espera larga se lee como que la app se colgó. */}
         {generando && (
-          <p className="mt-2 text-[12px] text-[var(--text-tertiary)]">
+          <p className="mt-2 text-[12px] opacity-85">
             Esto puede tardar un poco: estamos metiendo cada comprobante en el documento.
           </p>
         )}
@@ -128,7 +123,7 @@ export default function Expediente() {
         {resultado && !generando && (
           <p
             role="status"
-            className={`mt-2 text-[12.5px] leading-[1.5] ${resultado.ok ? 'text-[var(--text-tertiary)]' : 'text-[var(--status-error)]'}`}
+            className={`mt-2 rounded-[var(--radius-chip,12px)] px-3 py-1.5 text-[12.5px] leading-[1.5] ${resultado.ok ? 'opacity-90' : 'bg-white text-[var(--status-error)]'}`}
           >
             {resultado.mensaje}
           </p>
@@ -140,7 +135,7 @@ export default function Expediente() {
       <AcuerdoCuota />
 
       <div className="mt-6 flex items-center justify-between">
-        <h2 className="text-[17px] font-semibold text-[var(--text-primary)]">Autorizaciones y controversias</h2>
+        <h2 className="text-[15px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">Autorizaciones y controversias</h2>
       </div>
       <div className="mt-3 flex flex-col gap-3">
         {falloCarga && <ErrorDeCarga onReintentar={() => setIntento((n) => n + 1)} />}
@@ -166,13 +161,14 @@ export default function Expediente() {
                     <p className="truncate text-[14px] font-medium text-[var(--text-primary)]">{a.concepto}</p>
                     <Pildora texto={PILDORA[a.estado].texto} tono={PILDORA[a.estado].tono} />
                   </div>
-                  <p className="mt-0.5 text-[12px] text-[var(--text-tertiary)]">{formatoFechaLarga(a.fecha)} · {formatoCOP(a.monto)}</p>
+                  <p className="mt-0.5 text-[12px] text-[var(--text-secondary)]">{formatoFechaLarga(a.fecha)} · {formatoCOP(a.monto)}</p>
                   {a.nota && <p className="mt-1.5 text-[13px] text-[var(--text-secondary)]">{a.nota}</p>}
                 </div>
               </div>
             </Tarjeta>
           ))}
       </div>
-    </ContenedorApp>
+      </ContenedorApp>
+    </>
   );
 }

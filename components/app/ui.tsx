@@ -9,7 +9,7 @@ import { usePathname } from 'next/navigation';
 import { motion, useReducedMotion } from 'motion/react';
 import { Home, Wallet, CalendarDays, FolderOpen, Scale, CloudOff, Check, Bell, ChevronDown, type LucideIcon } from 'lucide-react';
 import { crearClienteSupabase } from '@/lib/supabase/client';
-import { useEffect, useState, type ReactNode } from 'react';
+import React, { useEffect, useState, type ReactNode } from 'react';
 
 /* Motion signature de FICHA-ARTE.md, en un solo lugar: ease-out suave, 340ms base, sin springs
    agresivos (coherente con "Sereno"). Antes cada componente inventaba su curva y su duración. */
@@ -210,10 +210,12 @@ export function Tarjeta({
   indice = 0,
   destacada = false,
   role,
+  style,
 }: {
   children: ReactNode;
   className?: string;
   indice?: number;
+  style?: React.CSSProperties;
   /** Aplica la hairline degradada de FICHA-ARTE. Reservada a 1-3 elementos por pantalla: si todas
    *  las tarjetas la llevan deja de destacar nada y se vuelve ruido. */
   destacada?: boolean;
@@ -224,6 +226,7 @@ export function Tarjeta({
   return (
     <motion.div
       role={role}
+      style={style}
       initial={reduce ? false : { opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: DUR_BASE, ease: EASE_SERENO, delay: reduce ? 0 : indice * 0.05 }}
