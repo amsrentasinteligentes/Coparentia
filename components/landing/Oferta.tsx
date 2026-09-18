@@ -160,7 +160,7 @@ export function Oferta({
                       ojo apurado no sabía cuál era el número que importa (defecto del revisor). */}
                   <p className="mt-1 text-[14px] font-semibold text-[var(--text-primary)]">{anual.totalAnual}</p>
                   <p className="mt-0.5 text-[12px] text-[var(--text-tertiary)]">
-                    Tras los 7 días gratis{refCopAnual ? ` · ${refCopAnual}` : ''}
+                    Se cobra al terminar la prueba{refCopAnual ? ` · ${refCopAnual}` : ''}
                   </p>
                   {anual.ahorro && <p className="mt-2 text-[15px] font-semibold text-[var(--accent)]">{anual.ahorro}</p>}
                 </div>

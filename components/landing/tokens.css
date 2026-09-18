@@ -36,6 +36,7 @@
   --accent: #5b93e8;
   --accent-2: #5b93e8;        /* sin 2ª nota definida en la ficha — se repite el acento */
   --on-accent: var(--bg);     /* texto sobre botones de acento (la landing clara lo pone en blanco) */
+  --accent-ink: var(--accent); /* acento para texto pequeño (kickers, chips, labels) — la clara lo oscurece */
   --accent-underline: color-mix(in oklab, var(--accent) 40%, transparent); /* subrayado del <Accent> */
   --foto-1: #3a4a66;          /* marcador de foto (kit): en oscuro, azul apagado */
   --foto-2: #1c2a42;

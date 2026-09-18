@@ -110,7 +110,13 @@ export default function Home() {
       {/* 4. SOLUCIÓN */}
       <Solucion
         id="como-funciona"
-        foto={<img src="/fotos/solucion-papa-hija.jpg" alt="Papá e hija riendo juntos" className="h-full w-full object-cover object-[50%_40%]" width={1200} height={800} loading="lazy" />}
+        foto={
+          <span className="relative block h-full w-full">
+            <img src="/fotos/solucion-papa-hija.jpg" alt="Papá e hija riendo juntos" className="h-full w-full object-cover object-[42%_28%]" width={1200} height={800} loading="lazy" />
+            {/* Velo cálido tenue: la foto es más fría que la del hero y sin él parecían dos tratamientos. */}
+            <span aria-hidden="true" className="absolute inset-0 bg-[var(--foto-1)] opacity-10 mix-blend-multiply" />
+          </span>
+        }
         tituloMarked="Tu prueba, [acento]lista antes de que te pidan[/acento]"
         mecanismo="el Sello de Confianza"
         bigIdeaMarked="No es que no pagues — es que no tienes cómo [b]probarlo[/b]. El Sello de Confianza convierte cada comprobante en una prueba fechada y organizada."
@@ -173,15 +179,15 @@ export default function Home() {
         mensual={{
           nombre: 'Mensual',
           precioMes: 'US$9.99',
-          ctaLabel: 'Crear mi expediente · mensual',
+          ctaLabel: 'Empezar con el plan mensual',
           ctaHref: '/onboarding?plan=mensual',
           // Antes repetía 4 de los 5 bullets del plan anual y el diferenciador real se diluía.
           // Ahora dice solo en qué se diferencia: mismas funciones, sin compromiso de 12 meses.
           features: [
             'Todas las funciones del plan Anual',
+            'Pagas mes a mes, US$9.99',
             'Cancelas cuando quieras, sin permanencia',
             'Garantía del Primer Expediente (15 días)',
-            'Sin compromiso de 12 meses',
           ],
         }}
       />

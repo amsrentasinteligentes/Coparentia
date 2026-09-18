@@ -79,7 +79,7 @@ export function Solucion({
         {/* El chip del mecanismo bautizado — hairline + <Accent> (55 §4) */}
         <motion.div variants={item} className="mt-4">
           <Hairline surface="bg" radio="button" className="w-fit">
-            <span className="block px-4 py-2 text-[15px] font-semibold">
+            <span className="block px-4 py-2 text-[15px] font-semibold [--accent:var(--accent-ink)]">
               <Accent>{mecanismo}</Accent>
             </span>
           </Hairline>
@@ -139,13 +139,13 @@ export function Solucion({
               {antesDespues.anilloDespues !== undefined && (
                 <div className="relative shrink-0">
                   <MiniRing value={antesDespues.anilloDespues} tone="accent" />
-                  <span className="absolute inset-0 flex items-center justify-center text-[15px] font-bold tabular-nums text-[var(--accent)] [font-family:var(--font-display)]">
+                  <span className="absolute inset-0 flex items-center justify-center text-[15px] font-bold tabular-nums text-[var(--accent-ink)] [font-family:var(--font-display)]">
                     {antesDespues.anilloDespues}%
                   </span>
                 </div>
               )}
               <div>
-                <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-[var(--accent)]">
+                <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-[var(--accent-ink)]">
                   {antesDespues.labelDespues}
                 </p>
                 <p className="mt-2 text-[15px] font-medium leading-snug text-[var(--text-primary)]">

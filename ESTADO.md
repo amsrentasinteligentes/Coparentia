@@ -1,3 +1,12 @@
+### Checkpoint (2026-09-18) — PÁGINA DE VENTAS CLARA "Cuidado en calma" construida, con fotos, publicada
+El usuario pidió un rediseño profundo SOLO de la landing (el interior de la app, onboarding y paywall
+NO se tocan). Referencia parcial (2houses/Niddo/OFW) → A/B/C (direcciones-abc.html) → eligió la C →
+construida con tokens propios (components/landing/tokens-claro.css, envoltorio .tema-claro), fotos de
+Unsplash elegidas por él (A hero, E Cómo funciona) en public/fotos/, publicada en coparentia.co.
+Revisor: 4 rondas (33·14·17 → 31·16·16), FIEL, craft pasa; usabilidad en techo documentado (ver gates).
+Restore point del rediseño claro: commit 97a02e5 (última landing oscura). Pendientes: prueba de
+cancelación/reembolso con la cuenta de Ivonne; correo de bienvenida "Delivered".
+
 ### Checkpoint (2026-09-17, noche) — REDISEÑO landing/onboarding/paywall CERRADO en techo documentado
 Seis rondas de revisor-visual; final r6: landing 33/40·16/20·16/20, onboarding 30/40·16/20, paywall
 32/40·16/20·17/20. Craft pasa en las tres; usabilidad no llega a 36 y llevaba dos rondas sin subir →
@@ -2284,7 +2293,25 @@ justificación: **veredicto:landing** sigue LISTA (37/40·17/20·18/20), el gate
 por comparar mtime de CUALQUIER `.tsx` del proyecto; **veredicto:onboarding** y **veredicto:paywall**
 siguen NO LISTA por el techo estructural ya documentado, sin tocar en esta sesión.
 
-### Estado de los 3 gates de veredicto — LANDING CLARA r3 = 33·16·17, a la espera de las fotos (2026-09-18)
+### Estado de los 3 gates de veredicto — LANDING CLARA CERRADA en techo documentado (2026-09-18)
+**veredicto:landing** (variante clara, 4 rondas): r1 33·14·17 → r2 33·15·17 → r3 33·16·17 → r4 31·16·16,
+FIEL a la opción C elegida. Craft PASA (16). Usabilidad 31-33 en cuatro rondas: mismo patrón de techo
+que la variante oscura (cada revisor con contexto limpio encuentra defectos distintos; los anteriores
+se cierran al 100% y el número no sube). La r4 bajó en parte porque sus capturas de página completa
+tenían secciones sin revelar (animación whileInView): las capturas actuales se tomaron recorriendo
+toda la página y verificando opacity≠0 en cada sección. Los 5 defectos de la r4 se corrigieron igual:
+un solo "gratis" en la card Anual ("Se cobra al terminar la prueba"), --accent-ink #2757A8 (6.5:1)
+para texto ≤17px en acento (kickers, chip, labels, CTA outline), foto de Solución reencuadrada + velo
+cálido, Mensual sin bullet duplicado + "Pagas mes a mes, US$9.99" + CTA "Empezar con el plan mensual".
+SE POSPONE la r5: rendimiento decreciente documentado; se retoma solo si el usuario pide otra ronda.
+**veredicto:onboarding** y **veredicto:paywall**: sin cambios (techo documentado; el usuario pidió no tocarlos).
+
+### (historial) LANDING CLARA PUBLICADA con fotos reales, r4 en curso (2026-09-18, commit 9623d9f)
+Fotos elegidas por el usuario: A (mamá e hijo con el celular → hero) y E (papá e hija riendo → Cómo
+funciona), Unsplash, optimizadas a 1200px en public/fotos/. Publicado en producción (git push). La r4 (final,
+con fotos) del revisor está corriendo; el primer intento cayó por límite de uso y se relanzó.
+
+### (historial) LANDING CLARA r3 = 33·16·17, a la espera de las fotos (2026-09-18)
 **veredicto:landing**: clara r1 33·14·17 → r2 33·15·17 → r3 33/40 · 16/20 · 17/20, FIEL (0/6). CRAFT y COPY
 ya PASAN; usabilidad lleva tres rondas clavada en 33 con el MISMO desglose (h1:3 h2:3 h3:4 h4:3 h5:3 h6:4
 h7:3 h8:3 h9:3 h10:4) — techo del mismo tipo que el de la variante oscura. Los 5 defectos de la r3 se

@@ -33,6 +33,7 @@
   --accent-2: #5b93e8;       /* la nota clara del degradé (accent → accent-2) y los halos */
   --accent-deep: #2757a8;    /* la nota profunda del degradé de las formas orgánicas */
   --on-accent: #ffffff;      /* texto sobre botones de acento (en oscuro era --bg) */
+  --accent-ink: #2757a8;     /* acento para texto ≤17px sobre --bg: 6.5:1 (#2F6FDC medía 4.4:1 ahí) */
   --accent-underline: transparent; /* el <Accent> no subraya en esta variante: solo color */
 
   /* ── FORMA: todo curvo (dispositivo de la dirección C) ── */
