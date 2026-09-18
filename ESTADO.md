@@ -1,3 +1,17 @@
+### Checkpoint (2026-09-18, noche) — FUNNEL EN CLARO: onboarding, paywall y /entrar (orden del usuario)
+El usuario levantó la orden de no tocar el funnel ("me equivoqué, cámbiala toda a la imagen actual").
+Hecho: grupo de rutas app/(funnel)/ con layout .tema-claro + Figtree/Nunito (URLs iguales); kit del
+funnel adaptado (Marcador en --accent-ink sin subrayado, Halo 12%, chips con --shadow-1, CTA --on-accent
++ hover, logo horizontal); blobs (dispositivo ownable C) en reconocimientos y H1 del precio; fixes de
+producto: barra = fracción del contador, restauración de respuestas sin pisar el storage, "Empezar de
+nuevo" con confirmación, label en "Otra cosa", texto bajo el CTA con el primer cobro derivado del plan,
+garantía nombrada junto al CTA, spinner en "Abriendo…", flechas + roving tabindex en los planes, tarjeta
+"Cómo entras" en /entrar (secundaria, sin revisor). Revisor-visual, 3 rondas c/u:
+**veredicto:onboarding** 29→32→**36/40 · 16/20 LISTA** · **veredicto:paywall** 33→35→**36/40 · 16/20 ·
+18/20 LISTA**. Capturas: docs/revisiones/{onboarding,paywall,entrar}-claro-375.png (+ -1440, -p0, -p1,
+-reconocimiento, -meta). Commit 0225443, SIN PUBLICAR: esperando el "sí" del usuario. Pendiente: logo
+azul (el gris se ve apagado sobre claro — lo repiten los dos revisores); veredicto:landing sigue en 31/40.
+
 ### Checkpoint (2026-09-18, tarde) — GASTOS Y EVENTOS POR HIJO (pedido explícito del usuario)
 El usuario cargó a su hija en Perfil y pidió: "si hay 2 o 3 hijos, agrupar los gastos por cada hijo para
 que las cuentas queden claras". Construido y verificado (tsc ✓ build ✓ preview con sesión real ✓;
@@ -2366,6 +2380,11 @@ FICHA-ARTE.md que la landing.
   presupuesto; queda anotado para antes de declarar el funnel "vendible" de verdad.
 
 ## Problemas conocidos
+- **veredicto:onboarding** y **veredicto:paywall** (2026-09-18 noche): LISTA en r3 (36/40 ambos). El gate
+  los marca "caducado" porque DESPUÉS del veredicto se aplicaron los 5 defectos NO bloqueantes que el
+  propio revisor listó en esa r3 (h1 26→28px, tarjeta vacía anclada, blob lg:h-20, summary renombrado,
+  min-h de la TRM, roving tabindex) — cambios cosméticos verificados por captura (onboarding-claro-p0-375
+  recapturada). No se relanza una r4 por rendimiento decreciente; queda pospuesto.
 
 ### Estado de los 3 gates de veredicto tras el arreglo de raíz del menú fijo (2026-09-17)
 Backend/estructura transversal: `app/(app)/layout.tsx`, `components/app/ui.tsx` y los 3 archivos
