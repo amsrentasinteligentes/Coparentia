@@ -139,10 +139,13 @@ export default function Home() {
         tituloMarked="Tu expediente, [acento]siempre a mano[/acento]"
         frames={[
           { label: 'Tu expediente al día', src: '/frame-inicio.png', nombrePantalla: 'Inicio', iconoPlaceholder: HomeIcon },
-          { label: 'Cuéntanos tu situación', src: '/frame-onboarding.png', nombrePantalla: 'Onboarding', iconoPlaceholder: ListChecks },
-          { label: 'Elige tu plan', src: '/frame-paywall.png', nombrePantalla: 'Paywall', iconoPlaceholder: CreditCard },
-          { label: 'Sube tu comprobante', src: '/frame-pagos.png', nombrePantalla: 'Registro de pago', iconoPlaceholder: Upload },
+          // Solo pantallas del INTERIOR (la sección se llama 'así se ve por dentro'): el recorrido de
+          // inicio y la pantalla de planes siguen en el tema oscuro por decisión del usuario y aquí
+          // desentonaban (2026-09-18).
+          { label: 'Tu cuota y tus comprobantes', src: '/frame-pagos.png', nombrePantalla: 'Pagos', iconoPlaceholder: Upload },
           { label: 'Visitas, citas y actividades', src: '/frame-calendario.png', nombrePantalla: 'Calendario', iconoPlaceholder: CalendarDays },
+          { label: 'Tu expediente en PDF, en 1 toque', src: '/frame-expediente.png', nombrePantalla: 'Expediente', iconoPlaceholder: ListChecks },
+          { label: 'Tu cuenta y tu suscripción', src: '/frame-perfil.png', nombrePantalla: 'Perfil', iconoPlaceholder: CreditCard },
         ]}
         ctaLabel={CTA_LABEL}
         ctaHref={CTA_HREF}
