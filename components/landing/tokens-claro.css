@@ -49,10 +49,13 @@
   --shadow-2: 0 24px 56px -20px rgb(20 40 80 / 0.28);
 
   /* ── BLOQUE DE CIERRE: el "sector azul" de la página (degradé de marca, texto blanco) ── */
-  --cta-final-bg: linear-gradient(150deg, var(--accent-2), var(--accent-deep));
+  /* El degradé arranca en --accent (blanco sobre #2f6fdc = 4.7:1) y no en la nota clara: con
+      #5b93e8 en la esquina el blanco al 70% medía 2.3:1 (revisor, clara r1). Los textos de apoyo
+      van casi blancos por lo mismo. */
+  --cta-final-bg: linear-gradient(150deg, var(--accent), var(--accent-deep));
   --cta-final-text: #ffffff;
-  --cta-final-text-2: rgb(255 255 255 / 0.84);
-  --cta-final-text-3: rgb(255 255 255 / 0.7);
+  --cta-final-text-2: #ffffff;
+  --cta-final-text-3: rgb(255 255 255 / 0.92);
 
   /* ── Marcador de foto (<FotoLugar>): tono cálido de piel/madera, para que el hueco se lea humano ── */
   --foto-1: #e3c2ad;

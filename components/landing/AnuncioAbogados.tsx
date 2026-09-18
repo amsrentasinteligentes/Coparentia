@@ -8,7 +8,7 @@
 // distinto (tono B2B, no compite con el CTA principal). Justificación en ESTADO.md.
 
 import { BadgeCheck, MessageSquareText, Users } from 'lucide-react';
-import { IconChip, Kicker, SectionShell, useReveal, VIEWPORT_ONCE } from './ui';
+import { CtaButton, IconChip, Kicker, SectionShell, useReveal, VIEWPORT_ONCE } from './ui';
 import { motion } from 'motion/react';
 
 export interface AnuncioAbogadosProps {
@@ -72,12 +72,9 @@ export function AnuncioAbogados({ contactoEmail, id = 'para-abogados' }: Anuncio
         </div>
 
         <motion.div variants={item} className="mt-8 flex flex-col items-center gap-2">
-          <a
-            href={`mailto:${contactoEmail}?subject=${encodeURIComponent('Quiero anunciarme en Coparentia')}`}
-            className="inline-flex h-12 items-center justify-center rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--accent)_45%,transparent)] px-8 text-[15px] font-semibold text-[var(--accent)] transition-colors duration-150 hover:bg-[var(--chip-bg)] [touch-action:manipulation]"
-          >
+          <CtaButton href={`mailto:${contactoEmail}?subject=${encodeURIComponent('Quiero anunciarme en Coparentia')}`} variant="outline" fullMobile={false}>
             Quiero anunciarme como abogado
-          </a>
+          </CtaButton>
           <p className="text-[12px] text-[var(--text-tertiary)]">Te respondemos en menos de 48 horas.</p>
         </motion.div>
       </motion.div>

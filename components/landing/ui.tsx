@@ -449,7 +449,7 @@ export function FotoLugar({
     <div
       role="img"
       aria-label={`Espacio para fotografía: ${descripcion}`}
-      className={`relative flex items-end overflow-hidden p-3 ${forma === 'redonda' ? 'rounded-[var(--radius-card)]' : forma} ${className}`}
+      className={`relative flex items-start justify-end overflow-hidden p-3 ${forma === 'redonda' ? 'rounded-[var(--radius-card)]' : forma} ${className}`}
       style={{
         background:
           'radial-gradient(120% 80% at 30% 20%, rgb(255 255 255 / 0.45), transparent 60%), ' +
@@ -457,7 +457,7 @@ export function FotoLugar({
       }}
     >
       <Camera size={28} strokeWidth={1.6} aria-hidden="true" className="absolute left-1/2 top-[44%] -translate-x-1/2 -translate-y-1/2 text-white/70" />
-      <span className="relative rounded-full bg-black/30 px-2.5 py-1 text-[11px] font-semibold text-white/95 backdrop-blur-[2px]">
+      <span className="relative max-w-[88%] rounded-[12px] bg-black/30 px-2.5 py-1 text-left text-[11px] font-semibold leading-snug text-white/95 backdrop-blur-[2px]">
         {descripcion}
       </span>
     </div>

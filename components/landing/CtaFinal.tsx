@@ -12,7 +12,7 @@
 // y el footer.
 
 import { motion } from 'motion/react';
-import { CtaButton, useReveal, VIEWPORT_ONCE } from './ui';
+import { Blob, CtaButton, useReveal, VIEWPORT_ONCE } from './ui';
 import { MarkedCopy, warnCopy } from './MarkedCopy';
 
 export interface CtaFinalProps {
@@ -64,6 +64,9 @@ export function CtaFinal({
         }}
       />
 
+      {/* Forma orgánica tenue detrás del titular (variante clara: la ficha pide el dispositivo en
+          varios sectores, no solo en el hero). En oscuro casi no se ve y no molesta. */}
+      <Blob className="left-1/2 top-0 h-[70%] w-[520px] -translate-x-1/2" opacidad={0.1} />
       <motion.div
         variants={contenedor}
         initial="hidden"

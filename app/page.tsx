@@ -75,6 +75,7 @@ export default function Home() {
         // "10 minutos" es el tiempo medido del onboarding + primer comprobante (guía "Tu primer
         // expediente en 10 minutos" del stack de valor) — no una cifra de marketing inventada.
         burbuja={{ titulo: 'Tu primer expediente', dato: 'Listo en 10 minutos' }}
+        pilares={['Gastos al día', 'Comprobantes con fecha', 'Mente en calma']}
       />
 
       {/* 2. PROBLEMA */}
@@ -106,6 +107,7 @@ export default function Home() {
       {/* 4. SOLUCIÓN */}
       <Solucion
         id="como-funciona"
+        foto={<FotoLugar descripcion="Foto: papá guardando un recibo desde el celular" className="h-full w-full" forma="redonda" />}
         tituloMarked="Tu prueba, [acento]lista antes de que te pidan[/acento]"
         mecanismo="el Sello de Confianza"
         bigIdeaMarked="No es que no pagues — es que no tienes cómo [b]probarlo[/b]. El Sello de Confianza convierte cada comprobante en una prueba fechada y organizada."

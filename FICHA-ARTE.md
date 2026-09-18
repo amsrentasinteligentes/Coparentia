@@ -90,14 +90,19 @@
   A Calma editorial (Spectral+Plex, marfil, collage) · B Cercana y directa (Sora+Manrope, blanco +
   bloques marino) · **C Cuidado en calma (ELEGIDA por el usuario: "vamos con la C")**.
   Captura verificada: docs/revisiones/direcciones-abc-landing.png (fuentes clase por clase OK).
-- Tokens de la variante C (landing): --bg #F3F7FC · --surface #FFFFFF · --text-1 #14233A ·
-  --text-2 #5A6B85 · --accent #3F7FE6 · --accent-deep #2757A8 (degradé 150° accent→deep) ·
+- Tokens de la variante C (landing) — FUENTE DE VERDAD: components/landing/tokens-claro.css:
+  --bg #F3F7FC · --surface #FFFFFF · --surface-2 #E7EEF8 · --text-primary #14233A ·
+  --text-secondary #4B5C78 (6.9:1 sobre blanco) · --text-tertiary #667891 (4.6:1) ·
+  --accent #2F6FDC (4.7:1 sobre blanco, 4.5:1 sobre --bg) · --accent-2 #5B93E8 (solo degradés/halos:
+  mide 2.9:1 sobre blanco, NO sirve para texto ni botones) · --accent-deep #2757A8 ·
   radios 22px tarjetas / 999px botones y píldoras · display Figtree 700-800 · body Nunito Sans 400-700.
+  Nota: la comparativa A/B/C usaba #3F7FE6 y #5A6B85; al construir se oscurecieron porque #3F7FE6
+  medía 3.9:1 sobre blanco (fallaba AA en botones y palabra clave) — revisor clara r1.
 - Dispositivo ownable de la landing: FORMAS ORGÁNICAS (blobs `border-radius: 58% 42% 55% 45% / 48% 60%
   40% 52%`) en degradé azul que enmarcan las fotos; burbuja de dato con cola; todo curvo.
 - Fotos: marcadores honestos hasta elegir con el usuario fotos con licencia (Unsplash/Pexels).
   PROHIBIDO reutilizar las fotos de las apps de referencia.
 - Continuidad de marca entre landing clara y app oscura: mismo logo, misma familia de azul
-  (#3F7FE6 es el #5B93E8 oscurecido para pasar AA sobre claro: 4.6:1 sobre #F3F7FC).
+  (#2F6FDC es el #5B93E8 de la app oscurecido para pasar AA sobre claro).
 
 ## Idioma UI: Español (LATAM, neutro) · Fecha de cierre de la ficha: 2026-09-07 · Aprobada por el usuario: SÍ

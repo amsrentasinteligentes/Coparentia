@@ -16,7 +16,7 @@
 import type { ReactNode } from 'react';
 import { motion } from 'motion/react';
 import { Camera } from 'lucide-react';
-import { Blob, CtaButton } from './ui';
+import { Blob, CheckCustom, CtaButton } from './ui';
 import { MarkedCopy, truncarMarcado, warnCopy } from './MarkedCopy';
 
 export interface EnlaceNav {
@@ -48,6 +48,9 @@ export interface HeroProps {
   foto?: ReactNode;
   /** Burbuja con UN dato honesto sobre la escena ("Tu primer expediente · Listo en 10 minutos"). */
   burbuja?: { titulo: string; dato: string };
+  /** Fila de 3 píldoras bajo la escena — el mensaje literal de la dirección C
+      ("Gastos al día · Comprobantes con fecha · Mente en calma"). */
+  pilares?: string[];
   /** Sugerencia CONCRETA de qué imagen poner en el placeholder — nunca "imagen aquí". */
   visualPlaceholderSugerencia?: string;
   id?: string;
@@ -67,6 +70,7 @@ export function Hero({
   visual,
   foto,
   burbuja,
+  pilares = [],
   visualPlaceholderSugerencia = 'captura de la pantalla principal con datos reales',
   id = 'hero',
 }: HeroProps) {
@@ -153,7 +157,7 @@ export function Hero({
           <div className="relative mt-10 h-[340px] w-full max-w-[420px] sm:h-[400px] lg:mt-0 lg:h-[480px] lg:max-w-none lg:justify-self-end">
             <Blob className="-right-10 -top-6 h-[92%] w-[88%]" opacidad={0.14} />
             {foto && (
-              <div className="absolute right-0 top-0 h-[70%] w-[72%] overflow-hidden blob shadow-[var(--shadow-2)]">
+              <div className="absolute right-0 top-0 h-[66%] w-[74%] overflow-hidden blob shadow-[var(--shadow-2)]">
                 {foto}
               </div>
             )}
@@ -163,7 +167,7 @@ export function Hero({
               <a
                 href={ctaHref}
                 aria-label={ctaLabel}
-                className="absolute bottom-0 left-[6%] block w-[44%] max-w-[200px] overflow-hidden rounded-[26px] border-[5px] border-[color-mix(in_oklab,var(--text-primary)_92%,var(--accent))] bg-[var(--text-primary)] shadow-[var(--shadow-2)] transition-transform duration-150 active:scale-[0.99] lg:bottom-4 lg:left-[8%]"
+                className="absolute bottom-0 left-0 block w-[38%] max-w-[180px] overflow-hidden rounded-[26px] border-[5px] border-[color-mix(in_oklab,var(--text-primary)_92%,var(--accent))] bg-[var(--text-primary)] shadow-[var(--shadow-2)] transition-transform duration-150 active:scale-[0.99] lg:bottom-4 lg:left-[4%]"
               >
                 {visual}
               </a>
@@ -178,7 +182,7 @@ export function Hero({
             )}
             {burbuja && (
               <div
-                className="absolute bottom-6 right-0 w-[52%] max-w-[230px] rounded-[26px] rounded-bl-[8px] px-5 py-4 text-left text-[var(--on-accent)] shadow-[0_18px_40px_-14px_color-mix(in_oklab,var(--accent-deep,var(--accent))_60%,transparent)] lg:bottom-10 lg:right-2"
+                className="absolute bottom-2 right-0 w-[48%] max-w-[220px] rounded-[26px] rounded-bl-[8px] px-5 py-4 text-left text-[var(--on-accent)] shadow-[0_18px_40px_-14px_color-mix(in_oklab,var(--accent-deep,var(--accent))_60%,transparent)] lg:bottom-6 lg:right-2"
                 style={{ background: 'linear-gradient(150deg, var(--accent-2), var(--accent-deep, var(--accent)))' }}
               >
                 <p className="text-[12px] font-semibold opacity-85">{burbuja.titulo}</p>
@@ -189,6 +193,20 @@ export function Hero({
             )}
           </div>
         </motion.div>
+
+        {pilares.length > 0 && (
+          <ul className="mx-auto mt-10 grid max-w-[820px] grid-cols-1 gap-3 sm:grid-cols-3 lg:mx-0 lg:max-w-none">
+            {pilares.slice(0, 3).map((p) => (
+              <li
+                key={p}
+                className="flex items-center gap-3 rounded-[var(--radius-button)] bg-[var(--surface)] px-5 py-4 text-[15px] font-semibold text-[var(--text-primary)] shadow-[var(--shadow-1)]"
+              >
+                <CheckCustom />
+                {p}
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </section>
   );

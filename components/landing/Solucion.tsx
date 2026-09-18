@@ -8,7 +8,8 @@
 // escalonados (whileInView + stagger, reduced-motion respetado).
 
 import { motion } from 'motion/react';
-import { Accent, Hairline, Kicker, MiniRing, SectionShell, useReveal, VIEWPORT_ONCE } from './ui';
+import { Accent, Blob, Hairline, Kicker, MiniRing, SectionShell, useReveal, VIEWPORT_ONCE } from './ui';
+import type { ReactNode } from 'react';
 import { MarkedCopy, warnCopy } from './MarkedCopy';
 
 export interface PasoMecanismo {
@@ -39,6 +40,8 @@ export interface SolucionProps {
     despues: string;
     anilloDespues?: number;
   };
+  /** Fotografía humana (o <FotoLugar>) en forma orgánica — variante clara. */
+  foto?: ReactNode;
   id?: string;
 }
 
@@ -49,6 +52,7 @@ export function Solucion({
   bigIdeaMarked,
   pasos,
   antesDespues,
+  foto,
   id,
 }: SolucionProps) {
   warnCopy('Solución → título', tituloMarked, 8);
@@ -84,6 +88,15 @@ export function Solucion({
         <motion.p variants={item} className="mt-5 max-w-[620px] text-[17px] leading-relaxed text-[var(--text-secondary)] md:text-[18px]">
           <MarkedCopy text={bigIdeaMarked} />
         </motion.p>
+
+        {/* Foto humana en forma orgánica (dispositivo de la variante clara): el mecanismo
+            se ve en manos de alguien, no solo en tres pasos de texto. */}
+        {foto && (
+          <motion.div variants={item} className="relative mx-auto mt-10 h-[220px] w-full max-w-[520px] sm:h-[260px]">
+            <Blob variante="b" className="-left-6 -top-4 h-full w-[70%]" opacidad={0.12} />
+            <div className="absolute inset-y-0 right-0 w-[82%] overflow-hidden blob-b shadow-[var(--shadow-2)]">{foto}</div>
+          </motion.div>
+        )}
 
         {/* 3 pasos: filas apiladas en mobile, 3 columnas en desktop */}
         <ol className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-3">
