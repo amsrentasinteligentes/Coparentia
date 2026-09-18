@@ -9,7 +9,7 @@ garantía nombrada junto al CTA, spinner en "Abriendo…", flechas + roving tabi
 "Cómo entras" en /entrar (secundaria, sin revisor). Revisor-visual, 3 rondas c/u:
 **veredicto:onboarding** 29→32→**36/40 · 16/20 LISTA** · **veredicto:paywall** 33→35→**36/40 · 16/20 ·
 18/20 LISTA**. Capturas: docs/revisiones/{onboarding,paywall,entrar}-claro-375.png (+ -1440, -p0, -p1,
--reconocimiento, -meta). Commit 0225443, SIN PUBLICAR: esperando el "sí" del usuario. Pendiente: logo
+-reconocimiento, -meta). Commit 0225443, PUBLICADO con el "sí" del usuario (8d31eb0 → coparentia.co en claro, verificado). Pendiente: logo
 azul (el gris se ve apagado sobre claro — lo repiten los dos revisores); veredicto:landing sigue en 31/40.
 
 ### Checkpoint (2026-09-18, tarde) — GASTOS Y EVENTOS POR HIJO (pedido explícito del usuario)
