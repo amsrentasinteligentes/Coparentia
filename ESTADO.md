@@ -1,3 +1,13 @@
+### Checkpoint (2026-09-18) — PEDIDO NUEVO: pestaña PERFIL personalizable (ref-3 del usuario)
+El usuario pide una pestaña "Perfil" donde la persona personalice la app (nombre, foto, rol papá/mamá,
+hijos con nombre/edad/foto, nombre de la otra parte) para que se sienta cercana. Plan presentado; falta su
+decisión sobre el menú (5 pestañas ya): 1) Perfil reemplaza a Asistencia en el nav (recomendado; Asistencia
+queda en accesos de Inicio y en Perfil) o 2) Perfil solo desde el avatar. Requiere SQL en Supabase:
+columnas en profiles (rol_familiar, avatar_path, otro_progenitor_nombre — con grant update solo a esas
+columnas), tabla hijos (RLS por user_id) y bucket "perfiles" con políticas por carpeta del usuario.
+EXCEPCIÓN a la orden "no tocar el interior": este pedido viene del propio usuario (Perfil + saludo con
+nombre + etiquetas en calendario/PDF); el resto del interior sigue congelado.
+
 ### Checkpoint (2026-09-18) — El usuario APRUEBA la landing clara y pide llevar ese estilo AL INTERIOR DE LA APP
 Decisión del usuario (cambia la orden anterior de "no tocar el interior"): "me gustó muchísimo" la landing
 clara; quiere la misma paleta/identidad dentro de la app y adjuntó 3 capturas de referencia (mockups de una
