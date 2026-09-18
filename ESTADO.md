@@ -1,3 +1,12 @@
+### Checkpoint (2026-09-18, cierre) — Sesión de rediseño claro COMPLETA y confirmada por el usuario
+El usuario confirmó en su celular: landing clara, interior claro (6 pestañas: Inicio, Pagos, Calendario,
+Expediente, Asistencia, Perfil), logo nuevo (isotipo + horizontal), modales en claro ("ya se ve bien claro").
+PENDIENTES anotados: validación de uso con Ivonne → luego prueba de cancelación/reembolso; usar hijos y
+otra parte en etiquetas del calendario y portada del PDF; versión plana azul del logo si el usuario la
+consigue; ronda r2 del revisor en Inicio si el usuario la pide. Gates veredicto:landing /
+veredicto:onboarding / veredicto:paywall: techo documentado (ver "Problemas conocidos"); el interior sigue
+congelado salvo pedidos explícitos del usuario.
+
 ### Checkpoint (2026-09-18) — PEDIDO NUEVO: pestaña PERFIL personalizable (ref-3 del usuario)
 El usuario pide una pestaña "Perfil" donde la persona personalice la app (nombre, foto, rol papá/mamá,
 hijos con nombre/edad/foto, nombre de la otra parte) para que se sienta cercana. Decisión del usuario: Perfil como 6ª PESTAÑA independiente al lado de Asistencia (se le advirtió el tope
