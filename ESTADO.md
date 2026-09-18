@@ -2333,7 +2333,13 @@ siguen NO LISTA por el techo estructural ya documentado, sin tocar en esta sesi�
 mes, campana con punto solo si hay evento, chevron en "Ver todo", tap en accesos/nav/tarjetas, saludo en
 hora de Colombia). El isotipo gris queda como decisión de marca pendiente del usuario. Se pospone la r2
 hasta cerrar las etapas 2-3 (misma regla de una ronda por etapa). ETAPA 1 PUBLICADA en producción el
-2026-09-18 a pedido del usuario (commit be82130) para que la vea en su celular antes de la etapa 2. **veredicto:landing** (aprobada por el usuario,
+2026-09-18 a pedido del usuario (commit be82130); el usuario la vio y aprobó seguir. ETAPA 2 CONSTRUIDA:
+Pagos (ref-4: resumen de cuota del mes con estado + próximo vencimiento, saldo pendiente y gastos extra
+del mes, segmentos Cuotas/Gastos/Historial, lista con chip/monto/píldora dentro de una tarjeta, cifras
+de cierre) y Calendario (ref-2: mes con flechas dentro de la tarjeta, puntos y leyenda por categoría con
+tokens --cat-*, agenda de hoy/próximos, cifras por tipo). Ambas medidas a 375 sin revisor (pantallas
+secundarias; capturas docs/revisiones/pagos-375.png y calendario-375.png). Nota: ref-3 es Perfil y
+ref-4 es Pagos (archivos renombrados). Falta ETAPA 3: Expediente, Asistencia, Ajustes (ref-3). **veredicto:landing** (aprobada por el usuario,
 techo documentado abajo), **veredicto:onboarding** y **veredicto:paywall** (techo documentado; siguen
 oscuros, fuera del alcance pedido) sin cambios.
 

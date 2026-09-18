@@ -41,6 +41,13 @@
   --status-info: #6c4ab6;
   --status-info-bg: #e9e2fb;
 
+  /* ── CATEGORÍAS del calendario (puntos y chips de la referencia): un color por tipo de evento ── */
+  --cat-visita: #1a63dc;       --cat-visita-bg: #e3edfc;
+  --cat-medica: #c8397f;       --cat-medica-bg: #fbe4ef;
+  --cat-vacaciones: #157a4f;   --cat-vacaciones-bg: #dff5ea;
+  --cat-extra: #6c4ab6;        --cat-extra-bg: #e9e2fb;
+  --cat-salida: #0b7f8c;       --cat-salida-bg: #dcf3f5;
+
   /* ── FORMA: tarjetas 18px, chips 14px, botones redondos (referencia) ── */
   --radius-card: 18px;
   --radius-button: 999px;

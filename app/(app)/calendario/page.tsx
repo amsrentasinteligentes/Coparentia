@@ -10,11 +10,11 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ChevronLeft, ChevronRight, Plus, X, Users, HeartPulse, Plane, Trophy, Globe, Paperclip } from 'lucide-react';
-import { ContenedorApp, PageHeader, Tarjeta, IconoCirculo, BotonFlotante, ErrorDeCarga } from '@/components/app/ui';
+import { ChevronLeft, ChevronRight, Plus, X, Users, HeartPulse, Plane, Trophy, Globe, Paperclip, CalendarDays } from 'lucide-react';
+import { ContenedorApp, Tarjeta, IconoCirculo, BotonFlotante, ErrorDeCarga, CabeceraApp, TituloSeccion } from '@/components/app/ui';
 import { VisorImagen } from '@/components/app/VisorImagen';
 import { Portal } from '@/components/app/Portal';
-import { type Evento, type TipoEvento, obtenerEventos, agregarEvento, obtenerUrlArchivo, formatoFechaLarga, validarArchivoAdjunto } from '@/lib/datos';
+import { type Evento, type TipoEvento, obtenerEventos, agregarEvento, obtenerUrlArchivo, formatoFechaLarga, formatoFechaCorta, validarArchivoAdjunto } from '@/lib/datos';
 import { hoyEnColombia } from '@/lib/fecha';
 
 const ICONO: Record<TipoEvento, typeof Users> = { visita: Users, medica: HeartPulse, vacaciones: Plane, extracurricular: Trophy, salida_pais: Globe };
@@ -26,7 +26,15 @@ const LABEL_ADJUNTO: Record<TipoEvento, string> = {
   extracurricular: 'Adjuntar un documento (opcional)',
   salida_pais: 'Permiso de salida del país',
 };
-const DIAS_SEMANA = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
+const DIAS_SEMANA = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
+// Un color por tipo de evento (referencia del usuario: puntos y chips de colores por categoría).
+const COLOR: Record<TipoEvento, { fg: string; bg: string }> = {
+  visita: { fg: 'var(--cat-visita)', bg: 'var(--cat-visita-bg)' },
+  medica: { fg: 'var(--cat-medica)', bg: 'var(--cat-medica-bg)' },
+  vacaciones: { fg: 'var(--cat-vacaciones)', bg: 'var(--cat-vacaciones-bg)' },
+  extracurricular: { fg: 'var(--cat-extra)', bg: 'var(--cat-extra-bg)' },
+  salida_pais: { fg: 'var(--cat-salida)', bg: 'var(--cat-salida-bg)' },
+};
 const LABEL_CONTEO: Record<TipoEvento, (n: number) => string> = {
   visita: (n) => (n === 1 ? '1 visita' : `${n} visitas`),
   medica: (n) => (n === 1 ? '1 cita médica' : `${n} citas médicas`),
@@ -81,51 +89,79 @@ export default function Calendario() {
     setModalAbierto(true);
   };
 
+  const hoyISO = hoyEnColombia();
+  const deHoy = delMes.filter((e) => e.fecha === hoyISO);
+  const proximos = delMes.filter((e) => e.fecha >= hoyISO).sort((a, b) => a.fecha.localeCompare(b.fecha));
+  const listaAgenda = proximos.length > 0 ? proximos : delMes;
+  const tituloAgenda = deHoy.length > 0 ? `Hoy · ${formatoFechaCorta(hoyISO)}` : proximos.length > 0 ? 'Próximos este mes' : `Eventos de ${nombreMes(mesActual)}`;
+  const conteo = new Map<TipoEvento, number>();
+  for (const e of delMes) conteo.set(e.tipo, (conteo.get(e.tipo) ?? 0) + 1);
+
   return (
-    <ContenedorApp>
-      <PageHeader titulo="Calendario" subtitulo="Tu registro de eventos — no depende de nadie más" />
+    <>
+      <CabeceraApp aviso={proximos.length > 0} />
+      <ContenedorApp conFab sinTope>
+        <TituloSeccion titulo="Calendario" subtitulo="Organiza visitas, citas y actividades de tus hijos." icon={CalendarDays} />
 
-      <div className="flex items-center justify-between">
-        <button
-          type="button"
-          onClick={() => setMesActual((d) => new Date(d.getFullYear(), d.getMonth() - 1, 1))}
-          aria-label="Mes anterior"
-          className="flex size-11 items-center justify-center text-[var(--text-secondary)] [touch-action:manipulation]"
-        >
-          <ChevronLeft size={20} aria-hidden="true" />
-        </button>
-        <p className="text-[16px] font-semibold text-[var(--text-primary)]">{nombreMes(mesActual)}</p>
-        <button
-          type="button"
-          onClick={() => setMesActual((d) => new Date(d.getFullYear(), d.getMonth() + 1, 1))}
-          aria-label="Mes siguiente"
-          className="flex size-11 items-center justify-center text-[var(--text-secondary)] [touch-action:manipulation]"
-        >
-          <ChevronRight size={20} aria-hidden="true" />
-        </button>
-      </div>
+        {/* Celular: una columna; computador: lista a la izquierda, calendario a la derecha. */}
+        <div className="mt-4 flex flex-col gap-3 md:grid md:grid-cols-2 md:items-start md:gap-4">
+          <div className="md:order-2 flex flex-col gap-3">
+            <CalendarioMes
+              mesActual={mesActual}
+              eventos={eventos}
+              onDiaClick={abrirModalEnFecha}
+              onMesAnterior={() => setMesActual((d) => new Date(d.getFullYear(), d.getMonth() - 1, 1))}
+              onMesSiguiente={() => setMesActual((d) => new Date(d.getFullYear(), d.getMonth() + 1, 1))}
+            />
+          </div>
 
-      {/* Celular: una sola columna, calendario visual arriba y la lista abajo (sin quitar nada).
-          Escritorio (md+): dos columnas — lista a la izquierda, calendario visual a la derecha,
-          ambos mostrando el mismo mes. Aprovecha el espacio que antes quedaba vacío. */}
-      <div className="mt-4 flex flex-col gap-6 md:grid md:grid-cols-2 md:items-start">
-        <div className="md:order-2 flex flex-col gap-4">
-          <CalendarioMes mesActual={mesActual} eventos={eventos} onDiaClick={abrirModalEnFecha} />
-          <ResumenMes eventos={delMes} />
+          <div className="md:order-1 flex flex-col gap-3">
+            {falloCarga && <ErrorDeCarga onReintentar={() => setIntento((n) => n + 1)} />}
+            {!falloCarga && (
+              <Tarjeta indice={1}>
+                <div className="flex items-center justify-between">
+                  <h2 className="text-[15px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">{tituloAgenda}</h2>
+                  <span className="text-[12px] text-[var(--text-secondary)]">{delMes.length} este mes</span>
+                </div>
+                {listaAgenda.length === 0 ? (
+                  <div className="flex flex-col items-center py-6 text-center">
+                    <IconoCirculo icon={CalendarDays} size={22} />
+                    <p className="mt-3 text-[14px] font-bold text-[var(--text-primary)]">Sin eventos este mes</p>
+                    <p className="mt-1 max-w-[30ch] text-[13px] text-[var(--text-secondary)]">Toca un día del calendario o el botón "Evento" para registrar una visita, cita o actividad.</p>
+                  </div>
+                ) : (
+                  <ul className="mt-1 flex flex-col">
+                    {listaAgenda.map((e, i) => (
+                      <li key={e.id} className={i > 0 ? 'border-t border-[color-mix(in_oklab,var(--text-tertiary)_16%,transparent)]' : ''}>
+                        <TarjetaEvento evento={e} />
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </Tarjeta>
+            )}
+
+            {/* Cifras del mes por categoría (las tres tarjetitas de la referencia) */}
+            {conteo.size > 0 && (
+              <div className="grid grid-cols-3 gap-2">
+                {Array.from(conteo.entries()).slice(0, 3).map(([tipo, n], i) => {
+                  const Icon = ICONO[tipo];
+                  return (
+                    <Tarjeta key={tipo} indice={2 + i} className="flex flex-col items-start gap-2 p-3">
+                      <span className="flex size-9 shrink-0 items-center justify-center rounded-[var(--radius-chip,999px)]" style={{ background: COLOR[tipo].bg, color: COLOR[tipo].fg }}>
+                        <Icon size={18} aria-hidden="true" />
+                      </span>
+                      <div className="min-w-0">
+                        <p className="text-[17px] font-extrabold leading-none tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">{n}</p>
+                        <p className="truncate text-[10.5px] leading-tight text-[var(--text-secondary)]">{LABEL_CONTEO[tipo](n).replace(/^\d+ /, '')}</p>
+                      </div>
+                    </Tarjeta>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         </div>
-
-        <div className="md:order-1 flex flex-col gap-3">
-          {falloCarga && <ErrorDeCarga onReintentar={() => setIntento((n) => n + 1)} />}
-          {!falloCarga && delMes.length === 0 && (
-            <Tarjeta className="items-center py-10 text-center">
-              <p className="text-[14px] text-[var(--text-secondary)]">Sin eventos este mes todavía.</p>
-            </Tarjeta>
-          )}
-          {delMes.map((e) => (
-            <TarjetaEvento key={e.id} evento={e} />
-          ))}
-        </div>
-      </div>
 
       <BotonFlotante
         onClick={() => {
@@ -134,7 +170,7 @@ export default function Calendario() {
         }}
       >
         <Plus size={18} aria-hidden="true" />
-        Evento
+        Nuevo evento
       </BotonFlotante>
 
       <Portal>
@@ -151,7 +187,8 @@ export default function Calendario() {
         )}
       </AnimatePresence>
       </Portal>
-    </ContenedorApp>
+      </ContenedorApp>
+    </>
   );
 }
 
@@ -199,12 +236,12 @@ function TarjetaEvento({ evento: e }: { evento: Evento }) {
   );
 
   if (!e.documentoAdjuntoPath) {
-    return <Tarjeta className="flex items-center gap-3">{contenido}</Tarjeta>;
+    return <div className="flex items-center gap-3 py-2.5">{contenido}</div>;
   }
   return (
     <>
       <button type="button" onClick={abrirDocumento} disabled={abriendo} className="text-left [touch-action:manipulation]">
-        <Tarjeta className="flex items-center gap-3">{contenido}</Tarjeta>
+        <div className="flex items-center gap-3 py-2.5">{contenido}</div>
       </button>
       <Portal>
         <VisorImagen url={urlVisor} onCerrar={() => setUrlVisor(null)} />
@@ -215,32 +252,6 @@ function TarjetaEvento({ evento: e }: { evento: Evento }) {
 
 /* ── <ResumenMes> — cuántos eventos hay este mes, por tipo (dato real, nunca inventado) —
    llena el espacio junto al calendario visual sin repetir lo que ya muestra la lista. ── */
-function ResumenMes({ eventos }: { eventos: Evento[] }) {
-  if (eventos.length === 0) return null;
-  const conteo = new Map<TipoEvento, number>();
-  for (const e of eventos) conteo.set(e.tipo, (conteo.get(e.tipo) ?? 0) + 1);
-
-  return (
-    <Tarjeta className="flex flex-col gap-3">
-      <p className="text-[13px] font-semibold text-[var(--text-secondary)]">Este mes</p>
-      <div className="flex flex-wrap gap-2">
-        {Array.from(conteo.entries()).map(([tipo, n]) => {
-          const Icon = ICONO[tipo];
-          return (
-            <span
-              key={tipo}
-              className="flex items-center gap-1.5 rounded-full bg-[color-mix(in_oklab,var(--accent)_10%,transparent)] px-3 py-1.5 text-[12px] font-medium text-[var(--text-primary)]"
-            >
-              <Icon size={13} color="var(--accent)" aria-hidden="true" />
-              {LABEL_CONTEO[tipo](n)}
-            </span>
-          );
-        })}
-      </div>
-    </Tarjeta>
-  );
-}
-
 /* ── <CalendarioMes> — rejilla visual del mes (7 columnas, L→D). El día de hoy se marca con
    acento; los días con eventos llevan un punto debajo del número. Tocar un día abre el modal
    de "Nuevo evento" con esa fecha ya puesta. ── */
@@ -248,10 +259,14 @@ function CalendarioMes({
   mesActual,
   eventos,
   onDiaClick,
+  onMesAnterior,
+  onMesSiguiente,
 }: {
   mesActual: Date;
   eventos: Evento[];
   onDiaClick: (fecha: string) => void;
+  onMesAnterior: () => void;
+  onMesSiguiente: () => void;
 }) {
   const año = mesActual.getFullYear();
   const mes = mesActual.getMonth();
@@ -273,11 +288,22 @@ function CalendarioMes({
     ...Array.from({ length: diasEnMes }, (_, i) => i + 1),
   ];
 
+  const tiposPresentes = Array.from(new Set(Array.from(eventosPorDia.values()).flat()));
+
   return (
     <Tarjeta className="p-4">
+      <div className="mb-3 flex items-center justify-between">
+        <button type="button" onClick={onMesAnterior} aria-label="Mes anterior" className="flex size-10 items-center justify-center rounded-full text-[var(--accent-ink,var(--accent))] [touch-action:manipulation]">
+          <ChevronLeft size={20} aria-hidden="true" />
+        </button>
+        <p className="text-[16px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">{nombreMes(mesActual)}</p>
+        <button type="button" onClick={onMesSiguiente} aria-label="Mes siguiente" className="flex size-10 items-center justify-center rounded-full text-[var(--accent-ink,var(--accent))] [touch-action:manipulation]">
+          <ChevronRight size={20} aria-hidden="true" />
+        </button>
+      </div>
       <div className="grid grid-cols-7 gap-1">
         {DIAS_SEMANA.map((d, i) => (
-          <div key={i} className="pb-2 text-center text-[11px] font-semibold uppercase tracking-[0.04em] text-[var(--text-tertiary)]">
+          <div key={i} className="pb-2 text-center text-[11px] font-bold uppercase tracking-[0.04em] text-[var(--accent-ink,var(--accent))]">
             {d}
           </div>
         ))}
@@ -291,9 +317,9 @@ function CalendarioMes({
               key={fecha}
               type="button"
               onClick={() => onDiaClick(fecha)}
-              className={`flex aspect-square flex-col items-center justify-center gap-1 rounded-[var(--radius-button)] text-[13px] font-medium [touch-action:manipulation] ${
+              className={`flex aspect-square flex-col items-center justify-center gap-0.5 rounded-full text-[13px] font-bold transition-transform duration-100 active:scale-95 [touch-action:manipulation] ${
                 esHoy
-                  ? 'bg-[var(--accent)] text-[var(--on-accent,var(--bg))]'
+                  ? 'bg-[var(--accent)] text-[var(--on-accent,var(--bg))] shadow-[var(--shadow-1)]'
                   : 'text-[var(--text-primary)] hover:bg-[color-mix(in_oklab,var(--text-tertiary)_10%,transparent)]'
               }`}
             >
@@ -303,7 +329,7 @@ function CalendarioMes({
                   <span
                     key={idx}
                     className="size-1.5 rounded-full"
-                    style={{ backgroundColor: esHoy ? 'var(--on-accent, var(--bg))' : 'var(--accent)' }}
+                    style={{ backgroundColor: esHoy ? 'var(--on-accent, var(--bg))' : COLOR[t].fg }}
                   />
                 ))}
               </span>
@@ -311,6 +337,17 @@ function CalendarioMes({
           );
         })}
       </div>
+      {/* Leyenda de categorías presentes en el mes (chips de la referencia) */}
+      {tiposPresentes.length > 0 && (
+        <div className="mt-3 flex flex-wrap gap-1.5">
+          {tiposPresentes.map((t) => (
+            <span key={t} className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-bold" style={{ background: COLOR[t].bg, color: COLOR[t].fg }}>
+              <span className="size-1.5 rounded-full" style={{ background: COLOR[t].fg }} aria-hidden="true" />
+              {LABEL[t]}
+            </span>
+          ))}
+        </div>
+      )}
     </Tarjeta>
   );
 }

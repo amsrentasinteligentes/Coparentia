@@ -78,6 +78,13 @@
   --status-success: #5b93e8;
   --status-warning: #e8b95b;
   --status-error: #e85b6b;
+
+  /* Categorías del calendario (en oscuro todas en la familia del acento; la variante clara las separa) */
+  --cat-visita: var(--accent);      --cat-visita-bg: color-mix(in oklab, var(--accent) 14%, transparent);
+  --cat-medica: #e88ab0;            --cat-medica-bg: color-mix(in oklab, #e88ab0 14%, transparent);
+  --cat-vacaciones: #63b58f;        --cat-vacaciones-bg: color-mix(in oklab, #63b58f 14%, transparent);
+  --cat-extra: #a58be8;             --cat-extra-bg: color-mix(in oklab, #a58be8 14%, transparent);
+  --cat-salida: #5bc8d4;            --cat-salida-bg: color-mix(in oklab, #5bc8d4 14%, transparent);
 }
 
 /* ============================================================================

@@ -7,8 +7,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'motion/react';
-import { Upload, ShieldCheck, FileCheck2, X, ChevronRight, Sparkles } from 'lucide-react';
-import { ContenedorApp, PageHeader, Tarjeta, IconoCirculo, BotonFlotante, ErrorDeCarga } from '@/components/app/ui';
+import { Upload, ShieldCheck, FileCheck2, X, ChevronRight, Sparkles, CalendarDays, CreditCard, BarChart3, ReceiptText, Wallet } from 'lucide-react';
+import { ContenedorApp, Tarjeta, IconoCirculo, BotonFlotante, ErrorDeCarga, CabeceraApp, Pildora, TituloSeccion } from '@/components/app/ui';
 import { VisorImagen } from '@/components/app/VisorImagen';
 import { Portal } from '@/components/app/Portal';
 import { SelloConfianza } from '@/components/app/SelloConfianza';
@@ -26,7 +26,7 @@ import {
   formatoFechaLarga,
   validarArchivoAdjunto,
 } from '@/lib/datos';
-import { hoyEnColombia } from '@/lib/fecha';
+import { hoyEnColombia, mesEnColombia, diaDelMesEnColombia, anioEnColombia } from '@/lib/fecha';
 import { leerMontoDeRecibo } from '@/lib/ocr-recibo';
 import { comprimirParaLectura } from '@/lib/comprimir-imagen';
 
@@ -34,6 +34,7 @@ type Filtro = 'todos' | TipoMovimiento;
 
 export default function Pagos() {
   const [pagos, setPagos] = useState<Pago[]>([]);
+  const [titulo, setTitulo] = useState<Titulo | null>(null);
   const [filtro, setFiltro] = useState<Filtro>('todos');
   const parametros = useSearchParams();
   // Se abre solo cuando se llega desde el boton de Inicio, para no cobrar dos toques por una
@@ -71,8 +72,8 @@ export default function Pagos() {
   useEffect(() => {
     let vigente = true;
     setFalloCarga(false);
-    obtenerPagos()
-      .then((r) => { if (vigente) setPagos(r); })
+    Promise.all([obtenerPagos(), obtenerTitulo()])
+      .then(([r, t]) => { if (vigente) { setPagos(r); setTitulo(t); } })
       .catch(() => { if (vigente) setFalloCarga(true); });
     return () => { vigente = false; };
   }, [intento]);
@@ -107,137 +108,191 @@ export default function Pagos() {
 
   const totalVisible = visibles.reduce((acc, p) => acc + p.monto, 0);
 
+  // ── Datos del resumen (composición de la referencia del usuario, Ref 4) ──
+  const mesActual = mesEnColombia();
+  const cuotaDelMes = pagos.find((p) => p.tipo === 'cuota' && p.fecha.slice(0, 7) === mesActual);
+  const diaHoy = diaDelMesEnColombia();
+  const vencida = titulo ? !cuotaDelMes && diaHoy > titulo.diaPago : false;
+  const estadoCuota: { texto: string; tono: 'exito' | 'pendiente' | 'alerta' } = cuotaDelMes
+    ? { texto: 'Registrada', tono: 'exito' }
+    : vencida
+      ? { texto: 'Sin registrar', tono: 'alerta' }
+      : { texto: 'Por registrar', tono: 'pendiente' };
+  const extrasDelMes = pagos.filter((p) => p.tipo !== 'cuota' && p.fecha.slice(0, 7) === mesActual);
+  const totalExtrasMes = extrasDelMes.reduce((acc, p) => acc + p.monto, 0);
+  const anioActual = String(anioEnColombia());
+  const cuotasDelAnio = pagos.filter((p) => p.tipo === 'cuota' && p.fecha.startsWith(anioActual)).length;
+  const nombreMesRaw = new Intl.DateTimeFormat('es-CO', { month: 'long', year: 'numeric', timeZone: 'America/Bogota' }).format(new Date());
+  // Próximo vencimiento: el día de pago de este mes si no ha pasado; si ya pasó, el del mes siguiente.
+  const proximoVencimiento = (() => {
+    if (!titulo) return null;
+    const [y, m] = mesActual.split('-').map(Number);
+    const enEsteMes = diaHoy <= titulo.diaPago;
+    const fecha = new Date(Date.UTC(enEsteMes ? y : m === 12 ? y + 1 : y, enEsteMes ? m - 1 : m % 12, titulo.diaPago));
+    return new Intl.DateTimeFormat('es-CO', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' }).format(fecha);
+  })();
+
   return (
-    <ContenedorApp>
-      <PageHeader titulo="Pagos y gastos" subtitulo={`${pagos.length} comprobantes en tu expediente`} />
+    <>
+      <CabeceraApp aviso={vencida} />
+      <ContenedorApp conFab sinTope>
+        <TituloSeccion titulo="Pagos y cuota alimentaria" subtitulo="Controla tu cuota, los gastos extra y sus comprobantes." icon={Wallet} />
 
-      <div className="flex gap-2">
-        {([
-          { valor: 'todos' as const, label: 'Todos' },
-          { valor: 'cuota' as const, label: 'Cuota' },
-          { valor: 'gasto_extra' as const, label: 'Gastos extra' },
-        ]).map(({ valor, label }) => (
-          <button
-            key={valor}
-            type="button"
-            onClick={() => setFiltro(valor)}
-            className={`rounded-full border px-3.5 py-2 text-[13px] font-medium [touch-action:manipulation] ${
-              filtro === valor
-                ? 'border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_10%,transparent)] text-[var(--accent)]'
-                : 'border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] text-[var(--text-secondary)]'
-            }`}
-          >
-            {label}
-          </button>
-        ))}
-      </div>
-
-      <p className="mt-4 text-[13px] text-[var(--text-secondary)]">
-        {visibles.length} {visibles.length === 1 ? 'registro' : 'registros'} · {formatoCOP(totalVisible)}
-      </p>
-
-      <div className="mt-3 flex flex-col gap-3">
-        {falloCarga && <ErrorDeCarga onReintentar={() => setIntento((n) => n + 1)} />}
-        {/* Era una línea gris suelta: no explicaba nada ni ofrecía salida. Un estado vacío tiene
-            que ENSEÑAR qué va a aparecer ahí y cómo llenarlo (regla 7 del SO). */}
-        {!falloCarga && visibles.length === 0 && (
-          <Tarjeta className="flex flex-col items-center py-8 text-center">
-            <IconoCirculo icon={filtro === 'gasto_extra' ? FileCheck2 : ShieldCheck} size={22} />
-            <p className="mt-3 text-[14px] font-medium text-[var(--text-primary)]">
-              {filtro === 'todos'
-                ? 'Todavía no hay comprobantes'
-                : filtro === 'cuota'
-                  ? 'Todavía no hay cuotas registradas'
-                  : 'Todavía no hay gastos extra'}
-            </p>
-            <p className="mt-1 max-w-[32ch] text-[13px] text-[var(--text-secondary)]">
-              Cada foto que registres queda con su fecha y su Sello de Confianza, lista para exportar.
-            </p>
-            <button
-              type="button"
-              onClick={() => setModalAbierto(true)}
-              className="mt-4 flex h-11 items-center rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--accent)_40%,transparent)] px-5 text-[13.5px] font-semibold text-[var(--accent)] [touch-action:manipulation]"
-            >
-              Registrar el primero
-            </button>
-          </Tarjeta>
-        )}
-        {visibles.map((p, i) => {
-          const contenido = (
-            <>
-              <IconoCirculo icon={p.tipo === 'cuota' ? ShieldCheck : FileCheck2} />
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-[14px] font-medium text-[var(--text-primary)]">{p.concepto}</p>
-                <p className="truncate text-[12px] text-[var(--text-tertiary)]">{formatoFechaLarga(p.fecha)} · {p.comprobanteNombre}</p>
-              </div>
-              <p className="shrink-0 text-[14px] font-semibold tabular-nums text-[var(--text-primary)]">{formatoCOP(p.monto)}</p>
-              {p.comprobantePath && (
-                <ChevronRight size={16} className="shrink-0 text-[var(--text-tertiary)]" aria-hidden="true" />
-              )}
-            </>
-          );
-
-          return (
-            <Tarjeta key={p.id} indice={i} className="flex flex-col gap-2">
-              {p.comprobantePath ? (
-                <button
-                  type="button"
-                  onClick={() => verComprobante(p)}
-                  disabled={abriendo === p.id}
-                  className="flex items-center gap-3 text-left [touch-action:manipulation]"
-                >
-                  {contenido}
-                </button>
-              ) : (
-                <div className="flex items-center gap-3">{contenido}</div>
-              )}
-
-              {/* BORRAR — no existía ninguna forma de corregir un registro. Una foto equivocada
-                  quedaba para siempre en el expediente que se lleva a un juzgado, y ahora además
-                  se incrusta en el PDF que recibe el abogado. Confirmación en dos pasos porque es
-                  irreversible (regla 8 del SO: confirmar solo lo que no se puede deshacer). */}
-              {confirmandoBorrado === p.id ? (
-                <div className="flex items-center gap-2 border-t border-[color-mix(in_oklab,var(--text-tertiary)_14%,transparent)] pt-2">
-                  <p className="flex-1 text-[12.5px] text-[var(--text-secondary)]">
-                    ¿Borrar este registro y su comprobante?
+        {falloCarga ? (
+          <ErrorDeCarga onReintentar={() => setIntento((n) => n + 1)} />
+        ) : (
+          <>
+            {/* RESUMEN — la tarjeta ancha de la referencia: cuota del mes con estado | próximo vencimiento */}
+            <Tarjeta className="mt-4 flex flex-col gap-3">
+              <div className="flex min-w-0 flex-1 items-start gap-3">
+                <IconoCirculo icon={CreditCard} size={22} tono={estadoCuota.tono === 'exito' ? 'exito' : estadoCuota.tono === 'alerta' ? 'pendiente' : 'accent'} grande />
+                <div className="min-w-0">
+                  <p className="text-[14px] font-bold text-[var(--text-primary)] [font-family:var(--font-display)]">Cuota de {nombreMesRaw}</p>
+                  <div className="mt-1"><Pildora texto={estadoCuota.texto} tono={estadoCuota.tono} /></div>
+                  <p className="mt-1.5 text-[18px] font-extrabold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
+                    {titulo ? formatoCOP(cuotaDelMes?.monto ?? titulo.montoMensual) : '—'}
                   </p>
-                  <button
-                    type="button"
-                    onClick={() => setConfirmandoBorrado(null)}
-                    disabled={borrando === p.id}
-                    className="h-9 rounded-[var(--radius-button)] px-3 text-[12.5px] font-medium text-[var(--text-secondary)] [touch-action:manipulation]"
-                  >
-                    No
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => borrarPago(p)}
-                    disabled={borrando === p.id}
-                    className="h-9 rounded-[var(--radius-button)] bg-[var(--status-error)] px-3 text-[12.5px] font-semibold text-white transition-opacity disabled:opacity-60 [touch-action:manipulation]"
-                  >
-                    {borrando === p.id ? 'Borrando…' : 'Sí, borrar'}
-                  </button>
+                  <p className="text-[11.5px] text-[var(--text-secondary)]">
+                    {cuotaDelMes ? `Registrada el ${formatoFechaLarga(cuotaDelMes.fecha)}` : titulo ? `Vence el día ${titulo.diaPago}` : 'Define tu cuota en Ajustes'}
+                  </p>
                 </div>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => setConfirmandoBorrado(p.id)}
-                  aria-label={`Borrar ${p.concepto}`}
-                  className="self-end text-[12px] text-[var(--text-tertiary)] underline-offset-2 hover:underline [touch-action:manipulation]"
-                >
-                  Borrar
-                </button>
-              )}
-
-              {errorFila?.id === p.id && (
-                <p role="alert" className="text-[12.5px] leading-[1.5] text-[var(--status-error)]">
-                  {errorFila.mensaje}
-                </p>
+              </div>
+              {proximoVencimiento && (
+                <div className="flex items-center gap-2 border-t border-[color-mix(in_oklab,var(--text-tertiary)_16%,transparent)] pt-3">
+                  <IconoCirculo icon={CalendarDays} size={16} />
+                  <div className="min-w-0">
+                    <p className="text-[11px] text-[var(--text-secondary)]">Próximo vencimiento</p>
+                    <p className="text-[13px] font-bold text-[var(--text-primary)]">{proximoVencimiento}</p>
+                  </div>
+                  <ChevronRight size={16} className="ml-auto shrink-0 text-[var(--text-tertiary)]" aria-hidden="true" />
+                </div>
               )}
             </Tarjeta>
-          );
-        })}
-      </div>
+
+            {/* DOS CIFRAS — saldo pendiente y gastos extra del mes */}
+            <div className="mt-3 grid grid-cols-2 gap-3">
+              <Tarjeta indice={1}>
+                <IconoCirculo icon={BarChart3} tono={vencida ? 'pendiente' : 'exito'} />
+                <div className="mt-3 min-w-0">
+                  <p className="text-[12px] font-bold text-[var(--text-primary)]">Saldo pendiente</p>
+                  <p className="mt-1 text-[17px] font-extrabold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
+                    {vencida && titulo ? formatoCOP(titulo.montoMensual) : formatoCOP(0)}
+                  </p>
+                  <p className="text-[11.5px] text-[var(--text-secondary)]">{vencida ? 'Cuota del mes sin comprobante' : 'Sin pagos vencidos'}</p>
+                </div>
+              </Tarjeta>
+              <Tarjeta indice={2}>
+                <IconoCirculo icon={ReceiptText} tono="info" />
+                <div className="mt-3 min-w-0 flex-1">
+                  <p className="text-[12px] font-bold text-[var(--text-primary)]">Gastos extra</p>
+                  <p className="mt-1 text-[17px] font-extrabold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">{formatoCOP(totalExtrasMes)}</p>
+                  <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-[color-mix(in_oklab,var(--accent)_16%,transparent)]">
+                    <span className="block h-full rounded-full bg-[var(--accent)]" style={{ width: `${Math.min(100, extrasDelMes.length * 25)}%` }} />
+                  </div>
+                  <p className="mt-1 text-[11.5px] text-[var(--text-secondary)]">{extrasDelMes.length} este mes</p>
+                </div>
+              </Tarjeta>
+            </div>
+
+            {/* SEGMENTOS (referencia: Cuotas · Gastos · Historial) */}
+            <div role="tablist" aria-label="Filtrar registros" className="mt-4 grid grid-cols-3 gap-1 rounded-[var(--radius-button)] bg-[var(--surface-2)] p-1">
+              {([
+                { valor: 'cuota' as const, label: 'Cuotas' },
+                { valor: 'gasto_extra' as const, label: 'Gastos' },
+                { valor: 'todos' as const, label: 'Historial' },
+              ]).map(({ valor, label }) => (
+                <button
+                  key={valor}
+                  type="button"
+                  role="tab"
+                  aria-selected={filtro === valor}
+                  onClick={() => setFiltro(valor)}
+                  className={`h-9 rounded-[var(--radius-button)] text-[13px] font-bold transition-colors duration-150 [touch-action:manipulation] ${
+                    filtro === valor ? 'bg-[var(--accent)] text-[var(--on-accent,var(--bg))] shadow-[var(--shadow-1)]' : 'text-[var(--accent-ink,var(--accent))]'
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+
+            {/* LISTA — dentro de una tarjeta, filas con chip, mes/fecha, monto y estado */}
+            <Tarjeta indice={3} className="mt-3">
+              <div className="flex items-center justify-between">
+                <h2 className="text-[15px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">
+                  {filtro === 'cuota' ? 'Detalle de cuotas' : filtro === 'gasto_extra' ? 'Gastos extra' : 'Historial'}
+                </h2>
+                <p className="text-[12px] text-[var(--text-secondary)]">{visibles.length} · {formatoCOP(totalVisible)}</p>
+              </div>
+              {visibles.length === 0 ? (
+                <div className="flex flex-col items-center py-6 text-center">
+                  <IconoCirculo icon={filtro === 'gasto_extra' ? FileCheck2 : ShieldCheck} size={22} />
+                  <p className="mt-3 text-[14px] font-bold text-[var(--text-primary)]">
+                    {filtro === 'todos' ? 'Todavía no hay comprobantes' : filtro === 'cuota' ? 'Ninguna cuota registrada aún' : 'Ningún gasto extra aún'}
+                  </p>
+                  <p className="mt-1 max-w-[30ch] text-[13px] text-[var(--text-secondary)]">
+                    Toca "Registrar", sube la foto del comprobante y queda fechado con el Sello de Confianza.
+                  </p>
+                </div>
+              ) : (
+                <ul className="mt-1 flex flex-col">
+                  {visibles.map((p, i) => {
+                    const esCuota = p.tipo === 'cuota';
+                    const contenido = (
+                      <>
+                        <IconoCirculo icon={esCuota ? CalendarDays : ReceiptText} size={18} tono={esCuota ? 'accent' : 'info'} />
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate text-[13.5px] font-bold text-[var(--text-primary)]">{p.concepto}</p>
+                          <p className="truncate text-[11.5px] text-[var(--text-secondary)]">Registrado el {formatoFechaLarga(p.fecha)}</p>
+                        </div>
+                        <p className="shrink-0 text-[13.5px] font-extrabold tabular-nums text-[var(--text-primary)]">{formatoCOP(p.monto)}</p>
+                        <Pildora texto={esCuota ? 'Sello' : 'Extra'} tono={esCuota ? 'exito' : 'neutro'} />
+                        {p.comprobantePath && <ChevronRight size={16} className="shrink-0 text-[var(--text-tertiary)]" aria-hidden="true" />}
+                      </>
+                    );
+                    return (
+                      <li key={p.id} className={`flex flex-col gap-1.5 py-2.5 ${i > 0 ? 'border-t border-[color-mix(in_oklab,var(--text-tertiary)_16%,transparent)]' : ''}`}>
+                        {p.comprobantePath ? (
+                          <button type="button" onClick={() => verComprobante(p)} disabled={abriendo === p.id} className="flex w-full items-center gap-2.5 text-left [touch-action:manipulation]">
+                            {contenido}
+                          </button>
+                        ) : (
+                          <div className="flex items-center gap-2.5">{contenido}</div>
+                        )}
+                        {confirmandoBorrado === p.id ? (
+                          <div className="flex items-center gap-2 pt-1">
+                            <p className="flex-1 text-[12.5px] text-[var(--text-secondary)]">¿Borrar este registro y su comprobante?</p>
+                            <button type="button" onClick={() => setConfirmandoBorrado(null)} disabled={borrando === p.id} className="h-9 rounded-[var(--radius-button)] px-3 text-[12.5px] font-medium text-[var(--text-secondary)] [touch-action:manipulation]">No</button>
+                            <button type="button" onClick={() => borrarPago(p)} disabled={borrando === p.id} className="h-9 rounded-[var(--radius-button)] bg-[var(--status-error)] px-3 text-[12.5px] font-semibold text-white transition-opacity disabled:opacity-60 [touch-action:manipulation]">
+                              {borrando === p.id ? 'Borrando…' : 'Sí, borrar'}
+                            </button>
+                          </div>
+                        ) : (
+                          <button type="button" onClick={() => setConfirmandoBorrado(p.id)} aria-label={`Borrar ${p.concepto}`} className="self-end py-1 text-[11.5px] text-[var(--text-tertiary)] underline-offset-2 hover:underline [touch-action:manipulation]">Borrar</button>
+                        )}
+                        {errorFila?.id === p.id && (
+                          <p role="alert" className="text-[12.5px] leading-[1.5] text-[var(--status-error)]">{errorFila.mensaje}</p>
+                        )}
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+            </Tarjeta>
+
+            {/* CIFRAS DE CIERRE — pagos este año y comprobantes con Sello */}
+            <div className="mt-3 grid grid-cols-2 gap-3">
+              <Tarjeta indice={4} className="flex items-center gap-3">
+                <IconoCirculo icon={BarChart3} />
+                <div><p className="text-[11.5px] text-[var(--text-secondary)]">Cuotas este año</p><p className="text-[17px] font-extrabold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">{cuotasDelAnio}</p></div>
+              </Tarjeta>
+              <Tarjeta indice={5} className="flex items-center gap-3">
+                <IconoCirculo icon={ShieldCheck} tono="exito" />
+                <div><p className="text-[11.5px] text-[var(--text-secondary)]">Con Sello</p><p className="text-[17px] font-extrabold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">{pagos.length}</p></div>
+              </Tarjeta>
+            </div>
+          </>
+        )}
 
       <BotonFlotante onClick={() => setModalAbierto(true)}>
         <Upload size={18} aria-hidden="true" />
@@ -270,7 +325,8 @@ export default function Pagos() {
       <Portal>
         <VisorImagen url={urlVisor} onCerrar={() => setUrlVisor(null)} />
       </Portal>
-    </ContenedorApp>
+      </ContenedorApp>
+    </>
   );
 }
 
