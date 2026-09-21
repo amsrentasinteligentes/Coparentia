@@ -18,6 +18,10 @@ import { crearClienteSupabaseAdmin } from '@/lib/supabase/admin';
 
 const REMITENTE = 'Coparentia <hola@coparentia.co>';
 const RESPONDER_A = 'soporte@coparentia.co'; // a donde llegan las respuestas, no al remitente
+// Destino de las consultas de Asistencia jurídica (decisión del usuario, 2026-09-21): la abogada
+// que responde. Se puede cambiar sin tocar código con la variable CONSULTAS_JURIDICAS_EMAIL en
+// Vercel; sin ella, cae al correo de Ivonne.
+const DESTINO_CONSULTAS = process.env.CONSULTAS_JURIDICAS_EMAIL ?? 'ivonnereyes.abogada@gmail.com';
 const URL_APP = 'https://coparentia.co';
 
 function clienteResend(): Resend | null {
@@ -188,12 +192,13 @@ export async function enviarConsultaJuridica(emailUsuario: string, mensaje: stri
   try {
     const { error } = await resend.emails.send({
       from: REMITENTE,
-      to: RESPONDER_A,
+      to: DESTINO_CONSULTAS,
       replyTo: emailUsuario,
-      subject: `Consulta jurídica de ${emailUsuario}`,
+      subject: 'Consulta jurídica Coparentia',
       html: `
         <p style="font-family:sans-serif;color:#374151;font-size:14px;">
-          <strong>De:</strong> ${escaparHtml(emailUsuario)}
+          <strong>De:</strong> ${escaparHtml(emailUsuario)}<br/>
+          <span style="color:#6b7280;">Responde a este correo y la respuesta le llega directo a la persona.</span>
         </p>
         <p style="font-family:sans-serif;color:#111827;font-size:15px;line-height:1.6;white-space:pre-wrap;">${escaparHtml(mensaje)}</p>
       `,

@@ -1,6 +1,7 @@
 'use server';
 
-// Envía la consulta jurídica que el usuario escribe en /asistencia a soporte@coparentia.co —
+// Envía la consulta jurídica que el usuario escribe en /asistencia al correo de la abogada que
+// responde (DESTINO_CONSULTAS en lib/email.ts; antes iba a soporte@coparentia.co) —
 // sigue el mismo patrón de lib/email.ts (Resend), pero a diferencia de los correos que dispara el
 // webhook, este SÍ le importa el resultado a la pantalla (necesita decir "se envió" o "falló").
 
