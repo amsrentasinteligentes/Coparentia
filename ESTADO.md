@@ -6,7 +6,8 @@
   fecha y user_agent; RLS select/insert propios, sin update/delete. Fail-open SOLO si la tabla no existe
   (42P01/PGRST205) para no bloquear clientes antes de correr el SQL.
 - Ajustes → "Novedades y promociones": interruptor que inserta una fila nueva (registro completo).
-- SQL: supabase/consentimientos.sql — PENDIENTE de que el usuario lo corra (avisar "listo").
+- SQL: supabase/consentimientos.sql — EJECUTADO por el usuario (Success). Probado end-to-end con la
+  cuenta del dueño: aviso al faltar una casilla, guardado (fila v1 con fecha) y redirect a /inicio.
 - Duda para el equipo jurídico: ¿la renovación automática debe aceptarse ANTES del cobro (paywall)
   además de en la primera entrada? Se preguntó al usuario.
 - Captura: docs/revisiones/consentimiento-375.png (pantalla legal/secundaria, sin revisor). Commit f955416.
