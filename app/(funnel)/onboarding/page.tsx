@@ -683,7 +683,7 @@ function ReconocimientoPreocupacion({
     <div className="flex flex-1 flex-col items-center justify-center text-center lg:justify-start">
       <CheckCelebracion />
       <h1 className="mt-6 text-balance text-[28px] font-bold leading-[1.12] text-[var(--text-primary)] [font-family:var(--font-display)]">
-        Tiene sentido que te preocupe
+        Tiene sentido que te preocupes
       </h1>
       <p className="mt-4 max-w-[38ch] text-[16px] leading-[1.5] text-[var(--text-secondary)]">
         {textos[preocupacion] ??
