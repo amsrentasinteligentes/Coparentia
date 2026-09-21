@@ -4,6 +4,9 @@
   por env CONSULTAS_JURIDICAS_EMAIL (documentado en .env.example). Commit b58d2bf. Pendiente: prueba
   real del usuario ("prueba 1") y confirmación de recepción.
 - Copy: "Tiene sentido que te preocupes" (e508d9d).
+- Asistencia: tarjeta de confirmación cálida tras enviar ("Tu consulta ya está en camino… Equipo
+  Coparentia" + "Enviar otra consulta"), pedido del usuario; captura docs/revisiones/asistencia-enviado-375.png
+  (secundaria, sin revisor). Commit 5401912.
 - Pendiente del usuario: confirmar si existen los buzones soporte@ y alianzas@coparentia.co.
 - Botón "Continuar con Google — próximamente" (/entrar): el usuario eligió CONECTARLO (opción 2);
   recordatorio agendado para hoy 14:36. Plan: credencial en Google Cloud (guiado) → OAuth en Supabase →
