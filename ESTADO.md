@@ -2,11 +2,13 @@
 - Consultas de /asistencia ahora van a ivonnereyes.abogada@gmail.com (Ivonne, la abogada que responde;
   decisión del usuario) con asunto fijo "Consulta jurídica Coparentia" y replyTo = usuario. Override
   por env CONSULTAS_JURIDICAS_EMAIL (documentado en .env.example). Commit b58d2bf. Pendiente: prueba
-  real del usuario ("prueba 1") y confirmación de recepción.
+  real del usuario ("prueba 1") → HECHA y recibida (ver abajo).
 - Copy: "Tiene sentido que te preocupes" (e508d9d).
 - Asistencia: tarjeta de confirmación cálida tras enviar ("Tu consulta ya está en camino… Equipo
   Coparentia" + "Enviar otra consulta"), pedido del usuario; captura docs/revisiones/asistencia-enviado-375.png
   (secundaria, sin revisor). Commit 5401912.
+- VERIFICADO por el usuario (2026-09-21): la consulta de prueba llegó al Gmail de Ivonne; ella creó la
+  etiqueta "Coparentia" para esos correos. Circuito de Asistencia jurídica cerrado end-to-end.
 - Pendiente del usuario: confirmar si existen los buzones soporte@ y alianzas@coparentia.co.
 - Botón "Continuar con Google — próximamente" (/entrar): el usuario eligió CONECTARLO (opción 2);
   recordatorio agendado para hoy 14:36. Plan: credencial en Google Cloud (guiado) → OAuth en Supabase →
