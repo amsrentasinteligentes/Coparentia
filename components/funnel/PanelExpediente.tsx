@@ -105,7 +105,7 @@ export function PanelExpediente({
                     transition={reduce ? { duration: 0 } : { duration: 0.24, type: 'spring', bounce: 0.1 }}
                     className="flex items-center justify-center"
                   >
-                    <Check size={12} strokeWidth={3} color="var(--bg)" />
+                    <Check size={12} strokeWidth={3} color="var(--on-accent, var(--bg))" />
                   </motion.span>
                 )}
               </span>
@@ -115,7 +115,7 @@ export function PanelExpediente({
               {/* La fila pendiente usa --text-tertiary PLENO (5.1:1 sobre --surface): con el
                   `color-mix` al 75% caía a 3.46:1 y no pasaba AA — el revisor lo midió. */}
               <div className="min-w-0 flex-1">
-                <p className={lista ? 'text-[12px] text-[var(--text-tertiary)]' : 'text-[13px] text-[var(--text-tertiary)]'}>
+                <p className="text-[12px] text-[var(--text-tertiary)]">
                   {fila.label}
                 </p>
                 {lista && (

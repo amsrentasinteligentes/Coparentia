@@ -44,6 +44,28 @@ import {
   usePasoVariants,
 } from '@/components/funnel/ui';
 import { PanelExpediente, type FilaExpediente } from '@/components/funnel/PanelExpediente';
+import { Blob } from '@/components/landing/ui';
+
+/* Check de los reconocimientos sobre la FORMA ORGÁNICA de la variante clara (FICHA-ARTE: blobs
+   en degradé azul — el dispositivo ownable que al funnel le faltaba, revisor claro r1). */
+function CheckCelebracion() {
+  const reduce = useReducedMotion();
+  return (
+    <div className="relative flex size-28 items-center justify-center">
+      <Blob className="inset-0" opacidad={0.18} />
+      <Blob className="-bottom-2 -right-3 size-12" variante="b" opacidad={0.28} />
+      <motion.span
+        initial={{ scale: 0.6, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ type: 'spring', bounce: 0.12, duration: reduce ? 0 : 0.44 }}
+        aria-hidden="true"
+        className="relative flex size-16 items-center justify-center rounded-full bg-[var(--surface)] shadow-[var(--shadow-1)]"
+      >
+        <Check size={28} strokeWidth={2.4} color="var(--accent)" aria-hidden="true" />
+      </motion.span>
+    </div>
+  );
+}
 
 type Rol = 'paga' | 'recibe' | '';
 
@@ -78,7 +100,7 @@ function manejarFlechasChips(e: KeyboardEvent<HTMLDivElement>): void {
 function InfoContextual({ children, anclar = true }: { children: ReactNode; anclar?: boolean }) {
   return (
     <div
-      className={`flex items-start gap-3 rounded-[var(--radius-card)] bg-[color-mix(in_oklab,var(--bg)_60%,black)] p-4 shadow-[inset_0_1px_2px_rgb(0_0_0_/_0.3)] ${anclar ? 'mt-auto' : 'mt-6'}`}
+      className={`flex items-start gap-3 rounded-[var(--radius-card)] bg-[var(--surface-2)] p-4 ${anclar ? 'mt-auto' : 'mt-6'}`}
     >
       <Info size={18} className="mt-0.5 shrink-0 text-[var(--text-tertiary)]" aria-hidden="true" />
       <p className="text-[13px] leading-[1.5] text-[var(--text-secondary)]">{children}</p>
@@ -183,8 +205,6 @@ function filasExpediente(r: Respuestas): FilaExpediente[] {
   ];
 }
 
-// Pasos numerados solo para el % de la barra (7 preguntas reales + 2 reconocimientos + loading).
-const TOTAL_PASOS = 10;
 // Los pasos que son PREGUNTA (los otros son reconocimientos y la carga): el contador dice
 // "Pregunta n de 7" porque eso es lo que la persona cuenta — "Paso 1 de 10" prometía 10 preguntas.
 const PASOS_PREGUNTA = [0, 1, 2, 3, 5, 6, 7];
@@ -199,6 +219,14 @@ export default function Onboarding() {
   // el botón Atrás para volver a SU estado anterior, en vez de salir del paso completo.
   const [atrasLocal, setAtrasLocal] = useState<(() => void) | null>(null);
   const [retomado, setRetomado] = useState(false);
+  // "Empezar de nuevo" borra las 7 respuestas: el primer toque pide confirmar, el segundo ejecuta
+  // (revisor claro r2). La confirmación se retira sola a los 4 s si la persona no insiste.
+  const [confirmarReinicio, setConfirmarReinicio] = useState(false);
+  useEffect(() => {
+    if (!confirmarReinicio) return;
+    const t = setTimeout(() => setConfirmarReinicio(false), 4000);
+    return () => clearTimeout(t);
+  }, [confirmarReinicio]);
 
   const avanzar = (patch?: Partial<Respuestas>): void => {
     if (patch) setR((prev) => ({ ...prev, ...patch }));
@@ -211,6 +239,44 @@ export default function Onboarding() {
     setRetomado(false);
   };
   const atras = (): void => setPaso((p) => Math.max(0, p - 1));
+
+  const empezarDeNuevo = (): void => {
+    if (!confirmarReinicio) {
+      setConfirmarReinicio(true);
+      return;
+    }
+    setConfirmarReinicio(false);
+    try {
+      sessionStorage.removeItem(CLAVE_ONBOARDING);
+      sessionStorage.removeItem(CLAVE_PASO);
+    } catch {}
+    setR(VACIAS);
+    setPaso(0);
+    setRetomado(false);
+  };
+
+  // ORDEN DE LOS EFECTOS (2026-09-18): los dos guardados van ANTES del efecto que restaura, y
+  // saltan el estado inicial. Si no, en el primer render el guardado escribía el estado VACÍO
+  // sobre lo restaurado (visible en desarrollo con Strict Mode: el panel de computador mostraba
+  // "Pregunta 3 de 7" con el expediente en blanco).
+  const restaurado = useRef(false);
+  useEffect(() => {
+    if (paso === 0 && !restaurado.current) return;
+    try {
+      sessionStorage.setItem(CLAVE_PASO, String(paso));
+    } catch {}
+  }, [paso]);
+
+  // GUARDADO INCREMENTAL (2026-09-17). Antes esto solo corría en el paso 9 de 10: cerrar la
+  // pestaña en cualquier paso intermedio borraba TODAS las respuestas, sin aviso y sin forma de
+  // retomarlas (bug real encontrado por el revisor-visual). Ahora cada respuesta queda guardada
+  // en el momento en que se da — que es además lo que permite mostrar el expediente armándose.
+  useEffect(() => {
+    if (r === VACIAS) return;
+    try {
+      sessionStorage.setItem(CLAVE_ONBOARDING, JSON.stringify(r));
+    } catch {}
+  }, [r]);
 
   // Se retoman las respuestas Y EL PASO de un intento anterior: guardar solo las respuestas dejaba
   // a quien volvía en la pregunta 1 con el expediente ya lleno — dos señales contradictorias en la
@@ -234,33 +300,9 @@ export default function Onboarding() {
         setRetomado(true);
       }
     } catch {}
+    restaurado.current = true;
   }, []);
 
-  const empezarDeNuevo = (): void => {
-    try {
-      sessionStorage.removeItem(CLAVE_ONBOARDING);
-      sessionStorage.removeItem(CLAVE_PASO);
-    } catch {}
-    setR(VACIAS);
-    setPaso(0);
-    setRetomado(false);
-  };
-
-  useEffect(() => {
-    try {
-      sessionStorage.setItem(CLAVE_PASO, String(paso));
-    } catch {}
-  }, [paso]);
-
-  // GUARDADO INCREMENTAL (2026-09-17). Antes esto solo corría en el paso 9 de 10: cerrar la
-  // pestaña en cualquier paso intermedio borraba TODAS las respuestas, sin aviso y sin forma de
-  // retomarlas (bug real encontrado por el revisor-visual). Ahora cada respuesta queda guardada
-  // en el momento en que se da — que es además lo que permite mostrar el expediente armándose.
-  useEffect(() => {
-    try {
-      sessionStorage.setItem(CLAVE_ONBOARDING, JSON.stringify(r));
-    } catch {}
-  }, [r]);
 
   const filas = filasExpediente(r);
 
@@ -272,7 +314,7 @@ export default function Onboarding() {
               subrayado de acento que la pregunta de la derecha — dos titulares empatados en la
               misma vista y el dispositivo de marca gastado dos veces (revisor-visual). Ahora va un
               escalón abajo (21px, sin marcador): la pregunta sigue siendo EL objeto de la pantalla. */}
-          <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-[var(--accent)] lg:mt-3">
+          <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-[var(--accent-ink,var(--accent))] lg:mt-3">
             Tu expediente se está armando
           </p>
           <h2 className="mt-3 text-balance text-[21px] font-semibold leading-[1.25] text-[var(--text-primary)] [font-family:var(--font-display)]">
@@ -291,7 +333,7 @@ export default function Onboarding() {
       <FunnelHeader />
       {paso < PASO_LOADING && (
         <BarraAtras
-          porcentaje={((paso + 1) / TOTAL_PASOS) * 100}
+          porcentaje={(PASOS_PREGUNTA.filter((p) => p <= paso).length / PASOS_PREGUNTA.length) * 100}
           pasoActual={PASOS_PREGUNTA.filter((p) => p <= paso).length}
           pasoTotal={PASOS_PREGUNTA.length}
           palabra="Pregunta"
@@ -304,13 +346,13 @@ export default function Onboarding() {
           role="status"
           className="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-[var(--radius-button)] bg-[color-mix(in_oklab,var(--accent)_10%,transparent)] px-3 py-2 text-[13px] text-[var(--text-secondary)]"
         >
-          <span>Retomamos donde lo dejaste.</span>
+          <span>{confirmarReinicio ? 'Se borran tus respuestas.' : 'Retomamos donde lo dejaste.'}</span>
           <button
             type="button"
             onClick={empezarDeNuevo}
-            className="font-semibold text-[var(--accent)] underline-offset-2 hover:underline [touch-action:manipulation]"
+            className={`py-1 font-semibold underline-offset-2 hover:underline [touch-action:manipulation] ${confirmarReinicio ? 'text-[var(--status-error)]' : 'text-[var(--accent-ink,var(--accent))]'}`}
           >
-            Empezar de nuevo
+            {confirmarReinicio ? '¿Seguro? Toca otra vez' : 'Empezar de nuevo'}
           </button>
         </div>
       )}
@@ -367,7 +409,7 @@ export default function Onboarding() {
           venía marcando como vacío en las pantallas de opciones. Se oculta en los pasos que ya
           llenan la pantalla solos (reconocimientos y carga final) para no competir con su CTA. */}
       {PASOS_CON_RESUMEN_MOVIL.includes(paso) && (
-        <div className="my-auto pt-4 lg:hidden">
+        <div className={`pt-4 lg:hidden ${filas.some((x) => x.valor) ? 'my-auto' : 'mt-2'}`}>
           <PanelExpediente filas={filas} compacto />
         </div>
       )}
@@ -465,13 +507,16 @@ function PreguntaSituacion({
             onElegir(texto.trim());
           }}
         >
+        <label htmlFor="situacion-otra" className="mt-6 block text-[13px] font-medium text-[var(--text-secondary)]">Tu situación, en una frase</label>
         <input
+          id="situacion-otra"
           autoFocus
           type="text"
+          maxLength={120}
           value={texto}
           onChange={(e) => setTexto(e.target.value)}
-          placeholder="Tu situación..."
-          className="mt-6 h-14 w-full rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--surface)] px-4 text-[16px] text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)]"
+          placeholder="Ej. Pago, pero cada mes discutimos el monto"
+          className="mt-2 h-14 w-full rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--surface)] px-4 text-[16px] text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)]"
         />
         {/* Helper pegado al input + la caja de contexto de sus hermanas (sustancia real en un
             paso que si no sería un campo perdido en negro). El CTA sí se ancla al fondo con
@@ -634,19 +679,10 @@ function ReconocimientoPreocupacion({
       'Ese miedo baja cuando tienes con qué respaldar tu reclamo. No se trata de "tener razón" — se trata de tener la prueba a la mano.',
   };
   const mostrarRefuerzoUnilateral = situacion === 'Tengo disputas frecuentes por la cuota';
-  const reduce = useReducedMotion();
   return (
-    <div className="flex flex-1 flex-col items-center text-center">
-      <motion.span
-        initial={{ scale: 0.6, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ type: 'spring', bounce: 0.12, duration: reduce ? 0 : 0.44 }}
-        aria-hidden="true"
-        className="flex size-16 items-center justify-center rounded-full bg-[color-mix(in_oklab,var(--accent)_12%,transparent)]"
-      >
-        <Check size={28} strokeWidth={2.4} color="var(--accent)" aria-hidden="true" />
-      </motion.span>
-      <h1 className="mt-6 text-balance text-[26px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)]">
+    <div className="flex flex-1 flex-col items-center justify-center text-center lg:justify-start">
+      <CheckCelebracion />
+      <h1 className="mt-6 text-balance text-[28px] font-bold leading-[1.12] text-[var(--text-primary)] [font-family:var(--font-display)]">
         Tiene sentido que te preocupe
       </h1>
       <p className="mt-4 max-w-[38ch] text-[16px] leading-[1.5] text-[var(--text-secondary)]">
@@ -663,7 +699,7 @@ function ReconocimientoPreocupacion({
           </p>
         </div>
       )}
-      <div className="mt-auto w-full pt-8">
+      <div className="mt-10 w-full lg:mt-auto lg:pt-8">
         <CtaFunnel onClick={onContinuar}>Continuar</CtaFunnel>
       </div>
     </div>
@@ -692,7 +728,7 @@ function PreguntaMeta({ valor, onFijar }: { valor: number; onFijar: (v: number) 
   }, [rounded]);
 
   return (
-    <div className="flex flex-1 flex-col">
+    <div className="flex flex-1 flex-col justify-center lg:justify-start">
       <h1 className="relative text-balance text-[28px] font-bold leading-[1.1] text-[var(--text-primary)] [font-family:var(--font-display)]">
         <Halo />
         ¿Cuántos <Marcador>meses</Marcador> de comprobantes quieres organizar primero?
@@ -719,14 +755,14 @@ function PreguntaMeta({ valor, onFijar }: { valor: number; onFijar: (v: number) 
           <span>12</span>
         </div>
         {/* Emoji como ícono → prohibido por FICHA-ARTE. SVG de librería en chip de acento. */}
-        <p className="mt-6 flex items-center gap-2 text-[14px] font-medium text-[var(--accent)]">
+        <p className="mt-6 flex items-center gap-2 text-[14px] font-medium text-[var(--accent-ink,var(--accent))]">
           <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-[color-mix(in_oklab,var(--accent)_12%,transparent)]">
             <Zap size={13} strokeWidth={2.4} aria-hidden="true" />
           </span>
           {feedback}
         </p>
       </div>
-      <div className="mt-auto pt-8">
+      <div className="mt-10 lg:mt-auto lg:pt-8">
         <CtaFunnel onClick={() => onFijar(n)}>Fijar mi meta</CtaFunnel>
       </div>
     </div>
@@ -800,19 +836,10 @@ function PreguntaAtribucion({ valor, onElegir }: { valor: string; onElegir: (v: 
    Nombra el mecanismo (regla del 02B: "el usuario debe poder decir el nombre de lo que
    acaba de configurar") — antes solo vivía en landing/paywall, nunca en el onboarding. ── */
 function ReconocimientoFinal({ respuestas, onContinuar }: { respuestas: Respuestas; onContinuar: () => void }) {
-  const reduce = useReducedMotion();
   return (
-    <div className="flex flex-1 flex-col items-center text-center">
-      <motion.span
-        initial={{ scale: 0.6, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ type: 'spring', bounce: 0.12, duration: reduce ? 0 : 0.44 }}
-        aria-hidden="true"
-        className="flex size-16 items-center justify-center rounded-full bg-[color-mix(in_oklab,var(--accent)_12%,transparent)]"
-      >
-        <Check size={28} strokeWidth={2.4} color="var(--accent)" aria-hidden="true" />
-      </motion.span>
-      <h1 className="mt-6 text-balance text-[26px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)]">
+    <div className="flex flex-1 flex-col items-center justify-center text-center lg:justify-start">
+      <CheckCelebracion />
+      <h1 className="mt-6 text-balance text-[28px] font-bold leading-[1.12] text-[var(--text-primary)] [font-family:var(--font-display)]">
         Tus respuestas te describen
       </h1>
       <p className="mt-4 max-w-[40ch] text-[16px] leading-[1.5] text-[var(--text-secondary)]">
@@ -825,7 +852,7 @@ function ReconocimientoFinal({ respuestas, onContinuar }: { respuestas: Respuest
           Cada comprobante que subas llevará el <Marcador>Sello de Confianza</Marcador>: fecha y respaldo que nadie puede alterar en silencio.
         </p>
       </div>
-      <div className="mt-auto w-full pt-8">
+      <div className="mt-10 w-full lg:mt-auto lg:pt-8">
         <CtaFunnel onClick={onContinuar}>Ver mi plan</CtaFunnel>
       </div>
     </div>
@@ -916,7 +943,7 @@ function LoadingPlan({ respuestas, onListo }: { respuestas: Respuestas; onListo:
             <li key={i} className={`flex items-start gap-3 ${hecha || enCurso ? 'opacity-100' : 'opacity-40'}`}>
               {hecha ? (
                 <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-[var(--accent)]">
-                  <Check size={12} strokeWidth={3} color="var(--bg)" />
+                  <Check size={12} strokeWidth={3} color="var(--on-accent, var(--bg))" />
                 </span>
               ) : (
                 <span

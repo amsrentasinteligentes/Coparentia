@@ -14,12 +14,8 @@ import type { ReactNode } from 'react';
 /* ── <FunnelHeader> — logo + nombre arriba de TODA pantalla del funnel (50, regla de marca) ── */
 export function FunnelHeader({ appName = 'Coparentia' }: { appName?: string }) {
   return (
-    <Link
-      href="/"
-      className="mb-2 inline-flex items-center gap-2 py-3 text-[15px] font-semibold text-[var(--text-primary)]"
-    >
-      <img src="/logo-isotipo.png" alt="" aria-hidden="true" className="size-6 shrink-0 object-contain" />
-      {appName}
+    <Link href="/" aria-label={appName} className="mb-2 inline-flex items-center py-3">
+      <img src="/logo-horizontal.webp" alt={appName} className="h-8 w-auto object-contain" />
     </Link>
   );
 }
@@ -73,7 +69,7 @@ export function BarraAtras({
         <ChevronLeft size={22} aria-hidden="true" />
       </button>
       <BarraProgreso porcentaje={porcentaje} />
-      <span className="shrink-0 whitespace-nowrap text-right text-[12px] tabular-nums text-[var(--text-tertiary)]">
+      <span className="shrink-0 whitespace-nowrap text-right text-[13px] tabular-nums text-[var(--text-tertiary)]">
         {pasoActual && pasoTotal ? `${palabra} ${pasoActual} de ${pasoTotal}` : `${Math.round(Math.max(6, Math.min(100, porcentaje)))}%`}
       </span>
     </div>
@@ -102,8 +98,9 @@ export function Marcador({ children }: { children: ReactNode }) {
         // `text-decoration` resuelve el problema de raíz: el navegador conoce la baseline real de
         // la fuente y, con `skip-ink` (su valor por defecto), ABRE UN HUECO alrededor de cada
         // descendente en vez de atravesarla. Ningún cálculo manual puede igualar eso.
+        color: 'var(--marcador-color, inherit)',
         textDecorationLine: 'underline',
-        textDecorationColor: 'color-mix(in oklab, var(--accent) 45%, transparent)',
+        textDecorationColor: 'var(--accent-underline, color-mix(in oklab, var(--accent) 45%, transparent))',
         textDecorationThickness: '0.13em',
         textUnderlineOffset: '0.12em',
       }}
@@ -124,7 +121,7 @@ export function Halo() {
       // las dos revisiones de hoy encontraron a la vez, en onboarding y en paywall. Acotado a los
       // bordes del propio título: el degradado ya se desvanece dentro de su caja, así que el halo
       // se sigue viendo igual sin salirse de la pantalla.
-      className="pointer-events-none absolute inset-x-0 -top-16 -bottom-24 -z-10"
+      className="pointer-events-none absolute inset-x-0 -top-8 -bottom-24 -z-10"
       style={{
         // DOS bugs corregidos aquí, y este componente alimenta TODO el onboarding:
         // (a) `220px 140px` son RADIOS, o sea una elipse de 440×280 dentro de una caja de ~190px:
@@ -141,7 +138,9 @@ export function Halo() {
         // elipse para que toque el borde más cercano exactamente donde el color llega a cero: se
         // apaga por completo antes de cualquier borde, en celular y en computador.
         background:
-          'radial-gradient(ellipse closest-side at 36% 46%, color-mix(in oklab, var(--accent) 26%, transparent) 0%, transparent 100%)',
+          // En la variante clara el 26% se veía como una mancha azul detrás del título (medido a 375px):
+        // el tema claro baja la intensidad con --halo-alpha (tokens-claro.css); el oscuro conserva 26%.
+        'radial-gradient(ellipse closest-side at 36% 46%, color-mix(in oklab, var(--accent) var(--halo-alpha, 26%), transparent) 0%, transparent 100%)',
       }}
     />
   );
@@ -175,7 +174,7 @@ export function Chip({
       className={`flex min-h-14 w-full items-center gap-3 rounded-[var(--radius-button)] border px-4 py-3 text-left text-[16px] font-medium transition-colors duration-150 [touch-action:manipulation] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)] ${
         seleccionado
           ? 'border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_10%,transparent)] text-[var(--text-primary)] shadow-[0_4px_16px_color-mix(in_oklab,var(--accent)_22%,transparent)]'
-          : 'border-[color-mix(in_oklab,var(--text-tertiary)_60%,transparent)] bg-[var(--surface)] text-[var(--text-primary)] shadow-[0_2px_8px_rgb(6_12_24_/_0.45)]'
+          : 'border-[color-mix(in_oklab,var(--text-tertiary)_28%,transparent)] bg-[var(--surface)] text-[var(--text-primary)] shadow-[var(--shadow-1)]'
       }`}
     >
       {icon}
@@ -188,7 +187,7 @@ export function Chip({
           aria-hidden="true"
           className="flex size-5 shrink-0 items-center justify-center rounded-full bg-[var(--accent)]"
         >
-          <Check size={12} strokeWidth={3} color="var(--bg)" />
+          <Check size={12} strokeWidth={3} color="var(--on-accent, var(--bg))" />
         </motion.span>
       )}
     </motion.button>
@@ -216,7 +215,7 @@ export function CtaFunnel({
       // El foco de teclado global (globals/tokens.css) dibuja un anillo del color de ACENTO — y
       // este botón ya ES de color acento, así que el anillo se perdía sobre su propio relleno.
       // Aquí se fuerza un anillo de alto contraste para que navegar con teclado se vea.
-      className="flex h-14 w-full items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-[16px] font-semibold text-[var(--bg)] shadow-[0_8px_30px_color-mix(in_oklab,var(--accent)_28%,transparent)] transition-opacity duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--text-primary)] disabled:cursor-wait [touch-action:manipulation]"
+      className="flex h-14 w-full items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-[16px] font-semibold text-[var(--on-accent,var(--bg))] shadow-[0_8px_30px_color-mix(in_oklab,var(--accent)_28%,transparent)] transition-[background-color,opacity] duration-150 hover:bg-[var(--accent-deep,var(--accent))] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--text-primary)] disabled:cursor-wait disabled:opacity-80 [touch-action:manipulation]"
     >
       {children}
     </motion.button>

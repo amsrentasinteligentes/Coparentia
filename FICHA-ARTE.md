@@ -86,8 +86,12 @@
   réplica fiel de Inicio aprobada → el interior (Inicio, Pagos, Calendario, Expediente, Asistencia,
   Ajustes) pasa a CLARO con tokens-app-claro.css (valores MEDIDOS en ref-1: bg #EDF0F7, tarjetas #FFF,
   chips #EBF1FD, azul #1A63DC, marino #0B2A57, verde #157A4F/#DFF5EA, morado #6C4AB6/#E9E2FB, radios
-  18/14/999, Figtree + Nunito Sans). Onboarding, paywall y /entrar siguen oscuros hasta que el usuario
-  pida esa etapa. Pendiente de marca: el isotipo actual es gris metálico (se ve apagado sobre claro);
+  18/14/999, Figtree + Nunito Sans). ACTUALIZACIÓN 2026-09-18 (tarde): el usuario levantó la orden
+  ("me equivoqué, cámbiala toda") → onboarding, paywall y /entrar pasan a CLARO con los tokens de la
+  landing (app/(funnel)/layout.tsx envuelve las tres en .tema-claro). Ajustes del kit del funnel para
+  claro: <Marcador> = palabra en --accent-ink sin subrayado (--marcador-color), <Halo> al 12%
+  (--halo-alpha), blobs detrás del check de los reconocimientos y del H1 del precio. TODA la app es
+  clara; el tema oscuro de tokens.css queda solo como fallback de las páginas legales/admin. Pendiente de marca: el isotipo actual es gris metálico (se ve apagado sobre claro);
   la referencia lleva un logo azul — decisión del usuario si se rediseña.
 - Referencia PARCIAL del usuario: capturas de 2houses.com/es, niddoapp.com/es y ourfamilywizard.com →
   fondo claro, fotos reales de familias, capturas de la app flotando, azul Coparentia en sectores,

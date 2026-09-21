@@ -10,7 +10,7 @@ import { Suspense, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'motion/react';
-import { Lock, Mail } from 'lucide-react';
+import { Lock, Mail, KeyRound, ShieldCheck } from 'lucide-react';
 import { CtaFunnel, FunnelHeader, MarcoFunnel } from '@/components/funnel/ui';
 import { crearClienteSupabase } from '@/lib/supabase/client';
 
@@ -114,7 +114,7 @@ function EntrarInterno() {
     <MarcoFunnel
       panel={
         <>
-          <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-[var(--accent)]">
+          <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-[var(--accent-ink,var(--accent))]">
             Tu expediente te espera
           </p>
           <h2 className="mt-3 text-balance text-[21px] font-semibold leading-[1.25] text-[var(--text-primary)] [font-family:var(--font-display)]">
@@ -202,6 +202,29 @@ function EntrarInterno() {
               <Lock size={13} aria-hidden="true" />
               Sin contraseñas: te llegará un enlace de un solo uso
             </p>
+
+            {/* EN CELULAR no existe el panel lateral: la mitad inferior quedaba en fondo plano
+                (medido a 375×812 en la variante clara). Lo que el panel cuenta en computador —cómo
+                se entra y qué protege— va aquí como tarjeta compacta, anclada abajo. */}
+            <div className="mt-auto pt-8 lg:hidden">
+              <div className="rounded-[var(--radius-card)] bg-[var(--surface)] p-4 shadow-[var(--shadow-1)]">
+                <p className="text-[13px] font-semibold text-[var(--text-primary)]">Cómo entras</p>
+                <ul className="mt-3 flex flex-col gap-3">
+                  {[
+                    { icon: Mail, texto: 'Te llega un enlace de un solo uso a tu correo.' },
+                    { icon: KeyRound, texto: 'Si el enlace no abre la app, usa el código de 8 dígitos del mismo correo.' },
+                    { icon: ShieldCheck, texto: 'Tus comprobantes viajan cifrados y solo tú accedes a tu expediente.' },
+                  ].map(({ icon: Icon, texto }) => (
+                    <li key={texto} className="flex items-start gap-3">
+                      <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[color-mix(in_oklab,var(--accent)_12%,transparent)]">
+                        <Icon size={15} color="var(--accent)" aria-hidden="true" />
+                      </span>
+                      <p className="text-[13px] leading-[1.5] text-[var(--text-secondary)]">{texto}</p>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
           </>
         ) : (
           <div className="flex flex-1 flex-col items-center pt-6 text-center">
@@ -252,7 +275,7 @@ function EntrarInterno() {
               type="button"
               disabled={countdown > 0 || reenvio === 'enviando'}
               onClick={reenviar}
-              className="mt-6 text-[14px] font-medium text-[var(--accent)] disabled:text-[var(--text-tertiary)] [touch-action:manipulation]"
+              className="mt-6 text-[14px] font-medium text-[var(--accent-ink,var(--accent))] disabled:text-[var(--text-tertiary)] [touch-action:manipulation]"
             >
               {reenvio === 'enviando'
                 ? 'Reenviando…'

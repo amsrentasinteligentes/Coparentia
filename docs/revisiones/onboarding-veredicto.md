@@ -1,10 +1,14 @@
-# VEREDICTO revisor-visual — onboarding
-Histórico: r1 29·14 · r2 27·13 · r3 31·16 · r4 31·16 · r5 30·16 · r6 30·16
-Fecha: 2026-09-17 21:05
-Screenshot: docs/revisiones/onboarding-375.png
-Usabilidad: 30/40
+# VEREDICTO revisor-visual — onboarding (variante clara, ronda 3)
+Fecha: 2026-09-18 23:40
+Screenshot: docs/revisiones/onboarding-claro-375.png
+Usabilidad: 36/40
 Craft: 16/20
 Copy (si vende): N-A
 Fidelidad (si hubo referencia): N-A
-Veredicto: NO LISTA
-Top defectos: (1) 375 paso 1, tarjeta "Tu expediente" (PanelExpediente.tsx:44-53, page.tsx:362-366): con 0 respuestas renderiza 4 filas vacías con rayita + "y 3 preguntas más" + nota del Sello = ~300px (37% de la vista) sin un solo dato; sumada a la caja "¿Por qué lo preguntamos?" (4 líneas a 13px) son ~410px de apoyo gris contra ~210px de pregunta+2 opciones — el usuario lo percibe como relleno (h8=2); fix: variante `resumen` cuando contestadas=0 (1 línea "7 preguntas · 2 min" + 3 chips SVG: PDF, Sello de Confianza, alertas; ~120px) y las filas aparecen desde la primera respuesta. (2) 375 paso 1, borde inferior: el contenido cierra en y≈805 de 812 con pb=max(20px,safe-area); en iPhone (inset 34px) el documento desborda ~27px y aparece un scroll de "casi cabe" que en el screenshot de Playwright no se ve; fix: resolver (1) o bajar `mt-6`→`mt-4` del bloque de paso (page.tsx:318) + `pb-[max(24px,env(safe-area-inset-bottom))]`. (3) paso 6 slider (page.tsx:698-707): `<input type="range">` con thumb/track nativos del SO — el único control del funnel fuera del kit (sin radio 10px, sin sombra tintada, sin feedback de tap); fix: estilizar `[&::-webkit-slider-thumb]`/`[&::-moz-range-thumb]` (size-6, bg accent, ring accent/20) y track h-1 rounded con relleno hasta el valor. (4) FICHA-ARTE vs tokens.css:32: `--text-secondary` es #a8bad6 en código y #7F93B3 en la ficha (texto 2º) — subtítulos ("Así adaptamos las preguntas…") y cuerpo del panel a 1440 van un escalón más claros que el contrato; fix: una sola fuente de verdad — actualizar la ficha con el hex y el motivo (8.1:1) o volver al hex de la ficha. (5) page.tsx:915 `animate-pulse` en la carga no respeta prefers-reduced-motion (todo lo demás del paso sí) → `motion-safe:animate-pulse`; y BarraAtras "Paso 1 de 10" cuenta 2 reconocimientos + la carga como pasos — la persona lee 10 y son 7 preguntas; fix: "Pregunta 1 de 7" (solo pasos con decisión) o mantener el % sin la palabra "Paso".
+Veredicto: LISTA
+Top defectos:
+1. [Cabecera, todas las capturas] El logo (components/funnel/ui.tsx:18, /logo-horizontal.webp) es gris metálico sobre #F3F7FC: se lee apagado, como placeholder, y es lo primero que ve la persona. FICHA-ARTE.md:94 ya lo anota como pendiente del usuario → fix: exportar logo-horizontal-claro.webp con isotipo y wordmark en --accent-deep (#2757A8) y usarlo bajo .tema-claro; medible: contraste del wordmark vs fondo ≥3:1 (hoy ~2.2:1 estimado por el gris).
+2. [Pregunta 1, 375px] Con cero respuestas la tarjeta "Tu expediente" (page.tsx:412 `my-auto pt-4`) flota con ~125px de aire arriba y ~130px abajo (onboarding-claro-p0-375.png, y≈425-545 y y≈680-812) → fix: cuando `contestadas.length === 0` anclar la tarjeta con `mt-6` bajo la caja de contexto y dejar el sobrante abajo; medible: hueco entre InfoContextual y la tarjeta ≤48px a 375×812.
+3. [Titulares entre pasos] Los reconocimientos usan h1 26px (page.tsx:685 y :842) y las preguntas 28px (page.tsx:157, :493, :732); además en celular conviven 5 tamaños (28/16/14/13/12: PanelExpediente.tsx:72 y page.tsx:106 en 13px) → fix: h1 28px en los 9 pasos y subir los 13px a 14px; medible: ≤4 tamaños distintos por pantalla.
+4. [Banda "Retomamos donde lo dejaste"] "Empezar de nuevo" (page.tsx:243-256) ya confirma con segundo toque, pero sigue sin deshacer: tras confirmar se pierden las 7 respuestas → fix: guardar snapshot de `r`/`paso` antes de limpiar y mostrar toast 5 s con "Deshacer" que lo restaure; medible: tras "Deshacer" el panel vuelve a mostrar las mismas filas contestadas.
+5. [Captura de la pregunta 1] onboarding-claro-p0-375.png muestra "rol" SUBRAYADO, contradiciendo tokens-claro.css:38 (`--accent-underline: transparent`) y la captura fresca de la pregunta 3 (sin subrayado): es una captura vieja → fix: recapturar el paso 0 con el build actual; medible: `getComputedStyle(marcador).textDecorationColor` = transparente en la captura nueva.

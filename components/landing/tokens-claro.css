@@ -4,9 +4,10 @@
    PÁGINA DE VENTAS"). Referencia parcial del usuario: 2houses / Niddo /
    OurFamilyWizard → claro, empático, fotos, capturas de la app, azul en sectores.
 
-   ALCANCE: SOLO la landing (app/page.tsx envuelve todo en `.tema-claro`). El
-   interior de la app, el onboarding, el paywall y el login conservan el tema
-   oscuro de tokens.css sin cambios — orden explícita del usuario.
+   ALCANCE (2026-09-18): la landing (app/page.tsx) Y el funnel completo —
+   onboarding, paywall y login— vía app/(funnel)/layout.tsx. El interior de la
+   app usa su hermano tokens-app-claro.css. El tema oscuro de tokens.css queda
+   solo como fallback (legales, admin).
 
    CÓMO FUNCIONA: redefine los MISMOS tokens que consume el kit de landing, así
    los componentes cambian de piel sin bifurcar código. Lo que el kit no podía
@@ -35,6 +36,8 @@
   --on-accent: #ffffff;      /* texto sobre botones de acento (en oscuro era --bg) */
   --accent-ink: #2757a8;     /* acento para texto ≤17px sobre --bg: 6.5:1 (#2F6FDC medía 4.4:1 ahí) */
   --accent-underline: transparent; /* el <Accent> no subraya en esta variante: solo color */
+  --halo-alpha: 12%;
+  --marcador-color: var(--accent-ink); /* <Marcador> del funnel: palabra clave en acento, sin subrayado (como <Accent>) */               /* <Halo> del funnel: sobre claro, 26% era una mancha (2026-09-18) */
 
   /* ── FORMA: todo curvo (dispositivo de la dirección C) ── */
   --radius-card: 22px;

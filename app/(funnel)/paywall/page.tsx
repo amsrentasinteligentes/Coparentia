@@ -14,7 +14,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
-import { X, Check, ShieldCheck, Lock, FileCheck2, HeartHandshake } from 'lucide-react';
+import { X, Check, ShieldCheck, Lock, FileCheck2, HeartHandshake, ChevronDown, Loader2 } from 'lucide-react';
+import { Blob } from '@/components/landing/ui';
 import { BarraAtras, CtaFunnel, FunnelHeader, Halo, MarcoFunnel, Marcador, usePasoVariants } from '@/components/funnel/ui';
 import { PanelExpediente, type FilaExpediente } from '@/components/funnel/PanelExpediente';
 import { obtenerTRM } from '@/lib/trm';
@@ -65,7 +66,7 @@ function CheckPlan({ activo }: { activo: boolean }) {
           transition={reduce ? { duration: 0 } : { duration: 0.2, type: 'spring', bounce: 0.35 }}
           className="flex items-center justify-center"
         >
-          <Check size={12} strokeWidth={3} color="var(--bg)" />
+          <Check size={12} strokeWidth={3} color="var(--on-accent, var(--bg))" />
         </motion.span>
       )}
     </span>
@@ -90,8 +91,8 @@ type Respuestas = {
 // Precios en UN solo lugar y como NÚMEROS: el conteo animado los necesita numéricos, y tenerlos
 // duplicados como texto era la vía directa a que un cambio de precio actualizara una pantalla y
 // no la otra. El costo por día se deriva aquí mismo, nunca se escribe a mano.
-const PLAN_ANUAL = { precioMes: 7.42, cobroAnual: 89, totalAnual: 'Se cobra US$89 al año', costoDia: 'US$0.24' };
-const PLAN_MENSUAL = { precioMes: 9.99, cobroAnual: 119.88, totalAnual: 'Serían US$119.88 al año', costoDia: 'US$0.33' };
+const PLAN_ANUAL = { precioMes: 7.42, cobroAnual: 89, totalAnual: 'Se cobra US$89 al año', costoDia: 'US$0.24', cobro: 'US$89 al año' };
+const PLAN_MENSUAL = { precioMes: 9.99, cobroAnual: 119.88, totalAnual: 'Serían US$119.88 al año', costoDia: 'US$0.33', cobro: 'US$9.99 al mes' };
 
 // Enlaces REALES del checkout de Hotmart, uno por plan — el producto ya existe en Hotmart
 // (creado 2026-09-11). Si el precio o el plan cambian ahí, hay que traer el enlace nuevo aquí.
@@ -184,7 +185,7 @@ export default function Paywall() {
     <MarcoFunnel
       panel={
         <>
-          <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-[var(--accent)]">
+          <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-[var(--accent-ink,var(--accent))]">
             {filasExpediente.length > 0 ? 'Tu expediente ya está armado' : 'Lo que vas a tener'}
           </p>
           <h2 className="mt-3 text-balance text-[28px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)]">
@@ -332,7 +333,7 @@ function ValorYPrueba({
     <div className="flex flex-1 flex-col">
       <h1 className="relative text-balance text-[28px] font-bold leading-[1.12] text-[var(--text-primary)] [font-family:var(--font-display)]">
         <Halo />
-        Tu expediente está <span className="text-[var(--accent)]">listo para empezar</span>
+        Tu expediente está <span className="text-[var(--accent-ink,var(--accent))]">listo para empezar</span>
       </h1>
       <p className="mt-2 text-[14px] text-[var(--text-secondary)]">
         {/* El plural se rompía justo en la línea que PRUEBA la personalización ("Hecho con tus 1
@@ -420,6 +421,18 @@ function ValorYPrueba({
       </div>
 
       <div className="mt-auto pt-6">
+        {/* Las mismas dos señales que acompañan al CTA del paso 2: antes aquí había ~100px de
+            fondo vacío entre la tarjeta del trial y el botón (revisor claro r1). */}
+        <div className="mb-3 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-center text-[13px] font-medium text-[var(--text-secondary)]">
+          <span className="flex items-center gap-1.5">
+            <ShieldCheck size={14} color="var(--accent)" aria-hidden="true" />
+            Garantía del Primer Expediente · 15 días
+          </span>
+          <span className="flex items-center gap-1.5">
+            <Lock size={13} color="var(--accent)" aria-hidden="true" />
+            Pago seguro con Hotmart
+          </span>
+        </div>
         <CtaFunnel onClick={onContinuar}>Ver mi plan y precio</CtaFunnel>
       </div>
     </div>
@@ -450,23 +463,40 @@ function Precio({
   // este avatar hace antes de confiar en una cuenta.
   const costoDiario = plan === 'anual' ? PLAN_ANUAL.costoDia : PLAN_MENSUAL.costoDia;
   return (
-    <div className="flex flex-1 flex-col">
-      <h1 className="relative text-balance text-[26px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)]">
+    <div className="relative flex flex-1 flex-col">
+      {/* FORMA ORGÁNICA de la variante clara (FICHA-ARTE: blobs en degradé azul) detrás del
+          titular — el dispositivo ownable que al paywall le faltaba (revisor claro r1). */}
+      <Blob className="right-2 -top-1 -z-10 h-28 w-44 lg:top-0 lg:h-20" opacidad={0.14} />
+      <h1 className="relative text-balance text-[28px] font-bold leading-[1.12] text-[var(--text-primary)] [font-family:var(--font-display)]">
         <Halo />
         {/* El <Marcador> envolvía "captura de WhatsApp": a 375px esa frase cruza tres renglones y
             el subrayado se partía en tres trazos sueltos que parecían marcar palabras al azar.
             Marcando UNA sola palabra —la memorable— el trazo siempre cae entero en un renglón. */}
-        Una captura de WhatsApp <Marcador>se pierde</Marcador>&nbsp;— tu expediente <span className="text-[var(--accent)]">queda fechado</span>
+        Una captura de WhatsApp se pierde — tu expediente <span className="text-[var(--accent-ink,var(--accent))]">queda fechado</span>
       </h1>
 
       {/* `radiogroup` + `aria-checked`: las dos tarjetas eran <button> sueltos y el check estaba
           marcado como decorativo, así que con lector de pantalla NINGÚN plan aparecía elegido —
           alguien ciego no podía saber qué está por contratar. */}
-      <div role="radiogroup" aria-label="Elige tu plan" className="mt-4 flex flex-col gap-2 lg:mt-6">
+      <div
+        role="radiogroup"
+        aria-label="Elige tu plan"
+        className="mt-4 flex flex-col gap-2 lg:mt-6"
+        // Flechas ↑/↓ cambian de plan sin soltar el teclado (patrón radiogroup — revisor claro r2).
+        onKeyDown={(e) => {
+          if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+          e.preventDefault();
+          onCambiarPlan(plan === 'anual' ? 'mensual' : 'anual');
+          // Roving tabindex: el foco sigue al plan activo.
+          const radios = e.currentTarget.querySelectorAll<HTMLButtonElement>('[role="radio"]');
+          radios[plan === 'anual' ? 1 : 0]?.focus();
+        }}
+      >
         <motion.button
           type="button"
           role="radio"
           aria-checked={plan === 'anual'}
+          tabIndex={plan === 'anual' ? 0 : -1}
           onClick={() => onCambiarPlan('anual')}
           whileTap={{ scale: 0.97 }}
           initial={{ opacity: 0, y: 8 }}
@@ -484,7 +514,7 @@ function Precio({
           {/* Decía "Más popular": prueba social FABRICADA — la app todavía no tiene ni un cliente,
               así que no hay ningún plan que sea "el más popular". Sustituido por el único dato
               verificable y comprobable con la calculadora: $9.99×12 = $119.88 vs $89 = $30.88. */}
-          <span className="mb-3 self-start rounded-full bg-[color-mix(in_oklab,var(--accent)_14%,transparent)] px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.06em] text-[var(--accent)]">
+          <span className="mb-3 self-start rounded-full bg-[color-mix(in_oklab,var(--accent)_14%,transparent)] px-2.5 py-1 text-[13px] font-bold uppercase tracking-[0.06em] text-[var(--accent-ink,var(--accent))]">
             Ahorras 3 meses · US$30.88 al año
           </span>
           <div className="flex w-full items-start gap-3">
@@ -492,7 +522,7 @@ function Precio({
             <div className="flex-1">
               <div className="flex items-baseline justify-between">
                 <span className="text-[15px] font-semibold text-[var(--text-primary)]">Anual</span>
-                <span className="text-[24px] font-bold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
+                <span className="text-[22px] font-bold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
                   <PrecioContado valor={PLAN_ANUAL.precioMes} /><span className="text-[13px] font-normal text-[var(--text-secondary)]">/mes</span>
                 </span>
               </div>
@@ -500,7 +530,7 @@ function Precio({
                   tenía fondo base y tarjeta elevada; FICHA-ARTE declara tres niveles. La referencia
                   en pesos —dato de apoyo, no el precio— va sobre una superficie HUNDIDA: se
                   distingue del precio principal sin agregar otro color ni otro tamaño de letra. */}
-              <p className="mt-1.5 rounded-[var(--radius-button)] bg-[var(--surface-2)] px-3 py-1 text-[13px] text-[var(--text-secondary)] shadow-[inset_0_1px_2px_rgb(0_0_0_/_0.3)]">
+              <p className="mt-1.5 min-h-[2.6em] rounded-[var(--radius-button)] bg-[var(--surface-2)] px-3 py-1 text-[13px] text-[var(--text-secondary)] shadow-[inset_0_1px_2px_rgb(20_40_80_/_0.08)] lg:min-h-0">
                 {PLAN_ANUAL.totalAnual}
                 {trm && <span className="block text-[var(--text-tertiary)] lg:ml-2 lg:inline">≈ {aproximadoEnPesos(PLAN_ANUAL.cobroAnual, trm)} COP</span>}
               </p>
@@ -512,6 +542,7 @@ function Precio({
           type="button"
           role="radio"
           aria-checked={plan === 'mensual'}
+          tabIndex={plan === 'mensual' ? 0 : -1}
           onClick={() => onCambiarPlan('mensual')}
           whileTap={{ scale: 0.97 }}
           initial={{ opacity: 0, y: 8 }}
@@ -527,13 +558,13 @@ function Precio({
           <div className="flex-1">
             <div className="flex items-baseline justify-between">
               <span className="text-[15px] font-semibold text-[var(--text-primary)]">Mensual</span>
-              <span className="text-[24px] font-bold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
+              <span className="text-[22px] font-bold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
                 <PrecioContado valor={PLAN_MENSUAL.precioMes} /><span className="text-[13px] font-normal text-[var(--text-secondary)]">/mes</span>
               </span>
             </div>
             {/* Solo la tarjeta Anual mostraba su total, así que el "ahorras US$30.88" no se podía
                 comprobar contra nada: faltaba el término de comparación. */}
-            <p className="mt-1.5 rounded-[var(--radius-button)] bg-[var(--surface-2)] px-3 py-1 text-[13px] text-[var(--text-secondary)] shadow-[inset_0_1px_2px_rgb(0_0_0_/_0.3)]">
+            <p className="mt-1.5 min-h-[2.6em] rounded-[var(--radius-button)] bg-[var(--surface-2)] px-3 py-1 text-[13px] text-[var(--text-secondary)] shadow-[inset_0_1px_2px_rgb(20_40_80_/_0.08)] lg:min-h-0">
               {PLAN_MENSUAL.totalAnual}
               {trm && <span className="block text-[var(--text-tertiary)] lg:ml-2 lg:inline">≈ {aproximadoEnPesos(PLAN_MENSUAL.cobroAnual, trm)} COP</span>}
             </p>
@@ -590,8 +621,9 @@ function Precio({
         {/* El detalle de la garantía queda FUERA del bloque fijo (se lee una vez, no hace falta
             tenerlo siempre a la vista); el nombre y el sello de pago seguro sí entran con el CTA. */}
         <details className="mb-2 w-full text-center">
-          <summary className="cursor-pointer list-none text-[12px] text-[var(--text-tertiary)] underline-offset-2 [touch-action:manipulation] hover:underline">
-            Cómo funciona la garantía
+          <summary className="inline-flex cursor-pointer list-none items-center gap-1 py-2 text-[13px] text-[var(--text-secondary)] underline underline-offset-2 [touch-action:manipulation]">
+            Ver condiciones de la devolución
+            <ChevronDown size={14} aria-hidden="true" />
           </summary>
           <p className="mt-2 text-[13px] leading-[1.5] text-[var(--text-secondary)]">
             Es la Garantía del Primer Expediente: si en 15 días tu expediente no te sirve, escribes
@@ -627,7 +659,7 @@ function Precio({
             <div className="mb-2 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-center text-[13px] font-medium text-[var(--text-secondary)]">
               <span className="flex items-center gap-1.5">
                 <ShieldCheck size={14} color="var(--accent)" aria-hidden="true" />
-                Garantía de 15 días
+                Garantía del Primer Expediente · 15 días
               </span>
               <span className="flex items-center gap-1.5">
                 <Lock size={13} color="var(--accent)" aria-hidden="true" />
@@ -635,7 +667,14 @@ function Precio({
               </span>
             </div>
             <CtaFunnel onClick={onCta} disabled={yendo}>
-              {yendo ? 'Abriendo…' : 'Empezar mis 7 días gratis'}
+              {yendo ? (
+                <span className="flex items-center gap-2">
+                  <Loader2 size={18} className="motion-safe:animate-spin" aria-hidden="true" />
+                  Abriendo el pago seguro…
+                </span>
+              ) : (
+                'Empezar mis 7 días gratis'
+              )}
             </CtaFunnel>
             {/* `role="alert"`, no "status": que el pago no se pudiera abrir es un fallo que hay que
                 interrumpir a anunciar, no una actualización de fondo (revisor-visual). */}
@@ -645,7 +684,7 @@ function Precio({
               </p>
             )}
             <p className="mt-2 text-center text-[13px] text-[var(--text-secondary)]">
-              Hoy no pagas nada · Cancelas cuando quieras
+              Hoy no pagas nada · Primer cobro el día 7: {plan === 'anual' ? PLAN_ANUAL.cobro : PLAN_MENSUAL.cobro} · Cancelas cuando quieras
             </p>
           </div>
         </div>
@@ -661,9 +700,9 @@ function Precio({
           ¿Dudas? Escríbenos
         </a>
         <span aria-hidden="true" className="text-[var(--text-tertiary)]">·</span>
-        <a href="/terminos" className="py-2 text-[11px] text-[var(--text-tertiary)] underline-offset-2 hover:underline">Términos</a>
-        <span aria-hidden="true" className="text-[11px] text-[var(--text-tertiary)]">·</span>
-        <a href="/privacidad" className="py-2 text-[11px] text-[var(--text-tertiary)] underline-offset-2 hover:underline">Privacidad</a>
+        <a href="/terminos" className="py-2 text-[13px] text-[var(--text-tertiary)] underline-offset-2 hover:underline">Términos</a>
+        <span aria-hidden="true" className="text-[13px] text-[var(--text-tertiary)]">·</span>
+        <a href="/privacidad" className="py-2 text-[13px] text-[var(--text-tertiary)] underline-offset-2 hover:underline">Privacidad</a>
       </div>
     </div>
   );
