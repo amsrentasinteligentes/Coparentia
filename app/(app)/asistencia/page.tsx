@@ -1,14 +1,14 @@
 'use client';
 
 // ASISTENCIA JURÍDICA — nueva sección de la app: arriba, un canal directo para que el usuario
-// mande su duda legal (llega por correo a soporte@coparentia.co, con WhatsApp como respaldo de un
+// mande su duda legal (llega por correo a la abogada que responde — lib/email.ts —, con WhatsApp como respaldo de un
 // solo toque); abajo, el espacio publicitario de abogados que antes vivía al final de Expediente
 // (segundo ingreso de la app) — este es el lugar donde tiene más sentido: justo después de
 // preguntar, el usuario ya está pensando en hablar con un abogado de verdad.
 
 import { useState } from 'react';
 import { motion } from 'motion/react';
-import { MessageCircle, Send, Scale } from 'lucide-react';
+import { MessageCircle, Send, Scale, MailCheck } from 'lucide-react';
 import { ContenedorApp, Tarjeta, IconoCirculo, CabeceraApp, TituloSeccion } from '@/components/app/ui';
 import { AbogadoDestacado } from '@/components/app/AbogadoDestacado';
 import { enviarConsulta } from './acciones';
@@ -47,6 +47,23 @@ export default function Asistencia() {
       <ContenedorApp sinTope>
       <TituloSeccion titulo="Asistencia jurídica" subtitulo="Escríbenos tu duda: te respondemos por correo o WhatsApp." icon={Scale} />
 
+      {estado === 'enviado' ? (
+        <Tarjeta className="mt-4 flex flex-col items-center text-center" role="status">
+          <IconoCirculo icon={MailCheck} size={24} tono="exito" grande />
+          <p className="mt-4 text-[18px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">Tu consulta ya está en camino</p>
+          <p className="mt-2 max-w-[32ch] text-[14px] leading-[1.6] text-[var(--text-secondary)]">
+            La recibimos y una abogada del equipo la va a leer con calma. Te respondemos a tu correo en el menor tiempo posible — no tienes que hacer nada más.
+          </p>
+          <p className="mt-3 text-[13px] font-bold text-[var(--accent-ink,var(--accent))]">Equipo Coparentia</p>
+          <button
+            type="button"
+            onClick={() => setEstado('idle')}
+            className="mt-5 h-12 w-full rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--accent)_35%,transparent)] text-[14px] font-bold text-[var(--accent-ink,var(--accent))] [touch-action:manipulation]"
+          >
+            Enviar otra consulta
+          </button>
+        </Tarjeta>
+      ) : (
       <Tarjeta className="mt-4">
         <div className="flex items-center gap-3">
           <IconoCirculo icon={MessageCircle} size={18} />
@@ -57,7 +74,7 @@ export default function Asistencia() {
           value={mensaje}
           onChange={(e) => {
             setMensaje(e.target.value);
-            if (estado === 'error' || estado === 'enviado') setEstado('idle');
+            if (estado === 'error') setEstado('idle');
           }}
           placeholder="Ej.: mi expareja lleva 2 meses sin pagar la cuota, ¿qué puedo hacer?"
           rows={3}
@@ -84,15 +101,13 @@ export default function Asistencia() {
           O escríbenos por WhatsApp
         </a>
 
-        {aviso && (
-          <p
-            role="status"
-            className={`mt-2 text-[13px] leading-[1.5] ${estado === 'error' ? 'text-[var(--status-error)]' : 'text-[var(--text-tertiary)]'}`}
-          >
+        {aviso && estado === 'error' && (
+          <p role="alert" className="mt-2 text-[13px] leading-[1.5] text-[var(--status-error)]">
             {aviso}
           </p>
         )}
       </Tarjeta>
+      )}
 
       {/* Espacio publicitario para abogados de familia — mudado aquí desde Expediente: este es el
           momento donde el usuario ya está pensando en hablar con un abogado de verdad. */}
