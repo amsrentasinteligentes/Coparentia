@@ -1,3 +1,23 @@
+### Checkpoint (2026-09-21, tarde) — CONTACTO CON LOS HIJOS (opción 1 aprobada por el usuario)
+Evaluación frente a OurFamilyWizard: su módulo de llamadas exige que la OTRA parte use la app y consienta
+— contradice la promesa "funciona sin la otra parte". Se eligió la opción unilateral: REGISTRO de
+llamadas/videollamadas con Sello, inmutable, sin grabar contenido. Construido en e04f2cc (SIN PUBLICAR;
+falta que el usuario corra supabase/contacto-hijos.sql → luego prueba real → publicar):
+- eventos: tipos nuevos 'llamada'/'videollamada' + columnas hora, duracion_min, medio, resultado;
+  trigger `bloquear_cambios_contacto` (update/delete prohibidos para esos tipos; security definer,
+  revoke from public). Tokens --cat-llamada / --cat-video (claro y oscuro).
+- Calendario: grid de 7 tipos (4 cols), formulario de contacto (hora, ¿contestaron?, duración,
+  medio, captura recomendada, título automático "Llamada con {hijo}"), aviso de inmutabilidad, Sello
+  al guardar, fila con hora/min/medio/etiqueta de resultado; sheets con max-h-[92dvh] + scroll.
+- Inicio: tarjeta "Contacto con tus hijos" (N este mes · contestados); los contactos no compiten por
+  "próximo evento".
+- PDF: sección "Contacto con los hijos" (resumen por hijo con % contestados y minutos + detalle
+  cronológico + nota legal) y Anexos C1..Cn con las capturas.
+- Pendiente 2ª etapa: recordatorio de llamadas pactadas. Landing NO se toca hasta que Ivonne confirme
+  el valor probatorio del registro. Captura: docs/revisiones/contacto-modal-375.png; revisor pendiente
+  tras la prueba real con datos (pantalla/tipo nuevo → revisor obligatorio antes de publicar).
+- Gates veredicto:landing / veredicto:onboarding / veredicto:paywall: sin cambios (Problemas conocidos).
+
 ### Checkpoint (2026-09-21, mediodía) — CONSENTIMIENTO EXPRESO (pedido del equipo jurídico del usuario)
 - Nueva pantalla /consentimiento (grupo funnel, tema claro): 4 casillas sin premarcar — Términos,
   Política de Datos (con enlaces), renovación automática (obligatorias) + novedades (opcional). Gate en
