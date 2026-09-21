@@ -9,6 +9,9 @@
   (secundaria, sin revisor). Commit 5401912.
 - VERIFICADO por el usuario (2026-09-21): la consulta de prueba llegó al Gmail de Ivonne; ella creó la
   etiqueta "Coparentia" para esos correos. Circuito de Asistencia jurídica cerrado end-to-end.
+- Asistencia (86383b3): "Te respondemos a {correo de la cuenta} · Cambiar" con casilla opcional para otro
+  correo (opción 1 elegida por el usuario); el servidor valida el formato y lo usa como replyTo, y el
+  correo a Ivonne trae "Responder a:" cuando difiere. Captura docs/revisiones/asistencia-correo-375.png.
 - Pendiente del usuario: confirmar si existen los buzones soporte@ y alianzas@coparentia.co.
 - Botón "Continuar con Google — próximamente" (/entrar): el usuario eligió CONECTARLO (opción 2);
   recordatorio agendado para hoy 14:36. Plan: credencial en Google Cloud (guiado) → OAuth en Supabase →
