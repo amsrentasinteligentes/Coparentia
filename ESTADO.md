@@ -1,3 +1,15 @@
+### Checkpoint (2026-09-21, mañana) — Consultas jurídicas a la abogada · copy · Google login agendado
+- Consultas de /asistencia ahora van a ivonnereyes.abogada@gmail.com (Ivonne, la abogada que responde;
+  decisión del usuario) con asunto fijo "Consulta jurídica Coparentia" y replyTo = usuario. Override
+  por env CONSULTAS_JURIDICAS_EMAIL (documentado en .env.example). Commit b58d2bf. Pendiente: prueba
+  real del usuario ("prueba 1") y confirmación de recepción.
+- Copy: "Tiene sentido que te preocupes" (e508d9d).
+- Pendiente del usuario: confirmar si existen los buzones soporte@ y alianzas@coparentia.co.
+- Botón "Continuar con Google — próximamente" (/entrar): el usuario eligió CONECTARLO (opción 2);
+  recordatorio agendado para hoy 14:36. Plan: credencial en Google Cloud (guiado) → OAuth en Supabase →
+  botón real → prueba → publicar → formulario de verificación de Google.
+- Gates veredicto:landing / veredicto:onboarding / veredicto:paywall: sin cambios (ver Problemas conocidos).
+
 ### Checkpoint (2026-09-21) — Fix de publicación del funnel claro
 El commit 0225443 solo incluyó el layout (funnel) + capturas: los cambios de contenido (kit del funnel,
 onboarding, paywall, entrar, tokens-claro) quedaron sin stage por un `git add` que falló en silencio
