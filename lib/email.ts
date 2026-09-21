@@ -186,18 +186,20 @@ export async function enviarCorreoCancelacion(
  * si de verdad llegó para poder decirle "listo, la enviamos" o "no se pudo, intenta de nuevo" en
  * vez de fingir éxito. Por eso devuelve boolean en lugar de tragarse el error en silencio.
  */
-export async function enviarConsultaJuridica(emailUsuario: string, mensaje: string): Promise<boolean> {
+export async function enviarConsultaJuridica(emailUsuario: string, mensaje: string, responderA: string = emailUsuario): Promise<boolean> {
   const resend = clienteResend();
   if (!resend) return false;
   try {
     const { error } = await resend.emails.send({
       from: REMITENTE,
       to: DESTINO_CONSULTAS,
-      replyTo: emailUsuario,
+      // La respuesta va al correo que la persona eligió (por defecto, el de su cuenta).
+      replyTo: responderA,
       subject: 'Consulta jurídica Coparentia',
       html: `
         <p style="font-family:sans-serif;color:#374151;font-size:14px;">
           <strong>De:</strong> ${escaparHtml(emailUsuario)}<br/>
+          ${responderA !== emailUsuario ? `<strong>Responder a:</strong> ${escaparHtml(responderA)}<br/>` : ''}
           <span style="color:#6b7280;">Responde a este correo y la respuesta le llega directo a la persona.</span>
         </p>
         <p style="font-family:sans-serif;color:#111827;font-size:15px;line-height:1.6;white-space:pre-wrap;">${escaparHtml(mensaje)}</p>

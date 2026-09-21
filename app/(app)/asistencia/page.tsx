@@ -6,12 +6,13 @@
 // (segundo ingreso de la app) — este es el lugar donde tiene más sentido: justo después de
 // preguntar, el usuario ya está pensando en hablar con un abogado de verdad.
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
 import { MessageCircle, Send, Scale, MailCheck } from 'lucide-react';
 import { ContenedorApp, Tarjeta, IconoCirculo, CabeceraApp, TituloSeccion } from '@/components/app/ui';
 import { AbogadoDestacado } from '@/components/app/AbogadoDestacado';
 import { enviarConsulta } from './acciones';
+import { obtenerPerfil } from '@/lib/perfil';
 
 // Número de WhatsApp del negocio — el botón abre WhatsApp con el mensaje ya escrito; el usuario
 // solo tiene que tocar "Enviar" ahí (WhatsApp no deja que ninguna app externa mande en su nombre).
@@ -25,13 +26,25 @@ export default function Asistencia() {
   const [mensaje, setMensaje] = useState('');
   const [estado, setEstado] = useState<Estado>('idle');
   const [aviso, setAviso] = useState('');
+  // A dónde llega la respuesta: por defecto el correo de la cuenta (el que ya usó para pagar y
+  // entrar, o sea que lo revisa). Se muestra y se puede cambiar — decisión del usuario 2026-09-21,
+  // opción 1: "mostrar el correo con opción de cambiarlo", sin una casilla más que llenar.
+  const [correoCuenta, setCorreoCuenta] = useState('');
+  const [cambiandoCorreo, setCambiandoCorreo] = useState(false);
+  const [correoRespuesta, setCorreoRespuesta] = useState('');
+  useEffect(() => {
+    let vigente = true;
+    obtenerPerfil().then((p) => { if (vigente) setCorreoCuenta(p.email); }).catch(() => {});
+    return () => { vigente = false; };
+  }, []);
+  const correoFinal = cambiandoCorreo && correoRespuesta.trim() ? correoRespuesta.trim() : correoCuenta;
 
   const habilitado = mensaje.trim().length >= LARGO_MINIMO && estado !== 'enviando';
 
   const enviarPorCorreo = async (): Promise<void> => {
     if (!habilitado) return;
     setEstado('enviando');
-    const r = await enviarConsulta(mensaje);
+    const r = await enviarConsulta(mensaje, cambiandoCorreo ? correoRespuesta : undefined);
     setAviso(r.mensaje);
     setEstado(r.ok ? 'enviado' : 'error');
     if (r.ok) setMensaje('');
@@ -52,7 +65,8 @@ export default function Asistencia() {
           <IconoCirculo icon={MailCheck} size={24} tono="exito" grande />
           <p className="mt-4 text-[18px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">Tu consulta ya está en camino</p>
           <p className="mt-2 max-w-[32ch] text-[14px] leading-[1.6] text-[var(--text-secondary)]">
-            La recibimos y una abogada del equipo la va a leer con calma. Te respondemos a tu correo en el menor tiempo posible — no tienes que hacer nada más.
+            La recibimos y una abogada del equipo la va a leer con calma. Te respondemos en el menor tiempo posible a{' '}
+            <span className="font-bold text-[var(--text-primary)]">{correoFinal || 'tu correo'}</span> — no tienes que hacer nada más.
           </p>
           <p className="mt-3 text-[13px] font-bold text-[var(--accent-ink,var(--accent))]">Equipo Coparentia</p>
           <button
@@ -80,6 +94,44 @@ export default function Asistencia() {
           rows={3}
           className="mt-3 w-full resize-none rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--surface-2)] p-4 text-[15px] leading-relaxed text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)]"
         />
+
+        {/* A dónde llega la respuesta: visible siempre; la casilla solo aparece si toca "Cambiar". */}
+        {cambiandoCorreo ? (
+          <div className="mt-3">
+            <label htmlFor="correo-respuesta" className="block text-[13px] font-medium text-[var(--text-secondary)]">Correo para la respuesta</label>
+            <div className="mt-2 flex flex-col items-start gap-1">
+              <input
+                id="correo-respuesta"
+                type="email"
+                inputMode="email"
+                autoFocus
+                value={correoRespuesta}
+                onChange={(e) => setCorreoRespuesta(e.target.value)}
+                placeholder={correoCuenta || 'tu@correo.com'}
+                className="h-12 w-full rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--surface-2)] px-4 text-[15px] text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)]"
+              />
+              <button
+                type="button"
+                onClick={() => { setCambiandoCorreo(false); setCorreoRespuesta(''); }}
+                className="py-2 text-[13px] font-bold text-[var(--accent-ink,var(--accent))] underline-offset-2 hover:underline [touch-action:manipulation]"
+              >
+                Usar el de mi cuenta
+              </button>
+            </div>
+          </div>
+        ) : (
+          <p className="mt-3 text-[13px] text-[var(--text-secondary)]">
+            Te respondemos a <span className="font-bold text-[var(--text-primary)]">{correoCuenta || 'tu correo'}</span>
+            {correoCuenta && (
+              <>
+                {' · '}
+                <button type="button" onClick={() => setCambiandoCorreo(true)} className="py-1 font-bold text-[var(--accent-ink,var(--accent))] underline-offset-2 hover:underline [touch-action:manipulation]">
+                  Cambiar
+                </button>
+              </>
+            )}
+          </p>
+        )}
 
         <motion.button
           type="button"

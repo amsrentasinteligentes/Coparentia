@@ -16,7 +16,11 @@ interface ResultadoAccion {
 const LARGO_MINIMO = 10;
 const LARGO_MAXIMO = 2000;
 
-export async function enviarConsulta(texto: string): Promise<ResultadoAccion> {
+// Correo válido "de andar por casa": algo@algo.algo, sin espacios. La validación fuerte la hace el
+// servidor de correo al entregar; aquí solo evitamos mandar basura como replyTo.
+const CORREO_VALIDO = /^[^s@]+@[^s@]+.[^s@]+$/;
+
+export async function enviarConsulta(texto: string, correoRespuesta?: string): Promise<ResultadoAccion> {
   const supabase = await crearClienteSupabaseServidor();
   const {
     data: { user },
@@ -30,7 +34,12 @@ export async function enviarConsulta(texto: string): Promise<ResultadoAccion> {
     return { ok: false, mensaje: `Escribe tu consulta con al menos ${LARGO_MINIMO} caracteres.` };
   }
 
-  const enviado = await enviarConsultaJuridica(user.email, mensaje);
+  const responderA = correoRespuesta?.trim().toLowerCase();
+  if (responderA && !CORREO_VALIDO.test(responderA)) {
+    return { ok: false, mensaje: 'Revisa el correo para la respuesta: no parece válido.' };
+  }
+
+  const enviado = await enviarConsultaJuridica(user.email, mensaje, responderA || user.email);
   if (!enviado) {
     return { ok: false, mensaje: 'No pudimos enviar tu consulta. Intenta de nuevo en un momento.' };
   }
