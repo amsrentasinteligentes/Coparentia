@@ -1,3 +1,12 @@
+### Checkpoint (2026-09-21) — Fix de publicación del funnel claro
+El commit 0225443 solo incluyó el layout (funnel) + capturas: los cambios de contenido (kit del funnel,
+onboarding, paywall, entrar, tokens-claro) quedaron sin stage por un `git add` que falló en silencio
+(ruta ya movida en la lista). Producción mostraba piel clara con caja de contexto gris oscura, logo
+viejo y marcador subrayado — el usuario lo reportó con captura. Corregido en b4dae61 (push + verificado
+en coparentia.co: caja #E7EEF8, logo horizontal, marcador sin subrayado). Lección: verificar
+`git status` limpio DESPUÉS de cada commit antes de anunciar publicado. Gates veredicto:onboarding /
+veredicto:paywall siguen LISTA (r3) con la nota de "caducado" documentada en Problemas conocidos.
+
 ### Checkpoint (2026-09-18, noche) — FUNNEL EN CLARO: onboarding, paywall y /entrar (orden del usuario)
 El usuario levantó la orden de no tocar el funnel ("me equivoqué, cámbiala toda a la imagen actual").
 Hecho: grupo de rutas app/(funnel)/ con layout .tema-claro + Figtree/Nunito (URLs iguales); kit del
