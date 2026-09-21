@@ -8,13 +8,75 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'motion/react';
-import { LogOut, ExternalLink, Trash2, AlertTriangle, UserRound, CreditCard, LifeBuoy, ShieldCheck, FileText, Scale, ChevronRight, CalendarCheck, Crown, type LucideIcon } from 'lucide-react';
+import { LogOut, ExternalLink, Trash2, AlertTriangle, UserRound, CreditCard, LifeBuoy, ShieldCheck, FileText, Scale, ChevronRight, CalendarCheck, Crown, Sparkles, type LucideIcon } from 'lucide-react';
 import Link from 'next/link';
 import { ContenedorApp, Tarjeta, IconoCirculo, TarjetaSkeleton, ErrorDeCarga, CabeceraApp, TituloSeccion } from '@/components/app/ui';
 import { type Titulo, obtenerTitulo, guardarTitulo, obtenerPagos, formatoCOP } from '@/lib/datos';
 import { hoyEnColombia } from '@/lib/fecha';
 import { crearClienteSupabase } from '@/lib/supabase/client';
 import { eliminarMiCuenta } from './acciones';
+import { obtenerPreferenciaNovedades, cambiarPreferenciaNovedades } from '@/lib/consentimiento';
+
+/* ── <FilaNovedades> — la casilla opcional del consentimiento, editable después (la pantalla de
+   autorizaciones promete "puedes cambiarla desde Ajustes"). Cada cambio inserta una fila nueva en
+   consentimientos: el registro legal queda completo. ── */
+function FilaNovedades() {
+  const [valor, setValor] = useState<boolean | null>(null);
+  const [guardando, setGuardando] = useState(false);
+  const [error, setError] = useState(false);
+  useEffect(() => {
+    let vigente = true;
+    const supabase = crearClienteSupabase();
+    supabase.auth.getUser().then(async ({ data }) => {
+      if (!data.user) return;
+      const v = await obtenerPreferenciaNovedades(supabase, data.user.id);
+      if (vigente) setValor(v);
+    }).catch(() => {});
+    return () => { vigente = false; };
+  }, []);
+  const cambiar = async (): Promise<void> => {
+    if (guardando || valor === null) return;
+    const nuevo = !valor;
+    setGuardando(true);
+    setError(false);
+    setValor(nuevo); // optimista: se revierte si falla
+    try {
+      const supabase = crearClienteSupabase();
+      const { data } = await supabase.auth.getUser();
+      if (!data.user) throw new Error('sin sesión');
+      await cambiarPreferenciaNovedades(supabase, data.user.id, nuevo);
+    } catch {
+      setValor(!nuevo);
+      setError(true);
+    } finally {
+      setGuardando(false);
+    }
+  };
+  if (valor === null) return null;
+  return (
+    <>
+      <div className="flex w-full items-center gap-3 border-b border-[color-mix(in_oklab,var(--text-tertiary)_16%,transparent)] py-3">
+        <IconoCirculo icon={Sparkles} size={18} tono="info" />
+        <span className="min-w-0 flex-1 text-left">
+          <span className="block text-[14px] font-bold text-[var(--text-primary)]">Novedades y promociones</span>
+          <span className="block truncate text-[12px] text-[var(--text-secondary)]">{valor ? 'Te llegan por correo · puedes apagarlo cuando quieras' : 'No te enviamos correos comerciales'}</span>
+        </span>
+        <button
+          type="button"
+          role="switch"
+          aria-checked={valor}
+          aria-label="Recibir novedades y promociones"
+          disabled={guardando}
+          onClick={cambiar}
+          className={`relative h-7 w-12 shrink-0 rounded-full transition-colors duration-200 [touch-action:manipulation] ${valor ? 'bg-[var(--accent)]' : 'bg-[color-mix(in_oklab,var(--text-tertiary)_35%,transparent)]'}`}
+        >
+          <span className={`absolute top-1 size-5 rounded-full bg-white shadow-[var(--shadow-1)] transition-transform duration-200 ${valor ? 'translate-x-6' : 'translate-x-1'}`} />
+        </button>
+      </div>
+      {error && <p role="alert" className="py-2 text-[12px] text-[var(--status-error)]">No pudimos guardar el cambio. Revisa tu conexión e inténtalo de nuevo.</p>}
+    </>
+  );
+}
 
 const OPCIONES_REAJUSTE = [
   'IPC (Índice de Precios al Consumidor)',
@@ -277,6 +339,7 @@ export default function Ajustes() {
 
         <h2 className="mt-6 text-[15px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">Tu suscripción</h2>
         <Tarjeta className="mt-3 py-1">
+          <FilaNovedades />
           <FilaAjuste icon={CreditCard} titulo="Suscripción y pagos" detalle="Se administra en Hotmart: cancelar, cambiar de plan, facturas" href="https://sac.hotmart.com/" externo ultima />
         </Tarjeta>
         {/* Cómo cancelar: texto legal obligatorio (47), ahora bajo la lista */}

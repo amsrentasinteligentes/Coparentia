@@ -6,6 +6,7 @@ import { AvisoSinConexion } from '@/components/app/AvisoSinConexion';
 import { RegistradorEventos } from '@/components/app/RegistradorEventos';
 import { crearClienteSupabaseServidor } from '@/lib/supabase/server';
 import { tieneAccesoCompleto, type Status } from '@/lib/membership-fsm';
+import { tieneConsentimientoVigente } from '@/lib/consentimiento';
 
 // Tipografía del interior claro (la misma de la página de ventas): next/font la sirve desde el
 // propio dominio con subset latino; las variables las consume components/landing/tokens-app-claro.css.
@@ -58,6 +59,15 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
     if (!tieneAcceso) {
       redirect('/paywall');
     }
+  }
+
+  // CONSENTIMIENTO EXPRESO (2026-09-21, equipo jurídico del usuario): la primera vez que entra tras
+  // comprar —y cada vez que cambie la versión de los textos legales— la persona debe aceptar
+  // Términos, Política de Datos y renovación automática en /consentimiento antes de ver la app.
+  // El dueño (admin) queda exento; las cuentas manuales (clientes de prueba) NO: también son
+  // personas cuyos datos tratamos.
+  if (perfil?.role !== 'admin' && !(await tieneConsentimientoVigente(supabase, user.id))) {
+    redirect('/consentimiento');
   }
 
   return (
