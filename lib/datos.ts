@@ -7,7 +7,14 @@ import { crearClienteSupabase } from '@/lib/supabase/client';
 
 export type TipoMovimiento = 'cuota' | 'gasto_extra';
 export type EstadoAutorizacion = 'aprobada' | 'pendiente' | 'objetada';
-export type TipoEvento = 'visita' | 'medica' | 'vacaciones' | 'extracurricular' | 'salida_pais';
+export type TipoEvento = 'visita' | 'medica' | 'vacaciones' | 'extracurricular' | 'salida_pais' | 'llamada' | 'videollamada';
+// Registro de CONTACTO con los hijos (2026-09-21): llamadas y videollamadas como prueba de presencia.
+export type MedioContacto = 'llamada' | 'whatsapp' | 'videollamada' | 'otro';
+export type ResultadoContacto = 'contestada' | 'no_contestada' | 'no_posible';
+export const TIPOS_CONTACTO: TipoEvento[] = ['llamada', 'videollamada'];
+export function esContacto(tipo: TipoEvento): boolean {
+  return tipo === 'llamada' || tipo === 'videollamada';
+}
 
 export interface Titulo {
   montoMensual: number; // COP — el valor de la cuota alimentaria, no el precio de la suscripción
@@ -51,6 +58,11 @@ export interface Evento {
   documentoAdjuntoPath?: string; // ruta real en Supabase Storage (bucket "comprobantes")
   hijoId?: string;
   hijoNombre?: string;
+  // Solo en registros de contacto (llamada / videollamada). Inmutables en la base (trigger).
+  hora?: string; // HH:MM
+  duracionMin?: number;
+  medio?: MedioContacto;
+  resultado?: ResultadoContacto;
 }
 
 // PostgREST devuelve la relación embebida como objeto (FK a una fila) o, según la versión, como
@@ -137,6 +149,10 @@ function mapEvento(row: {
   documento_adjunto_path: string | null;
   hijo_id?: string | null;
   hijos?: HijoEmbebido;
+  hora?: string | null;
+  duracion_min?: number | null;
+  medio?: MedioContacto | null;
+  resultado?: ResultadoContacto | null;
 }): Evento {
   return {
     id: row.id,
@@ -148,6 +164,10 @@ function mapEvento(row: {
     documentoAdjuntoPath: row.documento_adjunto_path ?? undefined,
     hijoId: row.hijo_id ?? undefined,
     hijoNombre: nombreHijo(row.hijos),
+    hora: row.hora ? row.hora.slice(0, 5) : undefined,
+    duracionMin: row.duracion_min ?? undefined,
+    medio: row.medio ?? undefined,
+    resultado: row.resultado ?? undefined,
   };
 }
 
@@ -395,11 +415,15 @@ export async function agregarEvento(
       documento_adjunto: evento.documentoAdjunto ?? null,
       documento_adjunto_path: rutaDocumento,
       hijo_id: evento.hijoId ?? null,
+      hora: evento.hora ?? null,
+      duracion_min: evento.duracionMin ?? null,
+      medio: evento.medio ?? null,
+      resultado: evento.resultado ?? null,
     })
     .select(COLUMNAS_EVENTO)
     .single();
   if (error || !data) throw error ?? new Error('No se pudo guardar el evento.');
-  registrarEvento(supabase, userId, 'evento_agregado');
+  registrarEvento(supabase, userId, esContacto(evento.tipo) ? 'contacto_registrado' : 'evento_agregado');
   return mapEvento(data);
 }
 

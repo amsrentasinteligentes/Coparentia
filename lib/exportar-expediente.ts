@@ -27,11 +27,15 @@ import {
   type Autorizacion,
   type EstadoAutorizacion,
   obtenerAutorizaciones,
+  obtenerEventos,
+  esContacto,
+  type Evento,
   obtenerPagos,
   obtenerTitulo,
   obtenerUrlArchivo,
   formatoCOP,
   formatoFechaLarga,
+  formatoFechaCorta,
 } from '@/lib/datos';
 import { hoyEnColombia } from '@/lib/fecha';
 import { obtenerPerfil, obtenerHijos, edadTexto, type Perfil, type Hijo } from '@/lib/perfil';
@@ -99,14 +103,22 @@ export async function exportarExpedientePdf(
 
   // Perfil e hijos son opcionales en el PDF: si no cargan (perfil sin llenar, red), el expediente
   // sale igual — solo sin los nombres. Nunca se cae la exportación por un dato de cortesía.
-  const [{ jsPDF }, titulo, pagos, autorizaciones, perfil, hijos] = await Promise.all([
+  const [{ jsPDF }, titulo, pagos, autorizaciones, perfil, hijos, eventos] = await Promise.all([
     import('jspdf'),
     obtenerTitulo(),
     obtenerPagos(),
     obtenerAutorizaciones(),
     obtenerPerfil().catch((): Perfil | null => null),
     obtenerHijos().catch((): Hijo[] => []),
+    obtenerEventos().catch((): Evento[] => []),
   ]);
+  // Registros de CONTACTO (llamadas / videollamadas): prueba de presencia, no de dinero.
+  const contactos = eventos
+    .filter((e) => esContacto(e.tipo))
+    .sort((a, b) => `${a.fecha} ${a.hora ?? ''}`.localeCompare(`${b.fecha} ${b.hora ?? ''}`));
+  const contactosConFoto = contactos.filter((c) => c.documentoAdjuntoPath && !c.documentoAdjunto?.toLowerCase().endsWith('.pdf'));
+  const MEDIO_TXT: Record<string, string> = { llamada: 'llamada normal', whatsapp: 'WhatsApp', videollamada: 'videollamada', otro: 'otro medio' };
+  const RESULTADO_TXT: Record<string, string> = { contestada: 'Contestó', no_contestada: 'No contestó', no_posible: 'No fue posible' };
 
   const ordenados = [...pagos].sort((a, b) => a.fecha.localeCompare(b.fecha));
   // Solo las fotos se pueden incrustar. Un comprobante en PDF no se puede pegar como imagen con
@@ -206,6 +218,7 @@ export async function exportarExpedientePdf(
     ['Meses con cuota registrada', String(meses)],
     ['Período cubierto', periodo],
     ['Comprobantes anexos en este documento', String(conFoto.length)],
+    ...(contactos.length > 0 ? [['Contactos con los hijos registrados', String(contactos.length)] as [string, string]] : []),
   ];
   filasResumen.forEach(([etiqueta, valor]) => {
     salto(16);
@@ -313,6 +326,81 @@ export async function exportarExpedientePdf(
       y += 16;
     });
     y += 12;
+  }
+
+  /* ── CONTACTO CON LOS HIJOS (2026-09-21) — llamadas y videollamadas registradas con Sello:
+     fecha, hora, medio, duración y si contestaron. Se registra el HECHO, nunca el contenido. ── */
+  if (contactos.length > 0) {
+    titular('Contacto con los hijos (llamadas y videollamadas)');
+    // Resumen por hijo primero: es lo que se lee de un vistazo ("38 llamadas, 92 % contestadas").
+    const grupos: { nombre: string; lista: Evento[] }[] = hijos
+      .map((h) => ({ nombre: h.nombre, lista: contactos.filter((c) => c.hijoId === h.id) }))
+      .filter((g) => g.lista.length > 0);
+    const sinHijo = contactos.filter((c) => !c.hijoId);
+    if (sinHijo.length > 0) grupos.push({ nombre: hijos.length > 0 ? 'Sin hijo asignado' : 'Total', lista: sinHijo });
+    doc.setTextColor(110);
+    doc.setFontSize(9);
+    doc.text('Hijo/a', MARGEN, y);
+    doc.text('Contactos', MARGEN + 200, y);
+    doc.text('Contestados', MARGEN + 270, y);
+    doc.text('Minutos', MARGEN + 350, y);
+    doc.text('Período', MARGEN + 420, y);
+    y += 14;
+    doc.setFontSize(10);
+    grupos.forEach((g) => {
+      salto(16);
+      const contestados = g.lista.filter((c) => c.resultado === 'contestada').length;
+      const minutos = g.lista.reduce((acc, c) => acc + (c.duracionMin ?? 0), 0);
+      const pct = Math.round((contestados / g.lista.length) * 100);
+      doc.setTextColor(40);
+      doc.text(doc.splitTextToSize(g.nombre, 180)[0], MARGEN, y);
+      doc.text(String(g.lista.length), MARGEN + 200, y);
+      doc.setFont('helvetica', 'bold');
+      doc.text(`${contestados} (${pct} %)`, MARGEN + 270, y);
+      doc.setFont('helvetica', 'normal');
+      doc.text(String(minutos), MARGEN + 350, y);
+      doc.setTextColor(110);
+      doc.text(`${formatoFechaCorta(g.lista[0].fecha)} — ${formatoFechaCorta(g.lista[g.lista.length - 1].fecha)}`, MARGEN + 420, y);
+      y += 16;
+    });
+    y += 10;
+
+    // Detalle cronológico.
+    salto(30);
+    doc.setTextColor(110);
+    doc.setFontSize(9);
+    doc.text('Fecha y hora', MARGEN, y);
+    doc.text('Tipo · medio', MARGEN + 120, y);
+    doc.text('Hijo/a', MARGEN + 250, y);
+    doc.text('Duración', MARGEN + 340, y);
+    doc.text('Resultado', MARGEN + 400, y);
+    doc.text('Prueba', MARGEN + 470, y);
+    y += 14;
+    doc.setFontSize(10);
+    let numeroAnexoC = 0;
+    contactos.forEach((c) => {
+      salto(16);
+      const esFoto = c.documentoAdjuntoPath && !c.documentoAdjunto?.toLowerCase().endsWith('.pdf');
+      if (esFoto) numeroAnexoC += 1;
+      doc.setTextColor(40);
+      doc.text(`${formatoFechaCorta(c.fecha)}${c.hora ? ` · ${c.hora}` : ''}`, MARGEN, y);
+      const tipoTxt = c.tipo === 'videollamada' ? 'Videollamada' : 'Llamada';
+      doc.text(doc.splitTextToSize(`${tipoTxt}${c.medio ? ` · ${MEDIO_TXT[c.medio] ?? c.medio}` : ''}`, 125)[0], MARGEN + 120, y);
+      doc.text(doc.splitTextToSize(c.hijoNombre ?? '—', 85)[0], MARGEN + 250, y);
+      doc.text(c.resultado === 'contestada' && c.duracionMin ? `${c.duracionMin} min` : '—', MARGEN + 340, y);
+      doc.text(c.resultado ? RESULTADO_TXT[c.resultado] ?? c.resultado : '—', MARGEN + 400, y);
+      doc.setTextColor(110);
+      doc.text(esFoto ? `Anexo C${numeroAnexoC}` : c.documentoAdjuntoPath ? 'PDF aparte' : '—', MARGEN + 470, y);
+      y += 16;
+    });
+    salto(30);
+    doc.setTextColor(110);
+    doc.setFontSize(9);
+    doc.text('Cada registro se creó con el Sello de Confianza (fecha del sistema) y no admite edición ni borrado.', MARGEN, y);
+    y += 12;
+    doc.text('Se registra el hecho del contacto; nunca se graba audio ni video.', MARGEN, y);
+    y += 22;
+    doc.setFontSize(10);
   }
 
   /* ── AUTORIZACIONES ─────────────────────────────────────────────────────── */
@@ -444,6 +532,44 @@ export async function exportarExpedientePdf(
     const w = imagen.ancho * escala;
     const h = imagen.alto * escala;
     doc.addImage(imagen.datos, 'JPEG', MARGEN, y, w, h);
+    incluidos += 1;
+  }
+
+  /* ANEXOS C — capturas de los registros de contacto (registro de llamadas del celular, pantalla
+     de la videollamada). Numeración propia (C1, C2…) para no mover la de los comprobantes. */
+  for (let i = 0; i < contactosConFoto.length; i++) {
+    const c = contactosConFoto[i];
+    onProgreso?.(`Anexando contacto ${i + 1} de ${contactosConFoto.length}…`);
+    doc.addPage();
+    y = MARGEN;
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(12);
+    doc.setTextColor(20);
+    doc.text(`Anexo C${i + 1} — Contacto con los hijos`, MARGEN, y);
+    y += 18;
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+    doc.setTextColor(60);
+    const resultadoTxt = c.resultado ? ` · ${RESULTADO_TXT[c.resultado] ?? c.resultado}` : '';
+    doc.text(`${formatoFechaLarga(c.fecha)}${c.hora ? ` · ${c.hora}` : ''} · ${c.titulo}${resultadoTxt}`, MARGEN, y);
+    y += 14;
+    doc.setTextColor(140);
+    doc.setFontSize(9);
+    doc.text(`Archivo original: ${c.documentoAdjunto ?? ''}`, MARGEN, y);
+    y += 18;
+    doc.setFontSize(10);
+    const url = c.documentoAdjuntoPath ? await obtenerUrlArchivo(c.documentoAdjuntoPath) : null;
+    const imagen = url ? await imagenParaAnexo(url) : null;
+    if (!imagen) {
+      fallidos += 1;
+      doc.setTextColor(150);
+      doc.text('No se pudo incluir la imagen de este registro en la exportación.', MARGEN, y);
+      doc.text('El archivo original sigue guardado en la aplicación.', MARGEN, y + 14);
+      continue;
+    }
+    const disponibleAlto = LIMITE_Y - y;
+    const escala = Math.min(ANCHO_UTIL / imagen.ancho, disponibleAlto / imagen.alto);
+    doc.addImage(imagen.datos, 'JPEG', MARGEN, y, imagen.ancho * escala, imagen.alto * escala);
     incluidos += 1;
   }
 

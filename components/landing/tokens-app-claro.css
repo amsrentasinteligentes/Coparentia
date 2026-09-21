@@ -47,6 +47,8 @@
   --cat-vacaciones: #157a4f;   --cat-vacaciones-bg: #dff5ea;
   --cat-extra: #6c4ab6;        --cat-extra-bg: #e9e2fb;
   --cat-salida: #0b7f8c;       --cat-salida-bg: #dcf3f5;
+  --cat-llamada: #b9731a;      --cat-llamada-bg: #fdf1dc;   /* contacto: llamada (ámbar cálido) */
+  --cat-video: #8a4b9f;        --cat-video-bg: #f1e4f6;     /* contacto: videollamada */
 
   /* ── FORMA: tarjetas 18px, chips 14px, botones redondos (referencia) ── */
   --radius-card: 18px;

@@ -532,7 +532,7 @@ function ModalRegistro({ hijos, onCerrar, onGuardado }: { hijos: Hijo[]; onCerra
         animate={{ y: 0 }}
         exit={{ y: '100%' }}
         transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-        className="mx-auto w-full max-w-[520px] rounded-t-[var(--radius-card)] bg-[var(--surface)] p-5 pb-[max(24px,env(safe-area-inset-bottom))]"
+        className="mx-auto max-h-[92dvh] w-full max-w-[520px] overflow-y-auto rounded-t-[var(--radius-card)] bg-[var(--surface)] p-5 pb-[max(24px,env(safe-area-inset-bottom))]"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between">

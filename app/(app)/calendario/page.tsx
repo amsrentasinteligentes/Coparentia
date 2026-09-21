@@ -10,24 +10,43 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ChevronLeft, ChevronRight, Plus, X, Users, HeartPulse, Plane, Trophy, Globe, Paperclip, CalendarDays } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Plus, X, Users, HeartPulse, Plane, Trophy, Globe, Paperclip, CalendarDays, Phone, Video, ShieldCheck, PhoneOff, PhoneMissed, Clock } from 'lucide-react';
+import { SelloConfianza } from '@/components/app/SelloConfianza';
 import { ContenedorApp, Tarjeta, IconoCirculo, BotonFlotante, ErrorDeCarga, CabeceraApp, TituloSeccion } from '@/components/app/ui';
 import { VisorImagen } from '@/components/app/VisorImagen';
 import { Portal } from '@/components/app/Portal';
 import { SelectorHijo, useHijos, type ValorHijo } from '@/components/app/SelectorHijo';
 import { type Hijo } from '@/lib/perfil';
-import { type Evento, type TipoEvento, obtenerEventos, agregarEvento, obtenerUrlArchivo, formatoFechaLarga, formatoFechaCorta, validarArchivoAdjunto } from '@/lib/datos';
+import { type Evento, type TipoEvento, type MedioContacto, type ResultadoContacto, esContacto, obtenerEventos, agregarEvento, obtenerUrlArchivo, formatoFechaLarga, formatoFechaCorta, validarArchivoAdjunto } from '@/lib/datos';
 import { hoyEnColombia } from '@/lib/fecha';
 
-const ICONO: Record<TipoEvento, typeof Users> = { visita: Users, medica: HeartPulse, vacaciones: Plane, extracurricular: Trophy, salida_pais: Globe };
-const LABEL: Record<TipoEvento, string> = { visita: 'Visita', medica: 'Cita médica', vacaciones: 'Vacaciones', extracurricular: 'Actividad', salida_pais: 'Salida del país' };
+// CONTACTO CON LOS HIJOS (2026-09-21): dos tipos nuevos —llamada y videollamada— que registran el
+// HECHO del contacto (fecha, hora, duración, medio, si contestaron) como prueba de presencia.
+// Unilateral (no depende de la otra parte), con Sello de Confianza y sin edición ni borrado.
+const ICONO: Record<TipoEvento, typeof Users> = { visita: Users, medica: HeartPulse, vacaciones: Plane, extracurricular: Trophy, salida_pais: Globe, llamada: Phone, videollamada: Video };
+const LABEL: Record<TipoEvento, string> = { visita: 'Visita', medica: 'Cita médica', vacaciones: 'Vacaciones', extracurricular: 'Actividad', salida_pais: 'Salida del país', llamada: 'Llamada', videollamada: 'Videollamada' };
 const LABEL_ADJUNTO: Record<TipoEvento, string> = {
   visita: 'Adjuntar un documento (opcional)',
   medica: 'Fórmula médica o resultado (opcional)',
   vacaciones: 'Adjuntar un documento (opcional)',
   extracurricular: 'Adjuntar un documento (opcional)',
   salida_pais: 'Permiso de salida del país',
+  llamada: 'Captura del registro de llamadas (recomendado)',
+  videollamada: 'Captura de la videollamada (recomendado)',
 };
+const MEDIOS: { valor: MedioContacto; label: string; soloEn?: TipoEvento }[] = [
+  { valor: 'llamada', label: 'Llamada normal', soloEn: 'llamada' },
+  { valor: 'whatsapp', label: 'WhatsApp' },
+  { valor: 'videollamada', label: 'Meet / Zoom / FaceTime', soloEn: 'videollamada' },
+  { valor: 'otro', label: 'Otro' },
+];
+const RESULTADOS: { valor: ResultadoContacto; label: string; icon: typeof Phone }[] = [
+  { valor: 'contestada', label: 'Contestó', icon: Phone },
+  { valor: 'no_contestada', label: 'No contestó', icon: PhoneMissed },
+  { valor: 'no_posible', label: 'No fue posible', icon: PhoneOff },
+];
+const LABEL_RESULTADO: Record<ResultadoContacto, string> = { contestada: 'Contestó', no_contestada: 'No contestó', no_posible: 'No fue posible' };
+const LABEL_MEDIO: Record<MedioContacto, string> = { llamada: 'llamada normal', whatsapp: 'WhatsApp', videollamada: 'videollamada', otro: 'otro medio' };
 const DIAS_SEMANA = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
 // Un color por tipo de evento (referencia del usuario: puntos y chips de colores por categoría).
 const COLOR: Record<TipoEvento, { fg: string; bg: string }> = {
@@ -36,6 +55,8 @@ const COLOR: Record<TipoEvento, { fg: string; bg: string }> = {
   vacaciones: { fg: 'var(--cat-vacaciones)', bg: 'var(--cat-vacaciones-bg)' },
   extracurricular: { fg: 'var(--cat-extra)', bg: 'var(--cat-extra-bg)' },
   salida_pais: { fg: 'var(--cat-salida)', bg: 'var(--cat-salida-bg)' },
+  llamada: { fg: 'var(--cat-llamada)', bg: 'var(--cat-llamada-bg)' },
+  videollamada: { fg: 'var(--cat-video)', bg: 'var(--cat-video-bg)' },
 };
 const LABEL_CONTEO: Record<TipoEvento, (n: number) => string> = {
   visita: (n) => (n === 1 ? '1 visita' : `${n} visitas`),
@@ -43,6 +64,8 @@ const LABEL_CONTEO: Record<TipoEvento, (n: number) => string> = {
   vacaciones: (n) => (n === 1 ? '1 período de vacaciones' : `${n} períodos de vacaciones`),
   extracurricular: (n) => (n === 1 ? '1 actividad' : `${n} actividades`),
   salida_pais: (n) => (n === 1 ? '1 salida del país' : `${n} salidas del país`),
+  llamada: (n) => (n === 1 ? '1 llamada' : `${n} llamadas`),
+  videollamada: (n) => (n === 1 ? '1 videollamada' : `${n} videollamadas`),
 };
 
 function claveMes(d: Date): string {
@@ -61,6 +84,7 @@ export default function Calendario() {
   const [mesActual, setMesActual] = useState(() => new Date());
   const [modalAbierto, setModalAbierto] = useState(false);
   const [fechaModal, setFechaModal] = useState<string | undefined>(undefined);
+  const [selloDe, setSelloDe] = useState<string | null>(null);
   // Hijos del perfil: cada evento puede quedar a nombre de uno ("Cita médica · Sofía").
   const { hijos } = useHijos();
 
@@ -187,9 +211,17 @@ export default function Calendario() {
             onGuardado={(nuevo) => {
               setEventos((prev) => [...prev, nuevo]);
               setModalAbierto(false);
+              // Un registro de contacto es PRUEBA: recibe el Sello igual que un comprobante de pago.
+              if (esContacto(nuevo.tipo)) setSelloDe(nuevo.fecha);
             }}
           />
         )}
+      </AnimatePresence>
+      </Portal>
+
+      <Portal>
+      <AnimatePresence>
+        {selloDe && <SelloConfianza fecha={formatoFechaLarga(selloDe)} onTerminar={() => setSelloDe(null)} />}
       </AnimatePresence>
       </Portal>
       </ContenedorApp>
@@ -226,13 +258,27 @@ function TarjetaEvento({ evento: e }: { evento: Evento }) {
         <span className="text-[15px] font-bold leading-none text-[var(--text-primary)]">{d.getDate()}</span>
         <span className="text-[10px] uppercase text-[var(--text-tertiary)]">{d.toLocaleDateString('es-CO', { month: 'short' })}</span>
       </div>
-      <IconoCirculo icon={Icon} />
+      <span className="flex size-10 shrink-0 items-center justify-center rounded-[var(--radius-chip,999px)]" style={{ background: COLOR[e.tipo].bg, color: COLOR[e.tipo].fg }}>
+        <Icon size={18} aria-hidden="true" />
+      </span>
       <div className="min-w-0 flex-1">
         <p className="truncate text-[13px] text-[var(--text-secondary)]">
           {LABEL[e.tipo]}
           {e.hijoNombre && <span className="font-semibold text-[var(--accent-ink,var(--accent))]"> · {e.hijoNombre}</span>}
         </p>
         <p className="truncate text-[14px] font-medium text-[var(--text-primary)]">{e.titulo}</p>
+        {esContacto(e.tipo) && (
+          <p className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[12px] text-[var(--text-secondary)]">
+            {e.hora && <span className="flex items-center gap-1"><Clock size={11} aria-hidden="true" />{e.hora}</span>}
+            {typeof e.duracionMin === 'number' && e.duracionMin > 0 && <span>{e.duracionMin} min</span>}
+            {e.medio && <span>· {LABEL_MEDIO[e.medio]}</span>}
+            {e.resultado && (
+              <span className={`rounded-full px-2 py-0.5 text-[11px] font-bold ${e.resultado === 'contestada' ? 'bg-[var(--status-success-bg,color-mix(in_oklab,var(--status-success)_14%,transparent))] text-[var(--status-success)]' : 'bg-[var(--status-warning-bg,color-mix(in_oklab,var(--status-warning)_14%,transparent))] text-[var(--status-warning)]'}`}>
+                {LABEL_RESULTADO[e.resultado]}
+              </span>
+            )}
+          </p>
+        )}
         {e.documentoAdjunto && (
           <p className="mt-0.5 flex items-center gap-1 text-[12px] text-[var(--accent)]">
             <Paperclip size={12} className="shrink-0" aria-hidden="true" />
@@ -374,6 +420,16 @@ function ModalEvento({
   const [tipo, setTipo] = useState<TipoEvento>('visita');
   // Con un solo hijo se preselecciona; con varios, la persona elige (o deja "Todos").
   const [hijoId, setHijoId] = useState<ValorHijo>(hijos.length === 1 ? hijos[0].id : null);
+  // Campos del registro de contacto (llamada / videollamada).
+  const [hora, setHora] = useState(() => new Intl.DateTimeFormat('es-CO', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'America/Bogota' }).format(new Date()));
+  const [duracion, setDuracion] = useState('');
+  const [medio, setMedio] = useState<MedioContacto | null>(null);
+  const [resultado, setResultado] = useState<ResultadoContacto | null>(null);
+  const [faltante, setFaltante] = useState<string | null>(null);
+  const contacto = esContacto(tipo);
+  const nombreHijo = hijos.find((h) => h.id === hijoId)?.nombre;
+  // Título automático del contacto ("Llamada con Isa"): la persona no tiene que escribirlo.
+  const tituloContacto = `${LABEL[tipo]}${nombreHijo ? ` con ${nombreHijo}` : ''}`;
   const [titulo, setTitulo] = useState('');
   const [fecha, setFecha] = useState(fechaInicial ?? hoyEnColombia());
   const [documento, setDocumento] = useState<File | null>(null);
@@ -383,19 +439,41 @@ function ModalEvento({
   const esSalidaPais = tipo === 'salida_pais';
 
   const guardar = (): void => {
-    if (!titulo.trim() || guardando) return;
+    if (guardando) return;
+    if (contacto) {
+      if (!resultado) {
+        setFaltante('Falta indicar si contestaron o no.');
+        return;
+      }
+      if (resultado === 'contestada' && !duracion) {
+        setFaltante('Falta la duración en minutos.');
+        return;
+      }
+    } else if (!titulo.trim()) {
+      return;
+    }
+    setFaltante(null);
     setGuardando(true);
     agregarEvento(
       {
         tipo,
-        titulo: titulo.trim(),
+        titulo: contacto ? (titulo.trim() || tituloContacto) : titulo.trim(),
         fecha,
         hijoId: hijoId ?? undefined,
+        ...(contacto
+          ? {
+              hora: hora || undefined,
+              duracionMin: resultado === 'contestada' ? Number(duracion) || 0 : 0,
+              medio: medio ?? undefined,
+              resultado: resultado ?? undefined,
+            }
+          : {}),
         ...(documento ? { documentoAdjunto: documento.name } : {}),
       },
       documento ?? undefined
     )
       .then(onGuardado)
+      .catch(() => setFaltante('No pudimos guardar el registro. Revisa tu conexión e inténtalo de nuevo.'))
       .finally(() => setGuardando(false));
   };
 
@@ -412,7 +490,7 @@ function ModalEvento({
         animate={{ y: 0 }}
         exit={{ y: '100%' }}
         transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-        className="mx-auto w-full max-w-[520px] rounded-t-[var(--radius-card)] bg-[var(--surface)] p-5 pb-[max(24px,env(safe-area-inset-bottom))]"
+        className="mx-auto max-h-[92dvh] w-full max-w-[520px] overflow-y-auto rounded-t-[var(--radius-card)] bg-[var(--surface)] p-5 pb-[max(24px,env(safe-area-inset-bottom))]"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between">
@@ -422,7 +500,7 @@ function ModalEvento({
           </button>
         </div>
 
-        <div className="mt-4 grid grid-cols-3 gap-2">
+        <div className="mt-4 grid grid-cols-4 gap-2">
           {(Object.keys(ICONO) as TipoEvento[]).map((t) => {
             const Icon = ICONO[t];
             return (
@@ -430,7 +508,7 @@ function ModalEvento({
                 key={t}
                 type="button"
                 onClick={() => setTipo(t)}
-                className={`flex flex-col items-center gap-1.5 rounded-[var(--radius-button)] border py-3 text-[11px] font-medium [touch-action:manipulation] ${
+                className={`flex flex-col items-center gap-1.5 rounded-[var(--radius-button)] border px-1 py-3 text-center text-[11px] font-medium leading-tight [touch-action:manipulation] ${
                   tipo === t ? 'border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_10%,transparent)] text-[var(--accent)]' : 'border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] text-[var(--text-secondary)]'
                 }`}
               >
@@ -443,22 +521,97 @@ function ModalEvento({
 
         <SelectorHijo hijos={hijos} valor={hijoId} onCambio={setHijoId} textoTodos="Todos" ocultarSinHijos />
 
-        <label className="mt-4 block text-[13px] font-medium text-[var(--text-secondary)]">Título</label>
+        {contacto && (
+          <p className="mt-4 flex items-start gap-2 rounded-[var(--radius-button)] bg-[var(--surface-2)] px-3 py-2.5 text-[12.5px] leading-[1.5] text-[var(--text-secondary)]">
+            <ShieldCheck size={15} className="mt-0.5 shrink-0 text-[var(--accent-ink,var(--accent))]" aria-hidden="true" />
+            Este registro queda con el Sello de Confianza y no se puede editar ni borrar: es tu prueba de contacto.
+          </p>
+        )}
+
+        <label className="mt-4 block text-[13px] font-medium text-[var(--text-secondary)]">{contacto ? 'Título (opcional)' : 'Título'}</label>
         <input
           type="text"
           value={titulo}
           onChange={(e) => setTitulo(e.target.value)}
-          placeholder="Ej. Cita con el pediatra"
+          placeholder={contacto ? tituloContacto : 'Ej. Cita con el pediatra'}
           className="mt-2 h-12 w-full rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--bg)] px-4 text-[15px] text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)]"
         />
 
-        <label className="mt-4 block text-[13px] font-medium text-[var(--text-secondary)]">Fecha</label>
-        <input
-          type="date"
-          value={fecha}
-          onChange={(e) => setFecha(e.target.value)}
-          className="mt-2 h-12 w-full rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--bg)] px-4 text-[15px] text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)]"
-        />
+        <div className={contacto ? 'mt-4 grid grid-cols-2 gap-3' : 'mt-4'}>
+          <div>
+            <label className="block text-[13px] font-medium text-[var(--text-secondary)]">Fecha</label>
+            <input
+              type="date"
+              value={fecha}
+              onChange={(e) => setFecha(e.target.value)}
+              className="mt-2 h-12 w-full rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--bg)] px-4 text-[15px] text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)]"
+            />
+          </div>
+          {contacto && (
+            <div>
+              <label className="block text-[13px] font-medium text-[var(--text-secondary)]">Hora</label>
+              <input
+                type="time"
+                value={hora}
+                onChange={(e) => setHora(e.target.value)}
+                className="mt-2 h-12 w-full rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--bg)] px-4 text-[15px] tabular-nums text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)]"
+              />
+            </div>
+          )}
+        </div>
+
+        {contacto && (
+          <>
+            <p className="mt-4 text-[13px] font-medium text-[var(--text-secondary)]">¿Contestaron?</p>
+            <div role="radiogroup" aria-label="Resultado" className="mt-2 grid grid-cols-3 gap-2">
+              {RESULTADOS.map(({ valor, label, icon: Icon }) => (
+                <button
+                  key={valor}
+                  type="button"
+                  role="radio"
+                  aria-checked={resultado === valor}
+                  onClick={() => { setResultado(valor); setFaltante(null); }}
+                  className={`flex flex-col items-center gap-1.5 rounded-[var(--radius-button)] border px-1 py-3 text-center text-[11px] font-medium leading-tight [touch-action:manipulation] ${
+                    resultado === valor ? 'border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_10%,transparent)] text-[var(--accent-ink,var(--accent))]' : 'border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] text-[var(--text-secondary)]'
+                  }`}
+                >
+                  <Icon size={18} aria-hidden="true" />
+                  {label}
+                </button>
+              ))}
+            </div>
+
+            <div className="mt-4 grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-[13px] font-medium text-[var(--text-secondary)]">Duración (min)</label>
+                <input
+                  type="number"
+                  inputMode="numeric"
+                  min={0}
+                  max={600}
+                  value={duracion}
+                  disabled={resultado !== null && resultado !== 'contestada'}
+                  onChange={(e) => { setDuracion(e.target.value); setFaltante(null); }}
+                  placeholder={resultado && resultado !== 'contestada' ? '—' : 'Ej. 15'}
+                  className="mt-2 h-12 w-full rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--bg)] px-4 text-[15px] tabular-nums text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)] disabled:opacity-50"
+                />
+              </div>
+              <div>
+                <label className="block text-[13px] font-medium text-[var(--text-secondary)]">Por dónde</label>
+                <select
+                  value={medio ?? ''}
+                  onChange={(e) => setMedio((e.target.value || null) as MedioContacto | null)}
+                  className="mt-2 h-12 w-full rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--bg)] px-3 text-[15px] text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)]"
+                >
+                  <option value="">Elegir…</option>
+                  {MEDIOS.filter((m) => !m.soloEn || m.soloEn === tipo).map((m) => (
+                    <option key={m.valor} value={m.valor}>{m.label}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          </>
+        )}
 
         <label className="mt-4 block text-[13px] font-medium text-[var(--text-secondary)]">{LABEL_ADJUNTO[tipo]}</label>
         <input
@@ -497,13 +650,16 @@ function ModalEvento({
           </p>
         )}
 
+        {faltante && (
+          <p role="alert" className="mt-3 text-center text-[12.5px] text-[var(--status-error)]">{faltante}</p>
+        )}
         <button
           type="button"
-          disabled={!titulo.trim() || guardando}
+          disabled={guardando || (!contacto && !titulo.trim())}
           onClick={guardar}
           className="mt-5 flex h-14 w-full items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-[16px] font-semibold text-[var(--on-accent,var(--bg))] transition-opacity disabled:opacity-40 [touch-action:manipulation]"
         >
-          {guardando ? 'Guardando…' : 'Guardar evento'}
+          {guardando ? (contacto ? 'Aplicando el Sello de Confianza…' : 'Guardando…') : contacto ? 'Registrar contacto' : 'Guardar evento'}
         </button>
       </motion.div>
     </motion.div>

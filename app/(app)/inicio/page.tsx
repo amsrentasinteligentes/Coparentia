@@ -7,7 +7,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { motion, useReducedMotion } from 'motion/react';
-import { Upload, Check, CalendarClock, ShieldCheck, ChevronRight, FileCheck2, Globe, Wallet, CalendarDays, FolderOpen, Scale, ReceiptText } from 'lucide-react';
+import { Upload, Check, CalendarClock, ShieldCheck, ChevronRight, FileCheck2, Globe, Wallet, CalendarDays, FolderOpen, Scale, ReceiptText, Phone, Video } from 'lucide-react';
 import { VistaPreviaArchivo } from '@/components/app/VistaPreviaArchivo';
 import { BarraAtras, Halo } from '@/components/funnel/ui';
 import Link from 'next/link';
@@ -17,6 +17,7 @@ import {
   type Titulo,
   type Pago,
   type Evento,
+  esContacto,
   tieneOnboardingCompleto,
   obtenerTitulo,
   guardarTitulo,
@@ -37,8 +38,8 @@ const ACCESOS = [
   { href: '/asistencia', label: 'Asistencia', icon: Scale },
 ];
 
-const ICONO_EVENTO = { visita: CalendarClock, medica: ShieldCheck, vacaciones: CalendarClock, extracurricular: CalendarClock, salida_pais: Globe } as const;
-const LABEL_EVENTO = { visita: 'Visita', medica: 'Cita médica', vacaciones: 'Vacaciones', extracurricular: 'Actividad', salida_pais: 'Salida del país' } as const;
+const ICONO_EVENTO = { visita: CalendarClock, medica: ShieldCheck, vacaciones: CalendarClock, extracurricular: CalendarClock, salida_pais: Globe, llamada: Phone, videollamada: Video } as const;
+const LABEL_EVENTO = { visita: 'Visita', medica: 'Cita médica', vacaciones: 'Vacaciones', extracurricular: 'Actividad', salida_pais: 'Salida del país', llamada: 'Llamada', videollamada: 'Videollamada' } as const;
 
 export default function Inicio() {
   const [listo, setListo] = useState(false);
@@ -487,7 +488,8 @@ function Dashboard() {
   }, [cargando, falloCarga, mesesLogrados]);
 
   const hoy = hoyEnColombia();
-  const proximoEvento = eventos.filter((e) => e.fecha >= hoy).sort((a, b) => a.fecha.localeCompare(b.fecha))[0];
+  // Los registros de contacto son HECHOS pasados, no citas: no compiten por "próximo evento".
+  const proximoEvento = eventos.filter((e) => e.fecha >= hoy && !esContacto(e.tipo)).sort((a, b) => a.fecha.localeCompare(b.fecha))[0];
   const ultimosPagos = [...pagos].sort((a, b) => b.fecha.localeCompare(a.fecha)).slice(0, 3);
 
   // Línea del saludo: responde la pregunta diaria ("¿voy al día?") en una frase humana.
@@ -500,6 +502,8 @@ function Dashboard() {
         : `Recuerda registrar la cuota antes del día ${titulo?.diaPago ?? '—'}.`;
 
   const gastosExtraMes = pagos.filter((p) => p.tipo !== 'cuota' && p.fecha.slice(0, 7) === mesActual);
+  const contactosMes = eventos.filter((e) => esContacto(e.tipo) && e.fecha.slice(0, 7) === mesActual);
+  const contestadosMes = contactosMes.filter((e) => e.resultado === 'contestada').length;
   const totalExtraMes = gastosExtraMes.reduce((acc, p) => acc + p.monto, 0);
 
   return (
@@ -595,6 +599,28 @@ function Dashboard() {
                 </Tarjeta>
               </Link>
             </div>
+
+            {/* CONTACTO CON TUS HIJOS (2026-09-21) — la app ya probaba DINERO; esto prueba PRESENCIA.
+                Cifra del mes: llamadas/videollamadas registradas y cuántas contestaron. */}
+            <Link href="/calendario" className="mt-3 block transition-transform duration-100 active:scale-[0.99] [touch-action:manipulation]">
+              <Tarjeta className="flex items-center gap-3">
+                <span className="flex size-11 shrink-0 items-center justify-center rounded-[var(--radius-chip,999px)]" style={{ background: 'var(--cat-llamada-bg)', color: 'var(--cat-llamada)' }}>
+                  <Phone size={20} aria-hidden="true" />
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="text-[14px] font-bold text-[var(--text-primary)] [font-family:var(--font-display)]">Contacto con tus hijos</p>
+                  {contactosMes.length > 0 ? (
+                    <p className="mt-0.5 text-[12.5px] text-[var(--text-secondary)]">
+                      <span className="font-extrabold tabular-nums text-[var(--text-primary)]">{contactosMes.length}</span> {contactosMes.length === 1 ? 'contacto' : 'contactos'} este mes ·{' '}
+                      <span className="font-bold text-[var(--status-success)]">{contestadosMes} {contestadosMes === 1 ? 'contestado' : 'contestados'}</span>
+                    </p>
+                  ) : (
+                    <p className="mt-0.5 text-[12.5px] text-[var(--text-secondary)]">Registra tus llamadas y videollamadas: quedan con Sello como prueba de presencia.</p>
+                  )}
+                </div>
+                <ChevronRight size={16} className="shrink-0 text-[var(--text-tertiary)]" aria-hidden="true" />
+              </Tarjeta>
+            </Link>
 
             <AccesosRapidos items={ACCESOS} />
 
