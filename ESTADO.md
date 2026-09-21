@@ -1,3 +1,18 @@
+### Checkpoint (2026-09-21, mediodía) — CONSENTIMIENTO EXPRESO (pedido del equipo jurídico del usuario)
+- Nueva pantalla /consentimiento (grupo funnel, tema claro): 4 casillas sin premarcar — Términos,
+  Política de Datos (con enlaces), renovación automática (obligatorias) + novedades (opcional). Gate en
+  app/(app)/layout.tsx: sin fila vigente en `consentimientos` → redirect; admin exento; cuentas manuales
+  (Ivonne) NO exentas. Registro append-only con versión (VERSION_CONSENTIMIENTO='v1-2026-09-21'),
+  fecha y user_agent; RLS select/insert propios, sin update/delete. Fail-open SOLO si la tabla no existe
+  (42P01/PGRST205) para no bloquear clientes antes de correr el SQL.
+- Ajustes → "Novedades y promociones": interruptor que inserta una fila nueva (registro completo).
+- SQL: supabase/consentimientos.sql — PENDIENTE de que el usuario lo corra (avisar "listo").
+- Duda para el equipo jurídico: ¿la renovación automática debe aceptarse ANTES del cobro (paywall)
+  además de en la primera entrada? Se preguntó al usuario.
+- Captura: docs/revisiones/consentimiento-375.png (pantalla legal/secundaria, sin revisor). Commit f955416.
+- Gates veredicto:landing / veredicto:onboarding / veredicto:paywall: sin cambios (Problemas conocidos);
+  el "caducado" de hoy viene de archivos del interior (ajustes, asistencia, layout), no del funnel.
+
 ### Checkpoint (2026-09-21, mañana) — Consultas jurídicas a la abogada · copy · Google login agendado
 - Consultas de /asistencia ahora van a ivonnereyes.abogada@gmail.com (Ivonne, la abogada que responde;
   decisión del usuario) con asunto fijo "Consulta jurídica Coparentia" y replyTo = usuario. Override
