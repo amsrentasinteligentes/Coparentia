@@ -336,7 +336,7 @@ export function IconoCirculo({ icon: Icon, size = 20, tono = 'accent', grande = 
    derecha con `justify-end`. ── */
 export function BotonFlotante({ onClick, children }: { onClick: () => void; children: ReactNode }) {
   return (
-    <div className="pointer-events-none sticky bottom-4 z-10 flex justify-end">
+    <div className="pointer-events-none sticky bottom-4 z-10 mt-4 flex justify-end">
       <motion.button
         type="button"
         onClick={onClick}
@@ -386,7 +386,7 @@ export function ErrorDeCarga({ onReintentar }: { onReintentar: () => void }) {
    falta calcular cuánto colchón dejarles. */
 export function ContenedorApp({ children, conFab = false, sinTope = false }: { children: ReactNode; conFab?: boolean; sinTope?: boolean }) {
   return (
-    <div className={`relative isolate mx-auto max-w-[520px] px-4 ${conFab ? 'pb-24' : 'pb-6'} ${sinTope ? 'pt-3' : 'pt-[max(20px,env(safe-area-inset-top))]'}`}>
+    <div className={`relative isolate mx-auto max-w-[520px] px-4 ${conFab ? 'pb-8' : 'pb-6'} ${sinTope ? 'pt-3' : 'pt-[max(20px,env(safe-area-inset-top))]'}`}>
       {/* LUZ AMBIENTAL — el fondo de la app interna era un color liso en las cuatro secciones, y
           "profundidad" fue el eje que el revisor bajó una y otra vez. Esto no es decoración: es el
           3er nivel de profundidad que FICHA-ARTE declara (base / elevado / hundido) y que aquí

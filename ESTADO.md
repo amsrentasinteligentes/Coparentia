@@ -1,3 +1,17 @@
+### Checkpoint (2026-09-21, noche) — CONTACTO CON LOS HIJOS: LISTA y publicado
+SQL contacto-hijos.sql EJECUTADO por el usuario (Success). Probado end-to-end con datos reales: llamada
+con captura y videollamada no contestada guardadas con Sello; update/delete bloqueados incluso con la
+clave admin (trigger); tarjeta en Inicio "1 contacto este mes · 1 contestado"; PDF con sección "Contacto
+con los hijos" (resumen por hijo + detalle + Anexo C1) verificado con pdftotext. Revisor-visual, 6 rondas:
+25→29→32→33→34→**36/40 · 16/20 LISTA** (**veredicto:contacto**, docs/revisiones/contacto-veredicto.md;
+capturas contacto-375.png y contacto-modal-375.png). Correcciones acumuladas: confirmación con resumen
+antes de sellar, cabecera sticky con X, esqueleto de carga, chips del kit en vez de select, hora no
+futura y duración ≥1, tarjetitas horizontales con NumeroContado, ShieldCheck en el badge de resultado,
+hairline en la tarjeta de agenda, escala 28/15/14/12, FAB con 16px de aire (ui.tsx: mt-4 / pb-8 en
+conFab — afecta a Pagos e Inicio, verificado). Publicado en el commit de esta entrada.
+Pendientes: 2ª etapa "llamadas pactadas" (recordatorio); landing sin tocar hasta que Ivonne valide el
+valor probatorio; los tres gates viejos siguen documentados en Problemas conocidos.
+
 ### Checkpoint (2026-09-21, tarde) — CONTACTO CON LOS HIJOS (opción 1 aprobada por el usuario)
 Evaluación frente a OurFamilyWizard: su módulo de llamadas exige que la OTRA parte use la app y consienta
 — contradice la promesa "funciona sin la otra parte". Se eligió la opción unilateral: REGISTRO de
