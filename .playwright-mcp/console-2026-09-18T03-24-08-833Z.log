@@ -1,0 +1,7 @@
+[      22ms] [LOG] [Fast Refresh] done in 51ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1e8vcs8._.js:776
+[     297ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1e8vcs8._.js:776
+[     335ms] [LOG] [HMR] connected @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1e8vcs8._.js:776
+[     515ms] [WARNING] [kit-landing] CtaFinal → h2: 9 palabras (presupuesto: 8 — tabla de 52-COPY). Recorta el copy en docs/copy/landing.md; el límite no se negocia en el componente. @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1e8vcs8._.js:776
+[     516ms] [WARNING] [kit-landing] CtaFinal → h2: 9 palabras (presupuesto: 8 — tabla de 52-COPY). Recorta el copy en docs/copy/landing.md; el límite no se negocia en el componente. @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1e8vcs8._.js:776
+[     655ms] [WARNING] [kit-landing] CtaFinal → h2: 9 palabras (presupuesto: 8 — tabla de 52-COPY). Recorta el copy en docs/copy/landing.md; el límite no se negocia en el componente. @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1e8vcs8._.js:776
+[     656ms] [WARNING] [kit-landing] CtaFinal → h2: 9 palabras (presupuesto: 8 — tabla de 52-COPY). Recorta el copy en docs/copy/landing.md; el límite no se negocia en el componente. @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1e8vcs8._.js:776

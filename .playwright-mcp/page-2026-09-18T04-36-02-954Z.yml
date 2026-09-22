@@ -1,0 +1,34 @@
+- generic [ref=e1]:
+  - link "Saltar al contenido" [ref=e2] [cursor=pointer]:
+    - /url: "#main"
+  - generic [ref=e3]:
+    - complementary [ref=e5]:
+      - generic [ref=e6]:
+        - paragraph [ref=e7]: Tu expediente te espera
+        - heading "Entras con tu correo, sin contraseñas que recordar" [level=2] [ref=e8]
+        - paragraph [ref=e9]: Te mandamos un enlace de un solo uso y un código de 8 dígitos. Cualquiera de los dos te abre tu expediente en este mismo dispositivo.
+        - paragraph [ref=e10]: Tus comprobantes viajan cifrados y solo tú accedes a tu expediente.
+    - generic [ref=e14]:
+      - link "Coparentia" [ref=e15] [cursor=pointer]:
+        - /url: /
+      - generic [ref=e17]:
+        - heading "Entra a tu expediente" [level=1] [ref=e18]
+        - paragraph [ref=e19]: Para guardarlo y verlo en cualquier dispositivo — sin contraseñas que recordar.
+        - generic [ref=e20]:
+          - textbox "tu@correo.com" [active] [ref=e21]
+          - generic [ref=e22]:
+            - checkbox "Autorizo el tratamiento de mis datos y acepto los Términos y la Política de Privacidad." [ref=e23]
+            - generic [ref=e24]:
+              - text: Autorizo el tratamiento de mis datos y acepto los
+              - link "Términos" [ref=e25] [cursor=pointer]:
+                - /url: /terminos
+              - text: y la
+              - link "Política de Privacidad" [ref=e26] [cursor=pointer]:
+                - /url: /privacidad
+              - text: .
+          - button "Enviarme mi enlace de acceso" [disabled] [ref=e27]
+        - button "Continuar con Google — próximamente" [disabled] [ref=e28]:
+          - generic [aria-hidden] [ref=e29]: G
+          - text: Continuar con Google — próximamente
+        - paragraph [ref=e30]: "Sin contraseñas: te llegará un enlace de un solo uso"
+  - alert [ref=e34]

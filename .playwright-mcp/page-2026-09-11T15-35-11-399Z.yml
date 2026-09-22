@@ -1,0 +1,15 @@
+- generic [active] [ref=e1]:
+  - link "Saltar al contenido" [ref=e2] [cursor=pointer]:
+    - /url: "#main"
+  - generic [ref=e3]:
+    - generic "Cargando tu expediente" [ref=e8]
+    - navigation "Navegación principal" [ref=e24]:
+      - generic [ref=e25]:
+        - link "Inicio" [ref=e26] [cursor=pointer]:
+          - /url: /inicio
+        - link "Pagos" [ref=e33] [cursor=pointer]:
+          - /url: /pagos
+        - link "Calendario" [ref=e39] [cursor=pointer]:
+          - /url: /calendario
+        - link "Expediente" [ref=e44] [cursor=pointer]:
+          - /url: /expediente

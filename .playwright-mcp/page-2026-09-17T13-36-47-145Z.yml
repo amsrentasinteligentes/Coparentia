@@ -1,0 +1,36 @@
+- generic [active] [ref=f5e1]:
+  - link "Saltar al contenido" [ref=f5e2] [cursor=pointer]:
+    - /url: "#main"
+  - generic [ref=f5e4]:
+    - link "Coparentia" [ref=f5e5] [cursor=pointer]:
+      - /url: /
+    - generic [ref=f5e7]:
+      - button "Volver" [ref=f5e8]
+      - progressbar [ref=f5e11]
+      - generic [ref=f5e13]: Paso 1 de 10
+    - generic [ref=f5e16]:
+      - heading "¿Cuál es tu rol hoy?" [level=1] [ref=f5e17]
+      - paragraph [ref=f5e18]: Así adaptamos las preguntas y tu expediente
+      - generic [ref=f5e19]:
+        - button "Yo pago la cuota alimentaria" [ref=f5e20]
+        - button "Yo recibo la cuota alimentaria" [ref=f5e25]
+      - paragraph [ref=f5e36]: ¿Por qué lo preguntamos? Quien paga y quien recibe la cuota enfrentan riesgos distintos — así usamos las palabras y los ejemplos correctos en tu expediente.
+    - generic [ref=f5e38]:
+      - generic [ref=f5e39]:
+        - paragraph [ref=f5e40]: Tu expediente
+        - generic [ref=f5e41]: 0 de 7
+      - list [ref=f5e43]:
+        - listitem [ref=f5e44]:
+          - paragraph [ref=f5e47]: Tu rol
+        - listitem [ref=f5e48]:
+          - paragraph [ref=f5e51]: Tu situación
+        - listitem [ref=f5e52]:
+          - paragraph [ref=f5e55]: Cómo está fijada
+        - listitem [ref=f5e56]:
+          - paragraph [ref=f5e59]: Lo que más te preocupa
+        - listitem [ref=f5e60]:
+          - paragraph [ref=f5e63]: Meses a documentar
+        - listitem [ref=f5e64]:
+          - paragraph [ref=f5e67]: Cuándo registras
+        - listitem [ref=f5e68]:
+          - paragraph [ref=f5e71]: Cómo nos encontraste

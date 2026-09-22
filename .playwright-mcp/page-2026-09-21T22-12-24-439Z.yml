@@ -1,0 +1,88 @@
+- generic [active] [ref=f6e1]:
+  - link "Saltar al contenido" [ref=f6e2] [cursor=pointer]:
+    - /url: "#main"
+  - generic [ref=f6e3]:
+    - main [ref=f6e4]:
+      - generic [ref=f6e5]:
+        - generic [ref=f6e6]:
+          - link "Coparentia Tu expediente, en confianza." [ref=f6e7] [cursor=pointer]:
+            - /url: /inicio
+            - generic [ref=f6e9]:
+              - generic [ref=f6e10]: Coparentia
+              - generic [ref=f6e11]: Tu expediente, en confianza.
+          - generic [ref=f6e12]:
+            - link "Próximos eventos" [ref=f6e13] [cursor=pointer]:
+              - /url: /calendario
+            - link "Tu perfil" [ref=f6e17] [cursor=pointer]:
+              - /url: /perfil
+              - generic [ref=f6e18]: ·
+        - generic [ref=f6e21]:
+          - generic [ref=f6e23]:
+            - heading "Calendario" [level=1] [ref=f6e24]
+            - paragraph [ref=f6e25]: Organiza visitas, citas y actividades de tus hijos.
+          - generic [ref=f6e29]:
+            - generic [ref=f6e31]:
+              - generic [ref=f6e32]:
+                - button "Mes anterior" [ref=f6e33]
+                - paragraph [ref=f6e36]: Septiembre de 2026
+                - button "Mes siguiente" [ref=f6e37]
+              - generic [ref=f6e40]:
+                - generic [ref=f6e41]: L
+                - generic [ref=f6e42]: M
+                - generic [ref=f6e43]: X
+                - generic [ref=f6e44]: J
+                - generic [ref=f6e45]: V
+                - generic [ref=f6e46]: S
+                - generic [ref=f6e47]: D
+                - button "1" [ref=f6e49]
+                - button "2" [ref=f6e51]
+                - button "3" [ref=f6e53]
+                - button "4" [ref=f6e55]
+                - button "5" [ref=f6e57]
+                - button "6" [ref=f6e59]
+                - button "7" [ref=f6e61]
+                - button "8" [ref=f6e63]
+                - button "9" [ref=f6e65]
+                - button "10" [ref=f6e67]
+                - button "11" [ref=f6e69]
+                - button "12" [ref=f6e71]
+                - button "13" [ref=f6e73]
+                - button "14" [ref=f6e75]
+                - button "15" [ref=f6e77]
+                - button "16" [ref=f6e79]
+                - button "17" [ref=f6e81]
+                - button "18" [ref=f6e83]
+                - button "19" [ref=f6e85]
+                - button "20" [ref=f6e87]
+                - button "21" [ref=f6e89]
+                - button "22" [ref=f6e91]
+                - button "23" [ref=f6e93]
+                - button "24" [ref=f6e95]
+                - button "25" [ref=f6e97]
+                - button "26" [ref=f6e99]
+                - button "27" [ref=f6e101]
+                - button "28" [ref=f6e103]
+                - button "29" [ref=f6e105]
+                - button "30" [ref=f6e107]
+            - generic [ref=f6e110]:
+              - generic [ref=f6e111]:
+                - heading "Eventos de Septiembre de 2026" [level=2] [ref=f6e112]
+                - generic [ref=f6e113]: 0 este mes
+              - list "Cargando eventos" [ref=f6e114]:
+                - listitem [ref=f6e115]
+                - listitem [ref=f6e121]
+          - button "Nuevo evento" [ref=f6e127]
+    - navigation "Navegación principal" [ref=f6e129]:
+      - generic [ref=f6e130]:
+        - link "Inicio" [ref=f6e131] [cursor=pointer]:
+          - /url: /inicio
+        - link "Pagos" [ref=f6e138] [cursor=pointer]:
+          - /url: /pagos
+        - link "Calendario" [ref=f6e145] [cursor=pointer]:
+          - /url: /calendario
+        - link "Expediente" [ref=f6e152] [cursor=pointer]:
+          - /url: /expediente
+        - link "Asistencia" [ref=f6e158] [cursor=pointer]:
+          - /url: /asistencia
+        - link "Perfil" [ref=f6e166] [cursor=pointer]:
+          - /url: /perfil

@@ -1,0 +1,41 @@
+- generic [active] [ref=e1]:
+  - link "Saltar al contenido" [ref=e2] [cursor=pointer]:
+    - /url: "#main"
+  - generic [ref=e3]:
+    - generic [ref=e5]:
+      - generic [ref=e6]:
+        - generic [ref=e7]:
+          - heading "Expediente" [level=1] [ref=e8]
+          - paragraph [ref=e9]: Todo al día
+        - link "Ajustes" [ref=e10] [cursor=pointer]:
+          - /url: /ajustes
+      - generic [ref=e14]:
+        - paragraph [ref=e20]: Reporte en 1 clic
+        - paragraph [ref=e21]:
+          - text: Tu expediente en PDF foliado,
+          - strong [ref=e22]: con las fotos de cada comprobante adentro
+          - text: — listo para tu abogado o conciliador.
+        - button "Exportar expediente" [ref=e23]
+      - generic [ref=e36]:
+        - paragraph [ref=e37]: Consultar acuerdo
+        - paragraph [ref=e38]: Guarda aquí el acta de conciliación o la sentencia que fija la cuota — así la tienes a mano cuando la necesites.
+      - heading "Autorizaciones y controversias" [level=2] [ref=e41]
+      - generic [ref=e43]:
+        - paragraph [ref=e49]: Sin autorizaciones registradas
+        - paragraph [ref=e50]: Aquí quedan los gastos extraordinarios que pediste autorizar y la respuesta que recibiste.
+      - generic [ref=e51]:
+        - generic [ref=e57]:
+          - paragraph [ref=e58]: ¿Necesitas que un abogado revise tu expediente?
+          - paragraph [ref=e59]: Pronto verás aquí abogados de familia de tu ciudad, listos para acompañarte con lo que ya tienes documentado.
+        - link "¿Eres abogado de familia? Anúnciate aquí" [ref=e60] [cursor=pointer]:
+          - /url: mailto:alianzas@coparentia.app?subject=Quiero%20anunciarme%20en%20Coparentia
+    - navigation "Navegación principal" [ref=e61]:
+      - generic [ref=e62]:
+        - link "Inicio" [ref=e63] [cursor=pointer]:
+          - /url: /inicio
+        - link "Pagos" [ref=e69] [cursor=pointer]:
+          - /url: /pagos
+        - link "Calendario" [ref=e75] [cursor=pointer]:
+          - /url: /calendario
+        - link "Expediente" [ref=e80] [cursor=pointer]:
+          - /url: /expediente

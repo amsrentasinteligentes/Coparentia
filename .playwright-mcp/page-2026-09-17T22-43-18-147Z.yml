@@ -1,0 +1,37 @@
+- generic [active] [ref=f1e1]:
+  - link "Saltar al contenido" [ref=f1e2] [cursor=pointer]:
+    - /url: "#main"
+  - generic [ref=f1e3]:
+    - complementary [ref=f1e5]:
+      - generic [ref=f1e6]:
+        - paragraph [ref=f1e7]: Tu expediente se está armando
+        - heading "Cada respuesta le da forma a lo que vas a poder mostrar" [level=2] [ref=f1e8]
+        - paragraph [ref=f1e9]: "No es un cuestionario: es el índice de tu expediente. Lo que contestas define qué registramos, con qué palabras y en qué formato sale tu PDF."
+        - generic [ref=f1e11]:
+          - paragraph [ref=f1e12]: Tu expediente
+          - list [ref=f1e13]:
+            - listitem [ref=f1e14]:
+              - paragraph [ref=f1e18]: Tu rol
+            - listitem [ref=f1e19]:
+              - paragraph [ref=f1e23]: Tu situación
+            - listitem [ref=f1e24]:
+              - paragraph [ref=f1e28]: Cómo está fijada tu cuota
+            - listitem [ref=f1e29]:
+              - paragraph [ref=f1e33]: Lo que más te preocupa
+          - paragraph [ref=f1e34]: y 3 preguntas más
+          - paragraph [ref=f1e35]: "Con tu primer comprobante se activa el Sello de Confianza: fecha, monto y soporte quedan asociados a este expediente."
+    - generic [ref=f1e39]:
+      - link "Coparentia" [ref=f1e40] [cursor=pointer]:
+        - /url: /
+      - generic [ref=f1e42]:
+        - button "Volver" [ref=f1e43]
+        - progressbar [ref=f1e46]
+        - generic [ref=f1e48]: Paso 1 de 10
+      - generic [ref=f1e51]:
+        - heading "¿Cuál es tu rol hoy?" [level=1] [ref=f1e52]
+        - paragraph [ref=f1e53]: Así adaptamos las preguntas y tu expediente
+        - generic [ref=f1e54]:
+          - button "Yo pago la cuota alimentaria" [ref=f1e55]
+          - button "Yo recibo la cuota alimentaria" [ref=f1e60]
+        - paragraph [ref=f1e71]: ¿Por qué lo preguntamos? Quien paga y quien recibe la cuota enfrentan riesgos distintos — así usamos las palabras y los ejemplos correctos en tu expediente.
+  - alert [ref=f1e72]

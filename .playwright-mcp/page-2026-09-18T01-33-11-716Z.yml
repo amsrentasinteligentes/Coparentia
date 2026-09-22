@@ -1,0 +1,218 @@
+- generic [active] [ref=f1e1]:
+  - banner [ref=f1e2]:
+    - heading "Tu página de ventas — 3 direcciones claras para Coparentia" [level=1] [ref=f1e3]
+    - paragraph [ref=f1e4]: "Solo cambia la página de ventas; el interior de la app se queda como está. Las tres son versiones claras, con fotos de familias, capturas reales de la app y el azul Coparentia en sectores — pero cada una se siente distinta. Los bloques marcados «Foto» son el lugar de una foto real: las elegimos juntos en un banco con licencia."
+    - list [ref=f1e5]:
+      - listitem [ref=f1e6]:
+        - generic [ref=f1e7]: 1 · Elegir
+        - text: A, B o C
+      - listitem [ref=f1e8]:
+        - generic [ref=f1e9]: 2 · Combinar
+        - text: («la C pero con las letras de la A»)
+      - listitem [ref=f1e10]:
+        - generic [ref=f1e11]: 3 · Pedir otras 3
+        - text: direcciones nuevas
+      - listitem [ref=f1e12]:
+        - generic [ref=f1e13]: 4 · Ajustar un detalle
+        - text: («la A con el azul más fuerte»)
+  - paragraph [ref=f1e14]: "Abre esta página con internet: las letras se descargan al abrirla. Si algún nombre de familia (en cada panel) se ve como letra de máquina de escribir, esa fuente no cargó — recarga antes de evaluar."
+  - generic [ref=f1e15]:
+    - region "Opción A" [ref=f1e16]:
+      - generic [ref=f1e17]:
+        - heading "A Calma editorial" [level=2] [ref=f1e18]:
+          - generic [ref=f1e19]: A
+          - text: Calma editorial
+        - paragraph [ref=f1e20]: "Fondo marfil cálido, títulos con las letras elegantes que ya tiene Coparentia y fotos de esquinas suaves junto a la app. Se siente como una revista tranquila: seria sin ser fría."
+        - paragraph [ref=f1e21]:
+          - strong [ref=f1e22]: "Por qué vendería:"
+          - text: el avatar llega desconfiado; el tono sereno y «de oficina de abogado amable» baja la guardia y hace creíble la promesa de calma.
+        - list [ref=f1e23]:
+          - listitem [ref=f1e24]: "fondo #F8F6F1 · azul #3B74D6 · tinta #0B1524"
+          - listitem [ref=f1e25]: esquinas 18/12 · Spectral + IBM Plex Sans (las de la marca)
+        - generic [ref=f1e33]:
+          - paragraph [ref=f1e34]: Spectral — AaBbÑñ 0123
+          - paragraph [ref=f1e35]: IBM Plex Sans — El veloz murciélago hindú comía feliz cardillo y kiwi.
+      - generic [ref=f1e36]:
+        - generic [ref=f1e37]: 9:41
+        - generic [ref=f1e49]:
+          - generic [ref=f1e50]:
+            - generic [ref=f1e51]: Coparentia
+            - generic [ref=f1e52]: Entrar
+          - heading "Tus gastos en orden. Tu mente, en calma." [level=1] [ref=f1e53]: Tus gastos en orden.Tu mente, en calma.
+          - paragraph [ref=f1e54]: Cada comprobante queda guardado, fechado y listo para cuando te lo pidan — sin discusiones de WhatsApp.
+          - generic [ref=f1e55]: Crear mi expediente gratis
+          - paragraph [ref=f1e56]: 7 días gratis · Garantía de 15 días
+          - generic [ref=f1e57]:
+            - generic [ref=f1e58]: "Foto: padre e hija en la cocina"
+            - img "Pantalla de inicio de Coparentia" [ref=f1e65]
+          - generic [ref=f1e66]: "Sello de Confianza en cada comprobante: fecha, monto y soporte, sin ediciones silenciosas."
+      - paragraph [ref=f1e72]: Así se vería en el celular
+    - region "Opción B" [ref=f1e73]:
+      - generic [ref=f1e74]:
+        - heading "B Cercana y directa" [level=2] [ref=f1e75]:
+          - generic [ref=f1e76]: B
+          - text: Cercana y directa
+        - paragraph [ref=f1e77]: Blanco limpio, un título enorme que habla sin rodeos y los teléfonos de la app montados sobre una foto. Los beneficios van en bloques azul marino, el color de la app. Se siente franca, moderna y con energía.
+        - paragraph [ref=f1e78]:
+          - strong [ref=f1e79]: "Por qué vendería:"
+          - text: el avatar está cansado de que no le crean; un mensaje grande y sin adornos («cuentas claras, sin discusiones») lo hace sentir entendido en 3 segundos.
+        - list [ref=f1e80]:
+          - listitem [ref=f1e81]: "fondo #FFFFFF · azul #2F6FE0 · marino #0B1524"
+          - listitem [ref=f1e82]: esquinas 16/10 · Sora + Manrope
+        - generic [ref=f1e90]:
+          - paragraph [ref=f1e91]: Sora — AaBbÑñ 0123
+          - paragraph [ref=f1e92]: Manrope — El veloz murciélago hindú comía feliz cardillo y kiwi.
+      - generic [ref=f1e93]:
+        - generic [ref=f1e94]: 9:41
+        - generic [ref=f1e106]:
+          - generic [ref=f1e107]:
+            - generic [ref=f1e108]: Coparentia
+            - generic [ref=f1e109]: Entrar
+          - heading "Cuentas claras. Sin discusiones." [level=1] [ref=f1e110]:
+            - text: Cuentas claras.
+            - generic [ref=f1e111]: Sin discusiones.
+          - paragraph [ref=f1e112]: Cada pago de tus hijos, con su comprobante y su fecha. Cuando te reclamen, respondes con hechos.
+          - generic [ref=f1e113]: Empezar gratis
+          - paragraph [ref=f1e114]: 7 días gratis · Garantía de 15 días
+          - generic [ref=f1e115]:
+            - generic [ref=f1e116]: "Foto: familia caminando en el parque"
+            - img "Registro de pago en Coparentia" [ref=f1e123]
+          - generic [ref=f1e124]:
+            - generic [ref=f1e125]: Comprobantes con fecha
+            - generic [ref=f1e129]: Funciona aunque la otra parte no la use
+      - paragraph [ref=f1e134]: Así se vería en el celular
+    - region "Opción C" [ref=f1e135]:
+      - generic [ref=f1e136]:
+        - heading "C Cuidado en calma" [level=2] [ref=f1e137]:
+          - generic [ref=f1e138]: C
+          - text: Cuidado en calma
+        - paragraph [ref=f1e139]: Azul muy suave de fondo, letras redondeadas y amables, y formas orgánicas en el azul Coparentia que abrazan la foto. Todo es curvo, nada tiene esquinas duras. Se siente cálida, protectora y cercana a los hijos.
+        - paragraph [ref=f1e140]:
+          - strong [ref=f1e141]: "Por qué vendería:"
+          - text: el avatar quiere paz, no un litigio; la suavidad y la presencia de los hijos conectan con «esto es por ellos» antes de hablar de dinero.
+        - list [ref=f1e142]:
+          - listitem [ref=f1e143]: "fondo #F3F7FC · azul #3F7FE6 → #2757A8 · tinta #14233A"
+          - listitem [ref=f1e144]: esquinas 22/redondas · Figtree + Nunito Sans
+        - generic [ref=f1e152]:
+          - paragraph [ref=f1e153]: Figtree — AaBbÑñ 0123
+          - paragraph [ref=f1e154]: Nunito Sans — El veloz murciélago hindú comía feliz cardillo y kiwi.
+      - generic [ref=f1e155]:
+        - generic [ref=f1e156]: 9:41
+        - generic [ref=f1e168]:
+          - generic [ref=f1e170]:
+            - generic [ref=f1e171]: Coparentia
+            - generic [ref=f1e172]: Entrar
+          - heading [level=1] [ref=f1e173]:
+            - text: Menos discusiones por dinero.
+            - emphasis [ref=f1e174]: Más calma
+            - text: para tus hijos.
+          - paragraph [ref=f1e175]: Organiza los gastos de tus hijos y guarda cada comprobante en un solo lugar, listo para mostrar.
+          - generic [ref=f1e176]: Crear mi expediente gratis
+          - paragraph [ref=f1e177]: 7 días gratis · Garantía de 15 días
+          - generic [ref=f1e178]:
+            - generic [ref=f1e179]: "Foto: mamá e hijo con el celular"
+            - generic [ref=f1e186]:
+              - generic [ref=f1e187]: Tu primer expediente
+              - generic [ref=f1e188]: Listo en 10 minutos
+          - generic [ref=f1e189]:
+            - generic [ref=f1e190]: Gastos al día
+            - generic [ref=f1e194]: Comprobantes con fecha
+            - generic [ref=f1e198]: Mente en calma
+      - paragraph [ref=f1e203]: Así se vería en el celular
+  - heading "Así se vería la parte de arriba en el computador" [level=2] [ref=f1e204]
+  - paragraph [ref=f1e205]: "La misma dirección, a pantalla ancha: lo primero que ve quien entra desde un enlace."
+  - generic [ref=f1e206]:
+    - paragraph [ref=f1e207]:
+      - generic [ref=f1e208]: A
+      - text: Calma editorial
+    - generic [ref=f1e209]:
+      - generic [ref=f1e210]:
+        - generic [ref=f1e211]: Coparentia
+        - generic [ref=f1e212]:
+          - generic [ref=f1e213]: Cómo funciona
+          - generic [ref=f1e214]: Planes
+          - generic [ref=f1e215]: Para abogados
+          - generic [ref=f1e216]: Entrar
+        - generic [ref=f1e217]: Crear mi expediente gratis
+      - generic [ref=f1e218]:
+        - generic [ref=f1e219]:
+          - heading "Tus gastos en orden. Tu mente, en calma." [level=2] [ref=f1e220]: Tus gastos en orden.Tu mente, en calma.
+          - paragraph [ref=f1e221]: Cada comprobante de tus hijos queda guardado, fechado y listo para mostrar. Cuando te reclamen por WhatsApp, respondes con hechos — no con capturas sueltas.
+          - generic [ref=f1e222]:
+            - generic [ref=f1e223]: Crear mi expediente gratis
+            - generic [ref=f1e224]: 7 días gratis · Garantía de 15 días
+        - generic [ref=f1e225]:
+          - generic [ref=f1e226]: "Foto: padre e hija en la cocina, luz de mañana"
+          - generic [ref=f1e233]: "Foto: niña con mochila"
+          - img "Pantalla de inicio de Coparentia" [ref=f1e235]
+      - generic [ref=f1e236]:
+        - generic [ref=f1e237]: Sello de Confianza en cada comprobante
+        - generic [ref=f1e241]: Funciona aunque la otra persona no la use
+        - generic [ref=f1e245]: Expediente exportable en PDF
+  - generic [ref=f1e249]:
+    - paragraph [ref=f1e250]:
+      - generic [ref=f1e251]: B
+      - text: Cercana y directa
+    - generic [ref=f1e252]:
+      - generic [ref=f1e253]:
+        - generic [ref=f1e254]: Coparentia
+        - generic [ref=f1e255]:
+          - generic [ref=f1e256]: Cómo funciona
+          - generic [ref=f1e257]: Planes
+          - generic [ref=f1e258]: Para abogados
+          - generic [ref=f1e259]: Entrar
+        - generic [ref=f1e260]: Empezar gratis
+      - generic [ref=f1e261]:
+        - generic [ref=f1e262]:
+          - heading "Cuentas claras. Sin discusiones." [level=2] [ref=f1e263]:
+            - text: Cuentas claras.
+            - generic [ref=f1e264]: Sin discusiones.
+          - paragraph [ref=f1e265]: "Pagar no basta: hay que poder mostrarlo."
+          - paragraph [ref=f1e266]: Cada pago de tus hijos queda con su comprobante y su fecha en un expediente que se arma solo. Funciona aunque la otra parte no use la app.
+          - generic [ref=f1e267]:
+            - generic [ref=f1e268]: Empezar gratis
+            - generic [ref=f1e269]: 7 días gratis · Garantía de 15 días
+        - generic [ref=f1e270]:
+          - generic [ref=f1e271]: "Foto: familia caminando en el parque"
+          - generic [ref=f1e278]: "Foto: papá jugando con su hijo"
+          - img "Inicio de Coparentia" [ref=f1e280]
+          - img "Registro de pago en Coparentia" [ref=f1e281]
+      - generic [ref=f1e282]:
+        - generic [ref=f1e283]: Comprobantes con fecha
+        - generic [ref=f1e287]: Gastos extra autorizados
+        - generic [ref=f1e291]: PDF listo para tu abogado
+        - generic [ref=f1e295]: Solo tú lo necesitas
+  - generic [ref=f1e299]:
+    - paragraph [ref=f1e300]:
+      - generic [ref=f1e301]: C
+      - text: Cuidado en calma
+    - generic [ref=f1e302]:
+      - generic [ref=f1e303]:
+        - generic [ref=f1e304]: Coparentia
+        - generic [ref=f1e305]:
+          - generic [ref=f1e306]: Cómo funciona
+          - generic [ref=f1e307]: Planes
+          - generic [ref=f1e308]: Para abogados
+          - generic [ref=f1e309]: Entrar
+        - generic [ref=f1e310]: Crear mi expediente gratis
+      - generic [ref=f1e311]:
+        - generic [ref=f1e312]:
+          - heading [level=2] [ref=f1e313]:
+            - text: Menos discusiones por dinero.
+            - emphasis [ref=f1e314]: Más calma
+            - text: para tus hijos.
+          - paragraph [ref=f1e315]: Organiza los gastos de tus hijos y guarda cada comprobante en un solo lugar, con fecha y listo para mostrar. Sin depender de la otra persona.
+          - generic [ref=f1e316]:
+            - generic [ref=f1e317]: Crear mi expediente gratis
+            - generic [ref=f1e318]: 7 días gratis · Garantía de 15 días
+        - generic [ref=f1e319]:
+          - generic [ref=f1e321]: "Foto: mamá e hijo sonriendo con el celular"
+          - img "Inicio de Coparentia" [ref=f1e328]
+          - generic [ref=f1e329]:
+            - generic [ref=f1e330]: Tu primer expediente
+            - generic [ref=f1e331]: Listo en 10 minutos
+      - generic [ref=f1e332]:
+        - generic [ref=f1e333]: Gastos al día
+        - generic [ref=f1e337]: Comprobantes con fecha
+        - generic [ref=f1e341]: Mente en calma
+  - contentinfo [ref=f1e345]: "Cómo se hizo: tres interpretaciones fieles de las referencias que compartiste (2houses, Niddo, OurFamilyWizard), todas en claro y con el azul Coparentia en sectores. Divergen en tipo de letra (elegante / rotunda / redondeada), composición (collage editorial / título enorme con teléfonos / formas orgánicas), paleta real y detalle propio. Las capturas de la app son reales; las fotos son marcadores de posición hasta elegir las definitivas con licencia. El interior de la app no cambia. Marcador del kit data-kit=\"abc-v2\" intacto (Regla Dura #0)."

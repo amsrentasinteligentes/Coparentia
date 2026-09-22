@@ -1,0 +1,34 @@
+- generic [active] [ref=f10e1]:
+  - link "Saltar al contenido" [ref=f10e2] [cursor=pointer]:
+    - /url: "#main"
+  - generic [ref=f10e5]:
+    - generic [ref=f10e6]:
+      - link "Coparentia" [ref=f10e7] [cursor=pointer]:
+        - /url: /
+        - img "Coparentia" [ref=f10e8]
+      - button "Cerrar" [ref=f10e9]
+    - generic [ref=f10e13]:
+      - button "Volver" [ref=f10e14]
+      - progressbar [ref=f10e17]
+      - generic [ref=f10e19]: Paso 1 de 2
+    - generic [ref=f10e22]:
+      - heading "Tu expediente está listo para empezar" [level=1] [ref=f10e23]
+      - paragraph [ref=f10e24]: Así funciona tu expediente desde el primer día
+      - generic [ref=f10e25]:
+        - generic [ref=f10e26]: El Sello de Confianza en cada comprobante
+        - generic [ref=f10e31]: Expediente exportable en PDF foliado
+        - generic [ref=f10e36]: Alertas en el momento que elegiste
+      - generic [ref=f10e42]:
+        - heading "7 días gratis, sin sorpresas" [level=2] [ref=f10e43]
+        - generic [ref=f10e44]:
+          - generic [ref=f10e49]:
+            - paragraph [ref=f10e50]: Hoy — acceso completo
+            - paragraph [ref=f10e51]: Todo tu expediente, sin límites
+          - generic [ref=f10e56]:
+            - paragraph [ref=f10e57]: Día 5 — te avisamos
+            - paragraph [ref=f10e58]: Correo antes de cualquier cobro
+          - generic [ref=f10e62]:
+            - paragraph [ref=f10e63]: "Día 7 — primer cobro: US$89 al año"
+            - paragraph [ref=f10e64]: Cancela antes sin costo
+        - paragraph [ref=f10e65]: El aviso del día 5 llega por correo. Podrás sumar notificaciones desde Ajustes cuando entres.
+      - button "Ver mi plan y precio" [ref=f10e67]

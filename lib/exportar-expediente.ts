@@ -39,6 +39,30 @@ import {
 } from '@/lib/datos';
 import { hoyEnColombia } from '@/lib/fecha';
 import { obtenerPerfil, obtenerHijos, edadTexto, type Perfil, type Hijo } from '@/lib/perfil';
+import { crearClienteSupabase } from '@/lib/supabase/client';
+import { periodoTexto } from '@/lib/constancias';
+
+interface FilaConstancia {
+  destinatario: string;
+  periodo: string;
+  origen: string;
+  estado: string;
+  created_at: string;
+}
+
+/** Constancias enviadas a la otra parte — prueba de que se le informó (2026-09-22). */
+async function obtenerConstancias(): Promise<FilaConstancia[]> {
+  try {
+    const supabase = crearClienteSupabase();
+    const { data } = await supabase
+      .from('constancias')
+      .select('destinatario, periodo, origen, estado, created_at')
+      .order('created_at', { ascending: true });
+    return (data ?? []) as FilaConstancia[];
+  } catch {
+    return [];
+  }
+}
 
 const ETIQUETA_ESTADO: Record<EstadoAutorizacion, string> = {
   aprobada: 'Aprobada',
@@ -112,6 +136,7 @@ export async function exportarExpedientePdf(
     obtenerHijos().catch((): Hijo[] => []),
     obtenerEventos().catch((): Evento[] => []),
   ]);
+  const constancias = await obtenerConstancias();
   // Registros de CONTACTO (llamadas / videollamadas): prueba de presencia, no de dinero.
   const contactos = eventos
     .filter((e) => esContacto(e.tipo))
@@ -219,6 +244,7 @@ export async function exportarExpedientePdf(
     ['Período cubierto', periodo],
     ['Comprobantes anexos en este documento', String(conFoto.length)],
     ...(contactos.length > 0 ? [['Contactos con los hijos registrados', String(contactos.length)] as [string, string]] : []),
+    ...(constancias.length > 0 ? [['Constancias enviadas a la otra parte', String(constancias.filter((c) => c.estado === 'enviada').length)] as [string, string]] : []),
   ];
   filasResumen.forEach(([etiqueta, valor]) => {
     salto(16);
@@ -399,6 +425,40 @@ export async function exportarExpedientePdf(
     doc.text('Cada registro se creó con el Sello de Confianza (fecha del sistema) y no admite edición ni borrado.', MARGEN, y);
     y += 12;
     doc.text('Se registra el hecho del contacto; nunca se graba audio ni video.', MARGEN, y);
+    y += 22;
+    doc.setFontSize(10);
+  }
+
+  /* ── CONSTANCIAS ENVIADAS A LA OTRA PARTE (2026-09-22) — no prueban un pago, prueban que la
+     otra parte FUE INFORMADA: fecha, hora, destinatario y período comunicado. ── */
+  if (constancias.length > 0) {
+    titular('Constancias enviadas a la otra parte');
+    doc.setTextColor(110);
+    doc.setFontSize(9);
+    doc.text('Fecha y hora del envío', MARGEN, y);
+    doc.text('Destinatario', MARGEN + 190, y);
+    doc.text('Período informado', MARGEN + 380, y);
+    doc.text('Estado', MARGEN + 480, y);
+    y += 14;
+    doc.setFontSize(10);
+    constancias.forEach((c) => {
+      salto(16);
+      doc.setTextColor(40);
+      doc.text(
+        new Date(c.created_at).toLocaleString('es-CO', { day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: '2-digit', timeZone: 'America/Bogota' }),
+        MARGEN,
+        y
+      );
+      doc.text(doc.splitTextToSize(c.destinatario, 185)[0], MARGEN + 190, y);
+      doc.text(doc.splitTextToSize(periodoTexto(c.periodo), 95)[0], MARGEN + 380, y);
+      doc.setTextColor(110);
+      doc.text(c.estado === 'enviada' ? (c.origen === 'mensual' ? 'Enviada (auto)' : 'Enviada') : 'No enviada', MARGEN + 480, y);
+      y += 16;
+    });
+    salto(26);
+    doc.setTextColor(110);
+    doc.setFontSize(9);
+    doc.text('Cada constancia incluyó los totales del período y el detalle de los movimientos registrados.', MARGEN, y);
     y += 22;
     doc.setFontSize(10);
   }

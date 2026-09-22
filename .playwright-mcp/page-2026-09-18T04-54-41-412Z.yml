@@ -1,0 +1,68 @@
+- generic [active] [ref=f4e1]:
+  - link "Saltar al contenido" [ref=f4e2] [cursor=pointer]:
+    - /url: "#main"
+  - generic [ref=f4e3]:
+    - main [ref=f4e4]:
+      - generic [ref=f4e5]:
+        - generic [ref=f4e6]:
+          - link "Coparentia Tu expediente, en confianza." [ref=f4e7] [cursor=pointer]:
+            - /url: /inicio
+            - generic [ref=f4e9]:
+              - generic [ref=f4e10]: Coparentia
+              - generic [ref=f4e11]: Tu expediente, en confianza.
+          - generic [ref=f4e12]:
+            - link "Próximos eventos" [ref=f4e13] [cursor=pointer]:
+              - /url: /calendario
+            - link "Tu cuenta y ajustes" [ref=f4e17] [cursor=pointer]:
+              - /url: /ajustes
+              - generic [ref=f4e18]: ·
+        - generic [ref=f4e21]:
+          - generic [ref=f4e23]:
+            - heading "Pagos y cuota alimentaria" [level=1] [ref=f4e24]
+            - paragraph [ref=f4e25]: Controla tu cuota, los gastos extra y sus comprobantes.
+          - generic [ref=f4e35]:
+            - paragraph [ref=f4e36]: Cuota de septiembre de 2026
+            - generic [ref=f4e37]: Por registrar
+            - paragraph [ref=f4e39]: —
+            - paragraph [ref=f4e40]: Define tu cuota en Ajustes
+          - generic [ref=f4e41]:
+            - generic [ref=f4e46]:
+              - paragraph [ref=f4e47]: Saldo pendiente
+              - paragraph [ref=f4e48]: $ 0
+              - paragraph [ref=f4e49]: Sin pagos vencidos
+            - generic [ref=f4e54]:
+              - paragraph [ref=f4e55]: Gastos extra
+              - paragraph [ref=f4e56]: $ 0
+              - paragraph [ref=f4e58]: 0 este mes
+          - tablist "Filtrar registros" [ref=f4e59]:
+            - tab "Cuotas" [ref=f4e60]
+            - tab "Gastos" [ref=f4e61]
+            - tab "Historial" [selected] [ref=f4e62]
+          - generic [ref=f4e63]:
+            - generic [ref=f4e64]:
+              - heading "Historial" [level=2] [ref=f4e65]
+              - paragraph [ref=f4e66]: 0 · $ 0
+            - generic [ref=f4e67]:
+              - paragraph [ref=f4e72]: Todavía no hay comprobantes
+              - paragraph [ref=f4e73]: Toca "Registrar", sube la foto del comprobante y queda fechado con el Sello de Confianza.
+          - generic [ref=f4e74]:
+            - generic [ref=f4e79]:
+              - paragraph [ref=f4e80]: Cuotas este año
+              - paragraph [ref=f4e81]: "0"
+            - generic [ref=f4e87]:
+              - paragraph [ref=f4e88]: Con Sello
+              - paragraph [ref=f4e89]: "0"
+          - button "Registrar" [ref=f4e90]
+    - navigation "Navegación principal" [ref=f4e94]:
+      - generic [ref=f4e95]:
+        - link "Inicio" [ref=f4e96] [cursor=pointer]:
+          - /url: /inicio
+        - link "Pagos" [ref=f4e103] [cursor=pointer]:
+          - /url: /pagos
+        - link "Calendario" [ref=f4e111] [cursor=pointer]:
+          - /url: /calendario
+        - link "Expediente" [ref=f4e117] [cursor=pointer]:
+          - /url: /expediente
+        - link "Asistencia" [ref=f4e123] [cursor=pointer]:
+          - /url: /asistencia
+  - alert [ref=f4e131]

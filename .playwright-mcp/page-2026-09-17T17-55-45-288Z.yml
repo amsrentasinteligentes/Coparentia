@@ -1,0 +1,57 @@
+- generic [active] [ref=f3e1]:
+  - link "Saltar al contenido" [ref=f3e2] [cursor=pointer]:
+    - /url: "#main"
+  - generic [ref=f3e4]:
+    - generic [ref=f3e5]:
+      - link "Coparentia" [ref=f3e6] [cursor=pointer]:
+        - /url: /
+      - button "Cerrar" [ref=f3e8]
+    - generic [ref=f3e12]:
+      - button "Volver" [ref=f3e13]
+      - progressbar [ref=f3e16]
+      - generic [ref=f3e18]: Paso 2 de 2
+    - generic [ref=f3e68]:
+      - heading "Una captura de WhatsApp no prueba nada — tu expediente sí" [level=1] [ref=f3e69]
+      - radiogroup "Elige tu plan" [ref=f3e70]:
+        - radio "Ahorras 3 meses · US$30.88 al año Anual US$7.42/mes Se cobra US$89 al año · ≈ $278.400 COP" [checked] [ref=f3e71]:
+          - generic [ref=f3e72]: Ahorras 3 meses · US$30.88 al año
+          - generic [ref=f3e78]:
+            - generic [ref=f3e79]:
+              - generic [ref=f3e80]: Anual
+              - generic [ref=f3e81]: US$7.42/mes
+            - paragraph [ref=f3e82]:
+              - text: Se cobra US$89 al año
+              - generic [ref=f3e83]: · ≈ $278.400 COP
+        - radio "Mensual US$9.99/mes Serían US$119.88 al año · ≈ $375.000 COP" [ref=f3e84]:
+          - generic [ref=f3e86]:
+            - generic [ref=f3e87]:
+              - generic [ref=f3e88]: Mensual
+              - generic [ref=f3e89]: US$9.99/mes
+            - paragraph [ref=f3e90]:
+              - text: Serían US$119.88 al año
+              - generic [ref=f3e91]: · ≈ $375.000 COP
+      - generic [ref=f3e92]:
+        - generic [ref=f3e93]: Te sale a US$0.24 al día.
+        - generic [ref=f3e99]: Funciona aunque la otra persona no la use.
+        - generic [ref=f3e104]: Cancelas cuando quieras, desde Ajustes.
+      - generic [ref=f3e111]:
+        - group [ref=f3e113]:
+          - generic "Cómo funciona la garantía" [ref=f3e114] [cursor=pointer]
+        - generic [ref=f3e116]:
+          - generic [ref=f3e117]:
+            - generic [ref=f3e118]: Garantía del Primer Expediente · 15 días
+            - generic [aria-hidden] [ref=f3e122]: ·
+            - generic [ref=f3e123]: Pago seguro con Hotmart
+          - button "Empezar mis 7 días gratis" [ref=f3e127]
+          - paragraph [ref=f3e128]: Hoy no pagas nada · Se renueva tras el día 7, cancela cuando quieras
+      - generic [ref=f3e129]:
+        - button "Ahora no" [ref=f3e130]
+        - generic [aria-hidden] [ref=f3e131]: ·
+        - link "¿Dudas? Escríbenos" [ref=f3e132] [cursor=pointer]:
+          - /url: mailto:soporte@coparentia.co
+        - generic [aria-hidden] [ref=f3e133]: ·
+        - link "Términos" [ref=f3e134] [cursor=pointer]:
+          - /url: /terminos
+        - link "Privacidad" [ref=f3e135] [cursor=pointer]:
+          - /url: /privacidad
+  - alert [ref=f3e136]

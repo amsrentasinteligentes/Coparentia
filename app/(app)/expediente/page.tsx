@@ -10,6 +10,7 @@ import { Download, FileCheck2, Scale, FolderOpen } from 'lucide-react';
 import { ContenedorApp, Tarjeta, IconoCirculo, Pildora, ErrorDeCarga, CabeceraApp, TituloSeccion } from '@/components/app/ui';
 import { exportarExpedientePdf } from '@/lib/exportar-expediente';
 import { AcuerdoCuota } from '@/components/app/AcuerdoCuota';
+import { ConstanciaOtraParte } from '@/components/app/ConstanciaOtraParte';
 import {
   type Autorizacion,
   type EstadoAutorizacion,
@@ -133,6 +134,9 @@ export default function Expediente() {
       {/* Documento base que fija la cuota (acta de conciliación o sentencia) — se guarda aquí,
           donde el usuario piensa "¿y el papel que dice cuánto me toca?". */}
       <AcuerdoCuota />
+
+      {/* Constancia a la otra parte: informar es parte del expediente, no un extra. */}
+      <ConstanciaOtraParte />
 
       <div className="mt-6 flex items-center justify-between">
         <h2 className="text-[15px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">Autorizaciones y controversias</h2>

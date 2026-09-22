@@ -1,0 +1,102 @@
+- generic [active] [ref=e1]:
+  - link "Saltar al contenido" [ref=e2] [cursor=pointer]:
+    - /url: "#main"
+  - generic [ref=e3]:
+    - main [ref=e4]:
+      - generic [ref=e5]:
+        - generic [ref=e6]:
+          - link "Coparentia Tu expediente, en confianza." [ref=e7] [cursor=pointer]:
+            - /url: /inicio
+            - generic [ref=e9]:
+              - generic [ref=e10]: Coparentia
+              - generic [ref=e11]: Tu expediente, en confianza.
+          - generic [ref=e12]:
+            - link "Próximos eventos" [ref=e13] [cursor=pointer]:
+              - /url: /calendario
+            - link "Tu cuenta y ajustes" [ref=e17] [cursor=pointer]:
+              - /url: /ajustes
+              - generic [ref=e18]: ·
+        - generic [ref=e21]:
+          - generic [ref=e23]:
+            - heading "Perfil" [level=1] [ref=e24]
+            - paragraph [ref=e25]: Tu cuenta, tu cuota y tu suscripción.
+          - generic [ref=e30]:
+            - generic [ref=e31]:
+              - generic [ref=e32]: ·
+              - generic [ref=e33]:
+                - paragraph [ref=e34]: Tu cuenta
+                - paragraph [ref=e35]: Cuenta principal · Expediente propio
+                - paragraph [ref=e36]: Sello de Confianza activo
+            - generic [ref=e40]:
+              - generic [ref=e41]:
+                - paragraph [ref=e42]: —
+                - paragraph [ref=e43]: comprobantes con Sello
+              - generic [ref=e44]:
+                - paragraph [ref=e45]: —
+                - paragraph [ref=e46]: cuota mensual · día —
+          - heading "Tu cuota alimentaria" [level=2] [ref=e47]
+          - generic "Cargando tu expediente" [ref=e49]
+          - heading "Ajustes y cuenta" [level=2] [ref=e55]
+          - generic [ref=e56]:
+            - 'link "Suscripción y pagos Se administra en Hotmart: cancelar, cambiar de plan, facturas" [ref=e57] [cursor=pointer]':
+              - /url: https://sac.hotmart.com/
+              - generic [ref=e61]:
+                - generic [ref=e62]: Suscripción y pagos
+                - generic [ref=e63]: "Se administra en Hotmart: cancelar, cambiar de plan, facturas"
+            - link "Asistencia jurídica Escríbenos tu duda o contacta a un abogado" [ref=e68] [cursor=pointer]:
+              - /url: /asistencia
+              - generic [ref=e74]:
+                - generic [ref=e75]: Asistencia jurídica
+                - generic [ref=e76]: Escríbenos tu duda o contacta a un abogado
+            - link "Ayuda y soporte soporte@coparentia.co · respondemos en menos de 48 h" [ref=e79] [cursor=pointer]:
+              - /url: mailto:soporte@coparentia.co
+              - generic [ref=e88]:
+                - generic [ref=e89]: Ayuda y soporte
+                - generic [ref=e90]: soporte@coparentia.co · respondemos en menos de 48 h
+            - link "Privacidad Qué guardamos, dónde y cómo borrarlo" [ref=e95] [cursor=pointer]:
+              - /url: /privacidad
+              - generic [ref=e100]:
+                - generic [ref=e101]: Privacidad
+                - generic [ref=e102]: Qué guardamos, dónde y cómo borrarlo
+            - link "Términos y condiciones Condiciones de uso y reembolsos" [ref=e105] [cursor=pointer]:
+              - /url: /terminos
+              - generic [ref=e110]:
+                - generic [ref=e111]: Términos y condiciones
+                - generic [ref=e112]: Condiciones de uso y reembolsos
+          - generic [ref=e115]:
+            - generic [ref=e121]:
+              - paragraph [ref=e122]: Miembro desde
+              - paragraph [ref=e123]: —
+            - generic [ref=e128]:
+              - paragraph [ref=e129]: Plan actual
+              - paragraph [ref=e130]: Suscripción activa
+          - paragraph [ref=e131]: Para cancelar tu suscripción (deja de cobrarte desde el siguiente ciclo, no borra tu cuenta ni tus datos) entra al portal de compras de Hotmart con el correo con el que pagaste.
+          - button "Cerrar sesión" [ref=e132]
+          - generic [ref=e140]:
+            - generic [ref=e145]:
+              - paragraph [ref=e146]: Eliminar mi cuenta
+              - paragraph [ref=e147]: Borra tu cuenta y TODOS tus datos (comprobantes, eventos, expediente) para siempre. No se puede deshacer.
+            - paragraph [ref=e149]:
+              - strong [ref=e150]: Esto NO cancela tu suscripción de Hotmart.
+              - text: Si tienes un plan activo, Hotmart te seguirá cobrando aunque borres tu cuenta aquí — cancela primero desde el portal de Hotmart (arriba) si no quieres que te sigan cobrando.
+            - button "Eliminar mi cuenta" [ref=e151]
+          - paragraph [ref=e155]:
+            - text: Más detalles en nuestra
+            - link "Política de Privacidad" [ref=e156] [cursor=pointer]:
+              - /url: /privacidad
+            - text: . ¿Dudas? Escríbenos a
+            - link "soporte@coparentia.co" [ref=e157] [cursor=pointer]:
+              - /url: mailto:soporte@coparentia.co
+            - text: .
+    - navigation "Navegación principal" [ref=e158]:
+      - generic [ref=e159]:
+        - link "Inicio" [ref=e160] [cursor=pointer]:
+          - /url: /inicio
+        - link "Pagos" [ref=e167] [cursor=pointer]:
+          - /url: /pagos
+        - link "Calendario" [ref=e174] [cursor=pointer]:
+          - /url: /calendario
+        - link "Expediente" [ref=e180] [cursor=pointer]:
+          - /url: /expediente
+        - link "Asistencia" [ref=e186] [cursor=pointer]:
+          - /url: /asistencia

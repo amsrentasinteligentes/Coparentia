@@ -1,0 +1,142 @@
+- generic [active] [ref=f17e1]:
+  - banner [ref=f17e2]:
+    - heading "Réplica fiel — el Inicio de Coparentia con el estilo de tu referencia" [level=1] [ref=f17e3]
+    - paragraph [ref=f17e4]: "A la izquierda tu captura (Ref 1); en el centro la pantalla de Inicio de Coparentia con ESE estilo copiado — mismos colores, misma composición, mismas formas — pero con lo que la app realmente muestra: tu cuota en pesos, tus comprobantes, el Sello de Confianza y las cinco secciones reales. A la derecha, de dónde salió cada valor."
+    - list [ref=f17e5]:
+      - listitem [ref=f17e6]:
+        - generic [ref=f17e7]: 1 · Es igualita
+        - text: → construyo el interior completo así
+      - listitem [ref=f17e8]:
+        - generic [ref=f17e9]: 2 · Ajustar un detalle
+        - text: («el azul más fuerte», «más grande el saludo»)
+      - listitem [ref=f17e10]:
+        - generic [ref=f17e11]: 3 · Otra interpretación
+        - text: de la misma referencia
+  - generic [ref=f17e12]:
+    - generic [ref=f17e13]:
+      - heading "Tu referencia (Ref 1)" [level=2] [ref=f17e14]
+      - 'img "Captura de referencia del usuario: pantalla de inicio en claro" [ref=f17e15]'
+    - generic [ref=f17e16]:
+      - heading "Inicio de Coparentia, replicado" [level=2] [ref=f17e17]
+      - generic [ref=f17e18]:
+        - generic [ref=f17e19]: 9:41
+        - generic [ref=f17e31]:
+          - generic [ref=f17e32]:
+            - generic [ref=f17e34]:
+              - text: Coparentia
+              - generic [ref=f17e35]: Tu expediente, en confianza.
+            - generic [ref=f17e36]: CA
+          - generic [ref=f17e46]:
+            - heading "Hola, Carlos" [level=1] [ref=f17e48]
+            - paragraph [ref=f17e49]: Tu expediente está al día. Nada pendiente hoy.
+          - generic [ref=f17e50]:
+            - generic [ref=f17e56]:
+              - generic [ref=f17e57]: Próximo evento
+              - generic [ref=f17e58]: Fin de semana con papá
+              - emphasis [ref=f17e59]: Sáb 10 de sept, 9:00 a. m.Visita
+            - generic [ref=f17e62]:
+              - generic [ref=f17e63]:
+                - generic [ref=f17e70]: Cuota alimentaria
+                - generic [ref=f17e71]: Pagada
+                - generic [ref=f17e74]: $450.000COP
+                - generic [ref=f17e75]: Septiembre 2026 · con Sello
+              - generic [ref=f17e76]:
+                - generic [ref=f17e83]: Gastos extra del mes
+                - generic [ref=f17e84]: $180.000COP
+                - generic [ref=f17e87]: 1 de 2 autorizados · natación
+            - generic [ref=f17e88]:
+              - generic [ref=f17e89]: Pagos
+              - generic [ref=f17e93]: Calendario
+              - generic [ref=f17e98]: Expediente
+              - generic [ref=f17e103]: Asistencia
+            - generic [ref=f17e107]:
+              - heading "Actividad reciente Ver todo ›" [level=2] [ref=f17e108]:
+                - text: Actividad reciente
+                - generic [ref=f17e109]: Ver todo ›
+              - generic [ref=f17e110]:
+                - generic [ref=f17e114]:
+                  - generic [ref=f17e115]: Comprobante con Sello de Confianza
+                  - generic [ref=f17e116]: Cuota de septiembre · $450.000
+                - time [ref=f17e117]: Hoy10:24 a. m.
+              - generic [ref=f17e118]:
+                - generic [ref=f17e123]:
+                  - generic [ref=f17e124]: Visita registrada
+                  - generic [ref=f17e125]: Fin de semana con papá · sáb 10
+                - time [ref=f17e126]: Ayer6:18 p. m.
+              - generic [ref=f17e127]:
+                - generic [ref=f17e132]:
+                  - generic [ref=f17e133]: Gasto extra autorizado
+                  - generic [ref=f17e134]: Matrícula natación · $180.000
+                - time [ref=f17e135]: 1 sept4:03 p. m.
+            - generic [ref=f17e141]:
+              - generic [ref=f17e142]: Tu expediente, listo para mostrar
+              - generic [ref=f17e143]: 3 comprobantes con Sello · PDF disponible
+          - navigation [ref=f17e144]:
+            - generic [ref=f17e145]: Inicio
+            - generic [ref=f17e148]: Pagos
+            - generic [ref=f17e151]: Calendario
+            - generic [ref=f17e155]: Expediente
+            - generic [ref=f17e159]: Asistencia
+    - generic [ref=f17e163]:
+      - heading "De dónde sale cada valor" [level=2] [ref=f17e164]
+      - generic [ref=f17e165]:
+        - heading "Tabla de extracción (medida en tu captura)" [level=3] [ref=f17e166]
+        - table [ref=f17e167]:
+          - rowgroup [ref=f17e168]:
+            - row [ref=f17e169]:
+              - cell "Fondo de página" [ref=f17e170]
+              - cell [ref=f17e171]:
+                - code [ref=f17e172]: "#EDF0F7"
+                - text: gris-azul muy claro
+            - row [ref=f17e173]:
+              - cell "Tarjetas" [ref=f17e174]
+              - cell [ref=f17e175]:
+                - text: blanco
+                - code [ref=f17e176]: "#FFFFFF"
+                - text: ", esquinas 18px, sombra suave azulada"
+            - row [ref=f17e177]:
+              - cell "Azul de acción" [ref=f17e178]
+              - cell [ref=f17e179]:
+                - code [ref=f17e180]: "#1A63DC"
+                - text: (barra
+                - code [ref=f17e181]: "#217AF5"
+                - text: ", nav"
+                - code [ref=f17e182]: "#0458CD"
+                - text: )
+            - row [ref=f17e183]:
+              - cell "Chips de ícono" [ref=f17e184]
+              - cell [ref=f17e185]:
+                - text: azul claro
+                - code [ref=f17e186]: "#EBF1FD"
+                - text: ", 14px; verde"
+                - code [ref=f17e187]: "#DFF5EA"
+                - text: ; morado
+                - code [ref=f17e188]: "#E9E2FB"
+            - row [ref=f17e189]:
+              - cell "Estados" [ref=f17e190]
+              - cell [ref=f17e191]:
+                - text: Pagada verde
+                - code [ref=f17e192]: "#22A06B"
+                - text: · Pendiente ámbar · Programado azul
+            - row [ref=f17e193]:
+              - cell "Texto" [ref=f17e194]
+              - cell [ref=f17e195]:
+                - text: marino
+                - code [ref=f17e196]: "#0B2A57"
+                - text: · secundario
+                - code [ref=f17e197]: "#5B6B85"
+                - text: · nav inactivo
+                - code [ref=f17e198]: "#9AA6B8"
+            - row [ref=f17e199]:
+              - cell "Letra" [ref=f17e200]
+              - cell "sans redondeada — se usan Figtree + Nunito Sans (las de la página de ventas) para una sola identidad" [ref=f17e201]
+            - row [ref=f17e202]:
+              - cell "Composición" [ref=f17e203]
+              - cell "cabecera con logo + campana + avatar · saludo con foto en forma orgánica · tarjeta de próximo evento · 2 cifras con píldora de estado · 4 accesos · actividad reciente · banner · nav de 5 con punto activo" [ref=f17e204]
+            - row [ref=f17e205]:
+              - cell "Contenido" [ref=f17e206]
+              - 'cell "el de Coparentia: cuota en COP, comprobantes con Sello, expediente, las 5 secciones reales" [ref=f17e207]'
+        - generic [ref=f17e218]:
+          - paragraph [ref=f17e219]: Figtree — AaBbÑñ 0123
+          - paragraph [ref=f17e220]: Nunito Sans — El veloz murciélago hindú comía feliz cardillo y kiwi.
+  - contentinfo [ref=f17e221]: "Réplica fiel (16 → REFERENCIA = CONTRATO): el estilo se copia, no se mejora ni se reinterpreta; se extiende solo donde la referencia no muestra algo, con su mismo sistema. Diferencias deliberadas: el contenido (Coparentia no tiene mensajes ni entregas; sí cuota, comprobantes, Sello y asistencia jurídica) y la tipografía (la de la página de ventas, para una sola identidad). Marcador data-kit=\"abc-v2\" intacto. Tras la aprobación, la FICHA-ARTE cambia de modo oscuro a claro para toda la app."

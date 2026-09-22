@@ -1,0 +1,22 @@
+- generic [active] [ref=f11e1]:
+  - link "Saltar al contenido" [ref=f11e2] [cursor=pointer]:
+    - /url: "#main"
+  - generic [ref=f11e5]:
+    - link "Coparentia" [ref=f11e6] [cursor=pointer]:
+      - /url: /
+      - img "Coparentia" [ref=f11e7]
+    - generic [ref=f11e8]:
+      - button "Volver" [ref=f11e9]
+      - progressbar [ref=f11e12]
+      - generic [ref=f11e14]: Pregunta 1 de 7
+    - generic [ref=f11e17]:
+      - heading "¿Cuál es tu rol hoy?" [level=1] [ref=f11e18]
+      - paragraph [ref=f11e19]: Así adaptamos las preguntas y tu expediente
+      - generic [ref=f11e20]:
+        - button "Yo pago la cuota alimentaria" [ref=f11e21]
+        - button "Yo recibo la cuota alimentaria" [ref=f11e26]
+      - paragraph [ref=f11e37]: ¿Por qué lo preguntamos? Quien paga y quien recibe la cuota enfrentan riesgos distintos — así usamos las palabras y los ejemplos correctos en tu expediente.
+    - generic [ref=f11e39]:
+      - paragraph [ref=f11e40]: Tu expediente
+      - paragraph [ref=f11e41]: 7 preguntas · unos 2 minutos. Cada respuesta aparece aquí.
+      - paragraph [ref=f11e42]: "Con tu primer comprobante se activa el Sello de Confianza: fecha, monto y soporte quedan asociados a este expediente."

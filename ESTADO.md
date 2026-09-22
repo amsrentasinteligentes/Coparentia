@@ -1,3 +1,24 @@
+### Checkpoint (2026-09-22) — CONSTANCIAS A LA OTRA PARTE (opción 1 elegida por el usuario)
+Idea del usuario: avisarle por correo a la otra parte cada registro, aunque no use la app. Se evaluó y
+se eligió la opción 1 (NO aviso por registro: hostigamiento + riesgo de que marquen spam y se caiga la
+reputación del dominio para los correos de acceso/compra; además publicidad no consentida sería ilegal
+— Ley 1581). Construido SIN PUBLICAR (falta SQL + CRON_SECRET del usuario → prueba real → publicar):
+- supabase/constancias.sql: profiles.otro_progenitor_email + constancias_mensuales; tabla `constancias`
+  (append-only, RLS select/insert propios, trigger que bloquea update/delete, índice único
+  user+periodo para origen='mensual').
+- lib/constancias.ts: armarResumen() (pagos+contactos+hijos del período) y enviarConstancia() desde
+  avisos@coparentia.co (remitente aparte para proteger la entregabilidad de hola@); el correo NO lleva
+  comprobantes ni capturas; registra el envío (también si falla) con proveedor_id de Resend.
+- app/(app)/expediente/acciones.ts: envío manual; si el mes en curso está vacío, ofrece el anterior.
+- app/api/cron/constancias/route.ts + vercel.json (cron diario 13:00 UTC = 8:00 Colombia): solo actúa
+  el día 1; exige Authorization: Bearer CRON_SECRET (503 si no está configurada, nunca abierta).
+- Perfil: campo "Correo de la otra parte" + interruptor "Constancia mensual". Expediente: tarjeta
+  ConstanciaOtraParte (botón "Enviar constancia ahora" + historial con fecha/hora).
+- PDF: sección "Constancias enviadas a la otra parte" + fila en el resumen de portada.
+Pendiente: prueba real de envío; texto de Términos (el usuario declara tener derecho a comunicarse con
+esa persona) para el equipo jurídico; revisor-visual de la tarjeta tras la prueba (pantalla secundaria:
+medición + checklist, se anotará). Gates viejos: sin cambios (Problemas conocidos).
+
 ### Checkpoint (2026-09-21, noche) — CONTACTO CON LOS HIJOS: LISTA y publicado
 SQL contacto-hijos.sql EJECUTADO por el usuario (Success). Probado end-to-end con datos reales: llamada
 con captura y videollamada no contestada guardadas con Sello; update/delete bloqueados incluso con la

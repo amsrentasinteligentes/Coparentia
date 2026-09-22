@@ -1,0 +1,18 @@
+- generic [active] [ref=f2e1]:
+  - link "Saltar al contenido" [ref=f2e2] [cursor=pointer]:
+    - /url: "#main"
+  - generic [ref=f2e3]:
+    - main [ref=f2e4]:
+      - generic "Cargando tu expediente" [ref=f2e9]
+    - navigation "Navegación principal" [ref=f2e25]:
+      - generic [ref=f2e26]:
+        - link "Inicio" [ref=f2e27] [cursor=pointer]:
+          - /url: /inicio
+        - link "Pagos" [ref=f2e35] [cursor=pointer]:
+          - /url: /pagos
+        - link "Calendario" [ref=f2e42] [cursor=pointer]:
+          - /url: /calendario
+        - link "Expediente" [ref=f2e48] [cursor=pointer]:
+          - /url: /expediente
+        - link "Asistencia" [ref=f2e54] [cursor=pointer]:
+          - /url: /asistencia

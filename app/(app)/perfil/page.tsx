@@ -12,7 +12,7 @@ import { useRouter } from 'next/navigation';
 import { motion } from 'motion/react';
 import {
   LogOut, ExternalLink, UserRound, CreditCard, LifeBuoy, ShieldCheck, FileText, Scale, ChevronRight,
-  CalendarCheck, Crown, Camera, Pencil, Plus, Trash2, Check, X, Baby, Users, Settings, type LucideIcon,
+  CalendarCheck, Crown, Camera, Pencil, Plus, Trash2, Check, X, Baby, Users, Settings, MailCheck, type LucideIcon,
 } from 'lucide-react';
 import Link from 'next/link';
 import { ContenedorApp, Tarjeta, IconoCirculo, TarjetaSkeleton, ErrorDeCarga, CabeceraApp, TituloSeccion, Pildora } from '@/components/app/ui';
@@ -103,7 +103,9 @@ export default function PerfilPage() {
   const [nombre, setNombre] = useState('');
   const [rol, setRol] = useState<RolFamiliar | null>(null);
   const [otro, setOtro] = useState('');
+  const [otroEmail, setOtroEmail] = useState('');
   const [guardando, setGuardando] = useState(false);
+  const [cambiandoConstancias, setCambiandoConstancias] = useState(false);
 
   // Alta de hijo
   const [agregando, setAgregando] = useState(false);
@@ -121,7 +123,7 @@ export default function PerfilPage() {
       .then(([p, h, pagos, t]) => {
         if (!vigente) return;
         setPerfil(p); setHijos(h); setNComprobantes(pagos.length); setTitulo(t);
-        setNombre(p.nombre); setRol(p.rolFamiliar); setOtro(p.otroProgenitorNombre);
+        setNombre(p.nombre); setRol(p.rolFamiliar); setOtro(p.otroProgenitorNombre); setOtroEmail(p.otroProgenitorEmail);
         setCargando(false);
       })
       .catch(() => { if (vigente) { setFallo(true); setCargando(false); } });
@@ -133,12 +135,27 @@ export default function PerfilPage() {
     window.setTimeout(() => setAviso(null), 3500);
   };
 
+  // Enciende o apaga el resumen mensual a la otra parte (optimista: se revierte si falla).
+  const alternarConstancias = async (): Promise<void> => {
+    if (!perfil || cambiandoConstancias) return;
+    const nuevo = !perfil.constanciasMensuales;
+    setCambiandoConstancias(true);
+    setPerfil({ ...perfil, constanciasMensuales: nuevo });
+    try {
+      await guardarPerfil({ constanciasMensuales: nuevo });
+    } catch {
+      setPerfil({ ...perfil, constanciasMensuales: !nuevo });
+    } finally {
+      setCambiandoConstancias(false);
+    }
+  };
+
   const guardarDatos = async () => {
     if (guardando || !perfil) return;
     setGuardando(true);
     try {
-      await guardarPerfil({ nombre, rolFamiliar: rol, otroProgenitorNombre: otro });
-      setPerfil({ ...perfil, nombre: nombre.trim(), rolFamiliar: rol, otroProgenitorNombre: otro.trim() });
+      await guardarPerfil({ nombre, rolFamiliar: rol, otroProgenitorNombre: otro, otroProgenitorEmail: otroEmail });
+      setPerfil({ ...perfil, nombre: nombre.trim(), rolFamiliar: rol, otroProgenitorNombre: otro.trim(), otroProgenitorEmail: otroEmail.trim().toLowerCase() });
       setEditando(false);
       avisar('ok', 'Perfil guardado. Inicio ya te saluda por tu nombre.');
     } catch {
@@ -260,7 +277,12 @@ export default function PerfilPage() {
                   <label className="block">
                     <span className="text-[12px] font-bold text-[var(--text-secondary)]">Nombre de la otra parte (mamá o papá de tus hijos)</span>
                     <input value={otro} onChange={(e) => setOtro(e.target.value)} maxLength={60} placeholder="Opcional — solo para nombrarla en tu expediente" className="mt-1 h-12 w-full rounded-[var(--radius-chip,14px)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--surface-2)] px-4 text-[15px] text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)]" />
-                    <span className="mt-1 block text-[11.5px] text-[var(--text-secondary)]">No se le avisa ni se conecta con nadie: tu expediente sigue siendo solo tuyo.</span>
+                    <span className="mt-1 block text-[12px] text-[var(--text-secondary)]">Se usa para nombrarla en tu expediente.</span>
+                  </label>
+                  <label className="block">
+                    <span className="text-[12px] font-bold text-[var(--text-secondary)]">Correo de la otra parte</span>
+                    <input type="email" inputMode="email" value={otroEmail} onChange={(e) => setOtroEmail(e.target.value)} maxLength={120} placeholder="Opcional — para enviarle constancias" className="mt-1 h-12 w-full rounded-[var(--radius-chip,14px)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--surface-2)] px-4 text-[15px] text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)]" />
+                    <span className="mt-1 block text-[12px] text-[var(--text-secondary)]">Solo le llega lo que tú decidas enviarle: nunca se le avisa de cada registro.</span>
                   </label>
                   <div className="flex gap-2">
                     <button type="button" onClick={() => { setEditando(false); setNombre(perfil.nombre); setRol(perfil.rolFamiliar); setOtro(perfil.otroProgenitorNombre); }} className="h-11 flex-1 rounded-[var(--radius-button)] bg-[var(--surface-2)] text-[14px] font-bold text-[var(--text-secondary)] [touch-action:manipulation]">Cancelar</button>
@@ -333,11 +355,38 @@ export default function PerfilPage() {
                   )}
                 </ul>
               )}
-              {perfil.otroProgenitorNombre && (
+              {(perfil.otroProgenitorNombre || perfil.otroProgenitorEmail) && (
                 <p className="mt-3 flex items-center gap-2 border-t border-[color-mix(in_oklab,var(--text-tertiary)_16%,transparent)] pt-3 text-[12px] text-[var(--text-secondary)]">
                   <Users size={14} className="shrink-0 text-[var(--accent-ink,var(--accent))]" aria-hidden="true" />
-                  La otra parte: <strong className="text-[var(--text-primary)]">{perfil.otroProgenitorNombre}</strong>
+                  La otra parte: <strong className="text-[var(--text-primary)]">{perfil.otroProgenitorNombre || perfil.otroProgenitorEmail}</strong>
                 </p>
+              )}
+
+              {/* CONSTANCIAS A LA OTRA PARTE (2026-09-22) — un resumen mensual, nunca un aviso por
+                  registro: lo que da valor es la trazabilidad, no la frecuencia. */}
+              {perfil.otroProgenitorEmail && (
+                <div className="mt-3 flex items-start gap-3 border-t border-[color-mix(in_oklab,var(--text-tertiary)_16%,transparent)] pt-3">
+                  <IconoCirculo icon={MailCheck} size={18} tono="info" />
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[14px] font-bold text-[var(--text-primary)]">Constancia mensual</p>
+                    <p className="text-[12px] leading-[1.5] text-[var(--text-secondary)]">
+                      {perfil.constanciasMensuales
+                        ? `Cada día 1 le enviamos a ${perfil.otroProgenitorEmail} el resumen del mes anterior.`
+                        : 'Apagada. Puedes enviar constancias a mano desde Expediente cuando quieras.'}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    role="switch"
+                    aria-checked={perfil.constanciasMensuales}
+                    aria-label="Enviar constancia mensual a la otra parte"
+                    disabled={cambiandoConstancias}
+                    onClick={alternarConstancias}
+                    className={`relative h-7 w-12 shrink-0 rounded-full transition-colors duration-200 [touch-action:manipulation] ${perfil.constanciasMensuales ? 'bg-[var(--accent)]' : 'bg-[color-mix(in_oklab,var(--text-tertiary)_35%,transparent)]'}`}
+                  >
+                    <span className={`absolute top-1 size-5 rounded-full bg-white shadow-[var(--shadow-1)] transition-transform duration-200 ${perfil.constanciasMensuales ? 'translate-x-6' : 'translate-x-1'}`} />
+                  </button>
+                </div>
               )}
             </Tarjeta>
 

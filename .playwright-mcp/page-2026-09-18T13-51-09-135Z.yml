@@ -1,0 +1,46 @@
+- generic [active] [ref=f2e1]:
+  - link "Saltar al contenido" [ref=f2e2] [cursor=pointer]:
+    - /url: "#main"
+  - generic [ref=f2e3]:
+    - main [ref=f2e4]:
+      - generic [ref=f2e5]:
+        - generic [ref=f2e6]:
+          - link "Coparentia Tu expediente, en confianza." [ref=f2e7] [cursor=pointer]:
+            - /url: /inicio
+            - generic [ref=f2e9]:
+              - generic [ref=f2e10]: Coparentia
+              - generic [ref=f2e11]: Tu expediente, en confianza.
+          - generic [ref=f2e12]:
+            - link "Próximos eventos" [ref=f2e13] [cursor=pointer]:
+              - /url: /calendario
+            - link "Tu cuenta y ajustes" [ref=f2e17] [cursor=pointer]:
+              - /url: /ajustes
+              - generic [ref=f2e18]: ·
+        - generic [ref=f2e21]:
+          - generic [ref=f2e23]:
+            - heading "Asistencia jurídica" [level=1] [ref=f2e24]
+            - paragraph [ref=f2e25]: "Escríbenos tu duda: te respondemos por correo o WhatsApp."
+          - generic [ref=f2e31]:
+            - paragraph [ref=f2e36]: ¿Qué necesitas resolver?
+            - 'textbox "Ej.: mi expareja lleva 2 meses sin pagar la cuota, ¿qué puedo hacer?" [ref=f2e37]'
+            - button "Enviar consulta" [disabled] [ref=f2e38]
+            - link "O escríbenos por WhatsApp" [ref=f2e42] [cursor=pointer]:
+              - /url: https://wa.me/573012283506
+          - generic [ref=f2e43]:
+            - paragraph [ref=f2e44]: Abogado de familia · Patrocinado
+            - link [ref=f2e45] [cursor=pointer]:
+              - /url: https://wa.me/573012283506
+              - img "Anuncio de Ivonne Reyes — Derecho de familia · Divorcio, custodia, alimentos y sucesiones" [ref=f2e46]
+            - paragraph [ref=f2e47]: Espacio publicitario. Coparentia no presta servicios legales ni responde por la asesoría de terceros.
+    - navigation "Navegación principal" [ref=f2e48]:
+      - generic [ref=f2e49]:
+        - link "Inicio" [ref=f2e50] [cursor=pointer]:
+          - /url: /inicio
+        - link "Pagos" [ref=f2e57] [cursor=pointer]:
+          - /url: /pagos
+        - link "Calendario" [ref=f2e64] [cursor=pointer]:
+          - /url: /calendario
+        - link "Expediente" [ref=f2e70] [cursor=pointer]:
+          - /url: /expediente
+        - link "Asistencia" [ref=f2e76] [cursor=pointer]:
+          - /url: /asistencia

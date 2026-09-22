@@ -1,0 +1,31 @@
+- generic [active] [ref=f1e1]:
+  - link "Saltar al contenido" [ref=f1e2] [cursor=pointer]:
+    - /url: "#main"
+  - generic [ref=f1e3]:
+    - main [ref=f1e4]:
+      - generic [ref=f1e6]:
+        - generic [ref=f1e8]:
+          - heading "Pagos y gastos" [level=1] [ref=f1e9]
+          - paragraph [ref=f1e10]: 0 comprobantes en tu expediente
+        - generic [ref=f1e11]:
+          - button "Todos" [ref=f1e12]
+          - button "Cuota" [ref=f1e13]
+          - button "Gastos extra" [ref=f1e14]
+        - paragraph [ref=f1e15]: 0 registros · $ 0
+        - generic [ref=f1e17]:
+          - paragraph [ref=f1e22]: Todavía no hay comprobantes
+          - paragraph [ref=f1e23]: Cada foto que registres queda con su fecha y su Sello de Confianza, lista para exportar.
+          - button "Registrar el primero" [ref=f1e24]
+        - button "Registrar" [ref=f1e25]
+    - navigation "Navegación principal" [ref=f1e29]:
+      - generic [ref=f1e30]:
+        - link "Inicio" [ref=f1e31] [cursor=pointer]:
+          - /url: /inicio
+        - link "Pagos" [ref=f1e38] [cursor=pointer]:
+          - /url: /pagos
+        - link "Calendario" [ref=f1e46] [cursor=pointer]:
+          - /url: /calendario
+        - link "Expediente" [ref=f1e52] [cursor=pointer]:
+          - /url: /expediente
+        - link "Asistencia" [ref=f1e58] [cursor=pointer]:
+          - /url: /asistencia

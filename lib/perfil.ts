@@ -14,6 +14,10 @@ export interface Perfil {
   rolFamiliar: RolFamiliar | null;
   avatarPath: string | null;
   otroProgenitorNombre: string;
+  // Constancias a la otra parte (2026-09-22): a qué correo se le informa y si el resumen mensual
+  // sale solo. Sin correo no se envía nada — la app nunca adivina una dirección.
+  otroProgenitorEmail: string;
+  constanciasMensuales: boolean;
   creadoEl: string | null;
 }
 
@@ -39,7 +43,7 @@ export async function obtenerPerfil(): Promise<Perfil> {
   const { supabase, user } = await usuarioActual();
   const { data, error } = await supabase
     .from('profiles')
-    .select('nombre, rol_familiar, avatar_path, otro_progenitor_nombre')
+    .select('nombre, rol_familiar, avatar_path, otro_progenitor_nombre, otro_progenitor_email, constancias_mensuales')
     .eq('id', user.id)
     .maybeSingle();
   if (error) throw error;
@@ -49,19 +53,33 @@ export async function obtenerPerfil(): Promise<Perfil> {
     rolFamiliar: (data?.rol_familiar as RolFamiliar | null) ?? null,
     avatarPath: data?.avatar_path ?? null,
     otroProgenitorNombre: data?.otro_progenitor_nombre ?? '',
+    otroProgenitorEmail: data?.otro_progenitor_email ?? '',
+    constanciasMensuales: Boolean(data?.constancias_mensuales),
     creadoEl: user.created_at ?? null,
   };
 }
 
-export async function guardarPerfil(cambios: { nombre?: string; rolFamiliar?: RolFamiliar | null; otroProgenitorNombre?: string }): Promise<void> {
+export async function guardarPerfil(cambios: {
+  nombre?: string;
+  rolFamiliar?: RolFamiliar | null;
+  otroProgenitorNombre?: string;
+  otroProgenitorEmail?: string;
+  constanciasMensuales?: boolean;
+}): Promise<void> {
   const { supabase, user } = await usuarioActual();
   const fila: Record<string, string | null> = {};
   if (cambios.nombre !== undefined) fila.nombre = cambios.nombre.trim().slice(0, 60) || null;
   if (cambios.rolFamiliar !== undefined) fila.rol_familiar = cambios.rolFamiliar;
   if (cambios.otroProgenitorNombre !== undefined) fila.otro_progenitor_nombre = cambios.otroProgenitorNombre.trim().slice(0, 60) || null;
-  const { error } = await supabase.from('profiles').update(fila).eq('id', user.id);
+  if (cambios.otroProgenitorEmail !== undefined) fila.otro_progenitor_email = cambios.otroProgenitorEmail.trim().toLowerCase().slice(0, 120) || null;
+  const filaCompleta: Record<string, string | boolean | null> = { ...fila };
+  if (cambios.constanciasMensuales !== undefined) filaCompleta.constancias_mensuales = cambios.constanciasMensuales;
+  const { error } = await supabase.from('profiles').update(filaCompleta).eq('id', user.id);
   if (error) throw error;
 }
+
+/** Correo válido de andar por casa (la validación fuerte la hace el servidor de correo). */
+export const CORREO_VALIDO = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 /** Sube una foto (comprimida) a la carpeta del usuario y devuelve su ruta. Reemplaza la anterior. */
 async function subirFoto(carpeta: string, archivo: File, anterior: string | null): Promise<string> {

@@ -1,0 +1,48 @@
+- generic [active] [ref=e1]:
+  - link "Saltar al contenido" [ref=e2] [cursor=pointer]:
+    - /url: "#main"
+  - generic [ref=e4]:
+    - complementary [ref=e6]:
+      - generic [ref=e7]:
+        - paragraph [ref=e8]: Antes de entrar
+        - heading "Tu expediente guarda información sensible; por eso te pedimos tu autorización expresa" [level=2] [ref=e9]
+        - paragraph [ref=e10]: Es un paso único. Cumple la ley colombiana de protección de datos (Ley 1581 de 2012) y te deja claro cómo funcionan los cobros. Puedes leer cada documento antes de marcar.
+    - generic [ref=e11]:
+      - link "Coparentia" [ref=e12] [cursor=pointer]:
+        - /url: /
+        - img "Coparentia" [ref=e13]
+      - generic [ref=e14]:
+        - 'heading "Un último paso: tus autorizaciones" [level=1] [ref=e15]'
+        - paragraph [ref=e16]: Marca las tres obligatorias para entrar a tu expediente. La cuarta es opcional.
+        - list [ref=e17]:
+          - listitem [ref=e18]:
+            - generic [ref=e19] [cursor=pointer]:
+              - checkbox "He leído y acepto los Términos y Condiciones de Coparentia. (obligatorio)" [ref=e20]
+              - generic [ref=e27]:
+                - text: He leído y acepto los
+                - link "Términos y Condiciones" [ref=e28]:
+                  - /url: /terminos
+                - text: de Coparentia.
+                - generic [ref=e29]: (obligatorio)
+          - listitem [ref=e30]:
+            - generic [ref=e31] [cursor=pointer]:
+              - checkbox "He leído la Política de Tratamiento de Datos Personales y autorizo el tratamiento de mis datos para las finalidades allí informadas. (obligatorio)" [ref=e32]
+              - generic [ref=e39]:
+                - text: He leído la
+                - link "Política de Tratamiento de Datos Personales" [ref=e40]:
+                  - /url: /privacidad
+                - text: y autorizo el tratamiento de mis datos para las finalidades allí informadas.
+                - generic [ref=e41]: (obligatorio)
+          - listitem [ref=e42]:
+            - generic [ref=e43] [cursor=pointer]:
+              - checkbox "Autorizo la renovación automática y los cobros recurrentes correspondientes al plan seleccionado, hasta que cancele la renovación. (obligatorio)" [ref=e44]
+              - generic [ref=e53]:
+                - text: Autorizo la renovación automática y los cobros recurrentes correspondientes al plan seleccionado, hasta que cancele la renovación.
+                - generic [ref=e54]: (obligatorio)
+          - listitem [ref=e55]:
+            - generic [ref=e56] [cursor=pointer]:
+              - checkbox "Quiero recibir novedades, promociones y contenido de Coparentia. Opcional." [ref=e57]
+              - generic [ref=e59]: Quiero recibir novedades, promociones y contenido de Coparentia. Opcional.
+        - generic [ref=e65]:
+          - paragraph [ref=e66]: Guardamos la fecha y la versión de lo que aceptas, como exige la ley. Puedes cambiar la opción de novedades cuando quieras desde Ajustes.
+          - button "Aceptar y entrar a mi expediente" [ref=e67]

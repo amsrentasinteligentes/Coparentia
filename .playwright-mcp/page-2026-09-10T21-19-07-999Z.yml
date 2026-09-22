@@ -1,0 +1,99 @@
+- generic [active] [ref=e1]:
+  - link "Saltar al contenido" [ref=e2] [cursor=pointer]:
+    - /url: "#main"
+  - generic [ref=e3]:
+    - generic [ref=e5]:
+      - generic [ref=e7]:
+        - heading "Calendario" [level=1] [ref=e8]
+        - paragraph [ref=e9]: Tu registro de eventos — no depende de nadie más
+      - generic [ref=e10]:
+        - button "Mes anterior" [ref=e11]
+        - paragraph [ref=e14]: Septiembre de 2026
+        - button "Mes siguiente" [ref=e15]
+      - generic [ref=e18]:
+        - generic [ref=e19]:
+          - generic [ref=e21]:
+            - generic [ref=e22]: L
+            - generic [ref=e23]: M
+            - generic [ref=e24]: M
+            - generic [ref=e25]: J
+            - generic [ref=e26]: V
+            - generic [ref=e27]: S
+            - generic [ref=e28]: D
+            - button "1" [ref=e30]
+            - button "2" [ref=e32]
+            - button "3" [ref=e34]
+            - button "4" [ref=e36]
+            - button "5" [ref=e38]
+            - button "6" [ref=e40]
+            - button "7" [ref=e42]
+            - button "8" [ref=e44]
+            - button "9" [ref=e46]
+            - button "10" [ref=e48]
+            - button "11" [ref=e50]
+            - button "12" [ref=e52]
+            - button "13" [ref=e54]
+            - button "14" [ref=e56]
+            - button "15" [ref=e58]
+            - button "16" [ref=e60]
+            - button "17" [ref=e62]
+            - button "18" [ref=e64]
+            - button "19" [ref=e66]
+            - button "20" [ref=e68]
+            - button "21" [ref=e70]
+            - button "22" [ref=e72]
+            - button "23" [ref=e74]
+            - button "24" [ref=e76]
+            - button "25" [ref=e78]
+            - button "26" [ref=e80]
+            - button "27" [ref=e82]
+            - button "28" [ref=e84]
+            - button "29" [ref=e86]
+            - button "30" [ref=e88]
+          - generic [ref=e126]:
+            - paragraph [ref=e127]: Este mes
+            - generic [ref=e128]:
+              - generic [ref=e129]: 1 visita
+              - generic [ref=e135]: 1 cita médica
+              - generic [ref=e139]: 1 actividad
+        - generic [ref=e90]:
+          - generic [ref=e146]:
+            - generic [ref=e147]:
+              - generic [ref=e148]: NaN
+              - generic [ref=e149]: Invalid Date
+            - generic [ref=e156]:
+              - paragraph [ref=e157]: Visita
+              - paragraph [ref=e158]: Fin de semana con los niños
+          - generic [ref=e159]:
+            - generic [ref=e160]:
+              - generic [ref=e161]: NaN
+              - generic [ref=e162]: Invalid Date
+            - generic [ref=e167]:
+              - paragraph [ref=e168]: Cita médica
+              - paragraph [ref=e169]: Control pediátrico
+          - generic [ref=e170]:
+            - generic [ref=e171]:
+              - generic [ref=e172]: NaN
+              - generic [ref=e173]: Invalid Date
+            - generic [ref=e181]:
+              - paragraph [ref=e182]: Actividad
+              - paragraph [ref=e183]: Presentación de natación
+      - button "Evento" [ref=e93]
+    - navigation "Navegación principal" [ref=e95]:
+      - generic [ref=e96]:
+        - link "Inicio" [ref=e97] [cursor=pointer]:
+          - /url: /inicio
+        - link "Pagos" [ref=e103] [cursor=pointer]:
+          - /url: /pagos
+        - link "Calendario" [ref=e109] [cursor=pointer]:
+          - /url: /calendario
+        - link "Expediente" [ref=e115] [cursor=pointer]:
+          - /url: /expediente
+  - generic [ref=e189] [cursor=pointer]:
+    - button "Open issues overlay" [ref=e190]:
+      - generic [ref=e194]:
+        - generic [aria-hidden] [ref=e195]: "0"
+        - generic [ref=e196]: "1"
+      - generic [ref=e197]: Issue
+    - button "Collapse issues badge" [ref=e198]
+  - alert [ref=e201]

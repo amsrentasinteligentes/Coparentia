@@ -1,0 +1,48 @@
+- generic [active] [ref=f1e1]:
+  - link "Saltar al contenido" [ref=f1e2] [cursor=pointer]:
+    - /url: "#main"
+  - generic [ref=f1e3]:
+    - main [ref=f1e4]:
+      - generic [ref=f1e5]:
+        - generic [ref=f1e6]:
+          - link "Coparentia Tu expediente, en confianza." [ref=f1e7] [cursor=pointer]:
+            - /url: /inicio
+            - generic [ref=f1e9]:
+              - generic [ref=f1e10]: Coparentia
+              - generic [ref=f1e11]: Tu expediente, en confianza.
+          - generic [ref=f1e12]:
+            - link "Próximos eventos" [ref=f1e13] [cursor=pointer]:
+              - /url: /calendario
+            - link "Tu cuenta y ajustes" [ref=f1e17] [cursor=pointer]:
+              - /url: /ajustes
+              - generic [ref=f1e18]: ·
+        - generic [ref=f1e21]:
+          - generic [ref=f1e23]:
+            - heading "Expediente" [level=1] [ref=f1e24]
+            - paragraph [ref=f1e25]: Todo al día · listo para exportar
+          - generic [ref=f1e29]:
+            - paragraph [ref=f1e35]: Tu expediente en PDF, en 1 toque
+            - paragraph [ref=f1e36]:
+              - text: Foliado y
+              - strong [ref=f1e37]: con la foto de cada comprobante adentro
+              - text: — listo para tu abogado o conciliador.
+            - button "Exportar expediente" [ref=f1e38]
+          - generic [ref=f1e51]:
+            - paragraph [ref=f1e52]: Consultar acuerdo
+            - paragraph [ref=f1e53]: Guarda aquí el acta de conciliación o la sentencia que fija la cuota — así la tienes a mano cuando la necesites.
+          - heading "Autorizaciones y controversias" [level=2] [ref=f1e56]
+          - generic [ref=f1e58]:
+            - paragraph [ref=f1e64]: Sin autorizaciones registradas
+            - paragraph [ref=f1e65]: Aquí quedan los gastos extraordinarios que pediste autorizar y la respuesta que recibiste.
+    - navigation "Navegación principal" [ref=f1e66]:
+      - generic [ref=f1e67]:
+        - link "Inicio" [ref=f1e68] [cursor=pointer]:
+          - /url: /inicio
+        - link "Pagos" [ref=f1e75] [cursor=pointer]:
+          - /url: /pagos
+        - link "Calendario" [ref=f1e82] [cursor=pointer]:
+          - /url: /calendario
+        - link "Expediente" [ref=f1e88] [cursor=pointer]:
+          - /url: /expediente
+        - link "Asistencia" [ref=f1e95] [cursor=pointer]:
+          - /url: /asistencia

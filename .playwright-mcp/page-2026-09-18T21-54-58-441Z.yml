@@ -1,0 +1,37 @@
+- generic [active] [ref=e1]:
+  - link "Saltar al contenido" [ref=e2] [cursor=pointer]:
+    - /url: "#main"
+  - generic [ref=e4]:
+    - complementary [ref=e6]:
+      - generic [ref=e7]:
+        - paragraph [ref=e8]: Tu expediente se está armando
+        - heading "Cada respuesta le da forma a lo que vas a poder mostrar" [level=2] [ref=e9]
+        - paragraph [ref=e10]: "No es un cuestionario: es el índice de tu expediente. Lo que contestas define qué registramos, con qué palabras y en qué formato sale tu PDF."
+        - generic [ref=e12]:
+          - paragraph [ref=e13]: Tu expediente
+          - list [ref=e14]:
+            - listitem [ref=e15]:
+              - paragraph [ref=e19]: Tu rol
+            - listitem [ref=e20]:
+              - paragraph [ref=e24]: Tu situación
+            - listitem [ref=e25]:
+              - paragraph [ref=e29]: Cómo está fijada tu cuota
+            - listitem [ref=e30]:
+              - paragraph [ref=e34]: Lo que más te preocupa
+          - paragraph [ref=e35]: y 3 preguntas más
+          - paragraph [ref=e36]: "Con tu primer comprobante se activa el Sello de Confianza: fecha, monto y soporte quedan asociados a este expediente."
+    - generic [ref=e40]:
+      - link "Coparentia" [ref=e41] [cursor=pointer]:
+        - /url: /
+        - img "Coparentia" [ref=e42]
+      - generic [ref=e43]:
+        - button "Volver" [ref=e44]
+        - progressbar [ref=e47]
+        - generic [ref=e49]: Pregunta 1 de 7
+      - generic [ref=e52]:
+        - heading "¿Cuál es tu rol hoy?" [level=1] [ref=e53]
+        - paragraph [ref=e54]: Así adaptamos las preguntas y tu expediente
+        - generic [ref=e55]:
+          - button "Yo pago la cuota alimentaria" [ref=e56]
+          - button "Yo recibo la cuota alimentaria" [ref=e61]
+        - paragraph [ref=e72]: ¿Por qué lo preguntamos? Quien paga y quien recibe la cuota enfrentan riesgos distintos — así usamos las palabras y los ejemplos correctos en tu expediente.

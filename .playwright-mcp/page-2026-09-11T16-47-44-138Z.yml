@@ -1,0 +1,7 @@
+- generic [active] [ref=e1]:
+  - link "Saltar al contenido" [ref=e2] [cursor=pointer]:
+    - /url: "#main"
+  - generic [ref=e3]:
+    - button "Foto lenta" [ref=e4]
+    - button "Foto que falla" [ref=e5]
+  - alert [ref=e6]

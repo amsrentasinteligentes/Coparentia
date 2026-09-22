@@ -1,0 +1,286 @@
+- generic [active] [ref=f6e1]:
+  - link "Saltar al contenido" [ref=f6e2] [cursor=pointer]:
+    - /url: "#main"
+  - generic [ref=f6e3]:
+    - generic [ref=f6e5]:
+      - generic [ref=f6e6]:
+        - link "Coparentia" [ref=f6e7] [cursor=pointer]:
+          - /url: /
+        - link "Entrar" [ref=f6e9] [cursor=pointer]:
+          - /url: /entrar
+      - generic [ref=f6e10]:
+        - generic [ref=f6e11]:
+          - heading "Tu cuota, pagada y probada" [level=1] [ref=f6e12]
+          - paragraph [ref=f6e13]:
+            - text: El Sello de Confianza convierte tus comprobantes en un expediente
+            - strong [ref=f6e14]: listo para mostrar
+          - link "Crear mi expediente gratis" [ref=f6e16] [cursor=pointer]:
+            - /url: /onboarding
+          - generic [ref=f6e17]: 7 días de prueba gratis — cancela cuando quieras
+        - 'img "Tu expediente: anillo de avance, total registrado y próximo evento" [ref=f6e20]'
+    - region "El problema" [ref=f6e21]:
+      - generic [ref=f6e23]:
+        - heading "¿Te suena?" [level=2] [ref=f6e24]
+        - list [ref=f6e25]:
+          - listitem [ref=f6e26]:
+            - paragraph [ref=f6e30]:
+              - text: ¿Te reclaman pagos que
+              - strong [ref=f6e31]: ya hiciste
+              - text: y no encuentras el comprobante?
+          - listitem [ref=f6e32]:
+            - paragraph [ref=f6e38]: ¿No tienes clara tu fecha de pago o cuándo aumenta tu cuota?
+          - listitem [ref=f6e39]:
+            - paragraph [ref=f6e43]: ¿Te piden dinero para gastos "urgentes" sin ningún soporte?
+          - listitem [ref=f6e44]:
+            - paragraph [ref=f6e48]: ¿Vives con miedo a una demanda que no sabrías cómo responder?
+    - region "El costo de seguir igual" [ref=f6e49]:
+      - generic [ref=f6e51]:
+        - generic [ref=f6e52]:
+          - paragraph [ref=f6e53]: Cada mes sin un registro claro es un mes más de discusiones que no terminan.
+          - paragraph [ref=f6e54]: En un año, eso puede ser cientos de dólares en honorarios de abogado solo para "aclarar cuentas".
+          - paragraph [ref=f6e55]:
+            - text: Un Excel o una captura de WhatsApp
+            - strong [ref=f6e56]: no alcanzan
+            - text: cuando de verdad los necesitas.
+        - generic [ref=f6e57]:
+          - generic [ref=f6e58]:
+            - generic [ref=f6e59]: 0%
+            - generic [ref=f6e64]:
+              - paragraph [ref=f6e65]: Hoy
+              - paragraph [ref=f6e66]: Capturas de pantalla dispersas y la ansiedad de no poder probar nada.
+          - generic [ref=f6e67]:
+            - generic [ref=f6e68]: 0%
+            - generic [ref=f6e73]:
+              - paragraph [ref=f6e74]: En 6 meses, si nada cambia
+              - paragraph [ref=f6e75]: El mismo desorden — con 6 meses menos de comprobantes a mano.
+    - region "Cómo funciona" [ref=f6e76]:
+      - generic [ref=f6e78]:
+        - generic [ref=f6e79]:
+          - paragraph [ref=f6e80]: EL MECANISMO
+          - heading "Tu prueba, lista antes de que te pidan" [level=2] [ref=f6e81]
+        - generic [ref=f6e82]: el Sello de Confianza
+        - paragraph [ref=f6e85]:
+          - text: No es que no pagues — es que no tienes cómo
+          - strong [ref=f6e86]: probarlo
+          - text: . El Sello de Confianza convierte cada comprobante en una prueba fechada y organizada.
+        - list [ref=f6e87]:
+          - listitem [ref=f6e88]:
+            - generic [aria-hidden] [ref=f6e89]: "01"
+            - generic [ref=f6e90]:
+              - heading "Subes tu comprobante" [level=3] [ref=f6e91]
+              - paragraph [ref=f6e92]: Foto o PDF, directo desde tu teléfono.
+          - listitem [ref=f6e93]:
+            - generic [aria-hidden] [ref=f6e94]: "02"
+            - generic [ref=f6e95]:
+              - heading "El Sello lo confirma" [level=3] [ref=f6e96]
+              - paragraph [ref=f6e97]: Lo lee, lo fecha y lo asocia al gasto correcto.
+          - listitem [ref=f6e98]:
+            - generic [aria-hidden] [ref=f6e99]: "03"
+            - generic [ref=f6e100]:
+              - heading "Queda en tu expediente" [level=3] [ref=f6e101]
+              - paragraph [ref=f6e102]: Listo para exportar cuando lo necesites.
+        - generic [ref=f6e103]:
+          - generic [ref=f6e104]:
+            - generic [ref=f6e105]: 0%
+            - generic [ref=f6e110]:
+              - paragraph [ref=f6e111]: Antes
+              - paragraph [ref=f6e112]: Capturas perdidas en el chat y ningún orden.
+          - generic [ref=f6e113]:
+            - generic [ref=f6e114]: 100%
+            - generic [ref=f6e119]:
+              - paragraph [ref=f6e120]: Después
+              - paragraph [ref=f6e121]: Un expediente exportable, con fecha y soporte, listo en segundos.
+    - region "La app por dentro" [ref=f6e122]:
+      - generic [ref=f6e124]:
+        - generic [ref=f6e125]:
+          - paragraph [ref=f6e126]: ASÍ SE VE POR DENTRO
+          - heading "Tu expediente, siempre a mano" [level=2] [ref=f6e127]
+        - generic [ref=f6e128]:
+          - generic [ref=f6e129]:
+            - generic [ref=f6e130]:
+              - img "Tu expediente al día" [ref=f6e132]
+              - paragraph [ref=f6e133]: Tu expediente al día
+            - generic [ref=f6e134]:
+              - img "Cuéntanos tu situación" [ref=f6e136]
+              - paragraph [ref=f6e137]: Cuéntanos tu situación
+            - generic [ref=f6e138]:
+              - img "Elige tu plan" [ref=f6e140]
+              - paragraph [ref=f6e141]: Elige tu plan
+            - generic [ref=f6e142]:
+              - img "Sube tu comprobante" [ref=f6e144]
+              - paragraph [ref=f6e145]: Sube tu comprobante
+            - generic [ref=f6e146]:
+              - img "Visitas, citas y actividades" [ref=f6e148]
+              - paragraph [ref=f6e149]: Visitas, citas y actividades
+          - generic [ref=f6e150]:
+            - 'button "Ir a: Tu expediente al día" [ref=f6e151]'
+            - 'button "Ir a: Cuéntanos tu situación" [ref=f6e153]'
+            - 'button "Ir a: Elige tu plan" [ref=f6e155]'
+            - 'button "Ir a: Sube tu comprobante" [ref=f6e157]'
+            - 'button "Ir a: Visitas, citas y actividades" [ref=f6e159]'
+        - link "Crear mi expediente gratis" [ref=f6e162] [cursor=pointer]:
+          - /url: /onboarding
+    - region "Planes y precios" [ref=f6e163]:
+      - generic [ref=f6e165]:
+        - generic [ref=f6e166]:
+          - paragraph [ref=f6e167]: LA OFERTA
+          - heading "Empieza gratis. Sigue por menos de US$0.25/día" [level=2] [ref=f6e168]
+        - generic [ref=f6e169]:
+          - list [ref=f6e170]:
+            - listitem [ref=f6e171]:
+              - generic [ref=f6e172]: Coparentia Pro con el Sello de Confianza (12 meses)
+              - generic [ref=f6e177]: US$120
+            - listitem [ref=f6e178]:
+              - generic [ref=f6e179]: Plantilla de autorización de gastos extraordinarios
+              - generic [ref=f6e184]: US$19
+            - listitem [ref=f6e185]:
+              - generic [ref=f6e186]: Guía "Tu primer expediente en 10 minutos"
+              - generic [ref=f6e191]: US$15
+          - generic [ref=f6e192]:
+            - paragraph [ref=f6e193]: "Valor total: US$154"
+            - paragraph [ref=f6e194]: "Hoy no pagas nada. Después: US$89 al año (US$7.42/mes)"
+        - generic [ref=f6e195]:
+          - generic [ref=f6e196]:
+            - generic [ref=f6e197]: AHORRAS 25%
+            - generic [ref=f6e199]:
+              - generic [ref=f6e200]:
+                - heading "Anual" [level=3] [ref=f6e201]
+                - generic [ref=f6e202]: 7 días gratis
+              - generic [ref=f6e205]:
+                - paragraph [ref=f6e207]:
+                  - generic [ref=f6e208]: US$0
+                  - generic [ref=f6e210]: /mes
+                - paragraph [ref=f6e211]: Se cobra US$89 al año
+                - paragraph [ref=f6e212]: Tras los 7 días gratis
+                - paragraph [ref=f6e213]: 3 meses gratis
+              - list [ref=f6e214]:
+                - listitem [ref=f6e215]:
+                  - generic [ref=f6e219]: Sello de Confianza en cada comprobante
+                - listitem [ref=f6e220]:
+                  - generic [ref=f6e224]: Expediente exportable en PDF foliado
+                - listitem [ref=f6e225]:
+                  - generic [ref=f6e229]: Registro de autorizaciones y controversias
+                - listitem [ref=f6e230]:
+                  - generic [ref=f6e234]: Alertas de vencimiento y soporte faltante
+                - listitem [ref=f6e235]:
+                  - generic [ref=f6e239]: Garantía del Primer Expediente (15 días)
+              - link "Empezar mis 7 días gratis" [ref=f6e241] [cursor=pointer]:
+                - /url: /onboarding
+          - generic [ref=f6e242]:
+            - generic [ref=f6e243]:
+              - heading "Mensual" [level=3] [ref=f6e244]
+              - generic [ref=f6e245]: 7 días gratis
+            - paragraph [ref=f6e250]:
+              - generic [ref=f6e251]: US$0
+              - generic [ref=f6e253]: /mes
+            - list [ref=f6e254]:
+              - listitem [ref=f6e255]:
+                - generic [ref=f6e259]: Todo lo que incluye el plan Anual
+              - listitem [ref=f6e260]:
+                - generic [ref=f6e264]: Cancelas cuando quieras, sin permanencia
+              - listitem [ref=f6e265]:
+                - generic [ref=f6e269]: Garantía del Primer Expediente (15 días)
+            - link "Elegir mensual" [ref=f6e271] [cursor=pointer]:
+              - /url: /onboarding
+    - region "Garantía" [ref=f6e272]:
+      - generic [ref=f6e277]:
+        - heading "la Garantía del Primer Expediente" [level=2] [ref=f6e282]
+        - paragraph [ref=f6e283]:
+          - text: Si en 15 días no tienes tu primer comprobante organizado y listo para exportar, escribes un correo y
+          - strong [ref=f6e284]: te devolvemos todo
+          - text: . Sin preguntas.
+        - paragraph [ref=f6e285]: Respaldada por la garantía Hotmart de 15 días
+    - region "Preguntas frecuentes" [ref=f6e289]:
+      - generic [ref=f6e291]:
+        - generic [ref=f6e292]:
+          - paragraph [ref=f6e293]: PREGUNTAS
+          - heading "Lo que quizá te estás preguntando" [level=2] [ref=f6e294]
+        - list [ref=f6e295]:
+          - listitem [ref=f6e296]:
+            - button "¿La otra persona tiene que descargar la app también?" [expanded] [ref=f6e297]
+            - region "¿La otra persona tiene que descargar la app también?" [ref=f6e301]:
+              - paragraph [ref=f6e302]:
+                - text: "No: Coparentia funciona 100% de forma"
+                - strong [ref=f6e303]: unilateral
+                - text: — es tu expediente, la use alguien más o no.
+          - listitem [ref=f6e304]:
+            - button "¿Esto tiene validez ante un juez?" [ref=f6e305]
+            - region "¿Esto tiene validez ante un juez?":
+              - paragraph [ref=f6e309]:
+                - text: Organiza tu evidencia en un formato claro y fechado para tu abogado o conciliador — no reemplaza la asesoría legal,
+                - strong [ref=f6e310]: la potencia
+                - text: .
+          - listitem [ref=f6e311]:
+            - button "¿Por qué no me sirve un Excel gratis?" [ref=f6e312]
+            - region "¿Por qué no me sirve un Excel gratis?":
+              - paragraph [ref=f6e316]:
+                - text: Un Excel se pierde y se cuestiona; tu expediente queda con fecha, soporte y
+                - strong [ref=f6e317]: sin ediciones silenciosas
+                - text: .
+          - listitem [ref=f6e318]:
+            - button "¿Es muy cara la suscripción?" [ref=f6e319]
+            - region "¿Es muy cara la suscripción?":
+              - paragraph [ref=f6e323]:
+                - text: Menos de US$0.25 al día con el plan anual — comparado con lo que cobra un abogado por cada correo de aclaración,
+                - strong [ref=f6e324]: se paga solo
+                - text: .
+          - listitem [ref=f6e325]:
+            - button "¿Mis datos financieros están seguros?" [ref=f6e326]
+            - region "¿Mis datos financieros están seguros?":
+              - paragraph [ref=f6e330]:
+                - text: Cifrado en tránsito y en reposo. Tus datos
+                - strong [ref=f6e331]: nunca se comparten
+                - text: sin tu autorización.
+    - region "Empieza hoy" [ref=f6e332]:
+      - generic [ref=f6e333]:
+        - heading "Todo lo importante, bajo control. Tu mente, en calma." [level=2] [ref=f6e334]
+        - paragraph [ref=f6e335]: La próxima vez que te reclamen por WhatsApp, abres tu expediente y respondes con hechos — no con capturas sueltas.
+        - link "Crear mi expediente gratis" [ref=f6e337] [cursor=pointer]:
+          - /url: /onboarding
+        - paragraph [ref=f6e338]: 7 días de prueba gratis · Garantía del Primer Expediente (15 días)
+        - paragraph [ref=f6e339]: "PS: Coparentia convierte tus comprobantes en un expediente fechado y listo para mostrar con el Sello de Confianza. Hoy entras con 7 días gratis y la Garantía del Primer Expediente de 15 días."
+    - region "Para abogados de familia" [ref=f6e340]:
+      - generic [ref=f6e342]:
+        - generic [ref=f6e343]:
+          - paragraph [ref=f6e344]: PARA ABOGADOS DE FAMILIA
+          - heading "Sé el abogado que nuestros usuarios ya están buscando" [level=2] [ref=f6e345]
+          - paragraph [ref=f6e346]: Coparentia conecta a diario con padres separados que documentan su caso y, tarde o temprano, necesitan un abogado de familia de confianza. Anúnciate y sé tú quien aparece cuando llega ese momento.
+        - generic [ref=f6e347]:
+          - generic [ref=f6e355]:
+            - heading "Tu cliente ideal, ya buscando ayuda" [level=3] [ref=f6e356]
+            - paragraph [ref=f6e357]: Padres separados que documentan su caso y necesitan asesoría de un abogado de familia real.
+          - generic [ref=f6e363]:
+            - heading "Perfil verificado en la app" [level=3] [ref=f6e364]
+            - paragraph [ref=f6e365]: Apareces con tu nombre, tu especialidad y tu ciudad — no un banner genérico.
+          - generic [ref=f6e370]:
+            - heading "Contacto directo, sin intermediarios" [level=3] [ref=f6e371]
+            - paragraph [ref=f6e372]: El usuario te escribe a ti cuando decide que necesita acompañamiento legal.
+        - generic [ref=f6e373]:
+          - link "Quiero anunciarme como abogado" [ref=f6e374] [cursor=pointer]:
+            - /url: mailto:alianzas@coparentia.co?subject=Quiero%20anunciarme%20en%20Coparentia
+          - paragraph [ref=f6e375]: Cupos limitados por ciudad — te contactamos en menos de 48 horas.
+    - contentinfo [ref=f6e376]:
+      - generic [ref=f6e377]:
+        - generic [ref=f6e378]:
+          - paragraph [ref=f6e379]: Coparentia
+          - navigation "Enlaces legales" [ref=f6e381]:
+            - list [ref=f6e382]:
+              - listitem [ref=f6e383]:
+                - link "Privacidad" [ref=f6e384] [cursor=pointer]:
+                  - /url: /privacidad
+              - listitem [ref=f6e385]:
+                - generic [aria-hidden] [ref=f6e386]: ·
+                - link "Términos y Condiciones" [ref=f6e387] [cursor=pointer]:
+                  - /url: /terminos
+              - listitem [ref=f6e388]:
+                - generic [aria-hidden] [ref=f6e389]: ·
+                - link "Reembolsos" [ref=f6e390] [cursor=pointer]:
+                  - /url: /reembolsos
+              - listitem [ref=f6e391]:
+                - generic [aria-hidden] [ref=f6e392]: ·
+                - link "Aviso de IA" [ref=f6e393] [cursor=pointer]:
+                  - /url: /aviso-ia
+        - paragraph [ref=f6e394]:
+          - text: © 2026 Coparentia ·
+          - link "soporte@coparentia.co" [ref=f6e395] [cursor=pointer]:
+            - /url: mailto:soporte@coparentia.co

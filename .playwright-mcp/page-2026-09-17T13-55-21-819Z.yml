@@ -1,0 +1,23 @@
+- generic [active] [ref=f3e1]:
+  - link "Saltar al contenido" [ref=f3e2] [cursor=pointer]:
+    - /url: "#main"
+  - generic [ref=f3e4]:
+    - link "Coparentia" [ref=f3e5] [cursor=pointer]:
+      - /url: /
+    - generic [ref=f3e7]:
+      - button "Volver" [ref=f3e8]
+      - progressbar [ref=f3e11]
+      - generic [ref=f3e13]: Paso 1 de 10
+    - generic [ref=f3e16]:
+      - heading "¿Cuál es tu rol hoy?" [level=1] [ref=f3e17]
+      - paragraph [ref=f3e18]: Así adaptamos las preguntas y tu expediente
+      - generic [ref=f3e19]:
+        - button "Yo pago la cuota alimentaria" [ref=f3e20]
+        - button "Yo recibo la cuota alimentaria" [ref=f3e25]
+      - paragraph [ref=f3e36]: ¿Por qué lo preguntamos? Quien paga y quien recibe la cuota enfrentan riesgos distintos — así usamos las palabras y los ejemplos correctos en tu expediente.
+    - generic [ref=f3e38]:
+      - paragraph [ref=f3e39]: Tu expediente
+      - list [ref=f3e41]:
+        - listitem [ref=f3e42]:
+          - paragraph [ref=f3e45]: Tu rol
+      - paragraph [ref=f3e46]: y 6 preguntas más

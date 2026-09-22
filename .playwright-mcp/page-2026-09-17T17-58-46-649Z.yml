@@ -1,0 +1,51 @@
+- generic [active] [ref=f6e1]:
+  - link "Saltar al contenido" [ref=f6e2] [cursor=pointer]:
+    - /url: "#main"
+  - generic [ref=f6e3]:
+    - complementary [ref=f6e4]:
+      - generic [ref=f6e5]:
+        - paragraph [ref=f6e6]: Lo que vas a tener
+        - heading "Falta un paso para que empiece a probar lo que pagas" [level=2] [ref=f6e7]
+        - list [ref=f6e8]:
+          - listitem [ref=f6e9]:
+            - generic [ref=f6e15]:
+              - paragraph [ref=f6e16]: Todo en un solo lugar
+              - paragraph [ref=f6e17]: Cuota, gastos extra y autorizaciones, mes a mes, con su soporte adjunto.
+          - listitem [ref=f6e18]:
+            - generic [ref=f6e23]:
+              - paragraph [ref=f6e24]: Respaldo probatorio
+              - paragraph [ref=f6e25]: Cada comprobante queda fechado y asociado — listo para exportar en PDF foliado.
+          - listitem [ref=f6e26]:
+            - generic [ref=f6e30]:
+              - paragraph [ref=f6e31]: Funciona sin la otra parte
+              - paragraph [ref=f6e32]: "Es tu expediente: no necesita que nadie más instale ni apruebe nada."
+    - generic [ref=f6e33]:
+      - generic [ref=f6e34]:
+        - link "Coparentia" [ref=f6e35] [cursor=pointer]:
+          - /url: /
+        - button "Cerrar" [ref=f6e37]
+      - generic [ref=f6e41]:
+        - button "Volver" [ref=f6e42]
+        - progressbar [ref=f6e45]
+        - generic [ref=f6e47]: Paso 1 de 2
+      - generic [ref=f6e50]:
+        - heading "Tu expediente está listo para empezar" [level=1] [ref=f6e51]
+        - paragraph [ref=f6e52]: Así funciona tu expediente desde el primer día
+        - generic [ref=f6e53]:
+          - generic [ref=f6e54]: El Sello de Confianza en cada comprobante
+          - generic [ref=f6e59]: Expediente exportable en PDF foliado
+          - generic [ref=f6e64]: Alertas en el momento que elegiste
+        - generic [ref=f6e70]:
+          - heading "7 días gratis, sin sorpresas" [level=2] [ref=f6e71]
+          - generic [ref=f6e72]:
+            - generic [ref=f6e77]:
+              - paragraph [ref=f6e78]: Hoy — acceso completo
+              - paragraph [ref=f6e79]: Todo tu expediente, sin límites
+            - generic [ref=f6e84]:
+              - paragraph [ref=f6e85]: Día 5 — te avisamos
+              - paragraph [ref=f6e86]: Correo antes de cualquier cobro
+            - generic [ref=f6e90]:
+              - paragraph [ref=f6e91]: "Día 7 — primer cobro: US$89 al año"
+              - paragraph [ref=f6e92]: Cancela antes sin costo
+          - paragraph [ref=f6e93]: El aviso del día 5 llega por correo. Podrás sumar notificaciones desde Ajustes cuando entres.
+        - button "Ver mi plan y precio" [ref=f6e95]
