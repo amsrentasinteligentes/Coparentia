@@ -6,7 +6,10 @@ COMUNES y no se suman al total de ningún hijo — se mencionan en una línea ap
 que no se cuenten dos veces; si ningún hijo tiene movimientos propios, sale UNA constancia general.
 Probado en producción: 2 correos ("Constancia de gastos y aportes de Isa / de Alejo · septiembre de
 2026") y el historial los muestra separados con hijo, fecha y hora; el PDF gana columna "Hijo/a".
-Asunto del correo y encabezado llevan el nombre del hijo. Nota: el correo de la otra parte sigue
+Asunto del correo y encabezado llevan el nombre del hijo. Cada correo lleva ADJUNTO el PDF de la constancia
+del mes (lib/pdf-constancia.ts, jsPDF en servidor: quién informa, a quién, período, fecha y hora de
+envío, totales y movimientos; SIN fotos de comprobantes por ser datos sensibles y peso). Publicado
+27fe718 y probado: 2 correos con sus PDF. Nota: el correo de la otra parte sigue
 siendo el del propio usuario (prueba) — debe cambiarlo en Perfil antes de usarlo de verdad.
 Pendientes vivos: Google login; validación de Ivonne; texto de Términos sobre el derecho a comunicar;
 revisor-visual de la tarjeta de constancias (secundaria); registros de prueba de contacto (NO borrar
