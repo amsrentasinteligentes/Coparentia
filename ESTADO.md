@@ -15,7 +15,12 @@ reputación del dominio para los correos de acceso/compra; además publicidad no
 - Perfil: campo "Correo de la otra parte" + interruptor "Constancia mensual". Expediente: tarjeta
   ConstanciaOtraParte (botón "Enviar constancia ahora" + historial con fecha/hora).
 - PDF: sección "Constancias enviadas a la otra parte" + fila en el resumen de portada.
-Pendiente: prueba real de envío; texto de Términos (el usuario declara tener derecho a comunicarse con
+PUBLICADO (f59aa65) y PROBADO en vivo: constancia de septiembre enviada al correo del usuario y registrada
+("enviada el 22 de septiembre de 2026 a las 10:09 a. m."). El correo de la otra parte quedó con el
+correo del propio usuario SOLO para la prueba — debe cambiarlo en Perfil. CRON_SECRET AÚN NO está en
+Vercel (verificado: /api/cron/constancias responde 503), así que el envío mensual automático no corre
+todavía; el manual sí.
+Pendiente: texto de Términos (el usuario declara tener derecho a comunicarse con
 esa persona) para el equipo jurídico; revisor-visual de la tarjeta tras la prueba (pantalla secundaria:
 medición + checklist, se anotará). Gates viejos: sin cambios (Problemas conocidos).
 
