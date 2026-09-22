@@ -108,16 +108,22 @@ function cuerpoHtml(resumen: ResumenConstancia, remitenteNombre: string, destina
 
   const saludo = destinatarioNombre ? `Hola, ${escapar(destinatarioNombre)}:` : 'Hola:';
   const porQuien = remitenteNombre ? escapar(remitenteNombre) : 'la otra parte';
-  const porHijos = resumen.hijos.length > 0 ? ` de ${escapar(resumen.hijos.join(', '))}` : '';
+  const nombresHijos = resumen.hijos.map(escapar);
+  const porHijos =
+    nombresHijos.length === 0
+      ? ''
+      : nombresHijos.length === 1
+        ? ` de <strong>${nombresHijos[0]}</strong>`
+        : ` de <strong>${nombresHijos.slice(0, -1).join(', ')} y ${nombresHijos[nombresHijos.length - 1]}</strong>`;
 
   return `
   <div style="font-family:Segoe UI,Helvetica,Arial,sans-serif;background:#f3f7fc;padding:24px;">
     <div style="max-width:560px;margin:0 auto;background:#ffffff;border-radius:16px;padding:28px;">
       <p style="color:#14233a;font-size:15px;margin:0 0 16px;">${saludo}</p>
       <p style="color:#14233a;font-size:15px;line-height:1.6;margin:0 0 20px;">
-        Esta es una constancia informativa de los gastos y aportes${porHijos} que
-        <strong>${porQuien}</strong> registró en <strong>${resumen.periodoTexto}</strong>.
-        No necesitas hacer nada con este correo; se envía para que tengas la misma información.
+        <strong>${porQuien}</strong> registró en <strong>${resumen.periodoTexto}</strong> los gastos
+        y aportes${porHijos} que aparecen abajo. Esta constancia es solo informativa: no necesitas
+        hacer nada con este correo, se envía para que tengas la misma información.
       </p>
 
       <div style="background:#e7eef8;border-radius:12px;padding:16px;margin:0 0 20px;">
