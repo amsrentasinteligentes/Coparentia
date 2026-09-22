@@ -42,3 +42,6 @@ yarn-error.log*
 .tsbuildinfo-hook
 next-env.d.ts
 supabase/.temp/
+
+# Capturas y logs temporales del navegador de pruebas (Playwright MCP)
+.playwright-mcp/
