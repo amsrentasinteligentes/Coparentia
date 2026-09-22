@@ -48,6 +48,7 @@ interface FilaConstancia {
   origen: string;
   estado: string;
   created_at: string;
+  hijos?: { nombre: string } | { nombre: string }[] | null;
 }
 
 /** Constancias enviadas a la otra parte — prueba de que se le informó (2026-09-22). */
@@ -56,7 +57,7 @@ async function obtenerConstancias(): Promise<FilaConstancia[]> {
     const supabase = crearClienteSupabase();
     const { data } = await supabase
       .from('constancias')
-      .select('destinatario, periodo, origen, estado, created_at')
+      .select('destinatario, periodo, origen, estado, created_at, hijos(nombre)')
       .order('created_at', { ascending: true });
     return (data ?? []) as FilaConstancia[];
   } catch {
@@ -436,8 +437,9 @@ export async function exportarExpedientePdf(
     doc.setTextColor(110);
     doc.setFontSize(9);
     doc.text('Fecha y hora del envío', MARGEN, y);
-    doc.text('Destinatario', MARGEN + 190, y);
-    doc.text('Período informado', MARGEN + 380, y);
+    doc.text('Destinatario', MARGEN + 170, y);
+    doc.text('Hijo/a', MARGEN + 330, y);
+    doc.text('Período', MARGEN + 410, y);
     doc.text('Estado', MARGEN + 480, y);
     y += 14;
     doc.setFontSize(10);
@@ -449,8 +451,10 @@ export async function exportarExpedientePdf(
         MARGEN,
         y
       );
-      doc.text(doc.splitTextToSize(c.destinatario, 185)[0], MARGEN + 190, y);
-      doc.text(doc.splitTextToSize(periodoTexto(c.periodo), 95)[0], MARGEN + 380, y);
+      doc.text(doc.splitTextToSize(c.destinatario, 155)[0], MARGEN + 170, y);
+      const hijoConstancia = Array.isArray(c.hijos) ? c.hijos[0]?.nombre : c.hijos?.nombre;
+      doc.text(doc.splitTextToSize(hijoConstancia ?? 'General', 75)[0], MARGEN + 330, y);
+      doc.text(doc.splitTextToSize(periodoTexto(c.periodo), 65)[0], MARGEN + 410, y);
       doc.setTextColor(110);
       doc.text(c.estado === 'enviada' ? (c.origen === 'mensual' ? 'Enviada (auto)' : 'Enviada') : 'No enviada', MARGEN + 480, y);
       y += 16;

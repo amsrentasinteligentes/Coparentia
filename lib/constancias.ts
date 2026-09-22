@@ -23,6 +23,13 @@ const URL_APP = 'https://coparentia.co';
 export interface ResumenConstancia {
   periodo: string; // 'YYYY-MM'
   periodoTexto: string; // 'septiembre de 2026'
+  // Cuando la constancia es de un hijo concreto (lo normal desde 2026-09-22: un correo por hijo).
+  hijoId?: string;
+  hijoNombre?: string;
+  // Movimientos COMUNES del período (cuota alimentaria y gastos sin hijo asignado): se mencionan
+  // en cada correo pero NO se suman al total del hijo, para que nadie los cuente dos veces.
+  comunesCantidad: number;
+  comunesTotal: number;
   cuotas: number;
   gastosExtra: number;
   totalRegistrado: number;
@@ -66,31 +73,51 @@ function fechaCorta(iso: string): string {
 
 /** Arma el resumen de un período leyendo los datos REALES del usuario (con el cliente que se le pase:
  *  el del servidor para el botón manual, el admin para el envío mensual). */
-export async function armarResumen(supabase: SupabaseClient, userId: string, periodo: string): Promise<ResumenConstancia> {
+export async function armarResumen(
+  supabase: SupabaseClient,
+  userId: string,
+  periodo: string,
+  hijo?: { id: string; nombre: string }
+): Promise<ResumenConstancia> {
   const desde = `${periodo}-01`;
   const [anio, mes] = periodo.split('-').map(Number);
   const hasta = `${mes === 12 ? anio + 1 : anio}-${String(mes === 12 ? 1 : mes + 1).padStart(2, '0')}-01`;
 
   const [{ data: pagos }, { data: eventos }, { data: hijos }] = await Promise.all([
-    supabase.from('pagos').select('fecha, concepto, monto, tipo').eq('user_id', userId).gte('fecha', desde).lt('fecha', hasta).order('fecha'),
-    supabase.from('eventos').select('tipo, resultado').eq('user_id', userId).gte('fecha', desde).lt('fecha', hasta),
+    supabase.from('pagos').select('fecha, concepto, monto, tipo, hijo_id').eq('user_id', userId).gte('fecha', desde).lt('fecha', hasta).order('fecha'),
+    supabase.from('eventos').select('tipo, resultado, hijo_id').eq('user_id', userId).gte('fecha', desde).lt('fecha', hasta),
     supabase.from('hijos').select('nombre').eq('user_id', userId),
   ]);
 
-  const lista = pagos ?? [];
-  const contactos = (eventos ?? []).filter((e) => e.tipo === 'llamada' || e.tipo === 'videollamada');
+  const todosPagos = pagos ?? [];
+  const todosEventos = eventos ?? [];
+  // Con hijo: solo lo suyo. Sin hijo (constancia general): todo.
+  const lista = hijo ? todosPagos.filter((p) => p.hijo_id === hijo.id) : todosPagos;
+  const comunes = hijo ? todosPagos.filter((p) => !p.hijo_id) : [];
+  const contactosTodos = todosEventos.filter((e) => e.tipo === 'llamada' || e.tipo === 'videollamada');
+  const contactos = hijo ? contactosTodos.filter((c) => c.hijo_id === hijo.id) : contactosTodos;
 
   return {
     periodo,
     periodoTexto: periodoTexto(periodo),
+    hijoId: hijo?.id,
+    hijoNombre: hijo?.nombre,
+    comunesCantidad: comunes.length,
+    comunesTotal: comunes.reduce((acc, p) => acc + Number(p.monto), 0),
     cuotas: lista.filter((p) => p.tipo === 'cuota').length,
     gastosExtra: lista.filter((p) => p.tipo !== 'cuota').length,
     totalRegistrado: lista.reduce((acc, p) => acc + Number(p.monto), 0),
     contactos: contactos.length,
     contactosContestados: contactos.filter((c) => c.resultado === 'contestada').length,
     movimientos: lista.map((p) => ({ fecha: p.fecha, concepto: p.concepto, monto: Number(p.monto), tipo: p.tipo })),
-    hijos: (hijos ?? []).map((h) => h.nombre),
+    hijos: hijo ? [hijo.nombre] : (hijos ?? []).map((h) => h.nombre),
   };
+}
+
+/** Los hijos del usuario, para mandar un correo por cada uno. */
+export async function hijosDelUsuario(supabase: SupabaseClient, userId: string): Promise<{ id: string; nombre: string }[]> {
+  const { data } = await supabase.from('hijos').select('id, nombre').eq('user_id', userId).order('fecha_nacimiento', { ascending: true, nullsFirst: false });
+  return (data ?? []).map((h) => ({ id: h.id, nombre: h.nombre }));
 }
 
 function cuerpoHtml(resumen: ResumenConstancia, remitenteNombre: string, destinatarioNombre: string): string {
@@ -127,7 +154,7 @@ function cuerpoHtml(resumen: ResumenConstancia, remitenteNombre: string, destina
       </p>
 
       <div style="background:#e7eef8;border-radius:12px;padding:16px;margin:0 0 20px;">
-        <p style="margin:0;color:#4b5c78;font-size:13px;">Total registrado en el período</p>
+        <p style="margin:0;color:#4b5c78;font-size:13px;">${resumen.hijoNombre ? `Total registrado para ${escapar(resumen.hijoNombre)}` : 'Total registrado en el período'}</p>
         <p style="margin:4px 0 0;color:#14233a;font-size:26px;font-weight:700;">${pesos(resumen.totalRegistrado)}</p>
         <p style="margin:8px 0 0;color:#4b5c78;font-size:13px;">
           ${resumen.cuotas} ${resumen.cuotas === 1 ? 'cuota' : 'cuotas'} · ${resumen.gastosExtra} ${resumen.gastosExtra === 1 ? 'gasto extra' : 'gastos extra'}
@@ -136,6 +163,15 @@ function cuerpoHtml(resumen: ResumenConstancia, remitenteNombre: string, destina
       </div>
 
       ${filas ? `<table style="width:100%;border-collapse:collapse;margin:0 0 20px;">${filas}</table>` : ''}
+      ${
+        resumen.comunesCantidad > 0
+          ? `<p style="color:#5b6d88;font-size:13px;line-height:1.6;margin:0 0 20px;background:#f3f7fc;border-radius:12px;padding:12px;">
+               Además, en el período se registraron <strong>${resumen.comunesCantidad}</strong> ${resumen.comunesCantidad === 1 ? 'movimiento común' : 'movimientos comunes'}
+               por <strong>${pesos(resumen.comunesTotal)}</strong> (cuota alimentaria y gastos que no corresponden a un hijo en particular).
+               No están sumados arriba para no contarlos dos veces.
+             </p>`
+          : ''
+      }
       ${resumen.movimientos.length > 40 ? `<p style="color:#5b6d88;font-size:13px;margin:0 0 20px;">y ${resumen.movimientos.length - 40} movimientos más.</p>` : ''}
 
       <p style="color:#5b6d88;font-size:13px;line-height:1.6;margin:0 0 8px;">
@@ -179,7 +215,9 @@ export async function enviarConstancia(
       from: REMITENTE_AVISOS,
       to: destinatario,
       replyTo: responderA,
-      subject: `Constancia de gastos y aportes · ${resumen.periodoTexto}`,
+      subject: resumen.hijoNombre
+        ? `Constancia de gastos y aportes de ${resumen.hijoNombre} · ${resumen.periodoTexto}`
+        : `Constancia de gastos y aportes · ${resumen.periodoTexto}`,
       html: cuerpoHtml(resumen, remitenteNombre, destinatarioNombre),
     });
     if (error) throw new Error(error.message);
@@ -195,6 +233,7 @@ export async function enviarConstancia(
     user_id: userId,
     destinatario,
     periodo: resumen.periodo,
+    hijo_id: resumen.hijoId ?? null,
     origen,
     estado,
     proveedor_id: proveedorId,
@@ -211,4 +250,46 @@ export async function enviarConstancia(
   return estado === 'enviada'
     ? { ok: true, mensaje: `Constancia de ${resumen.periodoTexto} enviada a ${destinatario}.` }
     : { ok: false, mensaje: 'No pudimos enviar la constancia. Revisa el correo de la otra parte e inténtalo de nuevo.' };
+}
+
+/** UN CORREO POR CADA HIJO (pedido del usuario, 2026-09-22). Si no hay hijos cargados, o si ninguno
+ *  tiene movimientos, cae a una sola constancia general del período — nunca se queda sin informar. */
+export async function enviarConstanciasDelPeriodo(
+  supabase: SupabaseClient,
+  userId: string,
+  destinatario: string,
+  periodo: string,
+  origen: 'manual' | 'mensual',
+  remitenteNombre: string,
+  destinatarioNombre: string,
+  responderA: string
+): Promise<{ enviadas: number; fallidas: number; nombres: string[]; sinNada: boolean }> {
+  const hijos = await hijosDelUsuario(supabase, userId);
+  const nombres: string[] = [];
+  let enviadas = 0;
+  let fallidas = 0;
+
+  for (const hijo of hijos) {
+    const resumen = await armarResumen(supabase, userId, periodo, hijo);
+    if (resumen.movimientos.length === 0 && resumen.contactos === 0) continue; // nada suyo este mes
+    const r = await enviarConstancia(supabase, userId, destinatario, resumen, origen, remitenteNombre, destinatarioNombre, responderA);
+    if (r.ok) {
+      enviadas += 1;
+      nombres.push(hijo.nombre);
+    } else if (!r.sinMovimientos) {
+      fallidas += 1;
+    }
+  }
+
+  if (enviadas === 0 && fallidas === 0) {
+    // Ningún hijo con movimientos propios: se informa igual con la constancia general del período
+    // (ahí entran la cuota alimentaria y los gastos sin hijo asignado).
+    const general = await armarResumen(supabase, userId, periodo);
+    if (general.movimientos.length === 0 && general.contactos === 0) return { enviadas: 0, fallidas: 0, nombres: [], sinNada: true };
+    const r = await enviarConstancia(supabase, userId, destinatario, general, origen, remitenteNombre, destinatarioNombre, responderA);
+    if (r.ok) enviadas += 1;
+    else fallidas += 1;
+  }
+
+  return { enviadas, fallidas, nombres, sinNada: false };
 }

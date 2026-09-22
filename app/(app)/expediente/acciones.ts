@@ -5,7 +5,7 @@
 // la otra parte guardado, y que el período tiene forma de 'YYYY-MM'.
 
 import { crearClienteSupabaseServidor } from '@/lib/supabase/server';
-import { armarResumen, enviarConstancia, mesAnteriorEnColombia } from '@/lib/constancias';
+import { armarResumen, enviarConstanciasDelPeriodo, mesAnteriorEnColombia, periodoTexto } from '@/lib/constancias';
 import { hoyEnColombia } from '@/lib/fecha';
 
 interface Resultado {
@@ -32,15 +32,35 @@ export async function enviarConstanciaAhora(periodo?: string): Promise<Resultado
   }
 
   const hoy = hoyEnColombia();
-  const elegido = periodo && /^\d{4}-\d{2}$/.test(periodo) ? periodo : hoy.slice(0, 7);
-  const resumen = await armarResumen(supabase, user.id, elegido);
-  // Si el mes en curso todavía no tiene nada, se ofrece el anterior: es el caso real de quien
-  // envía la constancia los primeros días del mes.
-  if (resumen.movimientos.length === 0 && resumen.contactos === 0 && !periodo) {
-    const anterior = await armarResumen(supabase, user.id, mesAnteriorEnColombia(hoy));
-    if (anterior.movimientos.length > 0 || anterior.contactos > 0) {
-      return enviarConstancia(supabase, user.id, destinatario, anterior, 'manual', perfil?.nombre ?? '', perfil?.otro_progenitor_nombre ?? '', user.email ?? '');
+  let elegido = periodo && /^\d{4}-\d{2}$/.test(periodo) ? periodo : hoy.slice(0, 7);
+  // Si el mes en curso todavía no tiene nada, se usa el anterior: es el caso real de quien envía la
+  // constancia los primeros días del mes.
+  if (!periodo) {
+    const resumen = await armarResumen(supabase, user.id, elegido);
+    if (resumen.movimientos.length === 0 && resumen.contactos === 0) {
+      const anteriorPeriodo = mesAnteriorEnColombia(hoy);
+      const anterior = await armarResumen(supabase, user.id, anteriorPeriodo);
+      if (anterior.movimientos.length > 0 || anterior.contactos > 0) elegido = anteriorPeriodo;
     }
   }
-  return enviarConstancia(supabase, user.id, destinatario, resumen, 'manual', perfil?.nombre ?? '', perfil?.otro_progenitor_nombre ?? '', user.email ?? '');
+
+  // UN CORREO POR CADA HIJO con lo suyo (pedido del usuario): así la otra parte recibe las cuentas
+  // separadas y no un solo correo mezclado.
+  const r = await enviarConstanciasDelPeriodo(
+    supabase,
+    user.id,
+    destinatario,
+    elegido,
+    'manual',
+    perfil?.nombre ?? '',
+    perfil?.otro_progenitor_nombre ?? '',
+    user.email ?? ''
+  );
+
+  if (r.sinNada) return { ok: false, mensaje: `No hay nada registrado en ${periodoTexto(elegido)}: no tiene sentido enviar una constancia vacía.` };
+  if (r.enviadas === 0) return { ok: false, mensaje: 'No pudimos enviar la constancia. Revisa el correo de la otra parte e inténtalo de nuevo.' };
+
+  const quienes = r.nombres.length > 0 ? ` (${r.nombres.join(' y ')})` : '';
+  const base = r.enviadas === 1 ? `Constancia de ${periodoTexto(elegido)}${quienes} enviada a ${destinatario}.` : `${r.enviadas} constancias de ${periodoTexto(elegido)}${quienes} enviadas a ${destinatario}.`;
+  return { ok: true, mensaje: r.fallidas > 0 ? `${base} ${r.fallidas} no se pudo enviar.` : base };
 }

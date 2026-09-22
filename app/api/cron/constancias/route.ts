@@ -7,7 +7,7 @@
 
 import { NextResponse } from 'next/server';
 import { crearClienteSupabaseAdmin } from '@/lib/supabase/admin';
-import { armarResumen, enviarConstancia, mesAnteriorEnColombia } from '@/lib/constancias';
+import { enviarConstanciasDelPeriodo, mesAnteriorEnColombia } from '@/lib/constancias';
 import { hoyEnColombia } from '@/lib/fecha';
 
 export const dynamic = 'force-dynamic';
@@ -46,25 +46,25 @@ export async function GET(request: Request): Promise<NextResponse> {
   for (const u of usuarios ?? []) {
     const destinatario = u.otro_progenitor_email?.trim();
     if (!destinatario) continue;
-    // Ya enviada este período (el índice único lo impide igual, pero así no se gasta un correo).
-    const { data: previa } = await admin
+    // Ya enviadas este período (el índice único lo impide igual, pero así no se gastan correos).
+    const { data: previas } = await admin
       .from('constancias')
       .select('id')
       .eq('user_id', u.id)
       .eq('periodo', periodo)
       .eq('origen', 'mensual')
-      .maybeSingle();
-    if (previa) {
+      .limit(1);
+    if ((previas ?? []).length > 0) {
       omitidas += 1;
       continue;
     }
-    const resumen = await armarResumen(admin, u.id, periodo);
-    if (resumen.movimientos.length === 0 && resumen.contactos === 0) {
-      omitidas += 1; // mes sin nada que informar: no se manda un correo vacío
+    // Un correo por cada hijo (y uno general si ninguno tiene movimientos propios).
+    const r = await enviarConstanciasDelPeriodo(admin, u.id, destinatario, periodo, 'mensual', u.nombre ?? '', u.otro_progenitor_nombre ?? '', u.email ?? '');
+    if (r.sinNada || r.enviadas === 0) {
+      omitidas += 1;
       continue;
     }
-    const r = await enviarConstancia(admin, u.id, destinatario, resumen, 'mensual', u.nombre ?? '', u.otro_progenitor_nombre ?? '', u.email ?? '');
-    if (r.ok) enviadas += 1;
+    enviadas += r.enviadas;
   }
 
   return NextResponse.json({ ok: true, periodo, enviadas, omitidas });

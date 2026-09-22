@@ -25,6 +25,12 @@ interface FilaConstancia {
   origen: string;
   estado: string;
   created_at: string;
+  hijos?: { nombre: string } | { nombre: string }[] | null;
+}
+
+function nombreHijo(h: FilaConstancia['hijos']): string | null {
+  if (!h) return null;
+  return Array.isArray(h) ? h[0]?.nombre ?? null : h.nombre;
 }
 
 function fechaHora(iso: string): string {
@@ -52,9 +58,9 @@ export function ConstanciaOtraParte() {
       const supabase = crearClienteSupabase();
       const { data } = await supabase
         .from('constancias')
-        .select('id, destinatario, periodo, origen, estado, created_at')
+        .select('id, destinatario, periodo, origen, estado, created_at, hijos(nombre)')
         .order('created_at', { ascending: false })
-        .limit(4);
+        .limit(6);
       setEnviadas((data ?? []) as FilaConstancia[]);
     } catch {
       // Sin datos no se bloquea la pantalla: la tarjeta simplemente invita a configurar el correo.
@@ -87,7 +93,7 @@ export function ConstanciaOtraParte() {
           <p className="text-[15px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">Constancia a la otra parte</p>
           <p className="mt-1 text-[13px] leading-[1.5] text-[var(--text-secondary)]">
             {correoOtraParte
-              ? 'Le envías por correo el resumen del mes: totales, movimientos y contactos. Queda constancia de la fecha y la hora del envío, y sale en tu PDF.'
+              ? 'Se envía un correo por cada hijo con lo registrado en el mes. Queda constancia de la fecha y la hora de cada envío, y sale en tu PDF.'
               : 'Guarda el correo de la otra parte en Perfil y podrás enviarle el resumen del mes. Queda constancia de que la informaste.'}
           </p>
         </div>
@@ -135,7 +141,7 @@ export function ConstanciaOtraParte() {
             <li key={c.id} className="flex items-start gap-2 py-1.5">
               <MailCheck size={14} className={`mt-0.5 shrink-0 ${c.estado === 'enviada' ? 'text-[var(--status-success)]' : 'text-[var(--status-error)]'}`} aria-hidden="true" />
               <p className="min-w-0 flex-1 text-[12px] leading-[1.5] text-[var(--text-secondary)]">
-                <strong className="text-[var(--text-primary)]">{periodoTexto(c.periodo)}</strong> · {c.estado === 'enviada' ? 'enviada' : 'no pudo enviarse'} el {fechaHora(c.created_at)}
+                <strong className="text-[var(--text-primary)]">{periodoTexto(c.periodo)}{nombreHijo(c.hijos) ? ` · ${nombreHijo(c.hijos)}` : ''}</strong> · {c.estado === 'enviada' ? 'enviada' : 'no pudo enviarse'} el {fechaHora(c.created_at)}
                 {c.origen === 'mensual' ? ' (envío automático)' : ''}
               </p>
             </li>
