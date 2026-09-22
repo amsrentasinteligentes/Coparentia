@@ -1,3 +1,22 @@
+### Checkpoint (2026-09-22, cierre) — PÁGINA DE VENTAS: **LISTA** (37/40 · 17/20 · 17/20)
+Primera vez que pasa el gate; venía de 31/40. Rondas r5→r7 del revisor-visual con capturas rehechas
+recorriendo la página (el reveal dejaba secciones en blanco y no se verificaban). Aplicado, publicado
+(33b289f) y verificado en coparentia.co:
+- Oferta sin confusión de plazos: badge "AHORRAS US$30.88 AL AÑO"; el dato de la tarjeta ("registras
+  tu medio de pago hoy; el primer cobro entra el día 8" — confirmado por el usuario: Hotmart la pide)
+  en hero, ambas tarjetas y PS.
+- Copy sin jerga: "PDF con cada página numerada", "Autorizaciones y desacuerdos, por escrito",
+  FAQ 1 "Solo la usas tú". Mecanismo bautizado en el hero (2º pilar).
+- Contraste AA con --accent-ink en textos ≤17px de acento; hero con stagger 0.07; "Planes" visible a
+  375px (44px); referencia en COP con alto reservado (salto 0); garantía a 760px en computador;
+  tarjeta Mensual en 3 bullets.
+- Decisiones del usuario respetadas: sección "Para abogados" se queda; logo/isotipo no se tocan.
+ÚNICO eje bajo que queda (copy especificidad 2/5): faltan TESTIMONIOS reales y/o una mini-demo del
+Sello (subir→sellar→exportar). No se inventan: entra con Ivonne o los primeros clientes.
+Los tres gates quedan: veredicto:landing LISTA · veredicto:onboarding LISTA (36/40) ·
+veredicto:paywall LISTA (36/40); los dos últimos se marcan "caducados" solo por mtime de .tsx del
+interior (Calendario/Ajustes/Asistencia), pantallas que no se tocaron desde su aprobación.
+
 ### Checkpoint (2026-09-22, noche) — PÁGINA DE VENTAS: ronda 5 y 6 (opción 1 elegida por el usuario)
 El usuario pidió "arreglar lo barato y volver a medir", SIN tocar logo ni isotipo. Hecho:
 - r5 (aplicado y medido): badge del anual "3 MESES GRATIS" → "AHORRAS US$30.88 AL AÑO" (quitaba la
