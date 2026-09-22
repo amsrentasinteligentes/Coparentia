@@ -1,3 +1,10 @@
+## REGLA DEL USUARIO (2026-09-22) — NUNCA borrar ni alterar datos sin consultar
+El usuario lo pidió explícitamente tras un borrado no consultado (el hijo de prueba "Alejo", que hubo
+que recrear): **antes de borrar, sobrescribir o modificar CUALQUIER dato suyo** —filas en Supabase,
+archivos de Storage, fotos, registros de prueba, contenido de la app— se le PREGUNTA y se espera su sí,
+aunque en una conversación anterior haya quedado la idea de hacerlo o parezca obvio. Vale igual para
+datos de prueba. Lo que se propone, se propone; lo que se ejecuta, se ejecuta solo con su OK.
+
 ### Checkpoint (2026-09-22) — CONSTANCIAS A LA OTRA PARTE (opción 1 elegida por el usuario)
 Idea del usuario: avisarle por correo a la otra parte cada registro, aunque no use la app. Se evaluó y
 se eligió la opción 1 (NO aviso por registro: hostigamiento + riesgo de que marquen spam y se caiga la
