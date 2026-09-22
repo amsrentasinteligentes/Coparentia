@@ -159,7 +159,7 @@ export function Oferta({
                       contexto que no compite. Antes eran 4 renglones de dinero al mismo nivel y el
                       ojo apurado no sabía cuál era el número que importa (defecto del revisor). */}
                   <p className="mt-1 text-[14px] font-semibold text-[var(--text-primary)] lg:text-[16px]">{anual.totalAnual}</p>
-                  <p className="mt-0.5 text-[12px] text-[var(--text-tertiary)] lg:text-[13px]">
+                  <p className="mt-0.5 min-h-[18px] text-[12px] text-[var(--text-tertiary)] lg:min-h-[20px] lg:text-[13px]">
                     Se cobra al terminar la prueba{refCopAnual ? ` · ${refCopAnual}` : ''}
                   </p>
                   {anual.ahorro && <p className="mt-2 text-[15px] font-semibold text-[var(--accent-ink,var(--accent))] lg:text-[17px]">{anual.ahorro}</p>}
@@ -170,7 +170,10 @@ export function Oferta({
                     {anual.ctaLabel}
                   </CtaButton>
                   {trialDias !== undefined && (
-                    <p className="mt-2 text-center text-[13px] text-[var(--text-secondary)] lg:text-[15px]">Incluye {trialDias} días de prueba, sin cobro</p>
+                    <p className="mt-2 text-center text-[13px] text-[var(--text-secondary)] lg:text-[15px]">
+                      Incluye {trialDias} días de prueba, sin cobro
+                      <span className="mt-0.5 block text-[12px] text-[var(--text-tertiary)] lg:text-[13px]">Registras tu medio de pago hoy; el primer cobro entra el día {trialDias + 1}.</span>
+                    </p>
                   )}
                 </div>
               </div>
@@ -194,7 +197,10 @@ export function Oferta({
                 {mensual.ctaLabel}
               </CtaButton>
               {trialDias !== undefined && (
-                <p className="mt-2 text-center text-[13px] text-[var(--text-secondary)] lg:text-[15px]">Incluye {trialDias} días de prueba, sin cobro</p>
+                <p className="mt-2 text-center text-[13px] text-[var(--text-secondary)] lg:text-[15px]">
+                  Incluye {trialDias} días de prueba, sin cobro
+                  <span className="mt-0.5 block text-[12px] text-[var(--text-tertiary)] lg:text-[13px]">Registras tu medio de pago hoy; el primer cobro entra el día {trialDias + 1}.</span>
+                </p>
               )}
             </div>
           </motion.div>

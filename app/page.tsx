@@ -70,7 +70,14 @@ export default function Home() {
         subtitleMarked="Tus comprobantes con fecha, en un solo lugar, [b]sin depender de la otra persona[/b]."
         ctaLabel={CTA_LABEL}
         ctaHref={CTA_HREF}
-        socialProof={<span>7 días gratis · Garantía de 15 días</span>}
+        socialProof={
+          <span className="block">
+            7 días gratis · Garantía de 15 días
+            <span className="mt-0.5 block text-[12px] text-[var(--text-tertiary)] lg:text-[13px]">
+              Registras tu medio de pago hoy; el primer cobro entra el día 8.
+            </span>
+          </span>
+        }
         visual={<img src="/frame-inicio.png" alt="Pantalla de inicio de Coparentia: tu expediente con el avance del mes, el total registrado y los últimos movimientos" className="w-full" />}
         // Fotos de Unsplash (licencia Unsplash: uso comercial libre) elegidas por el usuario el 2026-09-18
         // (opciones A y E de public/dev/fotos-propuesta.html), optimizadas a 1200px en public/fotos/.
@@ -78,7 +85,7 @@ export default function Home() {
         // "10 minutos" es el tiempo medido del onboarding + primer comprobante (guía "Tu primer
         // expediente en 10 minutos" del stack de valor) — no una cifra de marketing inventada.
         burbuja={{ titulo: 'Tu primer expediente', dato: 'Listo en 10 minutos' }}
-        pilares={['Gastos al día', 'Comprobantes con fecha', 'Mente en calma']}
+        pilares={['Gastos al día', 'Sello de Confianza en cada comprobante', 'Mente en calma']}
       />
 
       {/* 2. PROBLEMA */}
@@ -163,7 +170,7 @@ export default function Home() {
             { resultado: 'Guía "Tu primer expediente en 10 minutos"', valor: 'US$15' },
           ],
           totalTachado: 'US$154',
-          nota: 'Hoy no pagas nada. Después: US$89 al año (US$7.42/mes)',
+          nota: 'Hoy no pagas nada. Después: US$89 al año con el plan Anual (US$7.42/mes)',
         }}
         anual={{
           nombre: 'Anual',
@@ -183,14 +190,13 @@ export default function Home() {
         mensual={{
           nombre: 'Mensual',
           precioMes: 'US$9.99',
-          ctaLabel: 'Empezar con el plan mensual',
+          ctaLabel: 'Empezar mi plan mensual',
           ctaHref: '/onboarding?plan=mensual',
           // Antes repetía 4 de los 5 bullets del plan anual y el diferenciador real se diluía.
           // Ahora dice solo en qué se diferencia: mismas funciones, sin compromiso de 12 meses.
           features: [
             'Todas las funciones del plan Anual',
-            'Pagas mes a mes, US$9.99',
-            'Cancelas cuando quieras, sin permanencia',
+            'Sin compromiso de 12 meses',
             'Garantía del Primer Expediente (15 días)',
           ],
         }}
@@ -209,7 +215,7 @@ export default function Home() {
           {
             pregunta: '¿La otra persona tiene que descargar la app también?',
             respuestaMarked:
-              'No: Coparentia funciona 100% de forma [b]unilateral[/b] — es tu expediente, la use alguien más o no.',
+              'No. [b]Solo la usas tú[/b]: la otra persona no necesita instalar ni aprobar nada.',
           },
           {
             pregunta: '¿Esto tiene validez ante un juez?',
@@ -241,7 +247,7 @@ export default function Home() {
         ctaLabel={CTA_LABEL}
         ctaHref={CTA_HREF}
         recap="7 días gratis · Garantía de 15 días"
-        psMarked="PS: Coparentia convierte tus comprobantes en un expediente fechado y listo para mostrar con el Sello de Confianza. Hoy entras con 7 días gratis y, si no armas tu primer expediente en 15 días, te devolvemos todo."
+        psMarked="PS: Coparentia convierte tus comprobantes en un expediente fechado y listo para mostrar con el Sello de Confianza. Hoy entras con 7 días gratis —registras tu medio de pago, pero no se te cobra nada hasta el día 8— y, si no armas tu primer expediente en 15 días, te devolvemos todo."
       />
 
       {/* SECCIÓN EXTRA (fuera de la estructura canónica de 19, pedida por el usuario):

@@ -81,6 +81,9 @@ export function Hero({
   warnCopy('Hero → h1', h1Marked, 10);
   warnCopy('Hero → subtítulo', subtitleMarked, 14);
   const subtitulo = truncarMarcado(subtitleMarked, 14);
+  // "Planes" es el único enlace que también se muestra en celular (ver más abajo): quien llega
+  // decidido a ver el precio no debería tener que recorrer la página entera.
+  const enlacePlanes = navLinks.find((l) => /plan/i.test(l.label))?.href;
 
   return (
     <section id={id} className="relative overflow-hidden pb-16 md:pb-24">
@@ -108,7 +111,9 @@ export function Hero({
               <a
                 key={l.href}
                 href={l.href}
-                className="hidden px-3 py-3 text-[14px] font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] md:inline-block lg:text-[16px]"
+                className={`px-3 py-3 text-[14px] font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] md:inline-block lg:text-[16px] ${
+                  l.href === enlacePlanes ? 'inline-flex h-11 items-center' : 'hidden'
+                }`}
               >
                 {l.label}
               </a>

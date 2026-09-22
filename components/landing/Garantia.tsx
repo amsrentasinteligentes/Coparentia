@@ -36,7 +36,7 @@ export function Garantia({ nombre, condicionMarked, pisoLegal, icon: Icono = Shi
         initial="hidden"
         whileInView="visible"
         viewport={VIEWPORT_ONCE}
-        className="mx-auto max-w-[560px]"
+        className="mx-auto max-w-[560px] lg:max-w-[760px]"
       >
         <motion.div variants={item}>
           {/* La card de garantía: uno de los 1-3 usos de hairline permitidos por vista */}
