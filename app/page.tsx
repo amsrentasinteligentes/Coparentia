@@ -167,15 +167,15 @@ export default function Home() {
         }}
         anual={{
           nombre: 'Anual',
-          badge: '3 MESES GRATIS',
+          badge: 'AHORRAS US$30.88 AL AÑO',
           precioMes: 'US$7.42',
           totalAnual: 'Se cobra US$89 al año',
           ctaLabel: 'Crear mi expediente gratis',
           ctaHref: '/onboarding?plan=anual',
           features: [
             'Sello de Confianza en cada comprobante',
-            'Expediente exportable en PDF foliado',
-            'Registro de autorizaciones y controversias',
+            'Expediente en PDF, con cada página numerada',
+            'Autorizaciones y desacuerdos, por escrito',
             'Alertas de vencimiento y soporte faltante',
             'Garantía del Primer Expediente (15 días)',
           ],

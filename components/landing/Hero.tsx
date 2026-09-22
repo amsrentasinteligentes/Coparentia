@@ -16,7 +16,7 @@
 import type { ReactNode } from 'react';
 import { motion } from 'motion/react';
 import { Camera } from 'lucide-react';
-import { Blob, CheckCustom, CtaButton } from './ui';
+import { Blob, CheckCustom, CtaButton, useReveal } from './ui';
 import { MarkedCopy, truncarMarcado, warnCopy } from './MarkedCopy';
 
 export interface EnlaceNav {
@@ -77,6 +77,7 @@ export function Hero({
   visualPlaceholderSugerencia = 'captura de la pantalla principal con datos reales',
   id = 'hero',
 }: HeroProps) {
+  const { contenedor, item } = useReveal();
   warnCopy('Hero → h1', h1Marked, 10);
   warnCopy('Hero → subtítulo', subtitleMarked, 14);
   const subtitulo = truncarMarcado(subtitleMarked, 14);
@@ -130,34 +131,34 @@ export function Hero({
             tres apps del nicho). En celular: pila centrada, la escena debajo del CTA.
             Carga inmediata: fade simple 300ms — el LCP manda (55 T4). */}
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.3 }}
+          variants={contenedor}
+          initial="hidden"
+          animate="visible"
           className="mx-auto flex max-w-[820px] flex-col items-center pt-8 text-center md:pt-14 lg:mx-0 lg:grid lg:max-w-none lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:gap-12 lg:pt-10 lg:text-left"
         >
           <div className="flex flex-col items-center lg:items-start">
             {/* H1: bold completo por defecto; el acento lo pone el [acento] del copy */}
-            <h1 className="text-balance text-[34px] font-extrabold leading-[1.08] tracking-[-0.02em] text-[var(--text-primary)] [font-family:var(--font-display)] md:text-[56px] lg:text-[64px] 2xl:text-[70px]">
+            <motion.h1 variants={item} className="text-balance text-[34px] font-extrabold leading-[1.08] tracking-[-0.02em] text-[var(--text-primary)] [font-family:var(--font-display)] md:text-[56px] lg:text-[64px] 2xl:text-[70px]">
               <MarkedCopy text={h1Marked} />
-            </h1>
+            </motion.h1>
 
-            <p className="mt-5 max-w-[600px] text-[17px] leading-relaxed text-[var(--text-secondary)] md:text-[18px] lg:text-[21px]">
+            <motion.p variants={item} className="mt-5 max-w-[600px] text-[17px] leading-relaxed text-[var(--text-secondary)] md:text-[18px] lg:text-[21px]">
               <MarkedCopy text={subtitulo} />
-            </p>
+            </motion.p>
 
-            <div className="mt-7 w-full sm:w-auto">
+            <motion.div variants={item} className="mt-7 w-full sm:w-auto">
               <CtaButton href={ctaHref} alto={56}>{ctaLabel}</CtaButton>
-            </div>
+            </motion.div>
 
             {/* Franja de prueba social: 8-12px bajo el CTA — SOLO números reales */}
             {socialProof && (
-              <div className="mt-3 text-[13px] text-[var(--text-secondary)] lg:text-[15px]">{socialProof}</div>
+              <motion.div variants={item} className="mt-3 text-[13px] text-[var(--text-secondary)] lg:text-[15px]">{socialProof}</motion.div>
             )}
           </div>
 
           {/* LA ESCENA: forma orgánica + foto + captura + burbuja. Alto fijo por breakpoint para
               que no haya salto de layout (CLS 0) mientras cargan las imágenes. */}
-          <div className="relative mt-10 h-[340px] w-full max-w-[420px] sm:h-[400px] lg:mt-0 lg:h-[540px] lg:max-w-none lg:justify-self-end">
+          <motion.div variants={item} className="relative mt-10 h-[340px] w-full max-w-[420px] sm:h-[400px] lg:mt-0 lg:h-[540px] lg:max-w-none lg:justify-self-end">
             <Blob className="-right-10 -top-6 h-[92%] w-[88%]" opacidad={0.14} />
             {foto && (
               <div className="absolute right-0 top-0 h-[66%] w-[74%] overflow-hidden blob shadow-[var(--shadow-2)]">
@@ -196,21 +197,27 @@ export function Hero({
                 </p>
               </div>
             )}
-          </div>
+          </motion.div>
         </motion.div>
 
         {pilares.length > 0 && (
-          <ul className="mx-auto mt-10 grid max-w-[820px] grid-cols-1 gap-3 sm:grid-cols-3 lg:mx-0 lg:max-w-none">
+          <motion.ul
+            variants={contenedor}
+            initial="hidden"
+            animate="visible"
+            className="mx-auto mt-10 grid max-w-[820px] grid-cols-1 gap-3 sm:grid-cols-3 lg:mx-0 lg:max-w-none"
+          >
             {pilares.slice(0, 3).map((p) => (
-              <li
+              <motion.li
+                variants={item}
                 key={p}
                 className="flex items-center gap-3 rounded-[var(--radius-button)] bg-[var(--surface)] px-5 py-4 text-[15px] font-semibold text-[var(--text-primary)] shadow-[var(--shadow-1)] lg:py-5 lg:text-[17px]"
               >
                 <CheckCustom />
                 {p}
-              </li>
+              </motion.li>
             ))}
-          </ul>
+          </motion.ul>
         )}
       </div>
     </section>

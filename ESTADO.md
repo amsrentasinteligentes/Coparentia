@@ -1,3 +1,18 @@
+### Checkpoint (2026-09-22, noche) — PÁGINA DE VENTAS: ronda 5 y 6 (opción 1 elegida por el usuario)
+El usuario pidió "arreglar lo barato y volver a medir", SIN tocar logo ni isotipo. Hecho:
+- r5 (aplicado y medido): badge del anual "3 MESES GRATIS" → "AHORRAS US$30.88 AL AÑO" (quitaba la
+  confusión 3 meses vs 7 días y el tercer "gratis"); --accent-ink en textos ≤17px de acento (ahorro
+  del anual, números de paso de Solución) por contraste AA; capturas rehechas recorriendo la página
+  con scroll (antes secciones enteras salían en blanco por el reveal). **veredicto:landing subió de
+  31/40 a 35/40 · 16/20 craft · 16/20 copy** (NO LISTA por 1 punto).
+- r6 (aplicado, pendiente de re-medir): fuera la jerga "PDF foliado" y "autorizaciones y
+  controversias"; el hero entra escalonado (useReveal 0.07) como el resto de la página.
+PENDIENTE DEL USUARIO (bloquea la r6): (a) ¿Hotmart pide tarjeta para empezar la prueba de 7 días?
+—la página no lo aclara y es la duda #1 antes de pagar—; (b) qué hacer con la sección "Para abogados"
+(dejar / reducir a enlace / mover a página aparte). Y sin TESTIMONIOS reales (Ivonne o primeros
+clientes) el revisor no sube de ahí: es su defecto #2 y no se inventan.
+Gates veredicto:onboarding / veredicto:paywall: LISTA (36/40), el aviso es por mtime de otros .tsx.
+
 ### Checkpoint (2026-09-22, tarde) — CONSTANCIAS POR HIJO (pedido del usuario)
 El usuario pidió UN CORREO POR CADA HIJO en vez de uno general. Hecho y publicado (be7effb), con
 supabase/constancias-por-hijo.sql EJECUTADO por él (hijo_id en constancias + índice único por

@@ -104,7 +104,7 @@ export function Solucion({
             <motion.li key={i} variants={item} className="flex items-start gap-4 md:flex-col">
               <span
                 aria-hidden="true"
-                className="flex size-11 shrink-0 items-center justify-center rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--accent)_22%,transparent)] bg-[var(--chip-bg)] text-[17px] font-bold tabular-nums text-[var(--accent)] lg:text-[19px]"
+                className="flex size-11 shrink-0 items-center justify-center rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--accent)_22%,transparent)] bg-[var(--chip-bg)] text-[17px] font-bold tabular-nums text-[var(--accent-ink,var(--accent))] lg:text-[19px]"
               >
                 {String(i + 1).padStart(2, '0')}
               </span>

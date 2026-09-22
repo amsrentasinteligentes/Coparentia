@@ -162,7 +162,7 @@ export function Oferta({
                   <p className="mt-0.5 text-[12px] text-[var(--text-tertiary)] lg:text-[13px]">
                     Se cobra al terminar la prueba{refCopAnual ? ` · ${refCopAnual}` : ''}
                   </p>
-                  {anual.ahorro && <p className="mt-2 text-[15px] font-semibold text-[var(--accent)] lg:text-[17px]">{anual.ahorro}</p>}
+                  {anual.ahorro && <p className="mt-2 text-[15px] font-semibold text-[var(--accent-ink,var(--accent))] lg:text-[17px]">{anual.ahorro}</p>}
                 </div>
                 <Features items={anual.features} origen="Oferta → anual" />
                 <div className="mt-6">

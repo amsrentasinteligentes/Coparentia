@@ -1,15 +1,43 @@
-# VEREDICTO revisor-visual — landing (variante CLARA "Cuidado en calma", ronda 4 — fotos reales, commit 9623d9f)
-Histórico: oscura r-antigua 37·17·18 · r4 34·15·17 · r5 32·15·15 · r6 33·16·16 · clara r1 33·14·17 · r2 33·15·17 · r3 33·16·17 · r4 31·16·16
-Fecha: 2026-09-17 23:50
+# VEREDICTO revisor-visual — landing (variante CLARA "Cuidado en calma", ronda 5 — capturas con reveal disparado)
+Histórico: oscura r-antigua 37·17·18 · r4 34·15·17 · r5 32·15·15 · r6 33·16·16 · clara r1 33·14·17 · r2 33·15·17 · r3 33·16·17 · r4 31·16·16 · r5 35·16·16
+Fecha: 2026-09-22 00:00
 Screenshot: docs/revisiones/landing-375.png
-Usabilidad: 31/40
+Usabilidad: 35/40
 Craft: 16/20
 Copy (si vende): 16/20
 Fidelidad (si hubo referencia): FIEL
 Veredicto: NO LISTA
+
+Detalle usabilidad: h1:3 h2:3 h3:4 h4:4 h5:3 h6:4 h7:4 h8:3 h9:3 h10:4
+Detalle craft: jerarquía:3 profundidad:4 identidad:3 movimiento:3 encaje:3
+Detalle copy: idea:3 especificidad:3 emoción:3 oferta:4 acción:3
+
+Verificado de la r4: (1) badge "AHORRAS US$30.88 AL AÑO" — aritmética correcta (12×9.99−89) y una sola
+mención de "gratis" por tarjeta ✓ (app/page.tsx:170 · Oferta.tsx:161-165). (2) --accent-ink #2757A8
+(6.5:1) en kickers, ahorro anual y números de paso ✓ (tokens-claro.css:37 · Solucion.tsx:107 ·
+ui.tsx:90,313). (3) foto de Solución reencuadrada + velo cálido ✓ (app/page.tsx:114-118). (4) bullets
+y CTA del plan mensual sin repeticiones ✓ (app/page.tsx:190-195). (5) CERO secciones en opacity 0 en
+ambos anchos ✓. CTA héroe: los 4 anclas pasan (4.4:1 sobre --bg, whileTap 0.97 + aria-busy, nunca
+disabled, 56px ancho completo). Gate de conversión: titular con énfasis ✓ · 3 hairlines degradé ✓ ·
+chips SVG sin emojis ✓ · secciones alternadas con borde ✓.
+
 Top defectos:
-1. [Oferta → card Anual] Tres "gratis" y dos plazos distintos en la misma card: badge "3 MESES GRATIS" + "Tras los 7 días gratis · ≈ … COP" (Oferta.tsx:163) + CTA "Crear mi expediente gratis" — la confusión "3 meses vs 7 días" señalada en r3 sigue → línea 163: "Se cobra al terminar la prueba · ≈ … COP al año" (sin la palabra gratis).
-2. [Evidencia / secciones 5-7] En landing-375.png la sección "Tu expediente, siempre a mano" (AppPorDentro) es un hueco de ~1.250px en blanco; en landing-1440.png faltan AppPorDentro + Oferta + Garantía (~2.600px vacíos): el reveal whileInView (useReveal, opacity 0 inicial) no se dispara en la captura fullPage → recapturar tras recorrer la página con scroll (o fijar `initial={false}` en la captura); sin eso esas secciones no están verificadas.
-3. [Kickers 12px, chip "el Sello de Confianza" 15px, label "DESPUÉS" 12px, CTA outline de Abogados 17px] --accent #2F6FDC sobre --bg #F3F7FC mide 4.4:1 (medido; la ficha dice 4.5) — falla AA en texto pequeño de todas las secciones base (Solución, Oferta, FAQ, Abogados) → texto ≤17px en acento sobre --bg usa --accent-deep #2757A8 (6.5:1); mantener #2F6FDC para botones sólidos y palabras del H1/H2 (texto grande, 3:1 OK).
-4. [Solución → foto papá-hija] Encuadre corta la frente del papá y deja a la niña descentrada (object-[50%_40%] en un blob de 220px de alto a 375px); además la foto es oscura/fría frente al hero cálido y luminoso: dos tratamientos fotográficos en la misma página → object-[42%_28%] + un velo cálido uniforme (overlay del --foto-1 al 8-10% con mix-blend) o un recorte más abierto.
-5. [Oferta → card Mensual] Bullets 2 y 4 dicen lo mismo ("Cancelas cuando quieras, sin permanencia" / "Sin compromiso de 12 meses") y el CTA "Crear mi expediente · mensual" rompe el paralelismo con el Anual → fusionar en un bullet y reemplazar el 4º por un dato real ("Pagas mes a mes, US$9.99"); CTA "Empezar con el plan mensual".
+1. [Hero + Oferta + CTA final] "7 días gratis" nunca dice si piden tarjeta para empezar: es la
+   sorpresa #1 del checkout Hotmart y no está prevenida (app/page.tsx:73 y 243 · Oferta.tsx:173
+   "Incluye 7 días de prueba, sin cobro") → añadir el dato exacto en las 3 apariciones
+   ("Sin tarjeta para empezar" o "Pides la tarjeta hoy; el cobro entra el día 8").
+2. [Toda la página — copy eje 2] Cero prueba social en 10 secciones: ningún testimonio, ninguna
+   cifra de uso; el socialProof del hero (app/page.tsx:73) solo repite la garantía → agregar 2-3
+   testimonios reales con nombre+ciudad entre Garantía y FAQ, o declarar el vacío y compensar con
+   una demo en video del Sello de Confianza.
+3. [Oferta → features del plan Anual] Jerga que Carlos no usa: "PDF foliado" (app/page.tsx:177) y
+   "Registro de autorizaciones y controversias" (app/page.tsx:179) → "PDF con cada página numerada"
+   y "Autorizaciones y desacuerdos, por escrito".
+4. [Hero — eje movimiento] El bloque héroe entra con un único fade de 300ms de TODO el contenido
+   (Hero.tsx:132-136) mientras el resto de la página sí escalona: falta la baseline #1 en la
+   pantalla que más se ve → variants de useReveal (stagger 0.07) sobre h1 / subtítulo / CTA /
+   pilares, con reduced-motion ya resuelto en el hook.
+5. [Sección "Para abogados" tras el CTA final] Audiencia B2B (app/page.tsx:249) con su propio CTA
+   después del cierre emocional: rompe "una sola acción primaria" y es lo último que lee un padre
+   antes del footer → moverla a /para-abogados y dejar en el footer un enlace de una línea, o
+   comprimirla a 2 líneas + enlace de texto (sin CtaButton).
