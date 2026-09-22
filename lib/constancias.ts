@@ -16,6 +16,7 @@
 
 import { Resend } from 'resend';
 import type { SupabaseClient } from '@supabase/supabase-js';
+import { pdfConstancia } from '@/lib/pdf-constancia';
 
 const REMITENTE_AVISOS = 'Coparentia · Constancias <avisos@coparentia.co>';
 const URL_APP = 'https://coparentia.co';
@@ -158,7 +159,7 @@ function cuerpoHtml(resumen: ResumenConstancia, remitenteNombre: string, destina
         <p style="margin:4px 0 0;color:#14233a;font-size:26px;font-weight:700;">${pesos(resumen.totalRegistrado)}</p>
         <p style="margin:8px 0 0;color:#4b5c78;font-size:13px;">
           ${resumen.cuotas} ${resumen.cuotas === 1 ? 'cuota' : 'cuotas'} · ${resumen.gastosExtra} ${resumen.gastosExtra === 1 ? 'gasto extra' : 'gastos extra'}
-          ${resumen.contactos > 0 ? ` · ${resumen.contactos} ${resumen.contactos === 1 ? 'contacto' : 'contactos'} con ${resumen.hijos.length === 1 ? 'la niña o el niño' : 'los hijos'} (${resumen.contactosContestados} contestados)` : ''}
+          ${resumen.contactos > 0 ? ` · ${resumen.contactos} ${resumen.contactos === 1 ? 'contacto' : 'contactos'} con ${resumen.hijos.length === 1 ? 'la niña o el niño' : 'los hijos'} (${resumen.contactosContestados} ${resumen.contactosContestados === 1 ? 'contestado' : 'contestados'})` : ''}
         </p>
       </div>
 
@@ -175,8 +176,9 @@ function cuerpoHtml(resumen: ResumenConstancia, remitenteNombre: string, destina
       ${resumen.movimientos.length > 40 ? `<p style="color:#5b6d88;font-size:13px;margin:0 0 20px;">y ${resumen.movimientos.length - 40} movimientos más.</p>` : ''}
 
       <p style="color:#5b6d88;font-size:13px;line-height:1.6;margin:0 0 8px;">
-        Cada registro quedó guardado con su fecha y su soporte. Si necesitas el detalle completo con
-        los comprobantes, puedes pedírselo directamente a ${porQuien}.
+        Encuentras esta misma información en el <strong>PDF adjunto</strong> a este correo. Cada
+        registro quedó guardado con su fecha y su soporte; si necesitas el detalle con los
+        comprobantes, puedes pedírselo directamente a ${porQuien}.
       </p>
       <p style="color:#8494ab;font-size:12px;line-height:1.6;margin:16px 0 0;border-top:1px solid #e7eef8;padding-top:16px;">
         Esta constancia la generó <a href="${URL_APP}" style="color:#2757a8;">Coparentia</a>, la app que
@@ -210,6 +212,15 @@ export async function enviarConstancia(
   const resend = new Resend(key);
   let proveedorId: string | null = null;
   let estado: 'enviada' | 'fallida' = 'enviada';
+  // El PDF de la constancia viaja adjunto: la otra parte se queda con el documento, no solo con el
+  // correo (pedido del usuario 2026-09-22). Si fallara al generarse, el correo igual sale.
+  let adjunto: { filename: string; content: string }[] | undefined;
+  try {
+    const pdf = pdfConstancia(resumen, remitenteNombre, destinatarioNombre);
+    adjunto = [{ filename: pdf.nombreArchivo, content: pdf.base64 }];
+  } catch (e) {
+    console.error('constancias: no se pudo generar el PDF adjunto', e instanceof Error ? e.message : e);
+  }
   try {
     const { data, error } = await resend.emails.send({
       from: REMITENTE_AVISOS,
@@ -219,6 +230,7 @@ export async function enviarConstancia(
         ? `Constancia de gastos y aportes de ${resumen.hijoNombre} · ${resumen.periodoTexto}`
         : `Constancia de gastos y aportes · ${resumen.periodoTexto}`,
       html: cuerpoHtml(resumen, remitenteNombre, destinatarioNombre),
+      attachments: adjunto,
     });
     if (error) throw new Error(error.message);
     proveedorId = data?.id ?? null;
