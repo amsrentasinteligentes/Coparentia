@@ -1,3 +1,17 @@
+### Checkpoint (2026-09-22, tarde) — CONSTANCIAS POR HIJO (pedido del usuario)
+El usuario pidió UN CORREO POR CADA HIJO en vez de uno general. Hecho y publicado (be7effb), con
+supabase/constancias-por-hijo.sql EJECUTADO por él (hijo_id en constancias + índice único por
+usuario+período+hijo con coalesce). Reglas: la cuota alimentaria y los gastos sin hijo asignado son
+COMUNES y no se suman al total de ningún hijo — se mencionan en una línea aparte de cada correo para
+que no se cuenten dos veces; si ningún hijo tiene movimientos propios, sale UNA constancia general.
+Probado en producción: 2 correos ("Constancia de gastos y aportes de Isa / de Alejo · septiembre de
+2026") y el historial los muestra separados con hijo, fecha y hora; el PDF gana columna "Hijo/a".
+Asunto del correo y encabezado llevan el nombre del hijo. Nota: el correo de la otra parte sigue
+siendo el del propio usuario (prueba) — debe cambiarlo en Perfil antes de usarlo de verdad.
+Pendientes vivos: Google login; validación de Ivonne; texto de Términos sobre el derecho a comunicar;
+revisor-visual de la tarjeta de constancias (secundaria); registros de prueba de contacto (NO borrar
+sin su OK — ver la regla del usuario arriba).
+
 ## REGLA DEL USUARIO (2026-09-22) — NUNCA borrar ni alterar datos sin consultar
 El usuario lo pidió explícitamente tras un borrado no consultado (el hijo de prueba "Alejo", que hubo
 que recrear): **antes de borrar, sobrescribir o modificar CUALQUIER dato suyo** —filas en Supabase,
