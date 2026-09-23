@@ -142,6 +142,8 @@ export function Solucion({
     el.currentTime = Math.max(INICIO, segundosDe(marca));
     void el.play();
     setPausado(false);
+    // En celular el video va ARRIBA de los pasos: sin esto el salto ocurría fuera de pantalla.
+    el.scrollIntoView({ block: 'center', behavior: 'smooth' });
   };
 
   return (
@@ -178,7 +180,7 @@ export function Solucion({
             en 3 columnas, como en el resto del kit. */}
         {demo ? (
           <div className="mt-10 lg:grid lg:grid-cols-[0.95fr_1.05fr] lg:items-center lg:gap-16">
-            <motion.div variants={item} className="flex justify-center lg:order-2">
+            <motion.div variants={item} className="flex flex-col items-center lg:order-2">
               <Hairline emphasis surface="surface" className="relative w-full max-w-[260px] p-2 shadow-[var(--shadow-2)] lg:max-w-[320px]">
                 <video
                   ref={ref}
@@ -216,29 +218,31 @@ export function Solucion({
                   </button>
                 )}
 
-                {/* Mando propio: los controles del navegador montaban su barra negra encima de la
-                    navegación de la app grabada. Dos botones bastan — pausar y volver a empezar. */}
-                {yaArranco && (
-                  <div className="absolute right-4 top-4 flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={alternarPausa}
-                      aria-label={pausado ? 'Reanudar la demostración' : 'Pausar la demostración'}
-                      className="flex size-9 items-center justify-center rounded-full bg-[color-mix(in_oklab,var(--text-primary)_72%,transparent)] text-[var(--on-accent)] backdrop-blur transition-transform active:scale-95"
-                    >
-                      {pausado ? <Play size={15} fill="currentColor" aria-hidden="true" /> : <Pause size={15} fill="currentColor" aria-hidden="true" />}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={alTerminar}
-                      aria-label="Volver a empezar la demostración"
-                      className="flex size-9 items-center justify-center rounded-full bg-[color-mix(in_oklab,var(--text-primary)_72%,transparent)] text-[var(--on-accent)] backdrop-blur transition-transform active:scale-95"
-                    >
-                      <RotateCcw size={15} aria-hidden="true" />
-                    </button>
-                  </div>
-                )}
               </Hairline>
+
+              {/* Mando propio: los controles del navegador montaban su barra negra sobre la
+                  navegación de la app grabada, y encima del cuadro tapaban contenido. Van fuera
+                  del teléfono, con 44px de área táctil. */}
+              {yaArranco && (
+                <div className="mt-4 flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={alternarPausa}
+                    aria-label={pausado ? 'Reanudar la demostración' : 'Pausar la demostración'}
+                    className="flex size-11 items-center justify-center rounded-full border border-[color-mix(in_oklab,var(--accent)_22%,transparent)] bg-[var(--chip-bg)] text-[var(--accent-ink,var(--accent))] transition-transform active:scale-95 [touch-action:manipulation]"
+                  >
+                    {pausado ? <Play size={16} fill="currentColor" aria-hidden="true" /> : <Pause size={16} fill="currentColor" aria-hidden="true" />}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={alTerminar}
+                    aria-label="Volver a empezar la demostración"
+                    className="flex size-11 items-center justify-center rounded-full border border-[color-mix(in_oklab,var(--accent)_22%,transparent)] bg-[var(--chip-bg)] text-[var(--accent-ink,var(--accent))] transition-transform active:scale-95 [touch-action:manipulation]"
+                  >
+                    <RotateCcw size={16} aria-hidden="true" />
+                  </button>
+                </div>
+              )}
             </motion.div>
 
             <ol className="mt-8 flex flex-col gap-6 lg:order-1 lg:mt-0">
@@ -258,7 +262,7 @@ export function Solucion({
                           type="button"
                           onClick={() => irA(p.marca as string)}
                           aria-label={`Ver este paso en el video, en el segundo ${p.marca}`}
-                          className="rounded-[var(--radius-button)] px-2 py-1 text-[12px] font-bold tabular-nums text-[var(--accent-ink,var(--accent))] underline decoration-[color-mix(in_oklab,var(--accent)_45%,transparent)] underline-offset-2 transition-colors hover:bg-[var(--chip-bg)] lg:text-[13px]"
+                          className="-my-3 inline-flex min-h-11 items-center rounded-[var(--radius-button)] px-2 text-[12px] font-bold tabular-nums text-[var(--accent-ink,var(--accent))] underline decoration-[color-mix(in_oklab,var(--accent)_45%,transparent)] underline-offset-2 transition-colors hover:bg-[var(--chip-bg)] lg:text-[13px]"
                         >
                           {p.marca}
                         </button>

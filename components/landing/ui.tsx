@@ -308,6 +308,7 @@ export function CtaButton({
       href={href}
       onClick={() => setYendo(true)}
       aria-busy={yendo || undefined}
+      data-cta-pagina=""
       className={`inline-flex items-center justify-center rounded-[var(--radius-button)] px-8 text-[17px] font-semibold transition-[colors,opacity] lg:px-10 lg:text-[18px] duration-150 [touch-action:manipulation] ${yendo ? 'opacity-80' : ''} ${
         variant === 'outline'
           ? 'border border-[color-mix(in_oklab,var(--accent)_45%,transparent)] text-[var(--accent-ink)] hover:bg-[var(--chip-bg)]'
@@ -348,6 +349,7 @@ export function StickyCtaMobile({
   // el PRÓXIMO hito de scroll (entra/sale de hero, oferta o cta-final), nunca la esconde para
   // siempre: si el usuario sigue navegando, la barra vuelve a ofrecer ayuda cuando haga falta.
   const [descartada, setDescartada] = useState(false);
+  const [ctaEnPantalla, setCtaEnPantalla] = useState(false);
   const ultimoHito = useRef({ heroVisible, ofertaVisible, finalVisible });
 
   useEffect(() => {
@@ -381,14 +383,27 @@ export function StickyCtaMobile({
       if (v) setOfertaVista(true);
     });
     const c = observar(ctaFinalId, setFinalVisible);
+
+    const botones = Array.from(document.querySelectorAll('[data-cta-pagina]'));
+    const alaVista = new Set<Element>();
+    const ioCtas = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => (e.isIntersecting ? alaVista.add(e.target) : alaVista.delete(e.target)));
+        setCtaEnPantalla(alaVista.size > 0);
+      },
+      { threshold: 0.1 }
+    );
+    botones.forEach((el) => ioCtas.observe(el));
+
     return () => {
       a?.disconnect();
       b?.disconnect();
       c?.disconnect();
+      ioCtas.disconnect();
     };
   }, [heroId, ofertaId, ctaFinalId]);
 
-  const visible = !heroVisible && !ofertaVisible && !finalVisible && !descartada;
+  const visible = !heroVisible && !ofertaVisible && !finalVisible && !ctaEnPantalla && !descartada;
 
   return (
     <AnimatePresence>
