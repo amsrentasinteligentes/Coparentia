@@ -21,7 +21,6 @@ import { Solucion } from '@/components/landing/Solucion';
 import { AppPorDentro } from '@/components/landing/AppPorDentro';
 import { Oferta } from '@/components/landing/Oferta';
 import { Garantia } from '@/components/landing/Garantia';
-import { DemoSello } from '@/components/landing/DemoSello';
 import { Faq } from '@/components/landing/Faq';
 import { CtaFinal } from '@/components/landing/CtaFinal';
 import { AnuncioAbogados } from '@/components/landing/AnuncioAbogados';
@@ -119,27 +118,17 @@ export default function Home() {
       {/* 4. SOLUCIÓN */}
       <Solucion
         id="como-funciona"
-        foto={
-          <span className="relative block h-full w-full">
-            <img src="/fotos/solucion-papa-hija.jpg" alt="Papá e hija riendo juntos" className="h-full w-full object-cover object-[42%_28%]" width={1200} height={800} loading="lazy" />
-            {/* Velo cálido tenue: la foto es más fría que la del hero y sin él parecían dos tratamientos. */}
-            <span aria-hidden="true" className="absolute inset-0 bg-[var(--foto-1)] opacity-10 mix-blend-multiply" />
-          </span>
-        }
         tituloMarked="Tu prueba, [acento]lista antes de que te pidan[/acento]"
         mecanismo="el Sello de Confianza"
-        bigIdeaMarked="No es que no pagues — es que no tienes cómo [b]probarlo[/b]. El Sello de Confianza convierte cada comprobante en una prueba fechada y organizada."
+        bigIdeaMarked="No es que no pagues — es que no tienes cómo [b]probarlo[/b]. Míralo aquí: un comprobante entra y sale convertido en prueba fechada."
         pasos={[
-          { titulo: 'Subes tu comprobante', detalle: 'Foto o PDF, directo desde tu teléfono.' },
-          { titulo: 'El Sello lo confirma', detalle: 'Lo lee, lo fecha y lo asocia al gasto correcto.' },
-          { titulo: 'Queda en tu expediente', detalle: 'Listo para exportar cuando lo necesites.' },
+          { titulo: 'Subes tu comprobante', marca: '0:03', detalle: 'Foto o PDF, directo desde tu teléfono.' },
+          { titulo: 'El Sello lo confirma', marca: '0:10', detalle: 'Lo lee, lo fecha y lo asocia al gasto correcto.' },
+          { titulo: 'Queda en tu expediente', marca: '0:17', detalle: 'Listo para exportar cuando lo necesites.' },
         ]}
-        antesDespues={{
-          labelAntes: 'Antes',
-          antes: 'Capturas perdidas en el chat y ningún orden.',
-          labelDespues: 'Después',
-          despues: 'Un expediente exportable, con fecha y soporte, listo en segundos.',
-        }}
+        demo={{ video: '/demo/demo-sello', pie: 'Grabado de la app real, con datos de ejemplo.' }}
+        ctaLabel={CTA_LABEL}
+        ctaHref={CTA_HREF}
       />
 
       {/* 5. LA APP POR DENTRO */}
@@ -208,22 +197,6 @@ export default function Home() {
         nombre="Garantía del Primer Expediente"
         condicionMarked="Si en 15 días no tienes tu primer comprobante organizado y listo para exportar, escribes un correo y [b]te devolvemos todo[/b]. Sin preguntas."
         pisoLegal="Respaldada por la garantía Hotmart de 15 días"
-      />
-
-      {/* 7B. EL MECANISMO EN ACCIÓN — la página contaba el Sello; ahora lo muestra funcionando
-          (grabación real de la app con datos de ejemplo, nunca de un cliente). */}
-      <DemoSello
-        id="demo"
-        tituloMarked="Mira el [acento]Sello de Confianza[/acento] en acción"
-        subtitulo="Esto es la app de verdad: un comprobante entra, queda fechado y sale en tu expediente listo para mostrar."
-        pasos={[
-          '0:03 · La foto del comprobante entra y el monto se llena solo.',
-          '0:10 · El Sello lo fecha: "queda fechado el 23 de septiembre".',
-          '0:17 · Sale el PDF, con las partes, los totales y cada gasto.',
-        ]}
-        video="/demo/demo-sello"
-        ctaLabel={CTA_LABEL}
-        ctaHref={CTA_HREF}
       />
 
       {/* 8. FAQ */}

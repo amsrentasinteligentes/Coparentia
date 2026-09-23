@@ -39,7 +39,7 @@ export function Faq({ kicker = 'PREGUNTAS', titulo = 'Lo que quizá te estás pr
   const baseId = useId();
 
   return (
-    <SectionShell id={id} elevacion="elevada" ariaLabel="Preguntas frecuentes">
+    <SectionShell id={id} elevacion="base" ariaLabel="Preguntas frecuentes">
       <motion.div
         variants={contenedor}
         initial="hidden"
