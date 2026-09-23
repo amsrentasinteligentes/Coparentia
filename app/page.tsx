@@ -222,6 +222,8 @@ export default function Home() {
           '0:17 · Sale el PDF, con las partes, los totales y cada gasto.',
         ]}
         video="/demo/demo-sello"
+        ctaLabel={CTA_LABEL}
+        ctaHref={CTA_HREF}
       />
 
       {/* 8. FAQ */}

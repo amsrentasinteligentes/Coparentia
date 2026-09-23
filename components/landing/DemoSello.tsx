@@ -14,7 +14,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion, useReducedMotion } from 'motion/react';
 import { Loader2, Play, ShieldCheck } from 'lucide-react';
-import { Hairline, Kicker, SectionShell, useReveal, VIEWPORT_ONCE } from './ui';
+import { CtaButton, Hairline, Kicker, SectionShell, useReveal, VIEWPORT_ONCE } from './ui';
 import { MarkedCopy } from './MarkedCopy';
 
 export interface DemoSelloProps {
@@ -25,9 +25,11 @@ export interface DemoSelloProps {
   pasos: string[];
   /** Ruta del video sin extensión: se sirven .mp4 y .webm, más el póster .jpg */
   video: string;
+  ctaLabel?: string;
+  ctaHref?: string;
 }
 
-export function DemoSello({ id, tituloMarked, subtitulo, pasos, video }: DemoSelloProps) {
+export function DemoSello({ id, tituloMarked, subtitulo, pasos, video, ctaLabel, ctaHref }: DemoSelloProps) {
   const { contenedor, item } = useReveal();
   const reduce = useReducedMotion() ?? false;
   const ref = useRef<HTMLVideoElement>(null);
@@ -59,7 +61,7 @@ export function DemoSello({ id, tituloMarked, subtitulo, pasos, video }: DemoSel
   };
 
   return (
-    <SectionShell id={id} elevacion="elevada" ariaLabel="El Sello de Confianza en acción">
+    <SectionShell id={id} elevacion="base" ariaLabel="El Sello de Confianza en acción">
       <motion.div variants={contenedor} initial="hidden" whileInView="visible" viewport={VIEWPORT_ONCE} className="mx-auto max-w-[1140px]">
         <div className="lg:grid lg:grid-cols-[0.9fr_1.1fr] lg:items-center lg:gap-16">
           <motion.div variants={item} className="text-center lg:text-left">
@@ -79,6 +81,12 @@ export function DemoSello({ id, tituloMarked, subtitulo, pasos, video }: DemoSel
                 </li>
               ))}
             </ol>
+
+            {ctaLabel && ctaHref && (
+              <div className="mt-8 w-full sm:w-auto">
+                <CtaButton href={ctaHref} fullMobile>{ctaLabel}</CtaButton>
+              </div>
+            )}
 
             <p className="mt-6 flex items-center justify-center gap-2 text-[13px] text-[var(--text-tertiary)] lg:justify-start lg:text-[14px]">
               <ShieldCheck size={15} className="shrink-0 text-[var(--accent-ink,var(--accent))]" aria-hidden="true" />
@@ -113,7 +121,7 @@ export function DemoSello({ id, tituloMarked, subtitulo, pasos, video }: DemoSel
                   type="button"
                   onClick={reproducir}
                   aria-label="Ver la demostración"
-                  className="absolute inset-2 flex items-center justify-center rounded-[calc(var(--radius-card)-6px)] bg-[color-mix(in_oklab,var(--text-primary)_18%,transparent)] [touch-action:manipulation]"
+                  className="absolute inset-x-2 top-2 bottom-12 flex items-center justify-center rounded-t-[calc(var(--radius-card)-6px)] bg-[color-mix(in_oklab,var(--text-primary)_10%,transparent)] [touch-action:manipulation]"
                 >
                   <span className="flex size-14 items-center justify-center rounded-full bg-[var(--accent)] text-[var(--on-accent)] shadow-[0_8px_30px_color-mix(in_oklab,var(--accent)_45%,transparent)]">
                     {cargando ? (
