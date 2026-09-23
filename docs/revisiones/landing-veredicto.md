@@ -1,73 +1,100 @@
-# VEREDICTO revisor-visual — landing (variante CLARA "Cuidado en calma", ronda 9)
-Histórico: oscura r-antigua 37·17·18 · r4 34·15·17 · r5 32·15·15 · r6 33·16·16 · clara r1 33·14·17 · r2 33·15·17 · r3 33·16·17 · r4 31·16·16 · r5 35·16·16 · r6 35·17·16 · r7 37·17·17 · r8 36·16·18 · r9 38·16·18
-Fecha: 2026-09-23 13:05
+# VEREDICTO revisor-visual — landing (variante CLARA "Cuidado en calma", RONDA 10.1)
+Histórico: oscura r-antigua 37·17·18 · r4 34·15·17 · r5 32·15·15 · r6 33·16·16 · clara r1 33·14·17 · r2 33·15·17 · r3 33·16·17 · r4 31·16·16 · r5 35·16·16 · r6 35·17·16 · r7 37·17·17 · r8 36·16·18 · r9 38·16·18 · r10 38·16·18 · **r10.1 38·16·18**
+Fecha: 2026-09-23 19:20
 Screenshot: docs/revisiones/landing-375.png
 Usabilidad: 38/40
 Craft: 16/20
 Copy (si vende): 18/20
-Fidelidad (si hubo referencia): FIEL
+Fidelidad (si hubo referencia): N-A
 Veredicto: LISTA
 
 Detalle usabilidad: h1:4 h2:4 h3:4 h4:4 h5:4 h6:4 h7:4 h8:3 h9:3 h10:4
 Detalle craft: jerarquía:3 profundidad:3 identidad:3 movimiento:4 encaje:3
 Detalle copy: idea:4 especificidad:3 emoción:4 oferta:4 acción:3
 
-## Las 5 correcciones de la r8 — verificadas una por una
-1. `controls` SIEMPRE en el video (DemoSello.tsx:102) y `setReproduciendo(false)` en la rama `else`
-   del observer (DemoSello.tsx:47) ✓ → h3 3→4 (el visitante puede pausar, rebobinar y repetir el
-   cuadro del Sello; el overlay de play vuelve al salir de pantalla).
-2. Póster nuevo verificado en el archivo real (public/demo/demo-sello-poster.jpg): es el cuadro
-   "Sello de Confianza aplicado · Queda fechado el 23 de septiembre de 2026", con escudo acento y
-   fecha legible a 300px ✓. Ya NO repite la pantalla de Inicio del hero (defecto 2 de r8, cerrado).
-3. `elevacion="elevada"` en la demo (DemoSello.tsx:62) ✓ — pero el choque de planos se MOVIÓ, no se
-   resolvió: ahora Garantía (elevada, Garantia.tsx:33) y la demo quedan en el mismo plano (defecto 1).
-4. Los 3 pasos son marcas de tiempo con dato nuevo (app/page.tsx:220-222: monto que se llena solo,
-   fecha literal, PDF con partes y totales) ✓ — cero repetición de Solución.
-5. Indicador de carga: onWaiting/onPlaying + `Loader2` dentro del botón (DemoSello.tsx:100-101,
-   119-123) ✓ → h1 3→4.
+Gate doble: 38/40 ≥ 36 ✓ · 16/20 ≥ 16 ✓ · copy 18/20 ≥ 16 y ningún eje ≤2 ✓ → LISTA.
+Fidelidad: sin imagen de referencia-contrato del usuario para la variante clara (FICHA-ARTE
+§"Variante CLARA" registra referencia PARCIAL de estilo, no una captura a replicar) → N-A. Los
+valores VISIBLES sí se cotejaron con la ficha (azul #2F6FDC, radios 22/999, Figtree display +
+Nunito Sans body, blobs orgánicos): coinciden, cero desvío.
 
-## Verificaciones de código (no inventadas)
-- reduced-motion: `useReducedMotion` corta el observer (DemoSello.tsx:32,40) y el overlay no se
-  pinta (línea 111) — con los controles nativos siempre presentes, el usuario dispara el video ✓.
-- Movimiento (7 baseline): stagger `useReveal` ✓ · CountUp de precios ✓ · MiniRing dibujado ✓ ·
-  whileTap 0.97 (ui.tsx:306-311) ✓ · AnimatePresence del sticky ✓ · modales/acordeón suaves ✓ ·
-  celebración: N/A en landing.
-- CTA héroe (4 anclas): acento #2F6FDC ≥4.5:1 ✓ · whileTap + aria-busy ✓ · nunca disabled ✓ ·
-  56px de alto, ancho completo a 375 ✓.
-- Gate de conversión: titular con énfasis ✓ · hairlines degradé (2 `emphasis`: Oferta.tsx:150 y
-  DemoSello.tsx:91, dentro del máx 3) ✓ · chips SVG sin emojis en toda lista, incluidos los 3 pasos
-  de la demo ✓ · secciones con mesh + hairline de 1px ✓ salvo el par Garantía/demo (defecto 1).
-- Fidelidad FICHA-ARTE §"Variante CLARA": hex, radios 22/999/28 y Figtree+Nunito Sans coinciden en
-  375 y 1440 → FIEL.
-- Gate de carga cognitiva: 0 fallas nuevas.
+## r10.1 — los dos defectos aplicados, verificados uno por uno
+- **Defecto 2 de la r10 (dos mandos de play): CERRADO.** DemoSello.tsx:40 declara `yaArranco`,
+  DemoSello.tsx:112 lo pone en `true` dentro de `onPlaying`, y DemoSello.tsx:122 condiciona el
+  overlay a `!reproduciendo && !yaArranco && !reduce`. Tras la primera reproducción el botón grande
+  no vuelve — ni al pausar con los controles nativos ni al salir y reentrar en pantalla (el
+  observer solo toca `reproduciendo`, nunca `yaArranco`). En docs/revisiones/demo-sello-375.png, con
+  el video corriendo, hay 0 overlays sobre el cuadro. Queda 1 sola affordance de play por estado.
+- **Defecto 3 de la r10 (borde duro del velo): CERRADO en su mitad de "borde".** DemoSello.tsx:127
+  cambia el fill plano por `bg-gradient-to-b` 12% → 10% → transparent: el velo se desvanece hacia el
+  pie y ya no corta el cuadro con una línea horizontal.
+- **Mitad que sigue VIVA (respondiendo a la pregunta explícita): sí, el círculo queda descentrado.**
+  El botón conserva `inset-x-2 top-2 bottom-12` con `items-center`, así que su centro cae ~20px por
+  encima del centro óptico del video. Severidad BAJA: ese estado solo existe antes de la primera
+  reproducción y con `prefers-reduced-motion` ni se pinta. Sigue en la lista (defecto 4), no basta
+  para mover el eje de encaje.
 
-## No corregible hoy (decisión del usuario — no ocupa slot, sigue pesando en la nota)
-- Sin testimonios → copy especificidad 3 y copy acción 3 (techo mientras no haya clientes).
-- "Para abogados" después del cierre emocional → h8 = 3 (dos audiencias, dos acciones).
-- Logo/isotipo gris apagado sobre fondo claro → identidad = 3.
+## Lo demás de la r10, re-verificado (sin cambios de nota)
+- Alternancia de superficies: Problema(elevada, flush) → Agitación(elevada, flush: UN movimiento
+  visual) → Solución(base) → App por dentro(elevada) → Oferta(base) → Garantía(elevada) →
+  Demo(base) → FAQ(elevada) → CTA final(banda acento) → Abogados(elevada). 0 pares adyacentes con
+  la misma elevación fuera del par flush intencional ✓.
+- Velo al 10-12% y póster legible ✓ · CTA propio de la sección (DemoSello.tsx:88-92, mismo par
+  label/href del hero) ✓ · `controls` nativos siempre presentes y alcanzables ✓.
+- h3 control y libertad: controles del video + "x" del sticky (ui.tsx:410-417) + acordeón que cierra
+  (Faq.tsx:73) + cero acciones destructivas → 4.
+- h7 flexibilidad: nav de anclas · sticky en dos estados (ui.tsx:405-408) · plan por querystring
+  (`/onboarding?plan=anual|mensual`) · acordeón con button real, aria-expanded/aria-controls y
+  teclado → 4.
+- Movimiento (7 baseline): stagger `useReveal` ✓ · `CountUp` en los precios ✓ · `MiniRing` que se
+  dibuja ✓ · `whileTap 0.97` + duration-150 ✓ · `AnimatePresence` del sticky y carrusel ✓ ·
+  acordeón/modales 280ms ✓ · celebración N/A en landing · `useReducedMotion` en useReveal, MiniRing,
+  CountUp, sticky y DemoSello ✓ → eje 4.
+- CTA héroe vivo (4 anclas): #2F6FDC 4.7:1 sobre blanco ✓ · whileTap + `aria-busy` ✓ · nunca
+  `disabled` ✓ · 52-56px y ancho completo a 375 ✓.
+- Anclas de conversión: titular con énfasis ✓ · 2 hairlines `emphasis` (Oferta.tsx:150,
+  DemoSello.tsx:102), dentro del máx 3 ✓ · chips SVG Lucide en toda lista, cero emojis ✓ ·
+  secciones distinguibles por mesh + hairline + alternancia ✓ (con la reserva del defecto 2).
+- Gate de carga cognitiva: 8/8, cero fallas.
+- Copy trazado a FICHA-AVATAR: hero ← dolor ★1 + deseo ★5 · Problema ← dolores 1/3/4/5 · Agitación
+  ← costo de la inacción ($100 por correo de abogado) · FAQ ← objeciones 1-4 y 6 · garantía nombrada
+  ("Garantía del Primer Expediente", 15 días) junto al CTA de compra ✓. Message-match: sin dato de
+  creativo de origen, no evaluable (no penaliza).
 
-Top defectos:
-1. [components/landing/Garantia.tsx:33 + components/landing/DemoSello.tsx:62] Dos secciones
-   seguidas en `elevacion="elevada"`: garantía y demo se leen como un solo plano en
-   docs/revisiones/landing-1440.png (el choque de r8 se movió hacia arriba) → dejar la demo en
-   `base` y pasar Faq.tsx:42 a `elevada`, con lo que la cadena vuelve a alternar
-   elevada→base→elevada→acento (CtaFinal). Medible: 0 pares adyacentes con la misma elevación.
-2. [components/landing/DemoSello.tsx:111-126] El overlay de play ocupa `inset-2`, es decir tapa la
-   barra de controles nativa recién habilitada: mientras el video está pausado (estado inicial, o
-   tras salir y volver a entrar en pantalla) no se puede usar la línea de tiempo ni el volumen →
-   acotar el overlay a la zona superior (`absolute inset-2 bottom-12`) o dejar de pintarlo una vez
-   que el video se reprodujo al menos una vez. Medible: barra de controles clicable en todo estado.
-3. [app/page.tsx:215-225 (demo) vs app/page.tsx:143 (fin de Solución)] La única PRUEBA del mecanismo
-   llega en la posición 7B, después de precio y garantía: quien abandona en la oferta nunca la ve →
-   subir `<DemoSello>` justo después de `<Solucion>` (o dejar en Solución un ancla "Ver el Sello en
-   24 s" a `#demo`). Medible: la demo entra antes del bloque de precio.
-4. [components/landing/DemoSello.tsx:62-131] La sección de prueba no tiene CTA propio y en desktop
-   el sticky no existe (ui.tsx:322, solo mobile): tras el pico de convicción, a 1440px el botón más
-   cercano queda ~1.400px abajo → añadir el `PrimaryCta` de `CTA_LABEL` bajo los 3 pasos (mismo par
-   label/href del hero). Medible: 0 scroll entre el final del video y un botón visible.
-5. [components/landing/DemoSello.tsx:116 + public/demo/demo-sello-poster.jpg] El velo del overlay
-   (18% de `--text-primary`) sobre un póster ya lavado deja el marco en gris plano hasta que arranca
-   el video, justo el estado que ven autoplay bloqueado y reduced-motion → bajar el velo a ~10% o
-   aplicarlo solo en degradé desde el centro, para que "Sello de Confianza aplicado · 23 de
-   septiembre de 2026" se lea sin tocar nada. Medible: contraste del texto del póster ≥4.5:1 con el
-   velo puesto.
+## Riesgo menor anotado (no es defecto puntuable hoy)
+Con `yaArranco` en true, si una reproducción posterior fuera bloqueada por el navegador (p. ej. al
+volver por bfcache) ya no hay botón grande de rescate; la salida existe porque `controls` está
+siempre puesto. Vigilar si alguna vez se quitan los controles nativos.
+
+## Techos no corregibles hoy (decisión del dueño — pesan en la nota, no ocupan slot)
+- Sin testimonios ni cifra de clientes reales → copy especificidad 3 y copy acción 3.
+- "Para abogados" después del cierre emocional → h8 = 3.
+- Isotipo gris metálico sobre fondo claro → identidad = 3.
+
+## Nota de evidencia (método)
+El screenshot de página completa mide 10.102px de alto y solo pude verlo escalado; el juicio fino se
+apoyó en docs/revisiones/demo-sello-375.png (que muestra el video EN reproducción, no el estado
+pausado ni la sección completa) y en la lectura directa del código. Para la próxima ronda conviene
+una captura de la sección `#demo` completa en sus dos estados (pausado y reproduciendo).
+
+Top defectos (vivos, por severidad):
+1. [app/page.tsx:215-227 (demo) vs :163-204 (oferta)] ARRASTRE — la única PRUEBA del mecanismo sigue
+   después del precio y la garantía: quien abandona en la oferta nunca ve el Sello funcionando →
+   subir `<DemoSello>` tras `<Solucion>` o dejar un ancla "Ver el Sello en 24 s" → `#demo` en el
+   hero. Medible: la demo entra antes del bloque de precio. (Decisión del dueño, no aplicado.)
+2. [components/landing/ui.tsx:236-242, toda la página a 375px] La distinción base↔elevada es de ~4%
+   de luminancia (#F3F7FC vs #FFFFFF con mesh 12-16%): varias franjas se leen como un mismo plano
+   casi-blanco y el eje de profundidad queda en 3 → subir el mesh de `elevada` a 18-20% o dar a
+   `--surface-2` un escalón real. Medible: ΔL ≥ 6% entre secciones adyacentes. (No tocado en r10.1.)
+3. [components/landing/AnuncioAbogados.tsx:42, tras CtaFinal] "Para abogados" llega después del
+   cierre emocional y del PS: la página termina dos veces y con dos audiencias → moverla al footer o
+   a /abogados. Medible: 1 sola acción primaria desde el CTA final hasta el pie. (Decisión del
+   dueño, no aplicado.)
+4. [components/landing/DemoSello.tsx:127] El overlay sigue en `top-2 bottom-12` con `items-center`:
+   el círculo de play cae ~20px sobre el centro óptico del cuadro (solo en el estado previo a la
+   primera reproducción) → centrar sobre el alto real del video (`inset-2` + `pb-10` y centrado
+   vertical del contenido). Medible: centro del círculo = centro del cuadro ±4px.
+5. [docs/revisiones/demo-sello-375.png] La evidencia visual de la sección llega recortada (solo un
+   sliver del video en reproducción, sin el titular, los 3 pasos ni el estado pausado) → capturar
+   `#demo` completa en sus dos estados antes de la próxima revisión. Medible: la captura contiene
+   kicker, H2, los 3 pasos, el CTA y el teléfono entero.
