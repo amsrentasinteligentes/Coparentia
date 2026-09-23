@@ -21,6 +21,7 @@ import { Solucion } from '@/components/landing/Solucion';
 import { AppPorDentro } from '@/components/landing/AppPorDentro';
 import { Oferta } from '@/components/landing/Oferta';
 import { Garantia } from '@/components/landing/Garantia';
+import { DemoSello } from '@/components/landing/DemoSello';
 import { Faq } from '@/components/landing/Faq';
 import { CtaFinal } from '@/components/landing/CtaFinal';
 import { AnuncioAbogados } from '@/components/landing/AnuncioAbogados';
@@ -207,6 +208,20 @@ export default function Home() {
         nombre="Garantía del Primer Expediente"
         condicionMarked="Si en 15 días no tienes tu primer comprobante organizado y listo para exportar, escribes un correo y [b]te devolvemos todo[/b]. Sin preguntas."
         pisoLegal="Respaldada por la garantía Hotmart de 15 días"
+      />
+
+      {/* 7B. EL MECANISMO EN ACCIÓN — la página contaba el Sello; ahora lo muestra funcionando
+          (grabación real de la app con datos de ejemplo, nunca de un cliente). */}
+      <DemoSello
+        id="demo"
+        tituloMarked="Mira el [acento]Sello de Confianza[/acento] en acción"
+        subtitulo="Esto es la app de verdad: un comprobante entra, queda fechado y sale en tu expediente listo para mostrar."
+        pasos={[
+          'Registras el comprobante: una foto basta y el monto se completa solo.',
+          'El Sello lo fecha y lo asocia al gasto correcto.',
+          'Exportas tu expediente en PDF, con cada página numerada.',
+        ]}
+        video="/demo/demo-sello"
       />
 
       {/* 8. FAQ */}
