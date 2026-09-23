@@ -15,7 +15,10 @@
 - Se borraron los 4 registros de prueba que las tomas dejaron en la cuenta del usuario (autorizado).
 - AVISO de seguridad del día: un token de sesión temporal del dueño quedó en un log de pruebas; se le
   informó, expira en 1 h y se le dejó supabase/cerrar-sesiones.sql por si quiere invalidar sesiones.
-- Gates: veredicto:landing se re-lanza en esta sesión (r8) por la sección nueva; onboarding y paywall
+- Gates: **veredicto:landing** r8 = LISTA 36/40 · 16/20 · 17→18/20 (la demo subió el eje de copy);
+  aplicados sus 5 defectos (controles siempre, póster con el Sello, sección elevada, marcas de tiempo,
+  señal de carga) en 33f4e48 y **r9 lanzada** — si el aviso del gate aparece antes de que llegue su
+  veredicto, es porque el archivo todavía es el de la r8. onboarding y paywall
   siguen LISTA (36/40) con el aviso por mtime.
 
 ### Checkpoint (2026-09-22, cierre) — PÁGINA DE VENTAS: **LISTA** (37/40 · 17/20 · 17/20)
