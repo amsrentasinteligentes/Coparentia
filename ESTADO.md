@@ -1,3 +1,23 @@
+### Checkpoint (2026-09-23) — MINI-DEMO DEL SELLO en la página de ventas + cuenta de demostración
+- Cuenta **demo@coparentia.co** (datos INVENTADOS: Andrés, hijos Sofía y Martín, 5 comprobantes
+  dibujados, 3 contactos, cuota 450.000, creado_manualmente=true y consentimiento ya aceptado).
+  Script idempotente: scratchpad/demo/cuenta-demo.cjs. Sirve para videos y capturas sin exponer
+  datos reales. El usuario sabe que existe; se borra si lo pide.
+- Video grabado con Playwright sobre producción con esa cuenta (scratchpad/demo/grabar.cjs; sesión
+  inyectada por cookies @supabase/ssr — sesion.cjs — para no gastar correos): registrar comprobante →
+  OCR llena el monto → Sello de Confianza → Expediente → Exportar → PDF abierto en visor pdf.js.
+  Convertido con ffmpeg-static a public/demo/demo-sello.{mp4,webm} + póster (24 s, ~400 KB).
+- components/landing/DemoSello.tsx: sección "Mira el Sello de Confianza en acción" entre Garantía y
+  FAQ (autoplay al entrar en pantalla, pausa al salir, botón de play de respaldo, reduced-motion con
+  controles). Publicada en 4b7da04.
+- **Punto de retorno `antes-demo-sello` (commit 50cf3eb)**: el usuario pidió poder volver atrás
+  diciendo solo "elimina el video" → quitar sección + public/demo y republicar.
+- Se borraron los 4 registros de prueba que las tomas dejaron en la cuenta del usuario (autorizado).
+- AVISO de seguridad del día: un token de sesión temporal del dueño quedó en un log de pruebas; se le
+  informó, expira en 1 h y se le dejó supabase/cerrar-sesiones.sql por si quiere invalidar sesiones.
+- Gates: veredicto:landing se re-lanza en esta sesión (r8) por la sección nueva; onboarding y paywall
+  siguen LISTA (36/40) con el aviso por mtime.
+
 ### Checkpoint (2026-09-22, cierre) — PÁGINA DE VENTAS: **LISTA** (37/40 · 17/20 · 17/20)
 Primera vez que pasa el gate; venía de 31/40. Rondas r5→r7 del revisor-visual con capturas rehechas
 recorriendo la página (el reveal dejaba secciones en blanco y no se verificaban). Aplicado, publicado
