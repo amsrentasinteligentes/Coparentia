@@ -35,6 +35,9 @@ export function DemoSello({ id, tituloMarked, subtitulo, pasos, video, ctaLabel,
   const ref = useRef<HTMLVideoElement>(null);
   const [reproduciendo, setReproduciendo] = useState(false);
   const [cargando, setCargando] = useState(false);
+  // Una vez que el video arrancó, el botón grande no vuelve: los controles del propio video
+  // quedan como el único mando (dos plays a la vez confunden).
+  const [yaArranco, setYaArrancó] = useState(false);
 
   // Se reproduce al entrar en pantalla y se pausa al salir: nunca corre de fondo.
   useEffect(() => {
@@ -72,7 +75,7 @@ export function DemoSello({ id, tituloMarked, subtitulo, pasos, video, ctaLabel,
             <p className="mt-4 text-[16px] leading-relaxed text-[var(--text-secondary)] lg:text-[18px]">{subtitulo}</p>
 
             <ol className="mx-auto mt-6 flex max-w-[420px] flex-col gap-3 text-left lg:mx-0">
-              {pasos.map((paso, i) => (
+              {pasos.map((paso) => (
                 <li key={paso} className="flex items-start gap-3">
                   <span className="flex h-7 shrink-0 items-center justify-center rounded-[var(--radius-button)] bg-[var(--chip-bg)] px-2 text-[13px] font-bold tabular-nums text-[var(--accent-ink,var(--accent))]">
                     {paso.split(' · ')[0]}
@@ -106,7 +109,7 @@ export function DemoSello({ id, tituloMarked, subtitulo, pasos, video, ctaLabel,
                 playsInline
                 preload="none"
                 onWaiting={() => setCargando(true)}
-                onPlaying={() => { setCargando(false); setReproduciendo(true); }}
+                onPlaying={() => { setCargando(false); setReproduciendo(true); setYaArrancó(true); }}
                 controls
                 aria-label="Demostración: registrar un comprobante, el Sello de Confianza y el expediente en PDF"
               >
@@ -116,12 +119,12 @@ export function DemoSello({ id, tituloMarked, subtitulo, pasos, video, ctaLabel,
               </video>
 
               {/* Si el navegador bloquea la reproducción automática, el botón la dispara. */}
-              {!reproduciendo && !reduce && (
+              {!reproduciendo && !yaArranco && !reduce && (
                 <button
                   type="button"
                   onClick={reproducir}
                   aria-label="Ver la demostración"
-                  className="absolute inset-x-2 top-2 bottom-12 flex items-center justify-center rounded-t-[calc(var(--radius-card)-6px)] bg-[color-mix(in_oklab,var(--text-primary)_10%,transparent)] [touch-action:manipulation]"
+                  className="absolute inset-x-2 top-2 bottom-12 flex items-center justify-center rounded-t-[calc(var(--radius-card)-6px)] bg-gradient-to-b from-[color-mix(in_oklab,var(--text-primary)_12%,transparent)] via-[color-mix(in_oklab,var(--text-primary)_10%,transparent)] to-transparent [touch-action:manipulation]"
                 >
                   <span className="flex size-14 items-center justify-center rounded-full bg-[var(--accent)] text-[var(--on-accent)] shadow-[0_8px_30px_color-mix(in_oklab,var(--accent)_45%,transparent)]">
                     {cargando ? (
