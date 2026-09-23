@@ -1,3 +1,13 @@
+### Checkpoint (2026-09-23, cierre) — r9 de la landing aplicada (LISTA 38/40 · 16/20 · 18/20)
+- Veredicto r9 (docs/revisiones/landing-veredicto.md): **LISTA 38/40 · 16/20 · 18/20** — la mini-demo
+  subió usabilidad (36→38) y copy (17→18).
+- Aplicados y publicados en b4f271a: alternancia base/elevada (demo en base, FAQ en elevada), el
+  botón de play ya no tapa los controles del video (bottom-12) y su velo baja de 18% a 10%, y la
+  sección de la demo tiene su propio botón principal (CTA_LABEL/CTA_HREF).
+- **Pendiente de decisión del usuario (defecto 3 de la r9):** mover <DemoSello> justo después de
+  <Solucion> (o poner un ancla "Ver el Sello en 24 s" en el hero). Cambia el orden de la página que
+  el usuario ya aprobó, por eso no se tocó.
+
 ### Checkpoint (2026-09-23) — MINI-DEMO DEL SELLO en la página de ventas + cuenta de demostración
 - Cuenta **demo@coparentia.co** (datos INVENTADOS: Andrés, hijos Sofía y Martín, 5 comprobantes
   dibujados, 3 contactos, cuota 450.000, creado_manualmente=true y consentimiento ya aceptado).
