@@ -13,7 +13,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { motion, useReducedMotion } from 'motion/react';
-import { Play, ShieldCheck } from 'lucide-react';
+import { Loader2, Play, ShieldCheck } from 'lucide-react';
 import { Hairline, Kicker, SectionShell, useReveal, VIEWPORT_ONCE } from './ui';
 import { MarkedCopy } from './MarkedCopy';
 
@@ -21,6 +21,7 @@ export interface DemoSelloProps {
   id?: string;
   tituloMarked: string;
   subtitulo: string;
+  /** Marcas de tiempo del video: "0:04 · Registras el comprobante". */
   pasos: string[];
   /** Ruta del video sin extensión: se sirven .mp4 y .webm, más el póster .jpg */
   video: string;
@@ -31,6 +32,7 @@ export function DemoSello({ id, tituloMarked, subtitulo, pasos, video }: DemoSel
   const reduce = useReducedMotion() ?? false;
   const ref = useRef<HTMLVideoElement>(null);
   const [reproduciendo, setReproduciendo] = useState(false);
+  const [cargando, setCargando] = useState(false);
 
   // Se reproduce al entrar en pantalla y se pausa al salir: nunca corre de fondo.
   useEffect(() => {
@@ -42,6 +44,7 @@ export function DemoSello({ id, tituloMarked, subtitulo, pasos, video }: DemoSel
           el.play().then(() => setReproduciendo(true)).catch(() => setReproduciendo(false));
         } else {
           el.pause();
+          setReproduciendo(false);
         }
       },
       { threshold: 0.4 }
@@ -51,11 +54,12 @@ export function DemoSello({ id, tituloMarked, subtitulo, pasos, video }: DemoSel
   }, [reduce]);
 
   const reproducir = (): void => {
-    ref.current?.play().then(() => setReproduciendo(true)).catch(() => {});
+    setCargando(true);
+    ref.current?.play().then(() => setReproduciendo(true)).catch(() => setCargando(false));
   };
 
   return (
-    <SectionShell id={id} elevacion="base" ariaLabel="El Sello de Confianza en acción">
+    <SectionShell id={id} elevacion="elevada" ariaLabel="El Sello de Confianza en acción">
       <motion.div variants={contenedor} initial="hidden" whileInView="visible" viewport={VIEWPORT_ONCE} className="mx-auto max-w-[1140px]">
         <div className="lg:grid lg:grid-cols-[0.9fr_1.1fr] lg:items-center lg:gap-16">
           <motion.div variants={item} className="text-center lg:text-left">
@@ -68,10 +72,10 @@ export function DemoSello({ id, tituloMarked, subtitulo, pasos, video }: DemoSel
             <ol className="mx-auto mt-6 flex max-w-[420px] flex-col gap-3 text-left lg:mx-0">
               {pasos.map((paso, i) => (
                 <li key={paso} className="flex items-start gap-3">
-                  <span className="flex size-7 shrink-0 items-center justify-center rounded-[var(--radius-button)] bg-[var(--chip-bg)] text-[13px] font-bold tabular-nums text-[var(--accent-ink,var(--accent))]">
-                    {i + 1}
+                  <span className="flex h-7 shrink-0 items-center justify-center rounded-[var(--radius-button)] bg-[var(--chip-bg)] px-2 text-[13px] font-bold tabular-nums text-[var(--accent-ink,var(--accent))]">
+                    {paso.split(' · ')[0]}
                   </span>
-                  <span className="text-[15px] leading-[1.5] text-[var(--text-primary)] lg:text-[16px]">{paso}</span>
+                  <span className="text-[15px] leading-[1.5] text-[var(--text-primary)] lg:text-[16px]">{paso.split(' · ').slice(1).join(' · ')}</span>
                 </li>
               ))}
             </ol>
@@ -93,7 +97,9 @@ export function DemoSello({ id, tituloMarked, subtitulo, pasos, video }: DemoSel
                 loop
                 playsInline
                 preload="none"
-                controls={reduce}
+                onWaiting={() => setCargando(true)}
+                onPlaying={() => { setCargando(false); setReproduciendo(true); }}
+                controls
                 aria-label="Demostración: registrar un comprobante, el Sello de Confianza y el expediente en PDF"
               >
                 <source src={`${video}.webm`} type="video/webm" />
@@ -110,7 +116,11 @@ export function DemoSello({ id, tituloMarked, subtitulo, pasos, video }: DemoSel
                   className="absolute inset-2 flex items-center justify-center rounded-[calc(var(--radius-card)-6px)] bg-[color-mix(in_oklab,var(--text-primary)_18%,transparent)] [touch-action:manipulation]"
                 >
                   <span className="flex size-14 items-center justify-center rounded-full bg-[var(--accent)] text-[var(--on-accent)] shadow-[0_8px_30px_color-mix(in_oklab,var(--accent)_45%,transparent)]">
-                    <Play size={22} fill="currentColor" aria-hidden="true" />
+                    {cargando ? (
+                      <Loader2 size={22} className="motion-safe:animate-spin" aria-hidden="true" />
+                    ) : (
+                      <Play size={22} fill="currentColor" aria-hidden="true" />
+                    )}
                   </span>
                 </button>
               )}

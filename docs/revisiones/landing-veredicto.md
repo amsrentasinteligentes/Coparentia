@@ -1,83 +1,75 @@
-# VEREDICTO revisor-visual — landing (variante CLARA "Cuidado en calma", ronda 7)
-Histórico: oscura r-antigua 37·17·18 · r4 34·15·17 · r5 32·15·15 · r6 33·16·16 · clara r1 33·14·17 · r2 33·15·17 · r3 33·16·17 · r4 31·16·16 · r5 35·16·16 · r6 35·17·16 · r7 37·17·17
-Fecha: 2026-09-22 18:40
+# VEREDICTO revisor-visual — landing (variante CLARA "Cuidado en calma", ronda 8)
+Histórico: oscura r-antigua 37·17·18 · r4 34·15·17 · r5 32·15·15 · r6 33·16·16 · clara r1 33·14·17 · r2 33·15·17 · r3 33·16·17 · r4 31·16·16 · r5 35·16·16 · r6 35·17·16 · r7 37·17·17 · r8 36·16·18
+Fecha: 2026-09-23 11:20
 Screenshot: docs/revisiones/landing-375.png
-Usabilidad: 37/40
-Craft: 17/20
-Copy (si vende): 17/20
+Usabilidad: 36/40
+Craft: 16/20
+Copy (si vende): 18/20
 Fidelidad (si hubo referencia): FIEL
 Veredicto: LISTA
 
-Detalle usabilidad: h1:3 h2:4 h3:4 h4:4 h5:4 h6:4 h7:4 h8:3 h9:3 h10:4
-Detalle craft: jerarquía:3 profundidad:4 identidad:3 movimiento:4 encaje:3
-Detalle copy: idea:4 especificidad:2 emoción:4 oferta:4 acción:3
+Detalle usabilidad: h1:3 h2:4 h3:3 h4:4 h5:4 h6:4 h7:4 h8:3 h9:3 h10:4
+Detalle craft: jerarquía:3 profundidad:3 identidad:3 movimiento:4 encaje:3
+Detalle copy: idea:4 especificidad:3 emoción:4 oferta:4 acción:3
 
-Verificado de la r6 (las 4 correcciones, una por una):
-1. Mecanismo en el hero ✓ — 3er pilar "Sello de Confianza en cada comprobante" (app/page.tsx:81),
-   visible en el screenshot a 375px bajo la escena. Con solución (page.tsx:122-123) y oferta
-   (page.tsx:176) la Big Idea ya se formula en 1 frase en los tres puntos → copy eje idea 3→4.
-2. Salto de layout de la referencia en pesos ✓ — `min-h-[18px] lg:min-h-[20px]` en la línea que
-   recibe el fetch de TRM (Oferta.tsx:162-164). La línea existe pintada desde el primer frame
-   ("Se cobra al terminar la prueba") y la TRM solo la alarga; salto de alto 0 en el bloque que
-   decide la compra → h5 3→4.
-3. Confusión de plazos/precios en el stack ✓ — "Hoy no pagas nada. Después: US$89 al año con el
-   plan Anual (US$7.42/mes)" (app/page.tsx:166) y CTA mensual en 1ª persona "Empezar mi plan
-   mensual" (app/page.tsx:186). Ya no hay un precio que contradiga la tarjeta de al lado.
-4. "Planes" a 375px ✓ — Hero.tsx:86 + 114-116: el enlace que hace match con /plan/i sale del
-   `hidden` y pasa a `inline-flex h-11` (44px reales) junto a "Entrar"; el resto sigue md+.
+## Veredicto sobre la sección nueva (DemoSello)
+AYUDA más de lo que estorba, y se queda — pero con regresiones medibles.
+- **Copy especificidad 2 → 3.** La rúbrica acepta la demo como prueba: la página ya no solo CUENTA
+  el mecanismo, lo enseña funcionando con datos concretos (Andrés, Sofía/Martín, montos).
+  No llega a 4 porque los claims numéricos duros siguen sin respaldo al lado ("10 minutos",
+  "cientos de dólares en honorarios", "los US$100 que cobra un abogado por correo") y no hay
+  testimonios. Con esto YA NO hay ningún eje de copy ≤2 → se cierra el sub-umbral abierto en r7.
+- **Ubicación correcta.** Entre garantía y FAQ no interrumpe el camino oferta→CTA, y el sticky
+  de celular mantiene el botón a la vista mientras se ve el video.
+- **Póster: NO parece pantalla en blanco.** Verificado el archivo real
+  (public/demo/demo-sello-poster.jpg): es la pantalla de Inicio con datos semilla ricos
+  (cuota al día, $449.934, 3 de 9 meses, próximo evento). PERO es la MISMA imagen que ya
+  aparece dos veces arriba y NO muestra ningún Sello → en reposo, con reduced-motion o si el
+  autoplay falla, el titular promete "el Sello en acción" y entrega la portada de la app por
+  tercera vez. Comunica, pero no prueba (defecto 2).
+- **Regresiones que costaron 1 punto cada una:** el video no tiene controles (h3 4→3) y la
+  sección rompe la alternancia base↔elevada con la FAQ (profundidad 4→3).
 
-CTA héroe (4 anclas): --accent #2F6FDC = 4.5:1 sobre --bg ✓ · whileTap 0.97 + aria-busy
-(ui.tsx:306-311) ✓ · nunca disabled ✓ · 56px de alto, ancho completo en celular (Hero.tsx:155) ✓.
-Gate de conversión: titular con énfasis ✓ · hairlines degradé (plan anual, garantía, chip del
-mecanismo = 3) ✓ · chips SVG sin emojis ✓ · secciones alternadas base/elevada con borderTop ✓.
-Movimiento: stagger (useReveal 0.07 en hero y todas las secciones) · CountUp en los precios ·
-MiniRing que se dibuja · tap 0.97 · AnimatePresence en la barra pegajosa · reduced-motion resuelto
-en useReveal/CountUp/MiniRing/Sticky → eje 4.
-Fidelidad FICHA-ARTE §"Variante CLARA": hex (#F3F7FC/#FFF/#14233A/#2F6FDC), radios 22/999/28,
-Figtree+Nunito Sans y los blobs orgánicos coinciden con lo renderizado a 375 y a 1440 → FIEL.
+## Verificaciones de código (no inventadas)
+- reduced-motion: `useReducedMotion` corta el IntersectionObserver y activa `controls`
+  (DemoSello.tsx:31,38,96) ✓. useReveal/CountUp/MiniRing/Sticky siguen resueltos ✓.
+- Movimiento (7 baseline): stagger `useReveal` en la sección nueva ✓ · CountUp precios ✓ ·
+  MiniRing se dibuja ✓ · tap 0.97 (ui.tsx:306-311) ✓ · AnimatePresence sticky ✓.
+- CTA héroe (4 anclas): acento #2F6FDC 4.5:1 ✓ · whileTap + aria-busy ✓ · nunca disabled ✓ ·
+  56px y ancho completo a 375 ✓.
+- Gate de conversión: titular con énfasis ✓ · hairlines degradé en presupuesto (2 `emphasis`:
+  plan anual Oferta.tsx:150 y marco del video DemoSello.tsx:87 — dentro del máx 3) ✓ ·
+  chips SVG sin emojis, incluidos los 3 pasos numerados de la demo ✓.
+- Fidelidad FICHA-ARTE §"Variante CLARA": hex, radios 22/999/28 y Figtree+Nunito Sans coinciden
+  en 375 y 1440, incluido el marco nuevo → FIEL.
+- Gate de carga cognitiva: 0 fallas nuevas (la demo son 3 pasos, 1 video, 0 decisiones).
 
-Lo que NO se corrige hoy (decisión explícita del usuario — no ocupa slot de defecto, pero sí pesa
-en la nota y queda anotado como riesgo abierto):
-- Sin testimonios ni demo del mecanismo → COPY EJE ESPECIFICIDAD = 2 (el único sub-umbral de la
-  rúbrica 4 que no se cumple: "ningún eje ≤2"). Los claims grandes —"10 minutos", "cientos de
-  dólares en honorarios", "los US$100 que puede cobrar un abogado por correo"— no tienen hoy
-  ninguna prueba al lado. El veredicto sale LISTA porque las tres notas superan su gate
-  (37≥36 · 17≥16 · 17≥16), pero este eje SE REABRE en cuanto haya el primer cliente real o el
-  material para la mini-demo del flujo subir→sellar→exportar.
-- Bloque "Para abogados" con su propio CTA después del cierre emocional → h8 = 3 y copy acción = 3
-  (dos audiencias y dos acciones distintas en la misma página).
-- Logo/isotipo gris metálico sobre fondo claro (se ve apagado en el header y en el footer del
-  screenshot) → pesa en identidad = 3; prohibido tocarlo.
+## No corregible hoy (decisión del usuario — no ocupa slot, sigue pesando en la nota)
+- Sin testimonios → copy especificidad tope en 3 y copy acción en 3.
+- "Para abogados" después del cierre emocional → h8 = 3 (dos audiencias, dos acciones).
+- Logo/isotipo gris apagado sobre fondo claro → identidad = 3.
 
 Top defectos:
-1. [FAQ pregunta 1 — app/page.tsx:212] "Coparentia funciona 100% de forma **unilateral**" es la
-   única jerga legal cruda que queda en toda la página, y está en la respuesta que más se lee →
-   reemplazar por "Solo la usas tú: la otra persona no necesita instalar ni aprobar nada" (≤16
-   palabras, 0 términos técnicos).
-2. [Hero → franja bajo el CTA, app/page.tsx:73] tres datos encadenados en una sola línea de 13px
-   ("7 días gratis · Registras tu medio de pago hoy, el primer cobro entra el día 8 · Garantía de
-   15 días") que a 375px envuelve en 3 renglones apretados bajo el botón → dejar en 1ª línea
-   "7 días gratis · Garantía de 15 días" (14px, --text-secondary) y bajar el detalle del cobro a
-   una 2ª línea de 12px --text-tertiary. Máx 2 renglones medidos a 375px.
-3. [Plazos del trial repetidos 4 veces — app/page.tsx:73 · Oferta.tsx:175 y 202 · app/page.tsx:243
-   y 244] la misma frase "registras tu medio de pago hoy; el primer cobro entra el día 8" aparece
-   en hero, ambas tarjetas, el recap y el PS → conservarla completa SOLO en las tarjetas de la
-   oferta y en el PS; en hero y recap dejar "7 días gratis · Garantía de 15 días" (−2 apariciones,
-   h8 3→4).
-4. [Oferta → tarjeta Mensual, app/page.tsx:190-195] la feature "Pagas mes a mes, US$9.99" repite
-   la cifra que está 3 renglones arriba en 36px: de 4 bullets, 1 no aporta información nueva →
-   cambiarla por el diferenciador real ("Sin compromiso de 12 meses") y quedar en 3 bullets.
-5. [1440px — Garantia.tsx:33 y 39] la tarjeta va a `max-w-[560px]` dentro de un contenedor de
-   1280px con 64px de padding arriba y abajo: en computador queda como una isla pequeña en una
-   franja casi vacía (visible en docs/revisiones/landing-1440.png) → subir a `lg:max-w-[760px]`
-   con el ícono y el texto en fila (chip a la izquierda, texto a la derecha) para que la franja
-   deje de leerse hueca.
-
-
-## Retoques aplicados DESPUÉS del veredicto r7 (2026-09-22, medidos)
-- FAQ 1 sin la palabra "unilateral": "Solo la usas tú: la otra persona no necesita instalar ni aprobar nada".
-- Franja del hero en 2 renglones (39px medidos a 375px): promesa arriba, detalle del cobro en 12px tertiary.
-- El detalle del día 8 sale del recap del cierre (queda en hero, ambas tarjetas y el PS).
-- Tarjeta Mensual: 3 bullets, sin repetir el precio que ya está en 36px.
-- Garantía a 760px en computador (antes 560px dentro de 1280 dejaba la franja hueca).
-Ninguno toca logo ni isotipo (orden del usuario).
+1. [components/landing/DemoSello.tsx:88-102 y 42-46] El video de 24 s no tiene controles salvo con
+   reduced-motion (`controls={reduce}`, línea 96) y el botón de play desaparece para siempre tras
+   el primer arranque: al pausarse al salir de pantalla (línea 45) nunca vuelve
+   `setReproduciendo(false)`, así que el visitante no puede pausar, rebobinar ni repetir el cuadro
+   del Sello → poner `controls` siempre (o un par pausa/repetir de 44px) y añadir
+   `setReproduciendo(false)` en la rama `else` de la línea 45.
+2. [public/demo/demo-sello-poster.jpg, referenciado en DemoSello.tsx:91] El póster es la pantalla
+   "Inicio", idéntica al visual del hero (app/page.tsx:82) y al primer frame de AppPorDentro
+   (app/page.tsx:149), y no contiene ningún Sello → exportar como póster el cuadro del video con el
+   comprobante YA sellado (badge del Sello + fecha legible a 300px de ancho); es el único estado que
+   ven quienes tienen reduced-motion o autoplay bloqueado.
+3. [components/landing/DemoSello.tsx:58 vs components/landing/Faq.tsx:42] Dos secciones seguidas con
+   `elevacion="base"`: la demo y la FAQ se funden en un mismo plano, separadas solo por el hairline
+   de 1px (visible en docs/revisiones/landing-1440.png) → cambiar la demo a `elevacion="elevada"`
+   para recuperar la alternancia base↔elevada de toda la página.
+4. [app/page.tsx:219-223 vs app/page.tsx:132-136] Los 3 pasos de la demo repiten casi palabra por
+   palabra los 3 pasos de la sección Solución ("subes el comprobante · el Sello lo fecha · queda en
+   tu expediente") → sustituirlos por 3 marcas de tiempo del video ("0:04 registras · 0:11 el Sello
+   fecha · 0:19 PDF exportado") o eliminarlos: −3 líneas repetidas, la demo pasa a aportar dato nuevo.
+5. [components/landing/DemoSello.tsx:93-95 y 105-116] Con `preload="none"` y sin indicador de carga,
+   al tocar play en conexión lenta el botón desaparece y no pasa nada visible hasta que el video
+   bufferea (acción >100ms sin feedback) → mostrar un spinner inline en el evento `waiting`/`loadstart`
+   y ocultar el overlay solo en `playing`.

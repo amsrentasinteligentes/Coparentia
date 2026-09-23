@@ -217,9 +217,9 @@ export default function Home() {
         tituloMarked="Mira el [acento]Sello de Confianza[/acento] en acción"
         subtitulo="Esto es la app de verdad: un comprobante entra, queda fechado y sale en tu expediente listo para mostrar."
         pasos={[
-          'Registras el comprobante: una foto basta y el monto se completa solo.',
-          'El Sello lo fecha y lo asocia al gasto correcto.',
-          'Exportas tu expediente en PDF, con cada página numerada.',
+          '0:03 · La foto del comprobante entra y el monto se llena solo.',
+          '0:10 · El Sello lo fecha: "queda fechado el 23 de septiembre".',
+          '0:17 · Sale el PDF, con las partes, los totales y cada gasto.',
         ]}
         video="/demo/demo-sello"
       />
