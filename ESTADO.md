@@ -4,7 +4,8 @@
 - Aplicados y publicados en b4f271a: alternancia base/elevada (demo en base, FAQ en elevada), el
   botón de play ya no tapa los controles del video (bottom-12) y su velo baja de 18% a 10%, y la
   sección de la demo tiene su propio botón principal (CTA_LABEL/CTA_HREF).
-- **Pendiente de decisión del usuario (defecto 3 de la r9):** mover <DemoSello> justo después de
+- Veredicto final del día: **r10.1 LISTA 38/40 · 16/20 · 18/20** (defectos 2 y 3 de la r10 cerrados: un solo mando de play y velo en degradé). Defectos vivos, en Problemas conocidos.
+- **Pendiente de decisión del usuario (defecto 1 de la r10):** mover <DemoSello> justo después de
   <Solucion> (o poner un ancla "Ver el Sello en 24 s" en el hero). Cambia el orden de la página que
   el usuario ya aprobó, por eso no se tocó.
 
@@ -2575,6 +2576,19 @@ FICHA-ARTE.md que la landing.
   presupuesto; queda anotado para antes de declarar el funnel "vendible" de verdad.
 
 ## Problemas conocidos
+- **Defectos vivos de la landing tras la r10.1 (2026-09-23)** — veredicto LISTA 38/40 · 16/20 · 18/20,
+  ninguno bloqueante:
+  1. La mini-demo del Sello queda DESPUÉS del precio y la garantía (app/page.tsx). Subirla tras
+     <Solucion> o poner ancla #demo en el hero: **PENDIENTE DE DECISIÓN DEL DUEÑO** (cambia el orden
+     de la página que él aprobó). Preguntado el 2026-09-23, sin respuesta todavía.
+  2. La distinción base↔elevada de SectionShell es de ~4% de luminancia (components/landing/ui.tsx):
+     por eso el revisor mantiene profundidad en 3. Pospuesto: subirlo tocaría TODAS las secciones de
+     la página ya aprobada; se evalúa junto al próximo cambio de superficies.
+  3. El anuncio para abogados va después del cierre emocional (components/landing/AnuncioAbogados.tsx):
+     el dueño decidió expresamente dejar esa sección como está (2026-09-22). No se toca.
+  4. El círculo de play cae ~20px sobre el centro óptico del video (DemoSello.tsx): severidad baja —
+     solo existe ANTES de la primera reproducción. Pospuesto para no abrir otra ronda de revisor
+     (~100k tokens) por un ajuste de 20px; se corrige en el próximo cambio que toque ese archivo.
 - **veredicto:onboarding** y **veredicto:paywall** (2026-09-18 noche): LISTA en r3 (36/40 ambos). El gate
   los marca "caducado" porque DESPUÉS del veredicto se aplicaron los 5 defectos NO bloqueantes que el
   propio revisor listó en esa r3 (h1 26→28px, tarjeta vacía anclada, blob lg:h-20, summary renombrado,
