@@ -14,7 +14,7 @@
 // enlaces de sección en computador (las tres referencias los tienen; en celular sigue mínimo).
 
 import type { ReactNode } from 'react';
-import { motion } from 'motion/react';
+import { motion, useReducedMotion } from 'motion/react';
 import { Camera } from 'lucide-react';
 import { Blob, CheckCustom, CtaButton, useReveal } from './ui';
 import { MarkedCopy, truncarMarcado, warnCopy } from './MarkedCopy';
@@ -78,6 +78,7 @@ export function Hero({
   id = 'hero',
 }: HeroProps) {
   const { contenedor, item } = useReveal();
+  const reduce = useReducedMotion() ?? false;
   warnCopy('Hero → h1', h1Marked, 10);
   warnCopy('Hero → subtítulo', subtitleMarked, 14);
   const subtitulo = truncarMarcado(subtitleMarked, 14);
@@ -191,9 +192,9 @@ export function Hero({
             )}
             {burbuja && (
               <motion.div
-                initial={{ opacity: 0, y: 12 }}
+                initial={reduce ? { opacity: 0 } : { opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.35, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                transition={reduce ? { duration: 0.2 } : { delay: 0.35, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
                 className="absolute bottom-2 right-0 w-[48%] max-w-[220px] rounded-[var(--radius-card)] rounded-bl-[8px] px-5 py-4 text-left text-[var(--on-accent)] shadow-[0_18px_40px_-14px_color-mix(in_oklab,var(--accent-deep,var(--accent))_60%,transparent)] lg:bottom-6 lg:right-2"
                 // Desde --accent (4.7:1 con blanco), no desde la nota clara: con #5b93e8 el 12px al 85%
                 // medía 2.8:1 (revisor, clara r3) — mismo fallo ya corregido en el bloque de cierre.
