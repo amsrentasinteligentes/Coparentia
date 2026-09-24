@@ -1,3 +1,19 @@
+### Checkpoint (2026-09-24) — Boton "Continuar con Google" listo, falta activarlo
+- El boton estaba de adorno (deshabilitado) desde la construccion original. Ya funciona del lado
+  del codigo: llama a Supabase pidiendo el proveedor google, respeta el mismo candado de la casilla
+  de autorizacion que el resto de la pantalla, y usa la MISMA ruta de regreso que el enlace magico
+  (app/auth/callback/route.ts, sin tocar - ya funciona para cualquier proveedor).
+- Verificado con un clic real: dispara correctamente
+  ".../auth/v1/authorize?provider=google..." contra el proyecto real de Supabase.
+- **Pendiente del dueño (2 pasos, ~3 min, solo el dueño puede hacerlo):**
+  1. En Google Cloud Console (console.cloud.google.com) -> crear credenciales OAuth (tipo
+     "Aplicacion web"). Como URI de redireccion autorizado, pegar EXACTAMENTE:
+     https://chxhyzyzpipbopskomuv.supabase.co/auth/v1/callback
+  2. Copiar el "Client ID" y el "Client Secret" que Google entrega, y pegarlos en el panel de
+     Supabase -> Authentication -> Providers -> Google (activar el interruptor + pegar ambos).
+  Ninguna de las dos claves se debe pegar en el chat (regla del SO) - se pegan directo en los
+  paneles de Google/Supabase.
+
 ### Checkpoint (2026-09-24) — El aviso de instalar aparece SOLO, sin buscar Ajustes
 - Hallazgo del dueño: probó el botón de instalar y no lo encontró — no vive en el menú de abajo,
   hay que entrar a Perfil y bajar hasta una fila que ni siquiera dice "Ajustes" ("Cuota alimentaria
