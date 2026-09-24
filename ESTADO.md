@@ -1,3 +1,15 @@
+### Checkpoint (2026-09-24, cierre) — Login con Google ACTIVO y verificado en produccion
+- El dueño completo los 2 pasos externos (proyecto de Google Cloud + credenciales OAuth con la URI
+  de redireccion correcta) y las pego en Supabase -> Authentication -> Sign In / Providers -> Google.
+  El proveedor aparece "Enabled" en el panel.
+- **Verificado con una prueba real en produccion (coparentia.co/entrar)**: el boton "Continuar con
+  Google" lleva de verdad hasta accounts.google.com pidiendo el client_id correcto, con
+  scope=email+profile (minimo, sin permisos de mas) y la redireccion final apuntando a
+  coparentia.co/auth/callback. Cadena completa funcionando.
+- Nota de seguridad menor: el campo "Client IDs" de Google en Supabase tenia escrito "resend" antes
+  de este cambio (dato viejo sin relacion, ya reemplazado) - si aparece algo raro similar en otro
+  proveedor, vale la pena revisar de donde vino.
+
 ### Checkpoint (2026-09-24) — Boton "Continuar con Google" listo, falta activarlo
 - El boton estaba de adorno (deshabilitado) desde la construccion original. Ya funciona del lado
   del codigo: llama a Supabase pidiendo el proveedor google, respeta el mismo candado de la casilla
