@@ -44,7 +44,7 @@ export interface SolucionProps {
   pasos: [PasoMecanismo, PasoMecanismo, PasoMecanismo];
   /** El mecanismo GRABADO de la app real (datos de ejemplo, nunca de un cliente).
    *  `video` es la ruta sin extensión: se sirven .webm y .mp4, más el póster .jpg */
-  demo?: { video: string; pie?: string };
+  demo?: { video: string; pie?: string; inicioSeg?: number };
   /** Fotografía humana (o <FotoLugar>) en forma orgánica — variante clara.
    *  Se ignora cuando hay `demo`: dos bloques grandes en una sección la saturan. */
   foto?: ReactNode;
@@ -101,10 +101,10 @@ export function Solucion({
     ref.current?.play().then(() => setReproduciendo(true)).catch(() => setCargando(false));
   };
 
-  /** Los primeros segundos de la grabación son la app CARGANDO (barras grises): arrancar ahí
-   *  mostraba el mecanismo vacío, así que la reproducción empieza —y vuelve a empezar— pasado
-   *  ese tramo. Por eso no se usa `loop`: el bucle nativo siempre regresa al segundo 0. */
-  const INICIO = 2.4;
+  /** Segundo por el que entra —y vuelve a entrar— la reproducción. El montaje v2 ya empieza
+   *  dentro de la app, así que es 0; queda como prop por si un montaje futuro trae cabecera.
+   *  No se usa `loop`: el bucle nativo ignoraría ese punto de entrada. */
+  const INICIO = demo?.inicioSeg ?? 0;
 
   const alEmpezar = (): void => {
     const el = ref.current;

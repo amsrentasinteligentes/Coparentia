@@ -122,11 +122,11 @@ export default function Home() {
         mecanismo="el Sello de Confianza"
         bigIdeaMarked="No es que no pagues — es que no tienes cómo [b]probarlo[/b]. Míralo aquí: un comprobante entra y sale convertido en prueba fechada."
         pasos={[
-          { titulo: 'Le tomas la foto', marca: '0:06', detalle: 'Una foto del recibo, directo desde tu teléfono.' },
+          { titulo: 'Le tomas la foto al recibo', marca: '0:06', detalle: 'Desde tu teléfono, como cualquier foto.' },
           { titulo: 'El Sello lo confirma', marca: '0:12', detalle: 'Lee el monto solo, lo fecha y lo asocia al gasto.' },
           { titulo: 'Queda en tu expediente', marca: '0:21', detalle: 'Listo para exportar cuando lo necesites.' },
         ]}
-        demo={{ video: '/demo/demo-sello', pie: 'Grabado de la app real, con datos de ejemplo.' }}
+        demo={{ video: '/demo/demo-sello', pie: 'Grabado de la app real, con datos de ejemplo. La espera del PDF va acelerada.' }}
         ctaLabel={CTA_LABEL}
         ctaHref={CTA_HREF}
       />
