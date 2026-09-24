@@ -1,3 +1,18 @@
+### Checkpoint (2026-09-24) — El aviso de instalar aparece SOLO, sin buscar Ajustes
+- Hallazgo del dueño: probó el botón de instalar y no lo encontró — no vive en el menú de abajo,
+  hay que entrar a Perfil y bajar hasta una fila que ni siquiera dice "Ajustes" ("Cuota alimentaria
+  y cuenta"). Un usuario nuevo nunca iba a llegar ahí solo.
+- **Solución**: un aviso compacto ("Instálala en tu teléfono — sin pasar por el navegador") que
+  aparece SOLO, arriba de CUALQUIER pantalla de la app, hasta que la persona instale o lo cierre.
+  Cerrarlo es definitivo para ese navegador (localStorage) — no vuelve a insistir. El botón viejo de
+  Ajustes se queda como respaldo para quien lo cerró y lo quiere buscar después.
+- Refactor: components/app/InstalarApp.tsx centraliza TODA la lógica (antes duplicada) — el evento
+  de Android, la detección de iPhone, la hoja de 3 pasos. La usan tanto el aviso nuevo como el
+  botón de Ajustes.
+- Verificado con un recorrido automatizado: aparece en Inicio y Pagos, el botón abre el instalador
+  o la hoja de pasos, al cerrarlo desaparece en cualquier pestaña y sigue oculto tras recargar.
+- Sigue pendiente: el dueño confirmó Android real funcionando; falta probarlo en el iPhone de Ivonne.
+
 ### Checkpoint (2026-09-24) — Coparentia se puede INSTALAR en el teléfono (PWA)
 - Pedido del dueño: que la app quede en el teléfono como una app cualquiera, sin entrar por la
   página. Implementado como app web instalable (PWA) — NO es una app de las tiendas (App Store /
