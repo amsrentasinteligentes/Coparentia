@@ -16,7 +16,6 @@
 import type { ReactNode } from 'react';
 import { motion } from 'motion/react';
 import { Camera } from 'lucide-react';
-import { CountUp } from './ui';
 import { Blob, CheckCustom, CtaButton, useReveal } from './ui';
 import { MarkedCopy, truncarMarcado, warnCopy } from './MarkedCopy';
 
@@ -191,7 +190,10 @@ export function Hero({
               </div>
             )}
             {burbuja && (
-              <div
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.35, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
                 className="absolute bottom-2 right-0 w-[48%] max-w-[220px] rounded-[var(--radius-card)] rounded-bl-[8px] px-5 py-4 text-left text-[var(--on-accent)] shadow-[0_18px_40px_-14px_color-mix(in_oklab,var(--accent-deep,var(--accent))_60%,transparent)] lg:bottom-6 lg:right-2"
                 // Desde --accent (4.7:1 con blanco), no desde la nota clara: con #5b93e8 el 12px al 85%
                 // medía 2.8:1 (revisor, clara r3) — mismo fallo ya corregido en el bloque de cierre.
@@ -199,9 +201,9 @@ export function Hero({
               >
                 <p className="text-[12px] font-semibold lg:text-[13px]">{burbuja.titulo}</p>
                 <p className="mt-1 text-[22px] font-extrabold leading-[1.1] [font-family:var(--font-display)] md:text-[26px]">
-                  <CountUp text={burbuja.dato} />
+                  {burbuja.dato}
                 </p>
-              </div>
+              </motion.div>
             )}
           </motion.div>
         </motion.div>

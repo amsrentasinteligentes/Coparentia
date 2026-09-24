@@ -411,7 +411,9 @@ export function StickyCtaMobile({
 
   // La barra flota sobre el documento: sin esto tapa ~76px de lo que quede al fondo de la pantalla.
   useEffect(() => {
-    if (!visible) return;
+    // Solo en celular: la barra es `md:hidden`, así que en computador el relleno dejaba un hueco
+    // fantasma al pie de la página.
+    if (!visible || !window.matchMedia('(max-width: 767px)').matches) return;
     const anterior = document.body.style.paddingBottom;
     document.body.style.paddingBottom = '76px';
     return () => {
