@@ -42,12 +42,18 @@ export function Garantia({ nombre, condicionMarked, pisoLegal, icon: Icono = Shi
           {/* La card de garantía: uno de los 1-3 usos de hairline permitidos por vista */}
           <Hairline surface="surface" className="shadow-[var(--shadow-1)]">
             <div className="flex flex-col items-center gap-4 px-6 py-10 text-center">
-              <span
+              {/* Hito real (la promesa de devolución): el sello entra con un rebote corto —
+                  la única celebración de la página, reservada para lo que de verdad tranquiliza. */}
+              <motion.span
                 aria-hidden="true"
+                initial={{ scale: 0.86, opacity: 0 }}
+                whileInView={{ scale: 1, opacity: 1 }}
+                viewport={VIEWPORT_ONCE}
+                transition={{ type: "spring", stiffness: 320, damping: 18, delay: 0.1 }}
                 className="flex size-15 items-center justify-center rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--accent)_22%,transparent)] bg-[var(--chip-bg)]"
               >
                 <Icono size={32} strokeWidth={1.8} color="var(--accent)" aria-hidden="true" />
-              </span>
+              </motion.span>
               <h2 className="text-balance text-[22px] font-bold leading-tight [font-family:var(--font-display)]">
                 <Accent>{nombre}</Accent>
               </h2>

@@ -30,13 +30,17 @@ export function CountUp({ text, durationMs = 900 }: { text: string; durationMs?:
   const reduce = useReducedMotion();
   const target = match ? parseFloat(match[0]) : 0;
   const decimals = match?.[1] ? match[1].length - 1 : 0;
-  const mv = useMotionValue(reduce ? target : 0);
+  const mv = useMotionValue(target);
   const rounded = useTransform(mv, (v) => v.toFixed(decimals));
-  const [display, setDisplay] = useState(reduce ? (match ? target.toFixed(decimals) : '') : '0'.padStart(1, '0'));
+  // EN REPOSO se pinta el valor REAL (un precio que dice "0" mientras no corre el observador es
+  // el peor error posible en una página de ventas). La cuenta recorre el último tramo —del 70%
+  // al total—, que es lo que da la sensación de cifra viva sin mentir en ningún cuadro.
+  const [display, setDisplay] = useState(match ? target.toFixed(decimals) : '');
 
   useEffect(() => {
     if (!match || reduce) return;
     if (!inView) return;
+    mv.set(target * 0.7);
     const controls = animate(mv, target, { duration: durationMs / 1000, ease: [0.16, 1, 0.3, 1] });
     return () => controls.stop();
   }, [inView, match, mv, reduce, target, durationMs]);

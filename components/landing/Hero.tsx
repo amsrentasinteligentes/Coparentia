@@ -16,6 +16,7 @@
 import type { ReactNode } from 'react';
 import { motion } from 'motion/react';
 import { Camera } from 'lucide-react';
+import { CountUp } from './ui';
 import { Blob, CheckCustom, CtaButton, useReveal } from './ui';
 import { MarkedCopy, truncarMarcado, warnCopy } from './MarkedCopy';
 
@@ -198,7 +199,7 @@ export function Hero({
               >
                 <p className="text-[12px] font-semibold lg:text-[13px]">{burbuja.titulo}</p>
                 <p className="mt-1 text-[22px] font-extrabold leading-[1.1] [font-family:var(--font-display)] md:text-[26px]">
-                  {burbuja.dato}
+                  <CountUp text={burbuja.dato} />
                 </p>
               </div>
             )}
