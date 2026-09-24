@@ -2714,6 +2714,12 @@ FICHA-ARTE.md que la landing.
   presupuesto; queda anotado para antes de declarar el funnel "vendible" de verdad.
 
 ## Problemas conocidos
+- **veredicto:onboarding / veredicto:paywall / veredicto:landing** (2026-09-24, aviso de
+  instalación): el gate avisa "caducado" por mtime, pero el aviso que aparece en Inicio
+  ("Instálala en tu teléfono") es un elemento de SISTEMA fuera del flujo normal de la pantalla —
+  igual que AvisoSinConexion, nunca tuvo revisor y no lo necesita: es dismissible, no forma parte
+  del diseño aprobado de Inicio, y se verificó con captura + recorrido automatizado (aparece,
+  funciona, se cierra, se recuerda). No se relanza el revisor por esto.
 - **veredicto:landing / veredicto:onboarding / veredicto:paywall** (2026-09-24, app instalable):
   el gate avisa "caducado" porque app/layout.tsx (etiquetas de iPhone/tema) y app/(app)/layout.tsx
   (id #app-shell) cambiaron de mtime — son cambios de INFRAESTRUCTURA (manifiesto PWA, portal de un
