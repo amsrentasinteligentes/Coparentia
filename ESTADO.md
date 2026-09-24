@@ -1,3 +1,15 @@
+### Checkpoint (2026-09-24, cierre) — LANDING **LISTA** (36/40 · 16/20 · 17/20) + VIDEO v2
+- Veredicto r16 en docs/revisiones/landing-veredicto.md. Ocho rondas hoy (r10→r16): la regla dura
+  que salió de ellas es **ningún número que sea PRECIO o PROMESA se anima** (CountUp llegó a
+  publicar "US$0" en los planes y "7 minutos" en el hero).
+- Video v2 (public/demo/): puntero visible con destello en cada toque, la foto del recibo entrando
+  encuadrada y el monto llenándose solo (recibo de 138.500 ≠ valor prellenado, campo vaciado antes
+  de la foto), y la espera del expediente a 6x. 24 s. Guion: scratchpad/demo/grabar2.cjs.
+- Marcas de los pasos remapeadas: 0:06 / 0:12 / 0:21.
+- **Pendiente de permiso del dueño:** borrar los 2 registros de prueba ("Uniformes del colegio")
+  que las grabaciones dejaron en la cuenta demo@coparentia.co.
+- ffmpeg real disponible en scratchpad/node_modules/ffmpeg-static (libx264 + libvpx-vp9).
+
 ### Checkpoint (2026-09-24) — LA DEMO DEL SELLO SE MUDÓ A "CÓMO FUNCIONA" (pedido del dueño)
 - El video dejó de ser sección aparte: vive dentro de `Solucion` acompañando a los 3 pasos, cada
   uno con su marca de tiempo (0:03 / 0:10 / 0:17) que SALTA a ese momento del video. En celular
