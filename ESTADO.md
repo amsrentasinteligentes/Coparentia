@@ -19,9 +19,9 @@
   datos de un expediente legal es riesgoso (podría mostrar una versión vieja como si fuera
   vigente, justo lo contrario de lo que promete el Sello de Confianza). Se evalúa aparte si el
   dueño lo pide con cuidado extra en el diseño.
-- **Pendiente del dueño**: probarla en un Android y un iPhone REALES una vez publicada — la parte
-  de "aparece el ícono y abre sin barra de navegador" no se puede verificar 100% desde una prueba
-  automatizada, solo desde un teléfono de verdad.
+- **Confirmado por el dueño en su Android real (2026-09-24): funcionó bien** — un toque, quedó
+  instalada con su ícono, sin barra del navegador. Falta probar en un iPhone real (nadie del equipo
+  tiene uno a mano todavía; la parte de iPhone no se puede probar hasta que alguien la intente).
 - Verificado: tsc/build limpios, /manifest.webmanifest y /apple-icon.png se sirven solos, capturas
   en iPhone y Android simulados (docs/revisiones/ajustes-instalar-{ios,android,pasos}-375.png).
 
