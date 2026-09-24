@@ -122,9 +122,9 @@ export default function Home() {
         mecanismo="el Sello de Confianza"
         bigIdeaMarked="No es que no pagues — es que no tienes cómo [b]probarlo[/b]. Míralo aquí: un comprobante entra y sale convertido en prueba fechada."
         pasos={[
-          { titulo: 'Subes tu comprobante', marca: '0:03', detalle: 'Foto o PDF, directo desde tu teléfono.' },
-          { titulo: 'El Sello lo confirma', marca: '0:10', detalle: 'Lo lee, lo fecha y lo asocia al gasto correcto.' },
-          { titulo: 'Queda en tu expediente', marca: '0:17', detalle: 'Listo para exportar cuando lo necesites.' },
+          { titulo: 'Le tomas la foto', marca: '0:06', detalle: 'Una foto del recibo, directo desde tu teléfono.' },
+          { titulo: 'El Sello lo confirma', marca: '0:12', detalle: 'Lee el monto solo, lo fecha y lo asocia al gasto.' },
+          { titulo: 'Queda en tu expediente', marca: '0:21', detalle: 'Listo para exportar cuando lo necesites.' },
         ]}
         demo={{ video: '/demo/demo-sello', pie: 'Grabado de la app real, con datos de ejemplo.' }}
         ctaLabel={CTA_LABEL}
