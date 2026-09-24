@@ -2611,9 +2611,9 @@ FICHA-ARTE.md que la landing.
 ## Problemas conocidos
 - **veredicto:landing** (2026-09-24, cierre): LISTA en la r16.1 (36/40 · 16/20 · 17/20). Después del
   veredicto se aplicó UN cambio de una línea —su propio defecto 4, alinear el ícono del pie del video
-  que pasó a dos líneas ( + 3px)— verificado por captura. No se relanza una r17 por eso:
+  que pasó a dos líneas (items-start + 3px)— verificado por captura. No se relanza una r17 por eso:
   rendimiento decreciente (cada ronda cuesta ~100k tokens). Defectos vivos anotados: sin prueba social
-  real y ancla de US20 sin respaldo (ambos decisión del dueño, el segundo hay que resolverlo ANTES
+  real y ancla de US$120 sin respaldo (ambos decisión del dueño, el segundo hay que resolverlo ANTES
   de pautar) y seis tamaños de texto en la tarjeta de precio.
 - **Defectos vivos de la landing tras la r10.1 (2026-09-23)** — veredicto LISTA 38/40 · 16/20 · 18/20,
   ninguno bloqueante:
