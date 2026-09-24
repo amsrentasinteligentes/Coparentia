@@ -5,11 +5,10 @@
 // derecho de eliminación real (no solo una promesa por correo). No vive en el nav inferior fijo
 // (4 destinos ya establecidos) — se llega desde el ícono de engranaje en Expediente.
 
-import { useEffect, useState, useSyncExternalStore } from 'react';
-import { createPortal } from 'react-dom';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
-import { LogOut, ExternalLink, Trash2, AlertTriangle, UserRound, CreditCard, LifeBuoy, ShieldCheck, FileText, Scale, ChevronRight, CalendarCheck, Crown, Sparkles, Smartphone, Share, SquarePlus, X, type LucideIcon } from 'lucide-react';
+import { motion } from 'motion/react';
+import { LogOut, ExternalLink, Trash2, AlertTriangle, UserRound, CreditCard, LifeBuoy, ShieldCheck, FileText, Scale, ChevronRight, CalendarCheck, Crown, Sparkles, Smartphone, type LucideIcon } from 'lucide-react';
 import Link from 'next/link';
 import { ContenedorApp, Tarjeta, IconoCirculo, TarjetaSkeleton, ErrorDeCarga, CabeceraApp, TituloSeccion } from '@/components/app/ui';
 import { type Titulo, obtenerTitulo, guardarTitulo, obtenerPagos, formatoCOP } from '@/lib/datos';
@@ -17,6 +16,7 @@ import { hoyEnColombia } from '@/lib/fecha';
 import { crearClienteSupabase } from '@/lib/supabase/client';
 import { eliminarMiCuenta } from './acciones';
 import { obtenerPreferenciaNovedades, cambiarPreferenciaNovedades } from '@/lib/consentimiento';
+import { useEventoInstalacion, useInstalada, useEsIOS, HojaPasosInstalarIOS } from '@/components/app/InstalarApp';
 
 /* ── <FilaNovedades> — la casilla opcional del consentimiento, editable después (la pantalla de
    autorizaciones promete "puedes cambiarla desde Ajustes"). Cada cambio inserta una fila nueva en
@@ -282,62 +282,14 @@ function FilaAjuste({ icon, tono = 'accent', titulo, detalle, href, externo = fa
   return <Link href={href ?? '#'} className={clase}>{contenido}</Link>;
 }
 
-/* ── Instalar en el teléfono (PWA, 2026-09-24) ─────────────────────────────────────────────
-   Android/Chrome dispara `beforeinstallprompt`: se captura el evento y se muestra un botón que,
-   al tocarlo, abre el instalador NATIVO del propio navegador (`prompt()` de ese evento) — un solo
-   toque, sin salir de la app. iPhone/Safari NUNCA dispara ese evento (restricción de Apple, no
-   nuestra): ahí se detecta la plataforma y se abre una hoja con el paso a paso exacto de "Compartir
-   → Agregar a inicio". Si la persona ya la tiene instalada (`display-mode: standalone`), la fila
-   no se muestra — instalarla dos veces no tiene sentido. */
-function useEventoInstalacion(): { disponible: boolean; instalar: () => Promise<void> } {
-  const [evento, setEvento] = useState<{ prompt: () => void; userChoice: Promise<{ outcome: string }> } | null>(null);
-  useEffect(() => {
-    const capturar = (e: Event) => {
-      e.preventDefault();
-      setEvento(e as unknown as { prompt: () => void; userChoice: Promise<{ outcome: string }> });
-    };
-    window.addEventListener('beforeinstallprompt', capturar);
-    return () => window.removeEventListener('beforeinstallprompt', capturar);
-  }, []);
-  return {
-    disponible: evento !== null,
-    instalar: async () => {
-      if (!evento) return;
-      evento.prompt();
-      await evento.userChoice;
-      setEvento(null); // el navegador no vuelve a ofrecer el mismo evento
-    },
-  };
-}
-
-function leerInstalada(): boolean {
-  // `standalone` es el nombre que Safari le da a este mismo modo — dos formas de preguntar lo mismo.
-  return window.matchMedia('(display-mode: standalone)').matches || (window.navigator as { standalone?: boolean }).standalone === true;
-}
-function suscribirseAInstalada(avisar: () => void): () => void {
-  const mq = window.matchMedia('(display-mode: standalone)');
-  mq.addEventListener('change', avisar);
-  return () => mq.removeEventListener('change', avisar);
-}
-function useInstalada(): boolean {
-  return useSyncExternalStore(suscribirseAInstalada, leerInstalada, () => false);
-}
-
-/** El navegador no cambia de plataforma a mitad de sesión: sin suscripción real, solo el snapshot. */
-function useEsIOS(): boolean {
-  return useSyncExternalStore(
-    () => () => {},
-    () => /iphone|ipad|ipod/i.test(window.navigator.userAgent),
-    () => false
-  );
-}
-
+/* ── <FilaInstalar> — respaldo manual dentro de Ajustes, para quien cerró el aviso automático
+   (<BannerInstalar>, en app/(app)/layout.tsx) y lo quiere buscar después. Misma lógica compartida
+   en components/app/InstalarApp.tsx — nunca duplicada. ── */
 function FilaInstalar() {
   const { disponible, instalar } = useEventoInstalacion();
   const instalada = useInstalada();
   const ios = useEsIOS();
   const [mostrarPasos, setMostrarPasos] = useState(false);
-  const reduceMovimiento = useReducedMotion() ?? false;
 
   if (instalada) return null; // ya la tiene en su pantalla de inicio — nada que ofrecer
   if (!ios && !disponible) return null; // Android/Chrome sin el evento todavía (raro, pero posible): no mostrar un botón que no hace nada
@@ -351,67 +303,7 @@ function FilaInstalar() {
         detalle="Ábrela como una app, sin pasar por el navegador"
         onClick={ios ? () => setMostrarPasos(true) : instalar}
       />
-
-      {/* La hoja de pasos SOLO existe para iPhone: es la única plataforma sin instalación de un toque.
-          Va por PORTAL a <body> (2026-09-24): `app/(app)/template.tsx` anima cada pantalla con un
-          `motion.div` — un ancestro con `transform` activo convierte cualquier `position: fixed`
-          descendiente en algo fijo respecto a ESE ancestro, no al viewport real (regla de CSS, no bug
-          de Framer Motion). Sin el portal, la hoja se quedaba corta y el menú de abajo se veía a
-          través de ella. Con el portal, la hoja cuelga directo de `<body>`, fuera de ese contenedor. */}
-      {typeof document !== 'undefined' &&
-        // Portar DENTRO de #app-shell (nunca a document.body a secas): así conserva los tokens de
-        // color del tema del interior — ver el comentario en app/(app)/layout.tsx.
-        createPortal(
-          <AnimatePresence>
-            {mostrarPasos && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: reduceMovimiento ? 0.12 : 0.2 }}
-                className="fixed inset-0 z-30 flex items-end bg-[color-mix(in_oklab,black_55%,transparent)]"
-                onClick={() => setMostrarPasos(false)}
-              >
-                <motion.div
-                  initial={reduceMovimiento ? { opacity: 0 } : { y: '100%' }}
-                  animate={reduceMovimiento ? { opacity: 1 } : { y: 0 }}
-                  exit={reduceMovimiento ? { opacity: 0 } : { y: '100%' }}
-                  transition={{ duration: reduceMovimiento ? 0.12 : 0.28, ease: [0.16, 1, 0.3, 1] }}
-                  role="dialog"
-                  aria-modal="true"
-                  aria-label="Cómo instalar Coparentia en tu iPhone"
-                  className="mx-auto max-h-[92dvh] w-full max-w-[520px] overflow-y-auto rounded-t-[var(--radius-card)] bg-[var(--surface)] p-5 pb-[max(24px,env(safe-area-inset-bottom))]"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <div className="sticky -top-5 z-10 -mx-5 -mt-5 flex items-center justify-between bg-[var(--surface)] px-5 pt-5 pb-3">
-                    <h2 className="text-[18px] font-bold text-[var(--text-primary)] [font-family:var(--font-display)]">Instalar en tu iPhone</h2>
-                    <button type="button" onClick={() => setMostrarPasos(false)} aria-label="Cerrar" className="flex size-9 items-center justify-center text-[var(--text-secondary)]">
-                      <X size={20} aria-hidden="true" />
-                    </button>
-                  </div>
-                  <p className="mt-1 text-[13px] text-[var(--text-secondary)]">
-                    Apple no deja que ninguna página lo haga con un solo toque — son 3 pasos, una sola vez.
-                  </p>
-                  <ol className="mt-5 flex flex-col gap-4">
-                    {[
-                      { icon: Share, texto: <>Toca el botón <b>Compartir</b> (el cuadrado con la flecha hacia arriba) en la barra de Safari.</> },
-                      { icon: SquarePlus, texto: <>Baja hasta encontrar <b>&quot;Agregar a inicio&quot;</b> y tócalo.</> },
-                      { icon: Smartphone, texto: <>Toca <b>&quot;Agregar&quot;</b> arriba a la derecha. Listo: el ícono ya está en tu pantalla.</> },
-                    ].map((paso, i) => (
-                      <li key={i} className="flex items-start gap-3">
-                        <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[color-mix(in_oklab,var(--accent)_12%,transparent)] text-[13px] font-bold text-[var(--accent-ink,var(--accent))]">
-                          {i + 1}
-                        </span>
-                        <span className="pt-1.5 text-[14px] leading-[1.5] text-[var(--text-primary)]">{paso.texto}</span>
-                      </li>
-                    ))}
-                  </ol>
-                </motion.div>
-              </motion.div>
-            )}
-          </AnimatePresence>,
-          document.getElementById('app-shell') ?? document.body
-        )}
+      <HojaPasosInstalarIOS abierta={mostrarPasos} onCerrar={() => setMostrarPasos(false)} />
     </>
   );
 }

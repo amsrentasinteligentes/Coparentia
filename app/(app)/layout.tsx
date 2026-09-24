@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation';
 import { BottomNav } from '@/components/app/ui';
 import { AvisoSinConexion } from '@/components/app/AvisoSinConexion';
 import { RegistradorEventos } from '@/components/app/RegistradorEventos';
+import { BannerInstalar } from '@/components/app/InstalarApp';
 import { crearClienteSupabaseServidor } from '@/lib/supabase/server';
 import { tieneAccesoCompleto, type Status } from '@/lib/membership-fsm';
 import { tieneConsentimientoVigente } from '@/lib/consentimiento';
@@ -78,13 +79,22 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
     // compensarlo con CSS/JS no bastaron). Ahora el menú YA NO flota sobre nada: es un hermano fijo
     // dentro de una columna de exactamente `100dvh`, y solo el contenido de en medio hace scroll.
     // Ese tipo de bug deja de ser posible, en vez de seguir corrigiéndose después de que pasa.
-    // `id` para los modales que van por portal (ej. FilaInstalar en Ajustes, 2026-09-24): portar a
-    // `document.body` a secas saca al modal de esta clase y pierde TODOS los tokens de color del
-    // interior (cae al tema oscuro por defecto de la landing) — portar aquí adentro los conserva.
+    // `id` para los modales que van por portal (ej. la hoja de instalación en iPhone, 2026-09-24):
+    // portar a `document.body` a secas saca al modal de esta clase y pierde TODOS los tokens de
+    // color del interior (cae al tema oscuro por defecto de la landing) — portar aquí adentro los
+    // conserva.
     <div id="app-shell" className={`tema-app-claro ${figtree.variable} ${nunitoSans.variable} flex h-dvh flex-col bg-[var(--bg)] text-[var(--text-primary)] [font-family:var(--font-body)]`}>
       <AvisoSinConexion />
       <RegistradorEventos />
-      <main className="min-h-0 flex-1 overflow-y-auto">{children}</main>
+      {/* Aviso de instalación (2026-09-24): arriba de CUALQUIER pantalla — nadie debería tener que
+          buscar "Ajustes" para encontrarlo (el dueño lo probó y no lo encontró: no está en el menú
+          de abajo, hay que entrar a Perfil y bajar hasta una fila con otro nombre). Fuera de
+          `{children}` a propósito: así no se re-monta al cambiar de pestaña — quien ya lo cerró no
+          lo vuelve a ver de pantalla en pantalla. */}
+      <main className="min-h-0 flex-1 overflow-y-auto">
+        <BannerInstalar />
+        {children}
+      </main>
       <BottomNav />
     </div>
   );
