@@ -1,3 +1,16 @@
+### Checkpoint (2026-09-24) — Alertas de uso: Vercel Hobby NO tiene aviso automático
+- Revisado en el panel real (team amsrentasinteligentes-9577): "Spend Management"/alertas de
+  anomalías son función SOLO de Vercel Pro. En Hobby no hay forma de configurar "avísame al 80%".
+  Tampoco hay tarjeta guardada — sin riesgo de cobro sorpresa, solo se pausaría al tope.
+- Uso real medido el 2026-09-24 (últimos 30 días): Fast Data Transfer 388 MB/100 GB (0.4%) ·
+  Function Invocations 5.9K/1M (0.6%) · Edge Requests 9.2K/1M (0.9%). Muy lejos del límite — Vercel
+  Pro NO es urgente hoy.
+- Notificaciones por correo de Vercel SÍ están activas (amsrentasinteligentes@gmail.com).
+- **Acuerdo con el usuario**: sin alerta automática de Vercel, YO reviso el uso (1) cuando el
+  usuario pregunte, y (2) proactivamente antes/después de cualquier evento que dispare tráfico
+  (campaña de ads, lanzamiento, empujón de afiliados Hotmart, prensa). El usuario solo tiene que
+  avisarme cuando algo así vaya a pasar.
+
 ### Checkpoint (2026-09-24) — Costos de infraestructura: cuándo subir de plan cada servicio
 - Hoy la app corre gratis en Vercel (Hobby) y Supabase (Free). Decisión anotada para no perder el
   momento correcto:
