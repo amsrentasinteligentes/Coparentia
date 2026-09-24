@@ -1,3 +1,15 @@
+### Checkpoint (2026-09-24) — Enlace a la SIC (normativa colombiana, art. 40)
+- El equipo jurídico del usuario aportó la norma: la página debe contener un enlace VISIBLE a la
+  Superintendencia de Industria y Comercio (autoridad de protección al consumidor).
+- Agregado como "SIC" -> https://www.sic.gov.co/ en TRES lugares: pie de la landing (FooterLegal),
+  pie de Ajustes (dentro de la app), y un pie nuevo en el onboarding (que no tenia NINGUNO).
+- **Decision de diseño**: en el onboarding el pie SOLO aparece en la PRIMERA pregunta (paso 0), no
+  en las 8 preguntas siguientes — ponerlo en cada paso competiria con el CTA anclado al fondo
+  (mt-auto) que el revisor ya aprobo en varias rondas. Si el usuario prefiere que aparezca en TODOS
+  los pasos, avisar para ajustarlo.
+- Los enlaces externos del pie de la landing ahora abren en pestaña nueva (antes sacaban a la
+  persona de la pagina de ventas).
+
 ### Checkpoint (2026-09-24) — Alertas de uso: Supabase Free tampoco tiene aviso automatico
 - Revisado en el panel real (org amsrentasinteligentes, wflifkwjgtybupohjzxq): igual que Vercel, el
   plan Free no tiene un toggle de "avisame al 80%". Spend cap esta activado (sin riesgo de cobro
