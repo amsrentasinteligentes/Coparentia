@@ -2617,7 +2617,7 @@ FICHA-ARTE.md que la landing.
   meses de Pro y un total tachado de "US$154" con extras valorados en US$19 y US$15 que nunca se
   han vendido aparte — claims sin respaldo para el gate 61. Ahora la línea dice "12 meses, pagando
   mes a mes · US$119.88" (US$9.99 × 12, el precio publicado), los extras dicen "Incluida" sin
-  precio, y el tachado se etiqueta "Pagando mes a mes" (prop nueva  en Oferta.tsx).
+  precio, y el tachado se etiqueta "Pagando mes a mes" (prop nueva `etiquetaTotal` en Oferta.tsx).
   Cuadra con el badge "AHORRAS US$30.88 AL AÑO" (119.88 − 89 = 30.88).
 - (anterior) **veredicto:landing** LISTA en la r16.1 (36/40 · 16/20 · 17/20). Después del
   veredicto se aplicó UN cambio de una línea —su propio defecto 4, alinear el ícono del pie del video
