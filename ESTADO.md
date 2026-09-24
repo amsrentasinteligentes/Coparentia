@@ -2699,6 +2699,10 @@ FICHA-ARTE.md que la landing.
   presupuesto; queda anotado para antes de declarar el funnel "vendible" de verdad.
 
 ## Problemas conocidos
+- **veredicto:landing / veredicto:onboarding / veredicto:paywall** (2026-09-24, app instalable):
+  el gate avisa "caducado" porque app/layout.tsx (etiquetas de iPhone/tema) y app/(app)/layout.tsx
+  (id #app-shell) cambiaron de mtime — son cambios de INFRAESTRUCTURA (manifiesto PWA, portal de un
+  modal) que no tocan el diseño de ninguna de las 3 pantallas. No se relanza el revisor por esto.
 - **veredicto:landing / veredicto:onboarding** (2026-09-24, enlace a la SIC): tras el veredicto
   vigente se agrego el enlace "SIC" al pie de la landing (un enlace mas en una lista que ya tenia
   4) y un pie legal nuevo SOLO en el paso 0 del onboarding (screens 1-8 no cambiaron). Cambio de
