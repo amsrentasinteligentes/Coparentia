@@ -78,7 +78,10 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
     // compensarlo con CSS/JS no bastaron). Ahora el menú YA NO flota sobre nada: es un hermano fijo
     // dentro de una columna de exactamente `100dvh`, y solo el contenido de en medio hace scroll.
     // Ese tipo de bug deja de ser posible, en vez de seguir corrigiéndose después de que pasa.
-    <div className={`tema-app-claro ${figtree.variable} ${nunitoSans.variable} flex h-dvh flex-col bg-[var(--bg)] text-[var(--text-primary)] [font-family:var(--font-body)]`}>
+    // `id` para los modales que van por portal (ej. FilaInstalar en Ajustes, 2026-09-24): portar a
+    // `document.body` a secas saca al modal de esta clase y pierde TODOS los tokens de color del
+    // interior (cae al tema oscuro por defecto de la landing) — portar aquí adentro los conserva.
+    <div id="app-shell" className={`tema-app-claro ${figtree.variable} ${nunitoSans.variable} flex h-dvh flex-col bg-[var(--bg)] text-[var(--text-primary)] [font-family:var(--font-body)]`}>
       <AvisoSinConexion />
       <RegistradorEventos />
       <main className="min-h-0 flex-1 overflow-y-auto">{children}</main>

@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Spectral, IBM_Plex_Sans } from "next/font/google";
+import { ACCENT_HEX } from "@/lib/marca";
 import "./globals.css";
 
 const spectral = Spectral({
@@ -18,6 +19,20 @@ export const metadata: Metadata = {
   title: "Coparentia — Tu expediente, en confianza",
   description:
     "El expediente digital que convierte tus pagos y comprobantes en pruebas organizadas, sin depender de que nadie más la use.",
+  // iPhone/Safari NO lee app/manifest.ts (esa es la parte de Android/Chrome): sin estas 3 líneas,
+  // "Agregar a inicio" en iOS deja un acceso directo que sigue abriendo Safari con su barra completa
+  // — con ellas, abre a pantalla completa como cualquier app instalada (2026-09-24, PWA instalable).
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Coparentia",
+  },
+  // Next.js solo emite la etiqueta genérica moderna (`mobile-web-app-capable`); los iPhones más
+  // viejos que todavía circulan en Colombia solo entienden el nombre clásico de Apple — se agrega
+  // aparte para no dejarlos fuera.
+  other: {
+    "apple-mobile-web-app-capable": "yes",
+  },
 };
 
 // `viewportFit: 'cover'` es lo que activa `env(safe-area-inset-*)` de verdad — el nav de abajo y
@@ -29,6 +44,9 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
+  // Tiñe la barra de direcciones del navegador (Android/Chrome) con el acento de marca — no cambia
+  // nada dentro de la app instalada, esa parte ya la fija manifest.ts (theme_color).
+  themeColor: ACCENT_HEX,
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
