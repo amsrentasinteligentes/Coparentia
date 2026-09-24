@@ -1,3 +1,7 @@
+### Checkpoint (2026-09-24) — DECISIÓN: el logo se queda tal cual está
+- El dueño decidió NO hacer la versión plana azul del logo que estaba pendiente desde el 2026-09-18.
+  Se descarta de la lista de pendientes; el logo actual (isotipo + horizontal) es DEFINITIVO.
+
 ### Checkpoint (2026-09-24, cierre) — LANDING **LISTA** (36/40 · 16/20 · 17/20) + VIDEO v2
 - Veredicto r16 en docs/revisiones/landing-veredicto.md. Ocho rondas hoy (r10→r16): la regla dura
   que salió de ellas es **ningún número que sea PRECIO o PROMESA se anima** (CountUp llegó a
