@@ -2730,6 +2730,9 @@ FICHA-ARTE.md que la landing.
   presupuesto; queda anotado para antes de declarar el funnel "vendible" de verdad.
 
 ## Problemas conocidos
+- **veredicto:landing/onboarding/paywall** (2026-09-24, boton de Google): el gate avisa por mtime
+  de app/(funnel)/entrar/page.tsx — esa pantalla NO es ninguna de las 4 del dinero (es el login,
+  entre paywall y la app), asi que no dispara revision. No se relanza el revisor por esto.
 - **veredicto:onboarding / veredicto:paywall / veredicto:landing** (2026-09-24, aviso de
   instalación): el gate avisa "caducado" por mtime, pero el aviso que aparece en Inicio
   ("Instálala en tu teléfono") es un elemento de SISTEMA fuera del flujo normal de la pantalla —
