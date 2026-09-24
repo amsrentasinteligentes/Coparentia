@@ -303,8 +303,8 @@ export function Solucion({
         )}
 
         {demo?.pie && (
-          <motion.p variants={item} className="mt-8 flex items-center justify-center gap-2 text-[13px] text-[var(--text-tertiary)] lg:text-[14px]">
-            <ShieldCheck size={15} className="shrink-0 text-[var(--accent-ink,var(--accent))]" aria-hidden="true" />
+          <motion.p variants={item} className="mt-8 flex items-start justify-center gap-2 text-[13px] text-[var(--text-tertiary)] lg:text-[14px]">
+            <ShieldCheck size={15} className="mt-[3px] shrink-0 text-[var(--accent-ink,var(--accent))]" aria-hidden="true" />
             {demo.pie}
           </motion.p>
         )}
