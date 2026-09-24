@@ -179,9 +179,9 @@ export function Solucion({
             para que se lea el paso y se vea ocurriendo. Sin demo: la foto humana y los pasos
             en 3 columnas, como en el resto del kit. */}
         {demo ? (
-          <div className="mt-10 lg:grid lg:grid-cols-[0.95fr_1.05fr] lg:items-center lg:gap-16">
-            <motion.div variants={item} className="flex flex-col items-center lg:order-2">
-              <Hairline emphasis surface="surface" className="relative w-full max-w-[260px] p-2 shadow-[var(--shadow-2)] lg:max-w-[320px]">
+          <div className="mt-10 flex flex-col lg:grid lg:grid-cols-[0.95fr_1.05fr] lg:items-center lg:gap-16">
+            <motion.div variants={item} className="order-2 mt-10 flex flex-col items-center lg:order-2 lg:mt-0">
+              <Hairline emphasis surface="surface" className="relative w-full max-w-[220px] p-2 shadow-[var(--shadow-2)] lg:max-w-[320px]">
                 <video
                   ref={ref}
                   className="block w-full rounded-[calc(var(--radius-card)-6px)]"
@@ -245,7 +245,7 @@ export function Solucion({
               )}
             </motion.div>
 
-            <ol className="mt-8 flex flex-col gap-6 lg:order-1 lg:mt-0">
+            <ol className="order-1 flex flex-col gap-6 lg:order-1">
               {pasos.map((p, i) => (
                 <motion.li key={i} variants={item} className="flex items-start gap-4">
                   <span

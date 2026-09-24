@@ -9,7 +9,7 @@
 // El destino de los CTAs sigue al MODELO de 02C (checkout vs /onboarding).
 
 import { motion } from 'motion/react';
-import { CheckCustom, CountUp, CtaButton, Hairline, Kicker, SectionShell, useReveal, VIEWPORT_ONCE } from './ui';
+import { CheckCustom, CtaButton, Hairline, Kicker, SectionShell, useReveal, VIEWPORT_ONCE } from './ui';
 import { MarkedCopy, warnCopy, warnRango } from './MarkedCopy';
 
 export interface PlanOferta {
@@ -60,7 +60,7 @@ function Precio({ plan }: { plan: PlanOferta }) {
     <div>
       <p className="flex items-baseline gap-1">
         <span className="text-[36px] font-bold leading-none tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
-          <CountUp text={plan.precioMes} />
+          {plan.precioMes}
         </span>
         <span className="text-[14px] text-[var(--text-secondary)] lg:text-[16px]">{plan.sufijo ?? '/mes'}</span>
       </p>

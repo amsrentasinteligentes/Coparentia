@@ -7,7 +7,7 @@
 // Nunca placeholders ("garantía visible"): se nombra la política concreta o la
 // sección no se monta (52 §5). El plazo = el configurado en Hotmart (19 §7).
 
-import { motion } from 'motion/react';
+import { motion, useReducedMotion } from 'motion/react';
 import { Lock, ShieldCheck } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { Accent, Hairline, SectionShell, useReveal, VIEWPORT_ONCE } from './ui';
@@ -28,6 +28,7 @@ export interface GarantiaProps {
 export function Garantia({ nombre, condicionMarked, pisoLegal, icon: Icono = ShieldCheck, id }: GarantiaProps) {
   warnCopy('Garantía → condición', condicionMarked, 30);
   const { contenedor, item } = useReveal();
+  const reduce = useReducedMotion() ?? false;
 
   return (
     <SectionShell id={id} elevacion="elevada" compacta ariaLabel="Garantía">
@@ -46,10 +47,10 @@ export function Garantia({ nombre, condicionMarked, pisoLegal, icon: Icono = Shi
                   la única celebración de la página, reservada para lo que de verdad tranquiliza. */}
               <motion.span
                 aria-hidden="true"
-                initial={{ scale: 0.86, opacity: 0 }}
-                whileInView={{ scale: 1, opacity: 1 }}
+                initial={reduce ? { opacity: 0 } : { scale: 0.86, opacity: 0 }}
+                whileInView={reduce ? { opacity: 1 } : { scale: 1, opacity: 1 }}
                 viewport={VIEWPORT_ONCE}
-                transition={{ type: "spring", stiffness: 320, damping: 18, delay: 0.1 }}
+                transition={reduce ? { duration: 0.2 } : { type: 'spring', stiffness: 320, damping: 18, delay: 0.1 }}
                 className="flex size-15 items-center justify-center rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--accent)_22%,transparent)] bg-[var(--chip-bg)]"
               >
                 <Icono size={32} strokeWidth={1.8} color="var(--accent)" aria-hidden="true" />

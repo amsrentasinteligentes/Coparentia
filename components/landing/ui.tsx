@@ -409,6 +409,16 @@ export function StickyCtaMobile({
 
   const visible = !heroVisible && !ofertaVisible && !finalVisible && !ctaEnPantalla && !descartada;
 
+  // La barra flota sobre el documento: sin esto tapa ~76px de lo que quede al fondo de la pantalla.
+  useEffect(() => {
+    if (!visible) return;
+    const anterior = document.body.style.paddingBottom;
+    document.body.style.paddingBottom = '76px';
+    return () => {
+      document.body.style.paddingBottom = anterior;
+    };
+  }, [visible]);
+
   return (
     <AnimatePresence>
       {visible && (
