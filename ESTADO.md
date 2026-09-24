@@ -2609,6 +2609,13 @@ FICHA-ARTE.md que la landing.
   presupuesto; queda anotado para antes de declarar el funnel "vendible" de verdad.
 
 ## Problemas conocidos
+- **TESTIMONIOS / PRUEBA SOCIAL: pendiente A PROPÓSITO hasta que existan clientes reales**
+  (decisión del dueño, 2026-09-24). Es el defecto 1 vivo del revisor y el techo de conversión de
+  la landing, pero NO se resuelve inventando nada: ni testimonios, ni "+500 familias", ni un
+  "MÁS POPULAR" fabricado (ese ya se quitó una vez por lo mismo). Se desbloquea con la validación
+  de Ivonne y los primeros compradores; al pedirlos, servir la plantilla de `35-LANZAMIENTO.md`
+  (prueba social desde cero). Mientras tanto la página se sostiene con lo que SÍ es verificable:
+  la demo del Sello funcionando, la garantía de 15 días y el respaldo de Hotmart.
 - **veredicto:landing** (2026-09-24, cierre de la tarde): sigue LISTA por la r16.1; después se
   aplicaron dos cambios menores verificados por captura y NO re-revisados (rendimiento decreciente,
   ~100k tokens por ronda): el ícono del pie del video alineado a la primera línea, y el ANCLA DE
