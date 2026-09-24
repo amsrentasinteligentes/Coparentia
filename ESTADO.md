@@ -1,3 +1,19 @@
+### Checkpoint (2026-09-24) — Alertas de uso: Supabase Free tampoco tiene aviso automatico
+- Revisado en el panel real (org amsrentasinteligentes, wflifkwjgtybupohjzxq): igual que Vercel, el
+  plan Free no tiene un toggle de "avisame al 80%". Spend cap esta activado (sin riesgo de cobro
+  sorpresa, solo restriccion si se excede la cuota).
+- Uso real medido el 2026-09-24 (proyecto Coparentia, ref chxhyzyzpipbopskomuv): Egress 0.33/5 GB
+  (7%) - Database size 26.6/500 MB (6%) - Storage 0.02/1 GB (2%) - Monthly Active Users 4/50.000
+  (<1%). Muy lejos del limite.
+- **El riesgo real (pausa tras 7 dias sin actividad) es confirmado**: la MISMA cuenta tiene OTRO
+  proyecto viejo (no Coparentia) actualmente PAUSADO por inactividad - prueba de que el mecanismo
+  es real, no teorico. Pero mientras Coparentia tenga al menos una visita real por semana, nunca se
+  duerme - el riesgo solo aplica si la app quedara sin NINGUN visitante 7 dias seguidos.
+- **Acuerdo con el usuario (2026-09-24)**: se crea una tarea programada quincenal (dias 1 y 15 de
+  cada mes, 9:07am hora local) que revisa el uso real de Vercel y Supabase y le informa al usuario
+  el estado, ademas de que el usuario puede preguntar en cualquier momento. Ver tarea programada
+  "revision-quincenal-infra" (Claude Code -> tareas programadas).
+
 ### Checkpoint (2026-09-24) — Alertas de uso: Vercel Hobby NO tiene aviso automático
 - Revisado en el panel real (team amsrentasinteligentes-9577): "Spend Management"/alertas de
   anomalías son función SOLO de Vercel Pro. En Hobby no hay forma de configurar "avísame al 80%".
