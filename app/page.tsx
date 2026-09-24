@@ -155,12 +155,13 @@ export default function Home() {
         refCopAnual={refCop ?? undefined}
         stack={{
           lineas: [
-            { resultado: 'Coparentia Pro con el Sello de Confianza (12 meses)', valor: 'US$120' },
-            { resultado: 'Plantilla de autorización de gastos extraordinarios', valor: 'US$19' },
-            { resultado: 'Guía "Tu primer expediente en 10 minutos"', valor: 'US$15' },
+            { resultado: 'Coparentia Pro con el Sello de Confianza — 12 meses, pagando mes a mes', valor: 'US$119.88' },
+            { resultado: 'Plantilla de autorización de gastos extraordinarios', valor: 'Incluida' },
+            { resultado: 'Guía "Tu primer expediente en 10 minutos"', valor: 'Incluida' },
           ],
-          totalTachado: 'US$154',
-          nota: 'Hoy no pagas nada. Después: US$89 al año con el plan Anual (US$7.42/mes)',
+          totalTachado: 'US$119.88',
+          etiquetaTotal: 'Pagando mes a mes',
+          nota: 'Hoy no pagas nada. Después: US$89 al año con el plan Anual (US$7.42/mes) — US$30.88 menos que pagando mes a mes',
         }}
         anual={{
           nombre: 'Anual',

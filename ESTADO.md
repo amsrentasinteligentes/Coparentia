@@ -2609,7 +2609,17 @@ FICHA-ARTE.md que la landing.
   presupuesto; queda anotado para antes de declarar el funnel "vendible" de verdad.
 
 ## Problemas conocidos
-- **veredicto:landing** (2026-09-24, cierre): LISTA en la r16.1 (36/40 · 16/20 · 17/20). Después del
+- **veredicto:landing** (2026-09-24, cierre de la tarde): sigue LISTA por la r16.1; después se
+  aplicaron dos cambios menores verificados por captura y NO re-revisados (rendimiento decreciente,
+  ~100k tokens por ronda): el ícono del pie del video alineado a la primera línea, y el ANCLA DE
+  PRECIO del stack reescrita para que todo número tenga respaldo (ver abajo).
+- **Ancla de precio del stack (defecto 2 del revisor, RESUELTO 2026-09-24):** decía "US$120" por 12
+  meses de Pro y un total tachado de "US$154" con extras valorados en US$19 y US$15 que nunca se
+  han vendido aparte — claims sin respaldo para el gate 61. Ahora la línea dice "12 meses, pagando
+  mes a mes · US$119.88" (US$9.99 × 12, el precio publicado), los extras dicen "Incluida" sin
+  precio, y el tachado se etiqueta "Pagando mes a mes" (prop nueva  en Oferta.tsx).
+  Cuadra con el badge "AHORRAS US$30.88 AL AÑO" (119.88 − 89 = 30.88).
+- (anterior) **veredicto:landing** LISTA en la r16.1 (36/40 · 16/20 · 17/20). Después del
   veredicto se aplicó UN cambio de una línea —su propio defecto 4, alinear el ícono del pie del video
   que pasó a dos líneas (items-start + 3px)— verificado por captura. No se relanza una r17 por eso:
   rendimiento decreciente (cada ronda cuesta ~100k tokens). Defectos vivos anotados: sin prueba social
