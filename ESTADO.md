@@ -1,3 +1,30 @@
+### Checkpoint (2026-09-24) — Coparentia se puede INSTALAR en el teléfono (PWA)
+- Pedido del dueño: que la app quede en el teléfono como una app cualquiera, sin entrar por la
+  página. Implementado como app web instalable (PWA) — NO es una app de las tiendas (App Store /
+  Google Play); esa es otra decisión aparte, más cara (cuentas de desarrollador + revisión).
+- app/manifest.ts (Next.js nativo) + etiquetas de iPhone en app/layout.tsx. Íconos generados desde
+  el isotipo ya aprobado, en public/icons/ + app/apple-icon.png.
+- Botón "Instalar en tu teléfono" en Ajustes → tarjeta de suscripción. Android: un toque, evento
+  nativo `beforeinstallprompt`. iPhone (Apple no lo permite automático): hoja con 3 pasos
+  ("Compartir → Agregar a inicio"). Si ya está instalada, la fila desaparece sola.
+- **Bug real encontrado y corregido durante la construcción**: la hoja de pasos de iPhone, al vivir
+  dentro de app/(app)/template.tsx (que anima cada pantalla), quedaba atrapada por esa animación —
+  un ancestro con `transform` rompe `position: fixed` de sus descendientes (regla de CSS). Se movió
+  a un portal apuntando a #app-shell (id nuevo en app/(app)/layout.tsx) — cubre la pantalla entera
+  y conserva los colores del interior. Portar a `document.body` a secas se probó primero y se
+  descartó: perdía los tokens de color (caía al tema oscuro por defecto de la landing).
+- lib/marca.ts: los 2 hex de marca que SÍ necesitan ser texto plano (el manifiesto y las <meta>
+  no son CSS, no pueden usar var(--accent)) — centralizados para no repetirlos.
+- **Decisión explícita: SIN service worker / SIN funcionamiento sin internet todavía.** Cachear
+  datos de un expediente legal es riesgoso (podría mostrar una versión vieja como si fuera
+  vigente, justo lo contrario de lo que promete el Sello de Confianza). Se evalúa aparte si el
+  dueño lo pide con cuidado extra en el diseño.
+- **Pendiente del dueño**: probarla en un Android y un iPhone REALES una vez publicada — la parte
+  de "aparece el ícono y abre sin barra de navegador" no se puede verificar 100% desde una prueba
+  automatizada, solo desde un teléfono de verdad.
+- Verificado: tsc/build limpios, /manifest.webmanifest y /apple-icon.png se sirven solos, capturas
+  en iPhone y Android simulados (docs/revisiones/ajustes-instalar-{ios,android,pasos}-375.png).
+
 ### Checkpoint (2026-09-24) — Enlace a la SIC (normativa colombiana, art. 40)
 - El equipo jurídico del usuario aportó la norma: la página debe contener un enlace VISIBLE a la
   Superintendencia de Industria y Comercio (autoridad de protección al consumidor).
