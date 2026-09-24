@@ -1,3 +1,21 @@
+### Checkpoint (2026-09-24) — Costos de infraestructura: cuándo subir de plan cada servicio
+- Hoy la app corre gratis en Vercel (Hobby) y Supabase (Free). Decisión anotada para no perder el
+  momento correcto:
+  1. **Supabase Pro (US$25/mes) — subirlo el día que empiece a venderse de verdad (primer cliente
+     pagando en serio, no solo pruebas).** Es MÁS urgente que Vercel: el plan gratis de Supabase se
+     pausa solo tras 7 días sin actividad, inviable con clientes reales pagando.
+  2. **Vercel Pro (US$20/mes) — subirlo cuando el tráfico crezca bastante o el plan gratis estorbe**
+     (ej. solo permite publicar una cosa a la vez — el atasco de despliegues de sep-2026 fue por
+     esto). No es urgente al lanzar.
+  3. **Resend — sigue gratis hasta ~3.000 correos/mes**; subir cuando se acerque a ese tope.
+  4. **Dominio coparentia.co** — se renueva una vez al año, automático, ~US$25-35/año.
+  5. **Hotmart** no tiene mensualidad, cobra ~10% + tarifa fija por cada venta.
+- Con Supabase Pro + Vercel Pro (~US$45/mes total), el punto de equilibrio son menos de 7 clientes
+  del plan anual (US$7.42/mes) — todo lo de ahí en adelante es ganancia sobre la infraestructura.
+- Fuente de los números de Vercel/Supabase: docs/sistema/13-INFRA-ESCALABILIDAD.md (verificados
+  dentro de este SO, mediados 2026). Resend y dominio son aproximados — confirmar precio vigente
+  al momento de pagar.
+
 ### Checkpoint (2026-09-24) — DECISIÓN: el logo se queda tal cual está
 - El dueño decidió NO hacer la versión plana azul del logo que estaba pendiente desde el 2026-09-18.
   Se descarta de la lista de pendientes; el logo actual (isotipo + horizontal) es DEFINITIVO.
