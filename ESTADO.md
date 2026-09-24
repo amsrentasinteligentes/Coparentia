@@ -2672,6 +2672,12 @@ FICHA-ARTE.md que la landing.
   presupuesto; queda anotado para antes de declarar el funnel "vendible" de verdad.
 
 ## Problemas conocidos
+- **veredicto:landing / veredicto:onboarding** (2026-09-24, enlace a la SIC): tras el veredicto
+  vigente se agrego el enlace "SIC" al pie de la landing (un enlace mas en una lista que ya tenia
+  4) y un pie legal nuevo SOLO en el paso 0 del onboarding (screens 1-8 no cambiaron). Cambio de
+  copy/enlace, no de diseño — verificado por captura (texto exacto de los dos pies), sin re-lanzar
+  el revisor por rendimiento decreciente. veredicto:paywall sin cambios (avisa por mtime de
+  ajustes/asistencia/calendario, ya documentado).
 - **TESTIMONIOS / PRUEBA SOCIAL: pendiente A PROPÓSITO hasta que existan clientes reales**
   (decisión del dueño, 2026-09-24). Es el defecto 1 vivo del revisor y el techo de conversión de
   la landing, pero NO se resuelve inventando nada: ni testimonios, ni "+500 familias", ni un
