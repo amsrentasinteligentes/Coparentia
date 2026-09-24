@@ -1,3 +1,24 @@
+### Checkpoint (2026-09-24) — LA DEMO DEL SELLO SE MUDÓ A "CÓMO FUNCIONA" (pedido del dueño)
+- El video dejó de ser sección aparte: vive dentro de `Solucion` acompañando a los 3 pasos, cada
+  uno con su marca de tiempo (0:03 / 0:10 / 0:17) que SALTA a ese momento del video. En celular
+  mandan los pasos y el video va debajo, como prueba (`order-1`/`order-2`, marco de 220px).
+- Eliminados por pedido del dueño: el bloque Antes/Después de esa sección (prop `antesDespues`
+  borrada del componente) y la foto de papá e hija en esa sección (con el video saturaba).
+- Mando propio del video (pausar / volver a empezar, 44px, bajo el teléfono) en lugar de los
+  controles del navegador; la reproducción empieza pasado el tramo de carga de la app.
+- **Ningún número que sea PROMESA o PRECIO se anima** (regla del revisor, r13-r14): `CountUp` salió
+  de Oferta.tsx y de Hero.tsx — el precio llegó a publicar "US$0" y el hero "7 minutos". La cifra
+  viva quedó reemplazada por la entrada de la burbuja y la celebración del sello de la garantía
+  (con `useReducedMotion`).
+- La barra fija de celular se esconde si CUALQUIER botón principal está en pantalla (`data-cta-pagina`)
+  y compensa su alto en el `<body>` solo bajo 768px.
+- `components/landing/DemoSello.tsx` quedó SIN USO (la sección aparte ya no existe); no se borra
+  hasta que el dueño lo autorice.
+- Guion de captura nuevo (scratchpad/capturar2.cjs): recorre la página despacio y comprueba que
+  ninguna sección quede sin revelar antes de entregar el PNG — la r14 se cayó por una captura
+  con media página en blanco, no por diseño.
+- Página: 10.102px → 9.369px de alto.
+
 ### Checkpoint (2026-09-23, cierre) — r9 de la landing aplicada (LISTA 38/40 · 16/20 · 18/20)
 - Veredicto r9 (docs/revisiones/landing-veredicto.md): **LISTA 38/40 · 16/20 · 18/20** — la mini-demo
   subió usabilidad (36→38) y copy (17→18).
