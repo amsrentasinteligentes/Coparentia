@@ -256,6 +256,9 @@ export default function Home() {
           { label: 'Términos y Condiciones', href: '/terminos' },
           { label: 'Reembolsos', href: '/reembolsos' },
           { label: 'Aviso de IA', href: '/aviso-ia' },
+          // Exigido por la normativa colombiana de protección al consumidor (2026-09-24, aportada
+          // por el equipo jurídico): enlace visible a la autoridad de protección al consumidor.
+          { label: 'SIC', href: 'https://www.sic.gov.co/' },
         ]}
       />
 

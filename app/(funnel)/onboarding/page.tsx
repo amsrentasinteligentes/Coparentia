@@ -413,6 +413,38 @@ export default function Onboarding() {
           <PanelExpediente filas={filas} compacto />
         </div>
       )}
+
+      {/* Pie legal — SOLO en la primera pregunta (2026-09-24, normativa colombiana de protección al
+          consumidor): en los pasos siguientes competiría con el CTA anclado abajo (mt-auto) que el
+          revisor ya aprobó varias rondas — un enlace nuevo por pantalla movería esa ancla. Aquí,
+          antes de que la persona conteste nada, no hay CTA anclado que perturbar. */}
+      {paso === 0 && (
+        <nav aria-label="Enlaces legales" className="mt-6 flex flex-wrap items-center justify-center gap-x-1 gap-y-0 pb-2 text-center lg:justify-start">
+          {[
+            { label: 'Privacidad', href: '/privacidad' },
+            { label: 'Términos y Condiciones', href: '/terminos' },
+            { label: 'Reembolsos', href: '/reembolsos' },
+            { label: 'Aviso de IA', href: '/aviso-ia' },
+            { label: 'SIC', href: 'https://www.sic.gov.co/', externo: true },
+          ].map((e, i) => (
+            <span key={e.href} className="flex items-center">
+              {i > 0 && (
+                <span aria-hidden="true" className="px-1 text-[var(--text-tertiary)]">
+                  ·
+                </span>
+              )}
+              <a
+                href={e.href}
+                target={e.externo ? '_blank' : undefined}
+                rel={e.externo ? 'noopener noreferrer' : undefined}
+                className="px-1 py-3 text-[12px] text-[var(--text-tertiary)] underline-offset-4 hover:text-[var(--text-secondary)] hover:underline"
+              >
+                {e.label}
+              </a>
+            </span>
+          ))}
+        </nav>
+      )}
     </MarcoFunnel>
   );
 }

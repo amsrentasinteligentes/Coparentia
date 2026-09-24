@@ -47,9 +47,12 @@ export function FooterLegal({ appName, logo, marcaSoloLogo = false, enlaces, sop
                       ·
                     </span>
                   )}
-                  {/* py-3 = área táctil ≥44px sin líneas pegadas */}
+                  {/* py-3 = área táctil ≥44px sin líneas pegadas. Externo (ej. la SIC) abre en
+                      pestaña nueva: nunca sacar a alguien de mitad de la página de ventas. */}
                   <a
                     href={e.href}
+                    target={e.href.startsWith('http') ? '_blank' : undefined}
+                    rel={e.href.startsWith('http') ? 'noopener noreferrer' : undefined}
                     className="px-1 py-3 text-[13px] text-[var(--text-tertiary)] underline-offset-4 hover:text-[var(--text-secondary)] hover:underline lg:text-[15px]"
                   >
                     {e.label}

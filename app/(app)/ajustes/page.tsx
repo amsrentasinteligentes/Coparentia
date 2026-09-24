@@ -428,7 +428,17 @@ export default function Ajustes() {
         <a href="mailto:soporte@coparentia.co" className="text-[var(--accent)] underline">
           soporte@coparentia.co
         </a>
-        .
+        .{' '}
+        {/* Exigido por la normativa colombiana de proteccion al consumidor (2026-09-24) — enlace
+            visible a la autoridad, abre en pestaña nueva. */}
+        <a
+          href="https://www.sic.gov.co/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-[var(--accent)] underline"
+        >
+          SIC
+        </a>
       </p>
       </ContenedorApp>
     </>
