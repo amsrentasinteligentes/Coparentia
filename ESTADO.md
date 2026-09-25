@@ -1,3 +1,16 @@
+### Checkpoint (2026-09-25) — Enlace roto a Hotmart (bug real, corregido)
+- El usuario probo "Suscripcion y pagos" en su Android real y le salio "No se puede acceder a
+  este sitio" (sac.hotmart.com no resuelve).
+- **Encontrado el bug de raiz**: sac.hotmart.com y purchases.hotmart.com NUNCA fueron dominios
+  reales de Hotmart (verificado: ambos dan DNS_PROBE_FINISHED_NXDOMAIN). La direccion correcta del
+  area de compras para compradores es **consumer.hotmart.com** (confirmado con una carga real:
+  titulo "Hotmart - Consumer").
+- Corregido en 3 lugares que usaban la direccion vieja: Ajustes, Perfil (mismo enlace duplicado en
+  los dos) y lib/email.ts (boton "Actualizar mi metodo de pago" del correo de pago fallido — este
+  ultimo nunca se habia probado con un clic real).
+- Leccion para la proxima vez que se agregue un enlace externo nuevo: probarlo con un clic real
+  (Playwright o el navegador), no solo confiar en que el dominio suena correcto.
+
 ### Checkpoint (2026-09-25) — Politica de Tratamiento de Datos completa (juridica)
 - El usuario aporto un documento .docx de 29 secciones, ya revisado por su equipo juridico, y pidio
   incorporarlo completo. Reemplazo la version corta anterior en /privacidad (misma URL, todos los
