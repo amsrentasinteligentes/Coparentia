@@ -1,3 +1,17 @@
+### Checkpoint (2026-09-25) — Politica de Tratamiento de Datos completa (juridica)
+- El usuario aporto un documento .docx de 29 secciones, ya revisado por su equipo juridico, y pidio
+  incorporarlo completo. Reemplazo la version corta anterior en /privacidad (misma URL, todos los
+  enlaces existentes siguen funcionando).
+- El documento original traia varios campos en blanco ("[PENDIENTE]"). Resueltos CON el usuario
+  antes de publicar: Responsable = Alejandro Munoz, persona natural, SIN NIT de empresa; Domicilio =
+  Colombia (sin direccion exacta, a proposito); Correo de privacidad = soporte@coparentia.co (el que
+  ya existe, no se creo ninguna bandeja nueva).
+- **Hallazgo corregido de paso**: la version vieja decia "no recogemos, hoy, ningun dato de tus
+  hijos" — eso quedo desactualizado hace rato (la app ya guarda nombre y fecha de nacimiento de los
+  hijos para el feature de gastos por hijo). La seccion 6.2 del documento nuevo ya cubre esto
+  correctamente.
+- Si el usuario llega a registrar una empresa (NIT) mas adelante, avisar para actualizar la seccion 2.
+
 ### Checkpoint (2026-09-24, cierre) — Login con Google ACTIVO y verificado en produccion
 - El dueño completo los 2 pasos externos (proyecto de Google Cloud + credenciales OAuth con la URI
   de redireccion correcta) y las pego en Supabase -> Authentication -> Sign In / Providers -> Google.
