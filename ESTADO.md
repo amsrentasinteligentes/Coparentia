@@ -2784,6 +2784,12 @@ FICHA-ARTE.md que la landing.
   presupuesto; queda anotado para antes de declarar el funnel "vendible" de verdad.
 
 ## Problemas conocidos
+- **veredicto:landing/onboarding/paywall** (2026-09-25, fix de altura en Android instalado): el
+  gate avisa por mtime de Ajustes/layout/Perfil. El cambio toca el shell compartido (BottomNav,
+  app/(app)/layout.tsx) que tambien usa Inicio, PERO el arreglo esta condicionado a modo instalado
+  (display-mode: standalone) — verificado que en navegador normal (que es como el revisor siempre
+  captura sus pantallas)  sigue siendo exactamente , sin ningun cambio visual.
+  No se relanza el revisor por esto.
 - **veredicto:landing/onboarding/paywall** (2026-09-25, fix del enlace roto a Hotmart): el gate
   avisa por mtime de Ajustes/Perfil — ninguna de las 4 pantallas del dinero, fue solo cambiar una
   URL rota. No se relanza el revisor por esto.
