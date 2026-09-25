@@ -448,26 +448,41 @@ export default function Ajustes() {
       </Tarjeta>
 
       <p className="mt-6 text-[12.5px] leading-[1.5] text-[var(--text-tertiary)]">
-        Más detalles en nuestra{' '}
-        <Link href="/privacidad" className="text-[var(--accent)] underline">
-          Política de Privacidad
-        </Link>
-        . ¿Dudas? Escríbenos a{' '}
+        ¿Dudas? Escríbenos a{' '}
         <a href="mailto:soporte@coparentia.co" className="text-[var(--accent)] underline">
           soporte@coparentia.co
         </a>
-        .{' '}
-        {/* Exigido por la normativa colombiana de proteccion al consumidor (2026-09-24) — enlace
-            visible a la autoridad, abre en pestaña nueva. */}
-        <a
-          href="https://www.sic.gov.co/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-[var(--accent)] underline"
-        >
-          SIC
-        </a>
+        .
       </p>
+
+      {/* Mismos 5 enlaces legales de la landing y del onboarding (2026-09-25): antes solo estaban
+          Privacidad y SIC aquí adentro — el usuario los buscó y no encontró Términos, Reembolsos ni
+          Aviso de IA dentro de la app. */}
+      <nav aria-label="Enlaces legales" className="mt-3 flex flex-wrap items-center gap-x-1 gap-y-0">
+        {[
+          { label: 'Privacidad', href: '/privacidad' },
+          { label: 'Términos y Condiciones', href: '/terminos' },
+          { label: 'Reembolsos', href: '/reembolsos' },
+          { label: 'Aviso de IA', href: '/aviso-ia' },
+          { label: 'SIC', href: 'https://www.sic.gov.co/', externo: true },
+        ].map((e, i) => (
+          <span key={e.href} className="flex items-center">
+            {i > 0 && (
+              <span aria-hidden="true" className="px-1 text-[var(--text-tertiary)]">
+                ·
+              </span>
+            )}
+            <a
+              href={e.href}
+              target={e.externo ? '_blank' : undefined}
+              rel={e.externo ? 'noopener noreferrer' : undefined}
+              className="py-1 text-[12.5px] text-[var(--text-tertiary)] underline-offset-2 hover:text-[var(--accent-ink,var(--accent))] hover:underline"
+            >
+              {e.label}
+            </a>
+          </span>
+        ))}
+      </nav>
       </ContenedorApp>
     </>
   );
