@@ -2,3 +2,13 @@
 @import "../components/landing/tokens.css";
 @import "../components/landing/tokens-claro.css";
 @import "../components/landing/tokens-app-claro.css";
+
+/* Altura real del shell de la app interna (2026-09-25) — `100dvh` es correcto en un navegador
+   normal, pero en Android, cuando la app ya está INSTALADA (modo standalone), varias versiones de
+   Chrome/WebView no restan el alto de la barra propia del sistema (los 3 botones o el gesto de
+   abajo) del valor de `dvh` — el menú de abajo quedaba aplastado contra esa barra. Por defecto esta
+   variable vale lo mismo que `100dvh` (nada cambia en navegador); <AlturaEstandalone> (solo se monta
+   en modo standalone) la corrige con la altura real medida por el propio sistema operativo. */
+:root {
+  --app-altura: 100dvh;
+}

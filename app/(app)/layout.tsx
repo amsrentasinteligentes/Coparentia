@@ -5,6 +5,7 @@ import { BottomNav } from '@/components/app/ui';
 import { AvisoSinConexion } from '@/components/app/AvisoSinConexion';
 import { RegistradorEventos } from '@/components/app/RegistradorEventos';
 import { BannerInstalar } from '@/components/app/InstalarApp';
+import { AlturaEstandalone } from '@/components/app/AlturaEstandalone';
 import { crearClienteSupabaseServidor } from '@/lib/supabase/server';
 import { tieneAccesoCompleto, type Status } from '@/lib/membership-fsm';
 import { tieneConsentimientoVigente } from '@/lib/consentimiento';
@@ -83,7 +84,15 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
     // portar a `document.body` a secas saca al modal de esta clase y pierde TODOS los tokens de
     // color del interior (cae al tema oscuro por defecto de la landing) — portar aquí adentro los
     // conserva.
-    <div id="app-shell" className={`tema-app-claro ${figtree.variable} ${nunitoSans.variable} flex h-dvh flex-col bg-[var(--bg)] text-[var(--text-primary)] [font-family:var(--font-body)]`}>
+    // La altura viene de `--app-altura` (definida en globals.css, `100dvh` por defecto — igual que
+    // antes en navegador) en vez del utilitario `h-dvh` directo: así <AlturaEstandalone> puede
+    // pisarla SOLO en modo instalado, sin tocar el comportamiento ya probado en navegador normal.
+    <div
+      id="app-shell"
+      className={`tema-app-claro ${figtree.variable} ${nunitoSans.variable} flex flex-col bg-[var(--bg)] text-[var(--text-primary)] [font-family:var(--font-body)]`}
+      style={{ height: 'var(--app-altura)' }}
+    >
+      <AlturaEstandalone />
       <AvisoSinConexion />
       <RegistradorEventos />
       {/* Aviso de instalación (2026-09-24): arriba de CUALQUIER pantalla — nadie debería tener que

@@ -130,7 +130,10 @@ export function BottomNav() {
   return (
     <nav
       aria-label="Navegación principal"
-      className="shrink-0 border-t border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] bg-[var(--surface)] [padding-bottom:max(8px,env(safe-area-inset-bottom))]"
+      // 16px de mínimo (antes 8px, 2026-09-25): en Android instalado `env(safe-area-inset-bottom)`
+      // puede reportar 0 aunque la barra del sistema sí ocupe espacio real — este mínimo es el
+      // colchón de seguridad para ese caso, además del arreglo de fondo en AlturaEstandalone.tsx.
+      className="shrink-0 border-t border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] bg-[var(--surface)] [padding-bottom:max(16px,env(safe-area-inset-bottom))]"
     >
       <div className="mx-auto flex max-w-[520px] items-stretch justify-around">
         {DESTINOS.map(({ href, label, icon: Icon }) => {
