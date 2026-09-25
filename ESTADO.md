@@ -1,3 +1,18 @@
+### Checkpoint (2026-09-25) — Menu de abajo aplastado en Android instalado (corregido)
+- El usuario instalo la app el dia anterior; al navegar, el menu de abajo aparecio aplastado contra
+  la barra del sistema (Android).
+- **Causa raiz**: 100dvh no resta el alto real de la barra del sistema cuando la app corre INSTALADA
+  (display-mode: standalone) en varias versiones de Chrome/WebView Android — bug nuevo que no
+  existia antes de que hubiera instalacion PWA (el arreglo del 2026-09-17 solo cubria navegador).
+- Arreglado con components/app/AlturaEstandalone.tsx: mide la altura real con
+  window.visualViewport SOLO en modo instalado y pisa una variable CSS (--app-altura); en navegador
+  normal no cambia nada. Colchon extra: padding minimo del menu subio de 8px a 16px.
+- Verificado con una simulacion del escenario exacto (viewport visual 40px mas corto que la
+  ventana): el menu queda dentro de la pantalla visible.
+- **Pendiente del dueño**: confirmar en su Android real que ya no se ve aplastado (sin service
+  worker, no hace falta reinstalar — basta cerrar y volver a abrir la app para tomar el codigo
+  nuevo).
+
 ### Checkpoint (2026-09-25) — Enlace roto a Hotmart (bug real, corregido)
 - El usuario probo "Suscripcion y pagos" en su Android real y le salio "No se puede acceder a
   este sitio" (sac.hotmart.com no resuelve).
