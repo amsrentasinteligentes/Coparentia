@@ -394,7 +394,7 @@ export default function PerfilPage() {
             <h2 className="mt-6 text-[15px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">Ajustes y cuenta</h2>
             <Tarjeta indice={2} className="mt-3 py-1">
               <FilaAjuste icon={Settings} titulo="Cuota alimentaria y cuenta" detalle={titulo ? `${formatoCOP(titulo.montoMensual)} · día ${titulo.diaPago} · cambiar o eliminar cuenta` : 'Define tu cuota mensual'} href="/ajustes" />
-              <FilaAjuste icon={CreditCard} titulo="Suscripción y pagos" detalle="Se administra en Hotmart: cancelar, cambiar de plan, facturas" href="https://sac.hotmart.com/" externo />
+              <FilaAjuste icon={CreditCard} titulo="Suscripción y pagos" detalle="Se administra en Hotmart: cancelar, cambiar de plan, facturas" href="https://consumer.hotmart.com/" externo />
               <FilaAjuste icon={Scale} tono="info" titulo="Asistencia jurídica" detalle="Escríbenos tu duda o contacta a un abogado" href="/asistencia" />
               <FilaAjuste icon={LifeBuoy} tono="exito" titulo="Ayuda y soporte" detalle="soporte@coparentia.co · respondemos en menos de 48 h" href="mailto:soporte@coparentia.co" externo />
               <FilaAjuste icon={ShieldCheck} titulo="Privacidad" detalle="Qué guardamos, dónde y cómo borrarlo" href="/privacidad" />

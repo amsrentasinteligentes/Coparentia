@@ -232,7 +232,7 @@ export async function enviarCorreoPagoFallido(email: string, graceEndsAt?: Date 
           ${fecha ? `hasta el <strong>${fecha}</strong>` : 'por unos días más'} mientras lo resuelves.
         </p>
         <p style="margin:24px 0;">
-          <a href="https://purchases.hotmart.com" style="${ESTILO_BOTON}">Actualizar mi método de pago →</a>
+          <a href="https://consumer.hotmart.com" style="${ESTILO_BOTON}">Actualizar mi método de pago →</a>
         </p>
         <p style="font-family:sans-serif;color:#6b7280;font-size:13px;">
           ¿Necesitas ayuda? Escríbenos a ${RESPONDER_A}

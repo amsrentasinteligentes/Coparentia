@@ -368,7 +368,7 @@ export default function Ajustes() {
         <Tarjeta className="mt-3 py-1">
           <FilaInstalar />
           <FilaNovedades />
-          <FilaAjuste icon={CreditCard} titulo="Suscripción y pagos" detalle="Se administra en Hotmart: cancelar, cambiar de plan, facturas" href="https://sac.hotmart.com/" externo ultima />
+          <FilaAjuste icon={CreditCard} titulo="Suscripción y pagos" detalle="Se administra en Hotmart: cancelar, cambiar de plan, facturas" href="https://consumer.hotmart.com/" externo ultima />
         </Tarjeta>
         {/* Cómo cancelar: texto legal obligatorio (47), ahora bajo la lista */}
         <p className="mt-3 text-[12px] leading-[1.5] text-[var(--text-secondary)]">
