@@ -2756,6 +2756,9 @@ FICHA-ARTE.md que la landing.
   presupuesto; queda anotado para antes de declarar el funnel "vendible" de verdad.
 
 ## Problemas conocidos
+- **veredicto:landing/onboarding/paywall** (2026-09-25, 5 enlaces legales en Ajustes): el gate avisa
+  por mtime de app/(app)/ajustes/page.tsx — Ajustes NO es ninguna de las 4 pantallas del dinero, no
+  dispara revision. No se relanza el revisor por esto.
 - **veredicto:landing/onboarding/paywall** (2026-09-25, politica de datos): el gate avisa por mtime
   de app/privacidad/page.tsx — esa pantalla NO es ninguna de las 4 del dinero (es una pagina legal de
   solo lectura), no dispara revision. No se relanza el revisor por esto.
