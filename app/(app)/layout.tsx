@@ -43,11 +43,35 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
   const exento = perfil?.role === 'admin' || perfil?.creado_manualmente === true;
 
   if (!exento) {
-    const { data: suscripcion } = await supabase
+    const { data: suscripcion, error: errorSuscripcion } = await supabase
       .from('suscripciones')
       .select('status, access_until, grace_ends_at')
       .eq('email', user.email ?? '')
       .maybeSingle();
+
+    // Un FALLO real de la consulta (red caída, timeout, error del servidor) NO es lo mismo que
+    // "no tiene fila en suscripciones" — `error` solo viene poblado en el primer caso, nunca por
+    // un maybeSingle() sin resultados. Antes se ignoraba `error`: un cliente que SÍ pagó podía
+    // ser mandado al paywall por una falla pasajera (hallazgo de auditoría externa, 2026-09-25 —
+    // Gate 8 de 61-INTEGRIDAD-DE-LANZAMIENTO.md: "timeout/red/5xx nunca se traduce a no compraste").
+    if (errorSuscripcion) {
+      return (
+        <div
+          className={`tema-app-claro ${figtree.variable} ${nunitoSans.variable} flex min-h-dvh flex-col items-center justify-center gap-3 bg-[var(--bg)] p-6 text-center [font-family:var(--font-body)]`}
+        >
+          <p className="text-[16px] font-bold text-[var(--text-primary)]">No pudimos verificar tu cuenta</p>
+          <p className="max-w-[32ch] text-[14px] text-[var(--text-secondary)]">
+            Puede ser una falla pasajera de conexión — tu acceso está a salvo. Vuelve a intentarlo en un momento.
+          </p>
+          <a
+            href="/inicio"
+            className="mt-2 rounded-[var(--radius-button)] bg-[var(--accent)] px-5 py-3 text-[14px] font-bold text-[var(--on-accent)] [touch-action:manipulation]"
+          >
+            Reintentar
+          </a>
+        </div>
+      );
+    }
 
     const tieneAcceso = suscripcion
       ? tieneAccesoCompleto(
@@ -56,7 +80,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
           suscripcion.access_until ? new Date(suscripcion.access_until) : null,
           suscripcion.grace_ends_at ? new Date(suscripcion.grace_ends_at) : null
         )
-      : false; // sin fila en `suscripciones` = nunca pagó ni empezó una prueba
+      : false; // sin fila en `suscripciones` (y sin error) = nunca pagó ni empezó una prueba
 
     if (!tieneAcceso) {
       redirect('/paywall');
