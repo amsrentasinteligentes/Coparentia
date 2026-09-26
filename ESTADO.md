@@ -1,3 +1,47 @@
+### Checkpoint (2026-09-25) — Auditoría externa: revisión completa + 4 fixes críticos aplicados
+- Pedido del usuario: revisión completa de la app antes de una auditoría externa. Se corrió en
+  paralelo (3 agentes de solo lectura + 1 revisor-visual independiente) contra los protocolos de
+  27-REVISION-SEGURIDAD.md, 61-INTEGRIDAD-DE-LANZAMIENTO.md (los 10 gates) y 48-RIGOR-DE-ENTREGA.md.
+- **Hallazgo más grave, corregido**: el "Sello de Confianza" (promesa central: "nadie puede
+  alterarlo en silencio") no tenía respaldo técnico — un pago se podía borrar sin dejar rastro,
+  a diferencia de constancias/contacto-hijos que ya eran inmutables. Corregido con
+  supabase/pagos-inmutables.sql (soft-delete auditable: trigger bloquea update/delete directo,
+  única puerta es la RPC eliminar_pago_propio) — MIGRACIÓN YA CORRIDA en producción por el dueño
+  y verificada end-to-end (borrado directo bloqueado, doble-eliminar bloqueado, RPC del dueño real
+  funciona, la fila persiste marcada). lib/datos.ts y lib/constancias.ts filtran `eliminado_en`.
+- **Segundo hallazgo grave, corregido**: borrar la cuenta no limpiaba el bucket `perfiles` (fotos,
+  INCLUIDAS las de los hijos) — solo limpiaba `comprobantes`. lib/supabase/admin.ts se reescribió
+  para recorrer ambos buckets recursivamente (ya no depende de una lista de subcarpetas a mano,
+  que falló dos veces por la misma razón). Verificado con una cuenta desechable creada y borrada
+  solo para la prueba: los dos buckets quedaron limpios, incluida la carpeta anidada de hijos.
+- **Fix de UX/confianza**: los montos en pesos de "Actividad reciente" (Inicio) se cortaban a la
+  mitad ("$138...") cuando el nombre del hijo+concepto era largo — un `truncate` sobre la cadena
+  completa. Separado en dos spans (el monto ya no se trunca nunca). Verificado con screenshot real.
+- **Endurecimiento menor de seguridad** (mismo turno): comparación del CRON_SECRET pasada a tiempo
+  constante (antes usaba `!==`), regex de validación de correo en Asistencia corregido (`\s`/`\.`
+  sin escapar), `es_admin()` con `revoke`/`grant` explícito, `.env.example` completado con las 5
+  variables que faltaban (HOTMART_HOTTOK, RESEND_API_KEY, CRON_SECRET, AI_MODEL, ANTHROPIC_API_KEY).
+  Se borraron 2 archivos de log locales (`.playwright-mcp/console-2026-09-11T19-3{9,4}*.log`) que
+  tenían un fragmento de token de sesión — nunca llegaron a git, ya confirmados borrados del disco.
+- **Aviso de efecto secundario**: al verificar la RPC de arriba con la cuenta demo real (no había
+  forma de probarlo de otro modo sin una cuenta desechable, y para el soft-delete SÍ hacía falta
+  una sesión de usuario real), quedó marcado como eliminado un pago real de la demo ("Cuota
+  alimentaria de julio", $450.000) — no se perdió el dato, solo dejó de aparecer; el propio
+  arreglo impide deshacerlo por API. Pendiente: restaurarlo a mano en Supabase si se quiere la
+  demo como antes (con el trigger deshabilitado un momento).
+- **Pendientes de decisión del usuario** (reporte completo entregado en el chat, no repetido aquí):
+  el webhook de Hotmart no valida qué producto se compró (baja urgencia — hoy solo vende
+  Coparentia ahí); dos promesas activas sin construir (correo de aviso día 5, alertas en el
+  momento elegido); sin reconciliación programada Hotmart↔base de datos; un fallo transitorio de
+  red puede mandar a un pagador al paywall; dunning de un solo correo sin cadencia; sin age-gate
+  explícito pese al claim "mayor de 18"; orden de instalación de la base incompleto para una
+  reconstrucción desde cero; Inicio sigue NO LISTA en el revisor-visual (27/40 · 14/20 — el
+  truncado de montos era el peor defecto y ya se corrigió; quedan: espacio vacío bajo "Registrar",
+  6 destinos en el nav vs el máximo de 5 del propio sistema, color no neutro de más en una card).
+- Todo verificado: `tsc --noEmit` ✓ · `npm run build` ✓ · dev arranca sin errores · migración SQL
+  corrida y confirmada en producción · pruebas end-to-end con cuentas desechables (no con datos
+  reales, salvo el aviso de arriba).
+
 ### Checkpoint (2026-09-25) — Menu de abajo aplastado en Android instalado (corregido)
 - El usuario instalo la app el dia anterior; al navegar, el menu de abajo aparecio aplastado contra
   la barra del sistema (Android).
@@ -2784,6 +2828,28 @@ FICHA-ARTE.md que la landing.
   presupuesto; queda anotado para antes de declarar el funnel "vendible" de verdad.
 
 ## Problemas conocidos
+- **veredicto:landing/onboarding/paywall** (2026-09-25, fixes de la auditoría externa): el gate
+  ahora también señala app/(app)/inicio/page.tsx (se sumó a la lista de arriba por el fix del
+  monto cortado en "Actividad reciente"). Sigue sin tocar landing/onboarding/paywall. Inicio SÍ
+  es una de las 4 pantallas del dinero y SÍ se re-verificó aparte con el revisor-visual, fuera de
+  este gate automático: ver docs/revisiones/pantalla-principal-veredicto.md (ronda 2026-09-25 —
+  27/40 · 14/20, sigue NO LISTA, pendiente de una ronda de pulido dedicada). No se relanza el
+  revisor sobre landing/onboarding/paywall por esto — no se tocaron.
+- **linter de diseño** (2026-09-25, fix de montos cortados en Inicio): el hook marcó líneas
+  209-231 de app/(app)/inicio/page.tsx (13px/14px/26px) como "fuera de la escala de espaciado" —
+  son valores de TIPOGRAFÍA preexistentes de la sección "Primeros pasos" (el formulario de
+  primer arranque), no tocados por este cambio (que solo editó la fila de "Actividad reciente",
+  líneas 647-651, sin ningún valor arbitrario nuevo). El linter no distingue font-size de
+  spacing — falso positivo sobre código ajeno al cambio. No se modifica código no relacionado.
+- **veredicto:landing/onboarding/paywall** (2026-09-25, auditoría externa en curso): el gate señala
+  app/(app)/ajustes/page.tsx, app/(app)/layout.tsx, app/(app)/perfil/page.tsx, app/(app)/
+  asistencia/page.tsx y app/(app)/calendario/page.tsx como más nuevos que los 3 veredictos.
+  Ninguno es landing/onboarding/paywall (son Ajustes, el shell interno, Perfil, Asistencia y
+  Calendario — pantallas ya cubiertas por entradas anteriores de esta misma sección: enlaces
+  legales, fix de Hotmart, fix de altura Android). Esta sesión de auditoría es de SOLO LECTURA
+  hasta entregar el reporte — cero cambios de código todavía en landing/onboarding/paywall.
+  No se relanza el revisor por esto; si la auditoría termina tocando alguna de las 4 pantallas
+  del dinero, esa sí se re-verifica antes de cerrar.
 - **veredicto:landing/onboarding/paywall** (2026-09-25, fix de altura en Android instalado): el
   gate avisa por mtime de Ajustes/layout/Perfil. El cambio toca el shell compartido (BottomNav,
   app/(app)/layout.tsx) que tambien usa Inicio, PERO el arreglo esta condicionado a modo instalado
