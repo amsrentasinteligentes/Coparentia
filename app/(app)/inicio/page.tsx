@@ -604,9 +604,10 @@ function Dashboard() {
                 Cifra del mes: llamadas/videollamadas registradas y cuántas contestaron. */}
             <Link href="/calendario" className="mt-3 block transition-transform duration-100 active:scale-[0.99] [touch-action:manipulation]">
               <Tarjeta className="flex items-center gap-3">
-                <span className="flex size-11 shrink-0 items-center justify-center rounded-[var(--radius-chip,999px)]" style={{ background: 'var(--cat-llamada-bg)', color: 'var(--cat-llamada)' }}>
-                  <Phone size={20} aria-hidden="true" />
-                </span>
+                {/* El color por categoría (ámbar de "llamada") vive en Calendario; aquí es un 4º
+                    color no neutro de más sobre azul+verde+morado (hallazgo del revisor-visual,
+                    2026-09-25) — se usa el mismo acento neutro que el resto de Inicio. */}
+                <IconoCirculo icon={Phone} size={20} />
                 <div className="min-w-0 flex-1">
                   <p className="text-[14px] font-bold text-[var(--text-primary)] [font-family:var(--font-display)]">Contacto con tus hijos</p>
                   {contactosMes.length > 0 ? (
