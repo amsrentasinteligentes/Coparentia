@@ -85,7 +85,7 @@ export async function armarResumen(
   const hasta = `${mes === 12 ? anio + 1 : anio}-${String(mes === 12 ? 1 : mes + 1).padStart(2, '0')}-01`;
 
   const [{ data: pagos }, { data: eventos }, { data: hijos }] = await Promise.all([
-    supabase.from('pagos').select('fecha, concepto, monto, tipo, hijo_id').eq('user_id', userId).gte('fecha', desde).lt('fecha', hasta).order('fecha'),
+    supabase.from('pagos').select('fecha, concepto, monto, tipo, hijo_id').eq('user_id', userId).is('eliminado_en', null).gte('fecha', desde).lt('fecha', hasta).order('fecha'),
     supabase.from('eventos').select('tipo, resultado, hijo_id').eq('user_id', userId).gte('fecha', desde).lt('fecha', hasta),
     supabase.from('hijos').select('nombre').eq('user_id', userId),
   ]);

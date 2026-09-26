@@ -178,7 +178,7 @@ export async function tieneOnboardingCompleto(): Promise<boolean> {
   const { supabase, userId } = await usuarioActual();
   const [{ data: titulo }, { count }] = await Promise.all([
     supabase.from('titulos').select('id').eq('user_id', userId).maybeSingle(),
-    supabase.from('pagos').select('id', { count: 'exact', head: true }).eq('user_id', userId),
+    supabase.from('pagos').select('id', { count: 'exact', head: true }).eq('user_id', userId).is('eliminado_en', null),
   ]);
   return Boolean(titulo) && (count ?? 0) > 0;
 }
@@ -272,6 +272,7 @@ export async function obtenerPagos(): Promise<Pago[]> {
     .from('pagos')
     .select(COLUMNAS_PAGO)
     .eq('user_id', userId)
+    .is('eliminado_en', null)
     .order('fecha', { ascending: false });
   // Antes se ignoraba `error` y se devolvía `[]`: si la consulta fallaba (red caída, sesión
   // vencida), la app mostraba el expediente VACÍO — indistinguible de "no tienes nada guardado".
@@ -281,12 +282,14 @@ export async function obtenerPagos(): Promise<Pago[]> {
   return (data ?? []).map(mapPago);
 }
 
-// Elimina un movimiento y SU ARCHIVO. No existía ninguna forma de borrar: una foto equivocada
-// —la del recibo del vecino, una captura mal tomada, un duplicado— quedaba para siempre dentro del
-// expediente que se va a llevar a un juzgado, y ahora además se incrusta en el PDF que se le
-// entrega al abogado. Un registro que no se puede corregir no es un expediente confiable.
-// El archivo de Storage se borra ANTES que la fila: si se borrara después y algo fallara en el
-// medio, quedaría un archivo huérfano sin ninguna fila que lo referencie, imposible de encontrar.
+// Quita un movimiento de la lista activa y borra SU ARCHIVO. Una foto equivocada —la del recibo
+// del vecino, una captura mal tomada, un duplicado— no puede quedar para siempre en el expediente
+// que se va a llevar a un juzgado, así que sí se puede "eliminar". Pero el Sello de Confianza
+// promete que nada se altera EN SILENCIO: por eso esto ya no borra la fila de verdad (hallazgo de
+// auditoría externa, 2026-09-25) — llama a `eliminar_pago_propio`, la única puerta que la base
+// deja abierta (supabase/pagos-inmutables.sql), que la MARCA como eliminada sin poder borrarla ni
+// modificarla nunca más. El registro de que existió y de que se quitó queda para siempre.
+// El archivo de Storage sí se borra de verdad (la foto en sí no es lo que hay que conservar).
 export async function eliminarPago(pago: Pago): Promise<void> {
   const { supabase, userId } = await usuarioActual();
 
@@ -294,7 +297,7 @@ export async function eliminarPago(pago: Pago): Promise<void> {
     await supabase.storage.from('comprobantes').remove([pago.comprobantePath]);
   }
 
-  const { error } = await supabase.from('pagos').delete().eq('id', pago.id).eq('user_id', userId);
+  const { error } = await supabase.rpc('eliminar_pago_propio', { p_pago_id: pago.id });
   if (error) throw error;
   registrarEvento(supabase, userId, 'pago_eliminado');
 }
