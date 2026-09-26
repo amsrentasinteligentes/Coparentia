@@ -4,6 +4,14 @@
     {
       "path": "/api/cron/constancias",
       "schedule": "0 13 * * *"
+    },
+    {
+      "path": "/api/cron/aviso-pre-cobro",
+      "schedule": "0 14 * * *"
+    },
+    {
+      "path": "/api/cron/dunning",
+      "schedule": "0 15 * * *"
     }
   ]
 }

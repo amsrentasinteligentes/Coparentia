@@ -212,6 +212,45 @@ export async function enviarConsultaJuridica(emailUsuario: string, mensaje: stri
   }
 }
 
+/**
+ * Aviso ANTES del primer cobro (promesa activa desde el onboarding/paywall — "te avisamos por
+ * correo antes del día 7"). Lo dispara el cron de app/api/cron/aviso-pre-cobro/route.ts, 2 días
+ * antes de que termine la prueba gratis. Sin monto ni periodicidad: la tabla `suscripciones` no
+ * guarda cuál plan (mensual/anual) eligió cada quien, y decir un monto que podría no ser el
+ * correcto es peor que no decirlo — el enlace a Hotmart siempre tiene el dato exacto y real.
+ */
+export async function enviarCorreoAvisoPreCobro(email: string, nombre: string | undefined, trialEndsAt: Date): Promise<void> {
+  const resend = clienteResend();
+  if (!resend) return;
+  const primero = primerNombre(nombre);
+  const fecha = fechaLargaColombia(trialEndsAt);
+
+  try {
+    await resend.emails.send({
+      from: REMITENTE,
+      to: email,
+      replyTo: RESPONDER_A,
+      subject: 'Tu prueba gratis de Coparentia termina pronto',
+      html: `
+        <h1 style="font-family:sans-serif;color:#111827;">${primero ? `Hola ${primero}` : 'Hola'} 👋</h1>
+        <p style="font-family:sans-serif;color:#374151;font-size:15px;line-height:1.5;">
+          Tu prueba gratis termina el <strong>${fecha}</strong>. Si sigues, ese día se hace el
+          primer cobro de tu plan — puedes ver el monto exacto y cancelar cuando quieras desde
+          el portal de Hotmart.
+        </p>
+        <p style="margin:24px 0;">
+          <a href="https://consumer.hotmart.com" style="${ESTILO_BOTON}">Ver mi plan y método de pago →</a>
+        </p>
+        <p style="font-family:sans-serif;color:#6b7280;font-size:13px;">
+          ¿Dudas? Escríbenos a ${RESPONDER_A}
+        </p>
+      `,
+    });
+  } catch (e) {
+    console.error('fallo al enviar aviso de pre-cobro', e instanceof Error ? e.message : e);
+  }
+}
+
 /** Se manda cuando un cobro de renovación FALLA (estado `past_due`) — hay días de gracia, no se corta el acceso todavía. */
 export async function enviarCorreoPagoFallido(email: string, graceEndsAt?: Date | null): Promise<void> {
   const resend = clienteResend();
@@ -241,5 +280,75 @@ export async function enviarCorreoPagoFallido(email: string, graceEndsAt?: Date 
     });
   } catch (e) {
     console.error('fallo al enviar correo de pago fallido', e instanceof Error ? e.message : e);
+  }
+}
+
+/**
+ * Recordatorio A MITAD de los días de gracia de un pago fallido (además del correo inmediato de
+ * `enviarCorreoPagoFallido`) — antes no existía ninguna cadencia, solo ese primer aviso. Lo manda
+ * el cron de app/api/cron/dunning/route.ts.
+ */
+export async function enviarCorreoRecordatorioPago(email: string, graceEndsAt: Date): Promise<void> {
+  const resend = clienteResend();
+  if (!resend) return;
+  const fecha = fechaLargaColombia(graceEndsAt);
+
+  try {
+    await resend.emails.send({
+      from: REMITENTE,
+      to: email,
+      replyTo: RESPONDER_A,
+      subject: 'Recordatorio: tu pago de Coparentia sigue sin procesarse',
+      html: `
+        <h1 style="font-family:sans-serif;color:#111827;">Sigue pendiente tu pago</h1>
+        <p style="font-family:sans-serif;color:#374151;font-size:15px;line-height:1.5;">
+          Tu acceso a Coparentia sigue activo, pero si no actualizas tu método de pago antes del
+          <strong>${fecha}</strong> se pausará. Suele ser rápido de resolver desde el portal de Hotmart.
+        </p>
+        <p style="margin:24px 0;">
+          <a href="https://consumer.hotmart.com" style="${ESTILO_BOTON}">Actualizar mi método de pago →</a>
+        </p>
+        <p style="font-family:sans-serif;color:#6b7280;font-size:13px;">
+          ¿Necesitas ayuda? Escríbenos a ${RESPONDER_A}
+        </p>
+      `,
+    });
+  } catch (e) {
+    console.error('fallo al enviar recordatorio de pago', e instanceof Error ? e.message : e);
+  }
+}
+
+/**
+ * ÚLTIMO aviso antes de que termine la gracia de un pago fallido y se pause el acceso — el tono
+ * sube de "recordatorio" a "esto se corta pronto", con la fecha exacta en juego.
+ */
+export async function enviarCorreoUltimoAvisoPago(email: string, graceEndsAt: Date): Promise<void> {
+  const resend = clienteResend();
+  if (!resend) return;
+  const fecha = fechaLargaColombia(graceEndsAt);
+
+  try {
+    await resend.emails.send({
+      from: REMITENTE,
+      to: email,
+      replyTo: RESPONDER_A,
+      subject: 'Último aviso: tu acceso a Coparentia se pausa pronto',
+      html: `
+        <h1 style="font-family:sans-serif;color:#111827;">Tu acceso se pausa el ${fecha}</h1>
+        <p style="font-family:sans-serif;color:#374151;font-size:15px;line-height:1.5;">
+          No hemos podido cobrar tu renovación. Si no actualizas tu método de pago antes del
+          <strong>${fecha}</strong>, tu expediente queda en pausa (tus datos NO se borran — vuelves
+          a tener acceso apenas se resuelva el pago).
+        </p>
+        <p style="margin:24px 0;">
+          <a href="https://consumer.hotmart.com" style="${ESTILO_BOTON}">Actualizar mi método de pago →</a>
+        </p>
+        <p style="font-family:sans-serif;color:#6b7280;font-size:13px;">
+          ¿Necesitas ayuda? Escríbenos a ${RESPONDER_A}
+        </p>
+      `,
+    });
+  } catch (e) {
+    console.error('fallo al enviar último aviso de pago', e instanceof Error ? e.message : e);
   }
 }
