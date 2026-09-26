@@ -185,7 +185,7 @@ function EntrarInterno() {
                   className="mt-0.5 size-5 shrink-0 rounded border-[color-mix(in_oklab,var(--text-tertiary)_40%,transparent)] accent-[var(--accent)]"
                 />
                 <span className="text-[13px] leading-[1.5] text-[var(--text-secondary)]">
-                  Autorizo el tratamiento de mis datos y acepto los{' '}
+                  Confirmo que soy mayor de 18 años, autorizo el tratamiento de mis datos y acepto los{' '}
                   <Link href="/terminos" target="_blank" className="text-[var(--accent)] underline">Términos</Link>{' '}
                   y la{' '}
                   <Link href="/privacidad" target="_blank" className="text-[var(--accent)] underline">Política de Privacidad</Link>.
