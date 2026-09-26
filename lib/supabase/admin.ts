@@ -19,38 +19,42 @@ export function crearClienteSupabaseAdmin() {
   });
 }
 
-// TODAS las carpetas donde la app guarda archivos de una persona, dentro de su propia carpeta del
-// bucket privado. Vive aquí, en un solo sitio, porque el bug que motivó esto fue justamente tener
-// la lista escrita a mano en el borrado de cuenta: al agregar "Consultar acuerdo" nadie se acordó
-// de sumarla ahí, y el acta de conciliación —el documento más sensible del expediente— seguía en
-// el servidor DESPUÉS de que la persona pidió borrar todo (auditoría 2026-09-11).
-// ⚠️ Si algún día se agrega otra carpeta en `subirArchivoPrivado` (lib/datos.ts), va aquí también.
-export const CARPETAS_DE_ARCHIVOS = ['pagos', 'eventos', 'acuerdo'] as const;
-
 type ClienteAdmin = ReturnType<typeof crearClienteSupabaseAdmin>;
 
-// Borra TODOS los archivos de una persona en el bucket privado. `limit: 1000` porque el tope por
-// defecto de `.list()` es 100 — con más comprobantes de los esperados quedarían archivos sin borrar.
-//
-// Barre TAMBIÉN la raíz de la carpeta del usuario: los comprobantes subidos antes de que
-// existieran las subcarpetas quedaron en `{userId}/archivo.jpg`, un nivel más arriba, y se
-// habrían salvado del borrado (comprobado sobre los archivos reales, 2026-09-11). En la raíz hay
-// que distinguir archivos de subcarpetas: Supabase devuelve las subcarpetas como entradas sin
-// `metadata`, y pedir el borrado de una carpeta no hace nada.
-export async function borrarArchivosDelUsuario(admin: ClienteAdmin, userId: string): Promise<void> {
+// Los DOS buckets privados donde la app guarda archivos de una persona (ver lib/datos.ts para
+// "comprobantes" y lib/perfil.ts para "perfiles"). Antes esto recorría una lista de subcarpetas
+// escrita a mano, y ese patrón falló DOS veces por la misma razón: al agregar "Consultar acuerdo"
+// dentro de comprobantes nadie se acordó de sumarla al borrado de cuenta (auditoría 2026-09-11), y
+// después el bucket "perfiles" completo —con las fotos de los hijos— quedó fuera por el mismo
+// motivo (auditoría externa, 2026-09-25). Recorrer TODO lo que haya bajo la carpeta del usuario,
+// recursivamente, en vez de mantener una lista de nombres, cierra esa clase de bug de raíz: ya no
+// hay ninguna lista que se pueda olvidar de actualizar.
+const BUCKETS_CON_ARCHIVOS_DE_USUARIO = ['comprobantes', 'perfiles'] as const;
+
+// `limit: 1000` porque el tope por defecto de `.list()` es 100. Supabase devuelve las subcarpetas
+// como entradas sin `metadata` (a diferencia de los archivos, que sí la traen) — así se distingue
+// cuándo hay que bajar un nivel más y cuándo ya se llegó a un archivo real.
+async function rutasDeArchivos(admin: ClienteAdmin, bucket: string, carpeta: string): Promise<string[]> {
+  const { data } = await admin.storage.from(bucket).list(carpeta, { limit: 1000 });
   const rutas: string[] = [];
-
-  for (const carpeta of CARPETAS_DE_ARCHIVOS) {
-    const { data } = await admin.storage.from('comprobantes').list(`${userId}/${carpeta}`, { limit: 1000 });
-    for (const a of data ?? []) rutas.push(`${userId}/${carpeta}/${a.name}`);
+  for (const item of data ?? []) {
+    const ruta = `${carpeta}/${item.name}`;
+    if (item.metadata) {
+      rutas.push(ruta);
+    } else {
+      rutas.push(...(await rutasDeArchivos(admin, bucket, ruta)));
+    }
   }
+  return rutas;
+}
 
-  const { data: raiz } = await admin.storage.from('comprobantes').list(userId, { limit: 1000 });
-  for (const a of raiz ?? []) {
-    if (a.metadata) rutas.push(`${userId}/${a.name}`); // con metadata = es un archivo, no una carpeta
-  }
-
-  if (rutas.length > 0) {
-    await admin.storage.from('comprobantes').remove(rutas);
+// Borra TODOS los archivos de una persona en los buckets privados (comprobantes + perfiles),
+// sin importar en qué subcarpeta estén guardados.
+export async function borrarArchivosDelUsuario(admin: ClienteAdmin, userId: string): Promise<void> {
+  for (const bucket of BUCKETS_CON_ARCHIVOS_DE_USUARIO) {
+    const rutas = await rutasDeArchivos(admin, bucket, userId);
+    if (rutas.length > 0) {
+      await admin.storage.from(bucket).remove(rutas);
+    }
   }
 }
