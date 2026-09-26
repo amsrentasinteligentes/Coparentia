@@ -2879,6 +2879,10 @@ FICHA-ARTE.md que la landing.
   presupuesto; queda anotado para antes de declarar el funnel "vendible" de verdad.
 
 ## Problemas conocidos
+- **veredicto:landing/onboarding/paywall** (2026-09-25, confirmación de mayoría de edad): mismo
+  motivo que la entrada "boton de Google" de más abajo — app/(funnel)/entrar/page.tsx es el login,
+  ninguna de las 4 pantallas del dinero. Solo se agregó una frase a la casilla de consentimiento
+  ya existente (Gate 4 de 61: age-gate explícito). No se relanza el revisor por esto.
 - **linter de diseño** (2026-09-25, estado de error en app/(app)/layout.tsx): marcó
   `text-[14px]` y `max-w-[32ch]` como "fuera de la escala de espaciado". Ambos son patrones YA
   establecidos y repetidos en app/(app)/inicio/page.tsx (`text-[14px]` en 6+ lugares,
