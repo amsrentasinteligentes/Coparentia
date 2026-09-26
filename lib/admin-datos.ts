@@ -115,6 +115,34 @@ export async function obtenerResumenIA(supabase: SupabaseClient): Promise<Resume
   };
 }
 
+export interface ResumenWebhookHotmart {
+  avisosHoy: number;
+  fallidosHoy: number;
+  horasSinAvisos: number | null; // null = nunca ha llegado ninguno
+}
+
+// Antes esta tabla se llenaba en cada aviso de Hotmart pero nadie la leía — ni el dueño tenía
+// forma de notar que el webhook llevaba horas en silencio, o que varios avisos seguidos estaban
+// fallando (hallazgo de auditoría externa, 2026-09-25). `es_admin()` ya protege la tabla por RLS.
+export async function obtenerResumenWebhookHotmart(supabase: SupabaseClient): Promise<ResumenWebhookHotmart | null> {
+  const hoy = hoyEnColombia();
+
+  const [{ data: deHoy, error: e1 }, { data: ultimo, error: e2 }] = await Promise.all([
+    supabase.from('hotmart_webhook_log').select('result, received_at').gte('received_at', inicioDelDiaColombiaUTC()),
+    supabase.from('hotmart_webhook_log').select('received_at').order('received_at', { ascending: false }).limit(1).maybeSingle(),
+  ]);
+  if (e1 || e2) return null;
+
+  const filas = (deHoy ?? []) as { result: string; received_at: string }[];
+  const enHoy = filas.filter((f) => fechaEnColombia(new Date(f.received_at)) === hoy);
+
+  return {
+    avisosHoy: enHoy.length,
+    fallidosHoy: enHoy.filter((f) => f.result === 'error' || f.result === 'unauthorized' || f.result === 'illegal').length,
+    horasSinAvisos: ultimo?.received_at ? Math.floor((Date.now() - new Date(ultimo.received_at).getTime()) / 3_600_000) : null,
+  };
+}
+
 export async function obtenerListaUsuarios(supabase: SupabaseClient): Promise<PerfilAdmin[]> {
   const { data } = await supabase
     .from('profiles')

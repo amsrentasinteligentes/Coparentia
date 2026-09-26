@@ -12,10 +12,17 @@ import {
   ArrowLeft,
   Repeat,
   Signpost,
+  Webhook,
 } from 'lucide-react';
 import { Marcador } from '@/components/funnel/ui';
 import { crearClienteSupabaseServidor } from '@/lib/supabase/server';
-import { obtenerResumenUsuarios, obtenerUsoUltimos30Dias, obtenerListaUsuarios, obtenerResumenIA } from '@/lib/admin-datos';
+import {
+  obtenerResumenUsuarios,
+  obtenerUsoUltimos30Dias,
+  obtenerListaUsuarios,
+  obtenerResumenIA,
+  obtenerResumenWebhookHotmart,
+} from '@/lib/admin-datos';
 import { ContenedorAdmin, TarjetaSeccion, EncabezadoGrupo, DatoHeroe, DatoPendiente, SinDatos, NotaActivacion } from '@/components/admin/ui';
 import { MetricasFuturas } from '@/components/admin/MetricasFuturas';
 import { FormularioAgregarUsuario } from './FormularioAgregarUsuario';
@@ -38,11 +45,12 @@ const ETIQUETA_EVENTO: Record<string, string> = {
 
 export default async function PanelAdmin() {
   const supabase = await crearClienteSupabaseServidor();
-  const [usuarios, uso, listaUsuarios, ia] = await Promise.all([
+  const [usuarios, uso, listaUsuarios, ia, webhookHotmart] = await Promise.all([
     obtenerResumenUsuarios(supabase),
     obtenerUsoUltimos30Dias(supabase),
     obtenerListaUsuarios(supabase),
     obtenerResumenIA(supabase),
+    obtenerResumenWebhookHotmart(supabase),
   ]);
 
   return (
@@ -157,6 +165,42 @@ export default async function PanelAdmin() {
           motivo='Todavía no hay ventas ni costos reales que restar — sin esto no se puede decir "facturaste $X y te quedaron $Y limpios" sin inventarlo.'
           activaCon="conectes el aviso de Hotmart (ventas) — el resto de costos (IA, infraestructura, correo) se suma automáticamente en cuanto exista."
         />
+      </TarjetaSeccion>
+
+      {/* ── PAGOS — salud del webhook de Hotmart, siempre visible (no depende de tener ventas
+          todavía: si nunca llega ningún aviso, eso EN SÍ MISMO es lo que hay que saber). Antes
+          esta tabla se llenaba con cada aviso pero nadie la leía — hallazgo de auditoría externa
+          (2026-09-25): si el webhook dejaba de recibir avisos o empezaba a fallar, nadie se
+          enteraba hasta que un cliente reclamaba. ────────────────────────────────────────────── */}
+      <EncabezadoGrupo titulo="Pagos" subtitulo="Salud del webhook de Hotmart" />
+      <TarjetaSeccion
+        indice={2}
+        titulo="Webhook de Hotmart"
+        subtitulo="Avisos de compra, cancelación y pago fallido"
+        icon={<Webhook size={18} color="var(--accent)" aria-hidden="true" />}
+        tooltip="Hotmart te avisa cada vez que alguien paga, cancela o falla un cobro mandando una señal a tu app. Si esa señal deja de llegar, tú no te enteras de nada — esto te avisa si pasa."
+      >
+        {webhookHotmart ? (
+          <>
+            <div className="grid grid-cols-2 gap-4">
+              <DatoHeroe valor={String(webhookHotmart.avisosHoy)} label="Avisos hoy" />
+              <DatoHeroe
+                valor={String(webhookHotmart.fallidosHoy)}
+                label="Fallidos hoy"
+                tono={webhookHotmart.fallidosHoy > 0 ? 'warning' : undefined}
+              />
+            </div>
+            <p className="mt-3 text-[13px] text-[var(--text-secondary)]">
+              {webhookHotmart.horasSinAvisos === null
+                ? 'Todavía no ha llegado ningún aviso de Hotmart.'
+                : webhookHotmart.horasSinAvisos < 48
+                  ? `Último aviso hace ${webhookHotmart.horasSinAvisos} ${webhookHotmart.horasSinAvisos === 1 ? 'hora' : 'horas'}.`
+                  : `⚠️ Sin ningún aviso hace ${Math.floor(webhookHotmart.horasSinAvisos / 24)} días — si esperabas ventas, revisa la configuración del webhook en Hotmart.`}
+            </p>
+          </>
+        ) : (
+          <SinDatos motivo="No se pudo leer el registro del webhook." activaCon="que vuelva a estar disponible." />
+        )}
       </TarjetaSeccion>
 
       {/* ── SISTEMA — solo aparece si ya hay costo real de IA que mostrar. ─────────────────── */}
