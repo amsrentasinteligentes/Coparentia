@@ -84,6 +84,21 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   const eventId: string =
     String(cuerpo.id ?? data.purchase?.transaction ?? `${evento}:${email ?? subscriberCode ?? 'sin-identificar'}:${tsCandidato ?? Date.now()}`);
 
+  // 4b. CATÁLOGO — que el aviso sea de Hotmart de verdad no significa que sea de TU producto: si
+  //     la cuenta llega a vender algo más (un bump, otro curso) bajo el mismo hottok, un aviso de
+  //     ESA venta daría acceso a Coparentia igual, porque nada comparaba qué se compró (hallazgo
+  //     de auditoría externa, 2026-09-25). Solo se activa si HOTMART_PRODUCT_ID está configurada
+  //     — a propósito NO falla cerrado por defecto: sin la variable, esta cuenta hoy solo vende
+  //     Coparentia por Hotmart, y bloquear todo por una variable que aún no existe cortaría cobros
+  //     reales. Configúrala en cuanto tengas el ID (Hotmart → Productos → el tuyo → código junto
+  //     al nombre) para cerrar el hueco del todo.
+  const productoEsperado = process.env.HOTMART_PRODUCT_ID;
+  const productoRecibido = data.product?.id != null ? String(data.product.id) : undefined;
+  if (productoEsperado && productoRecibido && productoRecibido !== productoEsperado) {
+    await registrar(eventId, evento, 'illegal');
+    return NextResponse.json({ received: true, resultado: 'illegal' }); // 200: no es un error de Hotmart, es un producto ajeno
+  }
+
   const nuevoEstado = estadoParaEvento(evento, montoPagado);
   if (!nuevoEstado || (!email && !subscriberCode)) {
     // Evento que no cambia el acceso (SWITCH_PLAN, uno aún no mapeado) o sin ninguna forma de
