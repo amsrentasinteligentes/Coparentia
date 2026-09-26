@@ -251,6 +251,39 @@ export async function enviarCorreoAvisoPreCobro(email: string, nombre: string | 
   }
 }
 
+/**
+ * Alerta al DUEÑO (no al cliente) cuando la reconciliación semanal (app/api/cron/
+ * reconciliacion-hotmart/route.ts) encuentra diferencias entre lo que dice Hotmart y lo que
+ * guarda `suscripciones` — sea porque un webhook se perdió, o por cualquier otra razón. Se manda
+ * a `soporte@coparentia.co` (el mismo correo que ya monitorea) — nunca al cliente afectado.
+ */
+export async function enviarCorreoDriftDetectado(cantidad: number): Promise<void> {
+  const resend = clienteResend();
+  if (!resend) return;
+
+  try {
+    await resend.emails.send({
+      from: REMITENTE,
+      to: RESPONDER_A,
+      subject: `Coparentia: ${cantidad} diferencia${cantidad === 1 ? '' : 's'} entre Hotmart y tu base de datos`,
+      html: `
+        <h1 style="font-family:sans-serif;color:#111827;">La reconciliación semanal encontró diferencias</h1>
+        <p style="font-family:sans-serif;color:#374151;font-size:15px;line-height:1.5;">
+          Se compararon tus suscriptores reales en Hotmart contra lo que guarda la app, y se
+          encontraron <strong>${cantidad}</strong> ${cantidad === 1 ? 'caso' : 'casos'} donde no
+          coinciden — puede ser un aviso de pago que nunca llegó, entre otras causas. Revísalos en
+          el panel de administración, sección "Pagos", antes de que un cliente reclame.
+        </p>
+        <p style="margin:24px 0;">
+          <a href="${URL_APP}/admin" style="${ESTILO_BOTON}">Ver el panel de administración →</a>
+        </p>
+      `,
+    });
+  } catch (e) {
+    console.error('fallo al enviar alerta de reconciliación', e instanceof Error ? e.message : e);
+  }
+}
+
 /** Se manda cuando un cobro de renovación FALLA (estado `past_due`) — hay días de gracia, no se corta el acceso todavía. */
 export async function enviarCorreoPagoFallido(email: string, graceEndsAt?: Date | null): Promise<void> {
   const resend = clienteResend();

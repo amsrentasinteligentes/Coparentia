@@ -29,9 +29,13 @@
 --                                      16. constancias.sql
 --                                      17. constancias-por-hijo.sql
 --                                      18. pagos-inmutables.sql
+--                                      19. aviso-pre-cobro.sql
+--                                      20. dunning.sql               (reemplaza la función de #19)
+--                                      21. reconciliacion-hotmart.sql
 --
 -- Todos usan `if not exists`/`create or replace`, así que correr uno dos veces no rompe nada —
--- lo único que de verdad importa es que #10 y #11 vayan DESPUÉS de #8 y #9, en ese orden.
+-- lo único que de verdad importa es que #10 y #11 vayan DESPUÉS de #8 y #9 (en ese orden), y que
+-- #20 vaya DESPUÉS de #19 (mismo motivo: reemplaza la misma función, sumándole su propia columna).
 -- `cerrar-sesiones.sql` NO es parte del esquema: es un comando suelto de un incidente puntual,
 -- nunca se corre como parte de una instalación nueva.
 

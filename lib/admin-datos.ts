@@ -143,6 +143,39 @@ export async function obtenerResumenWebhookHotmart(supabase: SupabaseClient): Pr
   };
 }
 
+export interface DiferenciaHotmart {
+  id: number;
+  email: string;
+  estadoHotmart: string;
+  deberiaTenerAcceso: boolean;
+  estadoInterno: string | null;
+  tieneAccesoInterno: boolean;
+  ejecutadoEn: string;
+}
+
+// La reconciliación semanal (app/api/cron/reconciliacion-hotmart/route.ts) deja un registro por
+// cada diferencia encontrada entre Hotmart y `suscripciones` — esto trae las que el dueño no ha
+// marcado como revisadas todavía. `null` (no `[]`) distingue "la tabla no existe todavía porque
+// no se ha corrido la migración" de "no hay ninguna diferencia" (caso sano, sí es `[]`).
+export async function obtenerDiferenciasHotmartSinResolver(supabase: SupabaseClient): Promise<DiferenciaHotmart[] | null> {
+  const { data, error } = await supabase
+    .from('hotmart_drift_log')
+    .select('id, email, estado_hotmart, deberia_tener_acceso, estado_interno, tiene_acceso_interno, ejecutado_en')
+    .eq('resuelto', false)
+    .order('ejecutado_en', { ascending: false })
+    .limit(20);
+  if (error) return null;
+  return (data ?? []).map((d) => ({
+    id: d.id,
+    email: d.email,
+    estadoHotmart: d.estado_hotmart,
+    deberiaTenerAcceso: d.deberia_tener_acceso,
+    estadoInterno: d.estado_interno,
+    tieneAccesoInterno: d.tiene_acceso_interno,
+    ejecutadoEn: d.ejecutado_en,
+  }));
+}
+
 export async function obtenerListaUsuarios(supabase: SupabaseClient): Promise<PerfilAdmin[]> {
   const { data } = await supabase
     .from('profiles')

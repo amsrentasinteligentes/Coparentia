@@ -22,6 +22,7 @@ import {
   obtenerListaUsuarios,
   obtenerResumenIA,
   obtenerResumenWebhookHotmart,
+  obtenerDiferenciasHotmartSinResolver,
 } from '@/lib/admin-datos';
 import { ContenedorAdmin, TarjetaSeccion, EncabezadoGrupo, DatoHeroe, DatoPendiente, SinDatos, NotaActivacion } from '@/components/admin/ui';
 import { MetricasFuturas } from '@/components/admin/MetricasFuturas';
@@ -45,12 +46,13 @@ const ETIQUETA_EVENTO: Record<string, string> = {
 
 export default async function PanelAdmin() {
   const supabase = await crearClienteSupabaseServidor();
-  const [usuarios, uso, listaUsuarios, ia, webhookHotmart] = await Promise.all([
+  const [usuarios, uso, listaUsuarios, ia, webhookHotmart, diferenciasHotmart] = await Promise.all([
     obtenerResumenUsuarios(supabase),
     obtenerUsoUltimos30Dias(supabase),
     obtenerListaUsuarios(supabase),
     obtenerResumenIA(supabase),
     obtenerResumenWebhookHotmart(supabase),
+    obtenerDiferenciasHotmartSinResolver(supabase),
   ]);
 
   return (
@@ -200,6 +202,36 @@ export default async function PanelAdmin() {
           </>
         ) : (
           <SinDatos motivo="No se pudo leer el registro del webhook." activaCon="que vuelva a estar disponible." />
+        )}
+      </TarjetaSeccion>
+
+      {/* ── RECONCILIACIÓN — compara Hotmart contra la base de datos una vez por semana (Gate 2
+          de 61-INTEGRIDAD-DE-LANZAMIENTO.md). `null` = todavía no se corrió esa migración
+          (supabase/reconciliacion-hotmart.sql); `[]` = sí se corrió y no hay ninguna diferencia,
+          que es el caso sano. ─────────────────────────────────────────────────────────────── */}
+      <TarjetaSeccion
+        indice={3}
+        titulo="Reconciliación semanal"
+        subtitulo="Hotmart vs. tu base de datos"
+        icon={<ShieldAlert size={18} color="var(--accent)" aria-hidden="true" />}
+        tooltip="Cada lunes se compara la lista real de tus suscriptores en Hotmart contra lo que guarda la app. Si un aviso de pago se perdió alguna vez, aquí aparece — sin esto, nadie lo notaría."
+      >
+        {diferenciasHotmart === null ? (
+          <SinDatos motivo="Todavía no se activó (falta correr una migración y configurar las credenciales de la API de Hotmart)." activaCon="que el dueño las configure." />
+        ) : diferenciasHotmart.length === 0 ? (
+          <p className="text-[13px] text-[var(--text-secondary)]">✓ Sin diferencias pendientes — Hotmart y tu base de datos coinciden.</p>
+        ) : (
+          <div className="flex flex-col gap-2">
+            {diferenciasHotmart.map((d) => (
+              <div key={d.id} className="rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--status-warning)_30%,transparent)] p-3 text-[13px]">
+                <p className="font-bold text-[var(--text-primary)]">{d.email}</p>
+                <p className="mt-0.5 text-[var(--text-secondary)]">
+                  Hotmart dice <strong>{d.estadoHotmart}</strong> ({d.deberiaTenerAcceso ? 'debería tener acceso' : 'no debería tener acceso'}) ·
+                  {' '}tu base dice <strong>{d.estadoInterno ?? 'sin registro'}</strong> ({d.tieneAccesoInterno ? 'tiene acceso' : 'sin acceso'})
+                </p>
+              </div>
+            ))}
+          </div>
         )}
       </TarjetaSeccion>
 
