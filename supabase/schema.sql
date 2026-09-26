@@ -11,8 +11,29 @@
 -- (Los parches se siguen conservando para bases que ya existen; `if not exists` los hace
 --  inofensivos si se corren dos veces.)
 --
--- ORDEN DE INSTALACIÓN DESDE CERO: schema.sql → storage.sql → admin.sql → ai.sql →
--- freno-gasto-ia.sql → fix-limites-storage.sql → fix-privilegios-profiles.sql
+-- ORDEN DE INSTALACIÓN DESDE CERO (2026-09-25, corregido en la auditoría externa: la lista de
+-- abajo estaba incompleta —solo tenía 7 de 19 archivos— y omitía justo el parche crítico que
+-- cierra la ejecución pública de aplicar_evento_hotmart; seguirla al pie de la letra habría
+-- reabierto ese hueco en una base nueva). Este es el orden REAL en que cada archivo se corrió en
+-- producción — el mismo orden que dejó la base en el estado que hoy funciona —, no un orden
+-- inventado a mano. Pégalos uno por uno, en este orden exacto, en Supabase → SQL Editor:
+--
+--  1. schema.sql                        8. suscripciones-hotmart.sql
+--  2. storage.sql                       9. fix-suscripciones-sin-correo.sql
+--  3. eventos-adjuntos.sql             10. fix-permiso-publico-hotmart.sql   ← cierra un hueco crítico
+--  4. admin.sql                        11. fix-devuelve-estado-anterior.sql  (reemplaza la función de #9)
+--  5. fix-privilegios-profiles.sql     12. perfil-familia.sql
+--  6. ai.sql                           13. hijos-en-registros.sql
+--  7. fix-limites-storage.sql          14. consentimientos.sql
+--     acuerdo-titulo.sql               15. contacto-hijos.sql
+--                                      16. constancias.sql
+--                                      17. constancias-por-hijo.sql
+--                                      18. pagos-inmutables.sql
+--
+-- Todos usan `if not exists`/`create or replace`, así que correr uno dos veces no rompe nada —
+-- lo único que de verdad importa es que #10 y #11 vayan DESPUÉS de #8 y #9, en ese orden.
+-- `cerrar-sesiones.sql` NO es parte del esquema: es un comando suelto de un incidente puntual,
+-- nunca se corre como parte de una instalación nueva.
 
 -- ── TÍTULO (la cuota alimentaria) — uno por usuario ──────────────────────────
 create table if not exists public.titulos (
