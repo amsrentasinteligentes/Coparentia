@@ -1,3 +1,54 @@
+### Checkpoint (2026-09-25, cierre) — Auditoría externa: 4 gates cerrados adicionales, migraciones corridas
+- Tras el checkpoint anterior, el usuario pidió cerrar todo lo que estuviera "en mi mano" del
+  reporte pendiente (sin tocar lo que ya era decisión suya, como las 6 pestañas del nav).
+- **Webhook de Hotmart — catálogo de producto**: agregado el paso 4b (product_id) en
+  app/api/webhooks/hotmart/route.ts. Desactivado por defecto (sin `HOTMART_PRODUCT_ID` en env no
+  bloquea nada — el usuario confirmó que hoy solo vende Coparentia ahí); queda listo para
+  activarse en cuanto el dueño configure esa variable con el ID real de Hotmart.
+- **Promesa cumplida — aviso del día 5**: nuevo cron `api/cron/aviso-pre-cobro` (14:00 UTC diario)
+  + `enviarCorreoAvisoPreCobro` en lib/email.ts + columna `aviso_pre_cobro_enviado` en
+  `suscripciones` (supabase/aviso-pre-cobro.sql, YA CORRIDO en producción y verificado). Antes esa
+  promesa del onboarding/paywall no tenía ninguna implementación real.
+- **Cadencia de dunning**: nuevo cron `api/cron/dunning` (15:00 UTC diario) manda un recordatorio
+  a mitad de gracia y un último aviso antes de perder el acceso (sobre los mismos 5 días de gracia
+  ya existentes, sin cambiarlos) + columna `aviso_dunning_paso` (supabase/dunning.sql, YA CORRIDO
+  y verificado). Antes solo existía el correo único del webhook al entrar a `past_due`.
+- **Fallo transitorio ya no expulsa a un pagador**: app/(app)/layout.tsx distingue ahora "sin fila
+  en suscripciones" (nunca pagó → paywall) de "la consulta falló de verdad" (red/timeout/5xx →
+  pantalla de reintento, nunca el paywall) — Gate 8 de 61.
+- **Panel de administración — salud del webhook**: nueva sección "Pagos" (siempre visible, no
+  colapsada) en app/admin/page.tsx + `obtenerResumenWebhookHotmart` en lib/admin-datos.ts: avisos
+  de hoy, fallidos de hoy, y cuánto tiempo lleva sin llegar ninguno (con aviso ⚠️ si son más de 48h
+  seguidas). Antes esta tabla se llenaba pero nadie la leía.
+- **Orden de instalación de la base**: el encabezado de supabase/schema.sql solo listaba 7 de 19
+  archivos y omitía el parche crítico de seguridad — reescrito con el orden REAL (verificado por
+  fecha de commit) de los 18 archivos que sí forman el esquema.
+- **Color no neutro corregido en Inicio**: la tarjeta "Contacto con tus hijos" usaba el ámbar de
+  categoría de Calendario (4º color no neutro en la pantalla) — ahora usa el mismo acento azul
+  neutro que el resto de Inicio.
+- **6 pestañas del nav — NO se tocó a propósito**: es una decisión explícita del usuario del
+  2026-09-18 (ya se le advirtió del tope de 5 en su momento); no me correspondía revertirla sola.
+- **Intento revertido**: se intentó corregir el hueco vacío bajo el botón flotante de
+  Inicio/Pagos/Calendario (ContenedorApp + BotonFlotante + template.tsx, flex-1 en vez del vacío).
+  Al verificar con Playwright reabrió el bug de la fila tapada por el botón cuando el contenido
+  llena casi toda la pantalla (interacción de `position:sticky` con contenido al límite del alto
+  disponible — no es un problema de shrink/flex, es más profundo). Se REVIRTIÓ por completo antes
+  de cerrar: components/app/ui.tsx y app/(app)/template.tsx quedaron exactamente como estaban.
+  Sigue pendiente, sin tocar; requiere una solución que no dependa de `position:sticky` para el FAB.
+- **Migraciones corridas en producción y verificadas**: pagos-inmutables.sql, el revoke/grant de
+  es_admin, aviso-pre-cobro.sql, dunning.sql — las 4 confirmadas contra la base real (columnas,
+  función, índices, y las queries exactas que usan los crons nuevos).
+- Verificado: `tsc --noEmit` ✓ · `npm run build` ✓ (con los 2 crons nuevos listados) · panel de
+  admin renderizado con sesión real del dueño, sección "Pagos" visible y con datos reales.
+- **Pendiente real, sin tocar** (quedó fuera de lo que era "mi mano" cerrar — decisiones de
+  producto/negocio o trabajo grande): `HOTMART_PRODUCT_ID` sin configurar (el dueño decide cuándo);
+  sin reconciliación programada Hotmart↔base de datos (necesitaría credenciales de la API de
+  Hotmart, no solo el webhook); "alertas en el momento que elegiste" del onboarding sigue sin
+  ninguna infraestructura real (push notifications es un proyecto aparte, no un fix); sin age-gate
+  explícito en el registro; el hueco vacío bajo el FAB (ver intento revertido arriba); Inicio sigue
+  NO LISTA en el revisor-visual (mejoró de 27/40·14/20, con los defectos de monto cortado y color
+  ya resueltos — pendiente pulir el resto en una ronda dedicada).
+
 ### Checkpoint (2026-09-25) — Auditoría externa: revisión completa + 4 fixes críticos aplicados
 - Pedido del usuario: revisión completa de la app antes de una auditoría externa. Se corrió en
   paralelo (3 agentes de solo lectura + 1 revisor-visual independiente) contra los protocolos de
@@ -2828,13 +2879,25 @@ FICHA-ARTE.md que la landing.
   presupuesto; queda anotado para antes de declarar el funnel "vendible" de verdad.
 
 ## Problemas conocidos
+- **linter de diseño** (2026-09-25, estado de error en app/(app)/layout.tsx): marcó
+  `text-[14px]` y `max-w-[32ch]` como "fuera de la escala de espaciado". Ambos son patrones YA
+  establecidos y repetidos en app/(app)/inicio/page.tsx (`text-[14px]` en 6+ lugares,
+  `max-w-[34ch]` en 3) — texto de cuerpo y ancho de línea legible, no valores de espaciado.
+  Falso positivo del mismo tipo ya documentado antes en esta sesión.
 - **veredicto:landing/onboarding/paywall** (2026-09-25, fixes de la auditoría externa): el gate
   ahora también señala app/(app)/inicio/page.tsx (se sumó a la lista de arriba por el fix del
-  monto cortado en "Actividad reciente"). Sigue sin tocar landing/onboarding/paywall. Inicio SÍ
-  es una de las 4 pantallas del dinero y SÍ se re-verificó aparte con el revisor-visual, fuera de
-  este gate automático: ver docs/revisiones/pantalla-principal-veredicto.md (ronda 2026-09-25 —
-  27/40 · 14/20, sigue NO LISTA, pendiente de una ronda de pulido dedicada). No se relanza el
-  revisor sobre landing/onboarding/paywall por esto — no se tocaron.
+  monto cortado en "Actividad reciente" y, después, por el color no neutro de la tarjeta de
+  contacto). Sigue sin tocar landing/onboarding/paywall. Inicio SÍ es una de las 4 pantallas del
+  dinero y SÍ se re-verificó aparte con el revisor-visual, fuera de este gate automático: ver
+  docs/revisiones/pantalla-principal-veredicto.md (ronda 2026-09-25 — 27/40 · 14/20, sigue NO
+  LISTA, pendiente de una ronda de pulido dedicada). El resto de archivos tocados en esta ronda de
+  cierre de la auditoría (app/(app)/layout.tsx, app/admin/page.tsx, app/api/webhooks/hotmart/
+  route.ts, lib/email.ts, lib/admin-datos.ts, supabase/*.sql, vercel.json, los 2 crons nuevos)
+  tampoco son landing/onboarding/paywall. No se relanza el revisor sobre esas 3 por esto — no se
+  tocaron. (Se intentó también arreglar el hueco vacío bajo el botón flotante de Inicio/Pagos/
+  Calendario — components/app/ui.tsx y app/(app)/template.tsx — pero el intento reabrió el bug de
+  la fila tapada por el botón en pantallas con contenido justo del alto de la ventana; se
+  REVIRTIÓ por completo antes de cerrar, ambos archivos quedaron exactamente como estaban.)
 - **linter de diseño** (2026-09-25, fix de montos cortados en Inicio): el hook marcó líneas
   209-231 de app/(app)/inicio/page.tsx (13px/14px/26px) como "fuera de la escala de espaciado" —
   son valores de TIPOGRAFÍA preexistentes de la sección "Primeros pasos" (el formulario de
