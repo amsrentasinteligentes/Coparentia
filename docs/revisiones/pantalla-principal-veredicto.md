@@ -1,16 +1,14 @@
-# VEREDICTO revisor-visual — pantalla-principal (Inicio)
-Variante: clara r1 (arranca la variante clara del interior — commit c3a50a4)
-Fecha: 2026-09-17 21:40
-Screenshot: docs/revisiones/pantalla-principal-375.png
-Usabilidad: 28/40
-Craft: 12/20
+# VEREDICTO revisor-visual — Inicio (pantalla principal)
+Fecha: 2026-09-25 00:00
+Screenshot: docs/revisiones/_audit-inicio-actividad-375.png
+Usabilidad: 27/40
+Craft: 14/20
 Copy (si vende): N-A
-Fidelidad (si hubo referencia): FIEL
+Fidelidad (si hubo referencia): N-A
 Veredicto: NO LISTA
 Top defectos:
-1. [Actividad reciente / esquina inferior derecha] El FAB "Registrar" (BotonFlotante, sticky bottom-4) tapa la 2ª y 3ª fila de la lista (fecha "10 de sept" y el ícono quedan debajo del botón); ContenedorApp solo deja pb-6 → dar pb-24 al contenedor cuando hay FAB (o mover el FAB a la cabecera de Actividad como acción inline) para que ninguna fila quede oculta.
-2. [Cabecera] El isotipo (/logo-isotipo.png, 32px) se ve como un cuadrado gris borroso, no como el logo azul de la referencia; y la foto del saludo pixelada con corte recto arriba/derecha → reemplazar el asset por el isotipo real (SVG/PNG 2x) y la foto por el original; desplazar el blob (-right-3 -top-2) para que el recorte lo haga la forma orgánica, no el borde.
-3. [Tarjeta Cuota alimentaria / píldora "Al día"] #1F8F60 sobre #DFF5EA mide 3.6:1 (no 4.2 como dice tokens-app-claro.css) en 11px bold → falla AA; subir a #157A4F (≈4.6:1) o usar --status-success como texto sobre fondo blanco.
-4. [Tres captions] text-[10.5px] en "Mes actual · día 5", "meses que lleva tu expediente · $ 10.027.000" y las fechas de la lista: por debajo del mínimo 11px del SO y 8 tamaños tipográficos en pantalla (26/18/17/15/13/12/11/10.5) → subir a 11.5-12px y consolidar a 4 tamaños.
-5. [Cabecera / campana] Punto azul hardcodeado (ui.tsx:432) sin nada detrás: sugiere avisos nuevos y la campana solo lleva a /calendario; y "Ver todo ›" usa un carácter de texto donde toda la pantalla usa ChevronRight de Lucide → mostrar el punto solo si hay eventos en las próximas 48h; usar el mismo ícono.
-Notas: FICHA-ARTE.md aún dice que el interior conserva el kit oscuro (líneas 84-85) — documentar la variante clara del interior con tokens-app-claro.css como fuente de verdad. Pagos/Calendario/Expediente/Asistencia siguen en tema oscuro: al tocar un acceso la app cambia de modo (h4).
+1. [Actividad reciente, filas de movimientos] El monto en pesos queda truncado dentro de la misma línea que hijo+concepto ("$…", "$138…."; app/(app)/inicio/page.tsx L648, clase `truncate` sobre la cadena completa) — en 2 de 3 filas el dato de dinero, que es el valor central de la app, no se alcanza a leer. Fix: sacar el monto del bloque truncado (columna/`<span>` propio sin truncate).
+2. [Debajo del botón "Registrar", antes del nav] Franja plana y vacía de ~25-30% de la pantalla capturada sin contenido ni textura antes del menú inferior — `main` es `flex-1 overflow-y-auto` sin salvaguarda para cuando el contenido es más corto que el viewport (app/(app)/layout.tsx L103). Fix: centrar verticalmente el contenido corto o darle más aire a las tarjetas en vez de dejar vacío muerto; probar en 667/812/926px y en PWA de escritorio.
+3. [Menú inferior] 6 destinos (Inicio/Pagos/Calendario/Expediente/Asistencia/Perfil) superan el tope de 5 que el propio sistema define — el propio código lo documenta como excepción (components/app/ui.tsx L26-29). A 375px cada ítem queda muy angosto. Fix: mover "Perfil" al avatar de la cabecera (ya tiene chevron) y dejar 5 destinos.
+4. [Campana de notificaciones, cabecera] El punto de aviso usa el mismo azul de marca que el resto de la UI en vez de un tono que distinga "hay algo nuevo" — se puede pasar por alto. Fix: usar un tono semántico o mayor contraste para el punto.
+5. [Tarjeta "Contacto con tus hijos"] Introduce un cuarto matiz no neutro (ámbar) en una vista que ya usa azul+verde+morado, por encima de la restricción 60-30-10. Fix: usar el chip en tono de acento neutro aquí y reservar el color categórico para Calendario.
