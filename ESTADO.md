@@ -1,3 +1,27 @@
+### Checkpoint (2026-09-25) — Reconciliación semanal Hotmart↔base de datos + age-gate
+- El usuario pidió configurar HOTMART_PRODUCT_ID (hecho, verificado en producción con curl real)
+  y luego seguir cerrando lo que quedaba pendiente del reporte de auditoría.
+- **Age-gate**: la casilla de consentimiento de app/(funnel)/entrar/page.tsx ahora también dice
+  explícitamente "Confirmo que soy mayor de 18 años" — antes solo estaba enterrado en Términos.
+- **Reconciliación semanal (Gate 2 de 61)**: investigada la documentación REAL y actual de la API
+  de Hotmart con el navegador (developers.hotmart.com renderiza con JS, WebFetch normal no sirve
+  ahí) antes de escribir una sola línea — no se inventó ningún endpoint de memoria. Construido:
+  - `lib/hotmart-api.ts`: OAuth client_credentials (POST api-sec-vlc.hotmart.com/.../oauth/token)
+    + GET paginado a /payments/api/v1/subscriptions.
+  - `app/api/cron/reconciliacion-hotmart` (cron semanal, lunes) compara cada suscriptor real de
+    Hotmart contra `suscripciones` usando `tieneAccesoCompleto()` (la misma función del webhook) —
+    DETECTA y REGISTRA diferencias, NO las corrige solo (decisión deliberada: auto-reparar acceso
+    de alguien sin que el dueño lo vea primero es más riesgoso que dejarlo unos días).
+  - Si hay diferencias, correo de alerta al dueño (`enviarCorreoDriftDetectado`) + tabla nueva
+    `hotmart_drift_log` (supabase/reconciliacion-hotmart.sql) + tarjeta visible en el panel de
+    administración ("Reconciliación semanal", junto a "Webhook de Hotmart").
+  - Necesita 3 credenciales NUEVAS de Hotmart (`HOTMART_CLIENT_ID`, `HOTMART_CLIENT_SECRET`,
+    `HOTMART_BASIC_TOKEN` — Hotmart → Herramientas → Credenciales para desarrolladores → Crear
+    credencial) — sin ellas el cron se salta solo (503), no rompe nada. Pendiente que el dueño las
+    consiga y las pegue en Vercel + corra supabase/reconciliacion-hotmart.sql.
+- Verificado: `tsc --noEmit` ✓ · `npm run build` ✓ (4 crons ya listados) · panel de admin
+  renderizado con sesión real, la tarjeta nueva muestra correctamente "sin activar todavía".
+
 ### Checkpoint (2026-09-25, cierre) — Auditoría externa: 4 gates cerrados adicionales, migraciones corridas
 - Tras el checkpoint anterior, el usuario pidió cerrar todo lo que estuviera "en mi mano" del
   reporte pendiente (sin tocar lo que ya era decisión suya, como las 6 pestañas del nav).
