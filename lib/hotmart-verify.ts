@@ -19,7 +19,7 @@ import crypto from 'node:crypto';
  * de respuesta cuantos más caracteres acierta. `timingSafeEqual` exige buffers de igual longitud,
  * así que se compara la longitud aparte, sin un early-return que por sí mismo filtre tiempo.
  */
-function comparacionSegura(a: string, b: string): boolean {
+export function comparacionSegura(a: string, b: string): boolean {
   const ba = Buffer.from(a, 'utf8');
   const bb = Buffer.from(b, 'utf8');
   if (ba.length !== bb.length) return false;

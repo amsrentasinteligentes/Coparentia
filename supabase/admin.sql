@@ -50,6 +50,11 @@ as $$
     select 1 from public.profiles where id = auth.uid() and role = 'admin'
   );
 $$;
+-- Sin este revoke, Postgres deja a CUALQUIER rol (incluido `anon`, sin sesión) invocarla directo
+-- por RPC — impacto real nulo hoy (para `anon` auth.uid() es null, así que siempre da `false`),
+-- pero por higiene se cierra igual (hallazgo de auditoría externa, 2026-09-25).
+revoke all on function public.es_admin() from public;
+grant execute on function public.es_admin() to authenticated;
 
 alter table public.profiles enable row level security;
 

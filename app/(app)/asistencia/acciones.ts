@@ -18,7 +18,7 @@ const LARGO_MAXIMO = 2000;
 
 // Correo válido "de andar por casa": algo@algo.algo, sin espacios. La validación fuerte la hace el
 // servidor de correo al entregar; aquí solo evitamos mandar basura como replyTo.
-const CORREO_VALIDO = /^[^s@]+@[^s@]+.[^s@]+$/;
+const CORREO_VALIDO = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export async function enviarConsulta(texto: string, correoRespuesta?: string): Promise<ResultadoAccion> {
   const supabase = await crearClienteSupabaseServidor();

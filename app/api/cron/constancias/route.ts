@@ -9,6 +9,7 @@ import { NextResponse } from 'next/server';
 import { crearClienteSupabaseAdmin } from '@/lib/supabase/admin';
 import { enviarConstanciasDelPeriodo, mesAnteriorEnColombia } from '@/lib/constancias';
 import { hoyEnColombia } from '@/lib/fecha';
+import { comparacionSegura } from '@/lib/hotmart-verify';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
@@ -18,7 +19,7 @@ export async function GET(request: Request): Promise<NextResponse> {
   if (!secreto) {
     return NextResponse.json({ error: 'CRON_SECRET no configurado' }, { status: 503 });
   }
-  if (request.headers.get('authorization') !== `Bearer ${secreto}`) {
+  if (!comparacionSegura(request.headers.get('authorization') ?? '', `Bearer ${secreto}`)) {
     return NextResponse.json({ error: 'no autorizado' }, { status: 401 });
   }
 
