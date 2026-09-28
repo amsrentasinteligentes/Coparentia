@@ -12,10 +12,8 @@
 - **Corregido**: `ICONO_CATEGORIA`/`ETIQUETA_CATEGORIA` se movieron DENTRO de
   `FilaProfesionalAdmin.tsx` (ya es Client Component) y se resuelven ahí mismo a partir de
   `profesional.categoria` (un string, sí serializable) — `page.tsx` ya no arma ni pasa el ícono.
-- Verificado: `tsc --noEmit` ✓ · `npm run build` ✓. NO se pudo probar en vivo con la cuenta real
-  del usuario (mismo motivo de siempre: entrar como admin requiere sus credenciales). Publicado —
-  el usuario debe confirmar que ahora sí carga `/admin/profesionales` y que la tarjeta aparece en
-  `/admin` desde su cuenta, en computador y en celular.
+- Verificado: `tsc --noEmit` ✓ · `npm run build` ✓. **Confirmado por el usuario en producción,
+  computador y celular: ya carga bien.** Panel de profesionales — CERRADO.
 ### Checkpoint (2026-09-28) — Panel de profesionales: construido, SQL corrido por el usuario
 - El usuario pidió un panel en /admin para agregar/editar/pausar/quitar profesionales sin código
   (hasta ahora se lo pedía a Claude cada vez). Construido: tabla `profesionales` en Supabase
