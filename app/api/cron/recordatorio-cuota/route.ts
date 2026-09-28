@@ -70,11 +70,12 @@ export async function GET(request: Request): Promise<NextResponse> {
         ? { titulo: 'Recuerda tu cuota alimentaria', cuerpo: 'Ya casi es tu día de pago — sube el comprobante para que quede en tu expediente.' }
         : { titulo: 'Tu cuota alimentaria está por llegar', cuerpo: 'En los próximos días deberías recibirla — revisa tu expediente cuando llegue.' };
 
-    const enviados = await enviarPushAUsuario(admin, t.user_id, aviso);
-    if (enviados > 0) {
-      await admin.from('titulos').update({ recordatorio_cuota_enviado_mes: mesActual }).eq('user_id', t.user_id);
-      avisados += 1;
-    }
+    // Copia dentro de la app SIEMPRE (aunque no tenga notificaciones push activadas — para esa
+    // persona, esto es la ÚNICA forma de enterarse) — el push es un AVISO EXTRA, no la única vía.
+    await admin.from('notificaciones_app').insert({ user_id: t.user_id, titulo: aviso.titulo, cuerpo: aviso.cuerpo, url: '/inicio' });
+    await enviarPushAUsuario(admin, t.user_id, aviso);
+    await admin.from('titulos').update({ recordatorio_cuota_enviado_mes: mesActual }).eq('user_id', t.user_id);
+    avisados += 1;
   }
 
   return NextResponse.json({ ok: true, revisados: (titulos ?? []).length, avisados });

@@ -33,6 +33,7 @@
 --                                      20. dunning.sql               (reemplaza la función de #19)
 --                                      21. reconciliacion-hotmart.sql
 --                                      22. notificaciones-push.sql
+--                                      23. notificaciones-app.sql
 --
 -- Todos usan `if not exists`/`create or replace`, así que correr uno dos veces no rompe nada —
 -- lo único que de verdad importa es que #10 y #11 vayan DESPUÉS de #8 y #9 (en ese orden), y que

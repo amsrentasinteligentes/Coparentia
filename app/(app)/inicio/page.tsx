@@ -30,6 +30,8 @@ import {
   validarArchivoAdjunto,
 } from '@/lib/datos';
 import { hoyEnColombia, mesEnColombia, diaDelMesEnColombia } from '@/lib/fecha';
+import { type NotificacionApp, obtenerNotificacionesSinLeer, marcarNotificacionLeida } from '@/lib/notificaciones-app';
+import { Bell } from 'lucide-react';
 
 const ACCESOS = [
   { href: '/pagos', label: 'Pagos', icon: Wallet },
@@ -442,6 +444,7 @@ function Dashboard() {
   // pantalla que abre a diario, que sus pruebas no están — el peor mensaje posible para esta app.
   const [falloCarga, setFalloCarga] = useState(false);
   const [intentoDatos, setIntentoDatos] = useState(0);
+  const [notificaciones, setNotificaciones] = useState<NotificacionApp[]>([]);
 
   useEffect(() => {
     let vigente = true;
@@ -464,6 +467,33 @@ function Dashboard() {
       vigente = false;
     };
   }, [intentoDatos]);
+
+  // Copia dentro de la app de cada recordatorio push (2026-09-28): si la notificación del sistema
+  // se cerró sin verla, esto es lo único que queda para enterarse. Aparte del `useEffect` de
+  // arriba a propósito — un fallo aquí no debe bloquear ni el esqueleto de carga ni el resto del
+  // dashboard, es un aviso extra, no el contenido principal de la pantalla.
+  useEffect(() => {
+    let vigente = true;
+    obtenerNotificacionesSinLeer()
+      .then((n) => {
+        if (vigente) setNotificaciones(n);
+      })
+      .catch(() => {
+        // Silencioso a propósito: sin esto, no hay nada que mostrar — no es un error que deba
+        // interrumpir el resto de la pantalla.
+      });
+    return () => {
+      vigente = false;
+    };
+  }, []);
+
+  const cerrarNotificacion = (id: string): void => {
+    setNotificaciones((prev) => prev.filter((n) => n.id !== id)); // optimista
+    marcarNotificacionLeida(id).catch(() => {
+      // Si falla, la próxima vez que abra Inicio la volverá a ver — mejor eso que dejarla
+      // "atascada" en pantalla si el guardado real sí funcionó pero la respuesta se perdió.
+    });
+  };
 
   const totalRegistrado = pagos.reduce((acc, p) => acc + p.monto, 0);
   const mesesConRegistro = new Set(pagos.filter((p) => p.tipo === 'cuota').map((p) => p.fecha.slice(0, 7))).size;
@@ -551,6 +581,31 @@ function Dashboard() {
           <TarjetaSkeleton filas={3} />
         ) : (
           <>
+            {/* RECORDATORIO SIN LEER (2026-09-28) — copia dentro de la app de cada aviso push
+                real, para quien cerró la notificación del sistema sin verla. Arriba de todo a
+                propósito: es lo más reciente y lo que más urge que se vea. */}
+            {notificaciones.map((n) => (
+              <div
+                key={n.id}
+                className="mb-3 flex items-start gap-3 rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--accent)_18%,transparent)] px-3 py-3"
+                style={{ background: 'linear-gradient(120deg, color-mix(in oklab, var(--accent) 12%, var(--surface)), var(--surface))' }}
+              >
+                <IconoCirculo icon={Bell} size={18} />
+                <div className="min-w-0 flex-1">
+                  <p className="text-[13px] font-extrabold text-[var(--text-primary)]">{n.titulo}</p>
+                  <p className="mt-0.5 text-[11.5px] text-[var(--text-secondary)]">{n.cuerpo}</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => cerrarNotificacion(n.id)}
+                  aria-label="Marcar como visto"
+                  className="shrink-0 rounded-full p-1 text-[var(--text-tertiary)] [touch-action:manipulation]"
+                >
+                  <Check size={16} aria-hidden="true" />
+                </button>
+              </div>
+            ))}
+
             {/* PRÓXIMO EVENTO — la tarjeta más alta de la referencia. Sin evento, invita al calendario. */}
             <Link href="/calendario" className="block transition-transform duration-100 active:scale-[0.99] [touch-action:manipulation]">
               <Tarjeta className="flex items-center gap-3">
