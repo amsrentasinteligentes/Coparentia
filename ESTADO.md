@@ -1,3 +1,12 @@
+### Checkpoint (2026-09-28) — Contador de clics en "Contactar", publicado
+- El usuario preguntó si se puede llevar récord de cuántos tocaron "Contactar" a un profesional.
+  Construido con el mismo `event_log` que ya usa el resto del panel (36-ANALITICA-Y-EVENTOS.md):
+  `components/app/DirectorioProfesionales.tsx` anota `contacto_profesional_click` al tocar el
+  botón (con o sin sesión); `/admin/profesionales` muestra "N personas lo contactaron" por fila.
+- `supabase/contacto-profesional.sql`: el usuario lo corrió ("Success") — abre el insert de ESE
+  evento puntual para visitantes sin sesión (la landing es pública). Probado con un insert de
+  prueba desde el cliente anon (sin sesión): pasó ✓, fila de prueba borrada después.
+- Verificado: `tsc --noEmit` ✓ · `npm run build` ✓. Publicado.
 ### Checkpoint (2026-09-28, cierre) — Panel de profesionales: error 500 real, corregido
 - El usuario reportó "This page couldn't load" en `/admin/profesionales` en producción, y que en
   el celular la tarjeta ni aparecía. Causa raíz encontrada por revisión de código (no se pudo ver

@@ -42,6 +42,7 @@ const ETIQUETA_EVENTO: Record<string, string> = {
   autorizacion_agregada: 'Autorizaciones registradas',
   titulo_guardado: 'Cuotas configuradas',
   usuario_agregado_manualmente: 'Cuentas agregadas a mano',
+  contacto_profesional_click: 'Contactos a profesionales',
 };
 
 export default async function PanelAdmin() {

@@ -8,7 +8,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { motion } from 'motion/react';
-import { Pencil, Trash2, Pause, Play, Scale, Brain, HeartHandshake } from 'lucide-react';
+import { Pencil, Trash2, Pause, Play, MessageCircle, Scale, Brain, HeartHandshake } from 'lucide-react';
 import type { Profesional } from '@/lib/profesionales';
 import { actualizarProfesional, pausarProfesional, eliminarProfesional } from './acciones';
 
@@ -21,7 +21,7 @@ import { actualizarProfesional, pausarProfesional, eliminarProfesional } from '.
 const ICONO_CATEGORIA = { abogado: Scale, psicologo: Brain, trabajador_social: HeartHandshake } as const;
 const ETIQUETA_CATEGORIA = { abogado: 'Abogados de familia', psicologo: 'Psicólogos familiares', trabajador_social: 'Trabajadores sociales' } as const;
 
-export function FilaProfesionalAdmin({ profesional, activo }: { profesional: Profesional; activo: boolean }) {
+export function FilaProfesionalAdmin({ profesional, activo, contactos }: { profesional: Profesional; activo: boolean; contactos: number }) {
   const Icono = ICONO_CATEGORIA[profesional.categoria];
   const etiquetaCategoria = ETIQUETA_CATEGORIA[profesional.categoria];
   const [editando, setEditando] = useState(false);
@@ -75,6 +75,10 @@ export function FilaProfesionalAdmin({ profesional, activo }: { profesional: Pro
           {etiquetaCategoria} · {profesional.especialidad}
         </p>
         {profesional.ciudad && <p className="truncate text-[12px] text-[var(--text-tertiary)]">{profesional.ciudad}</p>}
+        <p className="mt-1 flex items-center gap-1 text-[12px] font-medium text-[var(--accent)]">
+          <MessageCircle size={12} aria-hidden="true" />
+          {contactos === 0 ? 'Nadie lo ha contactado todavía' : contactos === 1 ? '1 persona lo contactó' : `${contactos} personas lo contactaron`}
+        </p>
         {error && <p className="mt-1 text-[12px] text-[var(--status-error)]">{error}</p>}
       </div>
 

@@ -28,6 +28,25 @@ import { Tarjeta, IconoCirculo, TarjetaSkeleton } from '@/components/app/ui';
 import { crearClienteSupabase } from '@/lib/supabase/client';
 import { CATEGORIAS_PROFESIONAL, CONTACTO_ALIANZAS, filaAProfesional, type CategoriaProfesional, type Profesional, type FilaProfesional } from '@/lib/profesionales';
 
+// Cuenta el clic en "Contactar" en event_log (2026-09-28, pedido del usuario: "¿podemos llevar un
+// récord de cuántos contactaron a un profesional?") — funciona con o sin sesión (dentro de la app
+// Y en la landing pública), ver supabase/contacto-profesional.sql para el permiso del lado sin
+// sesión. Nunca bloquea el clic real: si falla el registro, el enlace se abre igual (regla de
+// lib/datos.ts: medir importa menos que la acción del usuario).
+function registrarClicContactar(profesional: Profesional): void {
+  const supabase = crearClienteSupabase();
+  supabase.auth.getUser().then(({ data: { user } }) => {
+    supabase
+      .from('event_log')
+      .insert({
+        user_id: user?.id ?? null,
+        nombre: 'contacto_profesional_click',
+        propiedades: { profesional_id: profesional.id, nombre: profesional.nombre, categoria: profesional.categoria },
+      })
+      .then(() => {});
+  });
+}
+
 // Formato de tarjeta (2026-09-28, referencia del usuario): foto + nombre + especialidad + ciudad +
 // botón de contacto — SIN calificaciones ni reseñas (pedido explícito: "elimina el tema de las
 // calificaciones" — además, inventar una reseña sería la misma prueba social falsa que el SO
@@ -68,6 +87,7 @@ function TarjetaPerfil({ profesional }: { profesional: Profesional }) {
         href={profesional.contactoUrl}
         target="_blank"
         rel="noopener noreferrer"
+        onClick={() => registrarClicContactar(profesional)}
         className="mt-4 flex h-11 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] bg-[var(--accent)] text-[13.5px] font-semibold text-[var(--on-accent,var(--bg))] [touch-action:manipulation]"
       >
         <MessageCircle size={16} aria-hidden="true" />

@@ -12,12 +12,28 @@ export const dynamic = 'force-dynamic'; // el dueño necesita ver el cambio reci
 // se consulta la tabla, con el mismo cliente de servidor de siempre.
 export default async function PanelProfesionales() {
   const supabase = await crearClienteSupabaseServidor();
-  const { data } = await supabase
-    .from('profesionales')
-    .select('id, categoria, nombre, especialidad, ciudad, contacto_url, foto_url, activo')
-    .order('created_at', { ascending: false });
+  const [{ data }, { data: clics }] = await Promise.all([
+    supabase
+      .from('profesionales')
+      .select('id, categoria, nombre, especialidad, ciudad, contacto_url, foto_url, activo')
+      .order('created_at', { ascending: false }),
+    // Cuántas veces se tocó "Contactar" por profesional (pedido del usuario, 2026-09-28) —
+    // event_log no tiene una columna propia para esto, así que se cuenta a mano desde
+    // `propiedades` (ver el registro en components/app/DirectorioProfesionales.tsx).
+    supabase.from('event_log').select('propiedades').eq('nombre', 'contacto_profesional_click'),
+  ]);
 
-  const profesionales = ((data ?? []) as FilaProfesional[]).map((fila) => ({ ...filaAProfesional(fila), activo: fila.activo }));
+  const conteoClics = new Map<string, number>();
+  for (const fila of clics ?? []) {
+    const id = (fila.propiedades as { profesional_id?: string })?.profesional_id;
+    if (id) conteoClics.set(id, (conteoClics.get(id) ?? 0) + 1);
+  }
+
+  const profesionales = ((data ?? []) as FilaProfesional[]).map((fila) => ({
+    ...filaAProfesional(fila),
+    activo: fila.activo,
+    contactos: conteoClics.get(fila.id) ?? 0,
+  }));
 
   return (
     <ContenedorAdmin>
@@ -49,7 +65,7 @@ export default async function PanelProfesionales() {
           <p className="text-[13px] text-[var(--text-secondary)]">Todavía no has agregado ningún profesional.</p>
         ) : (
           profesionales.map((p) => (
-            <FilaProfesionalAdmin key={p.id} profesional={p} activo={p.activo} />
+            <FilaProfesionalAdmin key={p.id} profesional={p} activo={p.activo} contactos={p.contactos} />
           ))
         )}
       </div>
