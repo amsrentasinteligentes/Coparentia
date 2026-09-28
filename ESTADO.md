@@ -1,3 +1,21 @@
+### Checkpoint (2026-09-28) — Segundo error 500 en /admin/profesionales: foto sin dominio permitido
+- El usuario probó agregar un profesional de prueba (con foto) y le volvió a salir "This page
+  couldn't load". Esta vez la causa fue distinta a la anterior: `next.config.ts` no tenía
+  `images.remotePatterns` — Next.js rechaza cualquier foto que next/image intente optimizar desde
+  un dominio no autorizado, y la foto de un profesional nuevo (subida por el panel) vive en
+  Supabase Storage (`https://chxhyzyzpipbopskomuv.supabase.co/storage/v1/...`), no en /public
+  como la de Ivonne (por eso nunca se había visto este error antes: ella fue la única prueba real
+  hasta ahora, y su foto sigue siendo un archivo local).
+- **Corregido**: se agregó `images.remotePatterns` en `next.config.ts` autorizando
+  `chxhyzyzpipbopskomuv.supabase.co/storage/v1/object/public/**`. Se revisó el resto del código
+  por el mismo patrón: `components/app/ui.tsx` y `app/(app)/perfil/page.tsx` (foto de perfil del
+  usuario) ya usaban `<img>` plano en vez de `next/image` para URLs firmadas de Supabase —
+  decisión previa correcta que evitó este mismo bug ahí; el directorio de profesionales fue el
+  único lugar nuevo que sí usa `next/image` con una URL de Supabase.
+- No se pudo reproducir visualmente en el navegador (mismo motivo de siempre: entrar como admin
+  requiere las credenciales del usuario). Verificado: `tsc --noEmit` ✓ · `npm run build` ✓. En la
+  base de datos, el profesional de prueba del usuario YA NO existe (no se sabe si él mismo lo
+  borró o si la creación nunca llegó a completarse) — no se tocó nada de la base en este arreglo.
 ### Checkpoint (2026-09-28) — Contador de clics en "Contactar", publicado
 - El usuario preguntó si se puede llevar récord de cuántos tocaron "Contactar" a un profesional.
   Construido con el mismo `event_log` que ya usa el resto del panel (36-ANALITICA-Y-EVENTOS.md):

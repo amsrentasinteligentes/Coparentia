@@ -8,6 +8,20 @@ import type { NextConfig } from "next";
 // que esta app nunca usa.
 const nextConfig: NextConfig = {
   devIndicators: false,
+  // Fotos de profesionales subidas desde /admin/profesionales (2026-09-28) viven en el bucket
+  // público "profesionales" de Supabase Storage — next/image rechaza cualquier dominio externo
+  // que no esté en esta lista (por diseño, para no optimizar imágenes de orígenes arbitrarios).
+  // Sin esto: "Invalid src prop... hostname is not configured" en cuanto alguien sube una foto
+  // nueva (las que ya vivían en /public, como la de Ivonne, nunca lo necesitaron).
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'chxhyzyzpipbopskomuv.supabase.co',
+        pathname: '/storage/v1/object/public/**',
+      },
+    ],
+  },
   async headers() {
     return [
       {
