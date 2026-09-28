@@ -1,3 +1,27 @@
+### Checkpoint (2026-09-28) — Panel de profesionales: construido, SQL corrido por el usuario
+- El usuario pidió un panel en /admin para agregar/editar/pausar/quitar profesionales sin código
+  (hasta ahora se lo pedía a Claude cada vez). Construido: tabla `profesionales` en Supabase
+  (`supabase/profesionales.sql`, RLS: cualquiera ve los activos, solo admin escribe; bucket
+  público "profesionales" para las fotos) + `/admin/profesionales` (lista, alta con foto, edición
+  en línea, pausar/reactivar, quitar — Server Actions en `app/admin/profesionales/acciones.ts`,
+  cada una revisa `esAdmin` de nuevo, mismo patrón que `app/admin/acciones.ts`).
+- `lib/profesionales.ts` perdió el arreglo fijo `PROFESIONALES`; ahora solo tiene el tipo, las
+  categorías (siguen siendo código, no BD — son íconos/colores, no datos del negocio) y
+  `filaAProfesional` (mapea snake_case de la BD a camelCase de la UI).
+  `components/app/DirectorioProfesionales.tsx` ahora CONSULTA la tabla con el cliente de
+  navegador (estados: cargando con skeleton, error de conexión, vacío por categoría, con datos) —
+  mismo componente para la app y la landing, así que un profesional nuevo sigue apareciendo en
+  los dos lugares sin tocar código.
+- El usuario corrió `supabase/profesionales.sql` en el SQL Editor ("Success"). Verificado después
+  con una consulta de solo-lectura (service role, script temporal, sin escribir nada): la tabla
+  existe y trae a Ivonne Reyes migrada (`activo: true`). Probado en el navegador local: la sección
+  Asistencia de la landing ya lee de la tabla real (no del archivo fijo) y sigue mostrando a
+  Ivonne igual que antes.
+- **Publicado** (ver commit siguiente). Verificado antes de publicar: `tsc --noEmit` ✓ ·
+  `npm run build` ✓ (ruta /admin/profesionales listada). NO se probó el panel /admin/profesionales
+  EN VIVO con la cuenta real del usuario (entrar como admin requiere sus credenciales, que no se
+  piden) — el usuario debe confirmar que el formulario de alta y las acciones (editar, pausar,
+  quitar) funcionan bien la primera vez que las use.
 ### Checkpoint (2026-09-28) — Rediseño de Asistencia: PUBLICADO (commit `07e8c5d`)
 - El usuario pidió, antes de vender, rediseñar Asistencia: reemplazar el espacio de "abogados
   patrocinados" por un directorio de 3 categorías (Abogados de familia, Psicólogos familiares,

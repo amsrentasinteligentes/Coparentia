@@ -1,13 +1,16 @@
-// BANCO DE PROFESIONALES (2026-09-28) — fuente única para el directorio, usada tanto dentro de la
-// app (components/app/DirectorioProfesionales.tsx) como en la página de ventas
-// (components/landing/AnuncioAbogados.tsx): un profesional nuevo se agrega UNA vez, aquí, y
-// aparece en los dos lugares. Mismo criterio de siempre — nunca un perfil inventado.
+// DIRECTORIO DE PROFESIONALES (2026-09-28, ahora en base de datos — antes era un arreglo fijo
+// aquí mismo) — fuente única para el directorio, usada tanto dentro de la app
+// (components/app/DirectorioProfesionales.tsx) como en la página de ventas
+// (components/landing/AnuncioAbogados.tsx): un profesional nuevo se agrega UNA vez, desde
+// /admin/profesionales, y aparece en los dos lugares. Mismo criterio de siempre — nunca un
+// perfil inventado. El esquema real vive en supabase/profesionales.sql.
 
 import { Scale, Brain, HeartHandshake, type LucideIcon } from 'lucide-react';
 
 export type CategoriaProfesional = 'abogado' | 'psicologo' | 'trabajador_social';
 
 export interface Profesional {
+  id: string;
   categoria: CategoriaProfesional;
   nombre: string;
   /** Ej. "Derecho de familia · Cuota alimentaria" */
@@ -15,8 +18,32 @@ export interface Profesional {
   ciudad?: string;
   /** mailto:, tel:, o https://wa.me/… — a dónde escribe el usuario. */
   contactoUrl: string;
-  /** Foto de perfil (headshot) — debe vivir en /public. */
+  /** Foto de perfil (headshot). */
   fotoUrl?: string;
+}
+
+/** Fila cruda de `public.profesionales` (snake_case, tal como la devuelve Supabase). */
+export interface FilaProfesional {
+  id: string;
+  categoria: CategoriaProfesional;
+  nombre: string;
+  especialidad: string;
+  ciudad: string | null;
+  contacto_url: string;
+  foto_url: string | null;
+  activo: boolean;
+}
+
+export function filaAProfesional(fila: FilaProfesional): Profesional {
+  return {
+    id: fila.id,
+    categoria: fila.categoria,
+    nombre: fila.nombre,
+    especialidad: fila.especialidad,
+    ciudad: fila.ciudad ?? undefined,
+    contactoUrl: fila.contacto_url,
+    fotoUrl: fila.foto_url ?? undefined,
+  };
 }
 
 // Colores YA definidos en tokens-app-claro.css/globals.css (nunca hex nuevo) — uno por categoría,
@@ -58,20 +85,6 @@ export const CATEGORIAS_PROFESIONAL: {
     corta: 'Acompañamiento social a tu familia',
     icon: HeartHandshake,
     motivoVacio: 'Pronto verás aquí trabajadores sociales que pueden acompañar el proceso de tu familia.',
-  },
-];
-
-// ⬇️ Cuando un profesional pague por su cupo, agrega su fila acá.
-// Primer anuncio real (2026-09-17, actualizado 2026-09-28 a foto + formato de tarjeta — antes era
-// un banner de imagen completa): Dra. Ivonne Reyes.
-export const PROFESIONALES: Profesional[] = [
-  {
-    categoria: 'abogado',
-    nombre: 'Ivonne Reyes',
-    especialidad: 'Abogada especialista en relaciones jurídico negociables',
-    ciudad: 'Bogotá D.C.',
-    contactoUrl: 'https://wa.me/573012283506',
-    fotoUrl: '/anuncios/ivonne-reyes.png',
   },
 ];
 

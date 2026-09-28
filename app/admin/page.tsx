@@ -152,6 +152,21 @@ export default async function PanelAdmin() {
         </TarjetaSeccion>
       </div>
 
+      {/* Agregar/editar/pausar abogados, psicólogos y trabajadores sociales del directorio —
+          sección propia (2026-09-28), no una TarjetaSeccion de métrica: es una ACCIÓN, no un dato. */}
+      <Link
+        href="/admin/profesionales"
+        className="flex items-center gap-3 rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--text-tertiary)_24%,transparent)] bg-[var(--surface)] p-5 shadow-[var(--shadow-2)] [touch-action:manipulation]"
+      >
+        <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[color-mix(in_oklab,var(--accent)_12%,transparent)]">
+          <Signpost size={18} color="var(--accent)" aria-hidden="true" />
+        </span>
+        <div className="min-w-0 flex-1">
+          <p className="text-[15px] font-semibold text-[var(--text-primary)]">Directorio de profesionales</p>
+          <p className="text-[12px] text-[var(--text-tertiary)]">Agrega, edita o pausa a quien aparece en Asistencia y en tu página de ventas.</p>
+        </div>
+      </Link>
+
       {/* ── DINERO — Ganancia real, el dato que más le importa al dueño (pedido explícito, nunca
           se diluye) aunque hoy no tenga número. Ventas/Negocio (sin datos) viven en el bloque
           plegable de abajo junto con el resto de métricas futuras. ─────────────────────────────── */}

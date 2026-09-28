@@ -5,9 +5,12 @@
 // Selector de 3 categorías arriba (ronda 2 del diseño, con referencia del usuario): solo se
 // muestra la lista de la categoría elegida, no las 3 apiladas — "más resumido y ordenado".
 //
-// Los datos (categorías + profesionales) viven en lib/profesionales.ts — misma fuente que usa
-// esta pantalla y la sección "Asistencia" de la página de ventas (2026-09-28): un profesional
-// nuevo se agrega una sola vez y aparece en los dos lugares.
+// Los profesionales viven en la tabla `public.profesionales` de Supabase (2026-09-28 — antes
+// era un arreglo fijo en código; ahora el dueño los agrega/edita/quita desde /admin/profesionales,
+// sin tocar código). Este componente se usa dentro de la app Y en la landing, así que consulta la
+// base directo con el cliente de navegador (anon key + RLS pública de solo-activos) en vez de
+// recibir los datos por prop — misma fuente para los dos lugares, un profesional nuevo aparece
+// automáticamente en ambos.
 //
 // Mismo modelo de negocio de siempre: un profesional PAGA por su cupo en una categoría — "Espacio
 // publicitario" (el texto NO cambia: decisión explícita del usuario, aunque hoy sea gratis el
@@ -18,11 +21,12 @@
 //     de WhatsApp), con la etiqueta "Patrocinado" — divulgación honesta de que es publicidad.
 //   · Sin ninguno todavía → estado honesto invitando a anunciarse, específico de esa categoría.
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { Scale, MapPin, MessageCircle } from 'lucide-react';
-import { Tarjeta, IconoCirculo } from '@/components/app/ui';
-import { CATEGORIAS_PROFESIONAL, PROFESIONALES, CONTACTO_ALIANZAS, type CategoriaProfesional, type Profesional } from '@/lib/profesionales';
+import { Tarjeta, IconoCirculo, TarjetaSkeleton } from '@/components/app/ui';
+import { crearClienteSupabase } from '@/lib/supabase/client';
+import { CATEGORIAS_PROFESIONAL, CONTACTO_ALIANZAS, filaAProfesional, type CategoriaProfesional, type Profesional, type FilaProfesional } from '@/lib/profesionales';
 
 // Formato de tarjeta (2026-09-28, referencia del usuario): foto + nombre + especialidad + ciudad +
 // botón de contacto — SIN calificaciones ni reseñas (pedido explícito: "elimina el tema de las
@@ -73,10 +77,33 @@ function TarjetaPerfil({ profesional }: { profesional: Profesional }) {
   );
 }
 
-export function DirectorioProfesionales({ profesionales = PROFESIONALES }: { profesionales?: Profesional[] }) {
+export function DirectorioProfesionales() {
   const [activa, setActiva] = useState<CategoriaProfesional>('abogado');
+  const [profesionales, setProfesionales] = useState<Profesional[] | null>(null); // null = cargando
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    let vigente = true;
+    crearClienteSupabase()
+      .from('profesionales')
+      .select('id, categoria, nombre, especialidad, ciudad, contacto_url, foto_url, activo')
+      .eq('activo', true)
+      .order('created_at', { ascending: false })
+      .then(({ data, error: errorConsulta }) => {
+        if (!vigente) return;
+        if (errorConsulta) {
+          setError(true);
+          return;
+        }
+        setProfesionales(((data ?? []) as FilaProfesional[]).map(filaAProfesional));
+      });
+    return () => {
+      vigente = false;
+    };
+  }, []);
+
   const categoria = CATEGORIAS_PROFESIONAL.find((c) => c.id === activa)!;
-  const deLaCategoria = profesionales.filter((p) => p.categoria === activa);
+  const deLaCategoria = (profesionales ?? []).filter((p) => p.categoria === activa);
 
   return (
     <div className="mt-6">
@@ -111,8 +138,18 @@ export function DirectorioProfesionales({ profesionales = PROFESIONALES }: { pro
         })}
       </div>
 
-      {deLaCategoria.length > 0 ? (
-        deLaCategoria.map((p) => <TarjetaPerfil key={p.nombre} profesional={p} />)
+      {profesionales === null ? (
+        <div className="mt-3">
+          <TarjetaSkeleton filas={1} />
+        </div>
+      ) : error ? (
+        <Tarjeta className="mt-3">
+          <p className="text-[13px] leading-[1.5] text-[var(--text-secondary)]">
+            No pudimos cargar el directorio. Puede ser una falla pasajera de conexión — vuelve a intentarlo en un momento.
+          </p>
+        </Tarjeta>
+      ) : deLaCategoria.length > 0 ? (
+        deLaCategoria.map((p) => <TarjetaPerfil key={p.id} profesional={p} />)
       ) : (
         <Tarjeta className="mt-3">
           <div className="flex items-start gap-3">
