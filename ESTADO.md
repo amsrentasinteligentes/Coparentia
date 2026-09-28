@@ -1,3 +1,67 @@
+### Checkpoint (2026-09-28) — Rediseño de Asistencia: BORRADOR local, sin publicar
+- El usuario pidió, antes de vender, rediseñar Asistencia: reemplazar el espacio de "abogados
+  patrocinados" por un directorio de 3 categorías (Abogados de familia, Psicólogos familiares,
+  Trabajadores sociales) + un bloque de artículos rotativos, mostrando referencias de otra app.
+- **Opinión dada antes de construir**: la idea es buena, pero las referencias mostraban perfiles
+  con foto/calificación/reseñas — hoy solo existe UN profesional real (Ivonne). Se acordó separar
+  la ESTRUCTURA (sí construible ya) de CONSEGUIR gente real (tarea del usuario, no mía) — mismo
+  criterio de "nunca prueba social inventada" ya aplicado en toda la auditoría.
+- Modelo confirmado por el usuario: sigue siendo pago por cupo ("Espacio publicitario..." — el
+  texto legal NO se tocó, aunque hoy el arranque sea gratis, la intención es que se cobre después).
+- **Construido** (`components/app/DirectorioProfesionales.tsx` reemplaza a AbogadoDestacado.tsx —
+  ese archivo viejo quedó sin usar, no se borró todavía; `components/app/ArticulosAsistencia.tsx` +
+  `lib/articulos.ts` con 3 artículos reales escritos por mí, sin fotos de stock — íconos de color
+  en su lugar; `app/(app)/asistencia/[slug]/page.tsx` nueva, página de detalle del artículo).
+- **Ronda 1 rechazada por el usuario**: el formulario de consulta iba primero, el directorio y los
+  artículos después. El usuario mandó una imagen de referencia con el orden que quería.
+- **Ronda 2, orden corregido**: directorio de profesionales → artículos → formulario de consulta
+  al final. Verificado con captura real a 375px de las 3 secciones, enviada al usuario.
+- **Estado: esperando aprobación del usuario — NADA de esto está commiteado ni publicado.** Es la
+  primera pantalla de un tipo nuevo (directorio + artículos): si se aprueba, corresponde pasarla
+  por el revisor-visual antes de declararla lista (regla 7 del SO) — Asistencia en sí es pantalla
+  secundaria, no una de las 4 del dinero, pero "primera de un tipo nuevo" sigue aplicando.
+- Verificado: `tsc --noEmit` ✓ · `npm run build` ✓ (ruta /asistencia/[slug] listada).
+
+### Checkpoint (2026-09-28) — Asistencia ronda 3-4 + misma idea extendida a la landing
+- **Ronda 3** (pedido: "más resumido y ordenado"): el directorio pasó de 3 listas apiladas a un
+  selector de 3 botones (tabs) — solo se ve la lista de la categoría activa. Probado tocando las 3.
+- **Ronda 4** (pedido: "dale un poco de color a estos íconos"): cada categoría usa un color YA
+  definido en tokens-app-claro.css (`--cat-visita` azul=abogados, `--cat-extra` morado=psicólogos,
+  `--cat-vacaciones` verde=trabajadores sociales) — sin inventar hex nuevo, ícono siempre coloreado.
+- **Extensión a landing confirmada por el usuario** (AskUserQuestion, "Sí, exactamente eso"): la
+  misma idea de 3 categorías (antes solo abogados) se lleva a `components/landing/AnuncioAbogados.tsx`
+  — reescrito: título/copy/CTA generalizados a "abogado, psicólogo o trabajador social", `id` por
+  defecto pasa de 'para-abogados' a 'asistencia'. FALTA: `app/page.tsx` todavía tiene el link del
+  menú "Para abogados" → `#abogados` sin actualizar (debe decir "Asistencia" → `#asistencia`).
+- **Ronda extra (2026-09-28)**: el usuario aclaró que quería la landing "igual como está dentro de
+  la app... no que se quede solamente en nombrar" — el directorio real y los artículos reales
+  tienen que VERSE en la página de ventas, no solo mencionarse. Se hizo un refactor de fuente
+  única: `lib/profesionales.ts` nuevo (categorías + profesionales, antes vivían solo dentro de
+  `components/app/DirectorioProfesionales.tsx`) — ahora la app y la landing leen de ahí, un
+  profesional nuevo aparece en los dos lugares sin repetir trabajo. `AnuncioAbogados.tsx` ya no
+  dibuja íconos sueltos: embebe `<DirectorioProfesionales />` y `<ArticulosAsistencia
+  basePath="/articulos" />` tal cual se ven en la app. Como `/asistencia/[slug]` exige sesión
+  (candado de `app/(app)/layout.tsx`), se creó `app/articulos/[slug]/page.tsx` — misma fuente
+  (`lib/articulos.ts`), pero pública, para que cualquier visitante lea el artículo sin cuenta.
+- **Ronda 4 (2026-09-28)**: el usuario pidió cambiar el formato de la tarjeta de Ivonne — de banner
+  de imagen completa a foto + nombre + especialidad + ciudad + botón "Contactar", SIN
+  calificaciones (pedido explícito, coincide con el criterio de "nunca prueba social inventada").
+  Reemplazado `imagenAnuncioUrl` (ya no existe en el tipo `Profesional`, se quitó del todo) por
+  `fotoUrl` con la foto real que envió el usuario (`public/anuncios/ivonne-reyes.png`, el banner
+  viejo se borró). Especialidad actualizada a "Abogada especialista en relaciones jurídico
+  negociables", ciudad "Bogotá D.C." — dato tal cual lo dio el usuario, nada inventado.
+- Sigue sin commitear NADA de este rediseño (Asistencia ni landing) — el usuario pidió ver el
+  resultado antes de publicar. Verificado: `tsc --noEmit` ✓ · `npm run build` ✓ (ruta pública
+  /articulos/[slug] listada) · probado en el navegador: categorías, tarjeta nueva de Ivonne Reyes
+  con foto real y sin calificaciones, los 3 artículos y la apertura de uno de ellos sin pedir
+  cuenta. Esperando aprobación del usuario.
+- **Nota de herramienta (no es bug del producto)**: durante esta sesión las capturas tomadas con
+  Playwright después de un salto instantáneo de scroll (`scrollIntoView` o `window.scrollTo` sin
+  pasos intermedios) salieron en blanco — el IntersectionObserver de la animación de aparición
+  (`whileInView` en `useReveal`, `components/landing/ui.tsx`) no alcanza a dispararse antes de que
+  se tome la captura. La página real funciona bien (confirmado con scroll gradual, como haría un
+  usuario). Para verificar visualmente de aquí en adelante: usar scroll con rueda/incremental y
+  esperar ≥1-2s antes de la captura, nunca un salto instantáneo seguido de screenshot inmediato.
 ### Checkpoint (2026-09-28, cierre) — Probando en Android real: 2 hallazgos, corregidos
 - El usuario probó en su Android real (pedido explícito) y encontró dos cosas reales:
 - **No encontraba "Ajustes"**: la única puerta desde la navegación normal es una fila en Perfil
@@ -2950,6 +3014,24 @@ FICHA-ARTE.md que la landing.
   presupuesto; queda anotado para antes de declarar el funnel "vendible" de verdad.
 
 ## Problemas conocidos
+- **veredicto:landing** (2026-09-28, sección "Asistencia" en la landing — BORRADOR sin aprobar):
+  esta vez sí se tocó `app/page.tsx` (label del menú "Para abogados"→"Asistencia" y su ancla) y
+  `components/landing/AnuncioAbogados.tsx` (copy generalizado a 3 categorías; ronda 2: los 3
+  íconos ahora son las 3 categorías con los mismos colores que el directorio de la app —
+  `--cat-visita`/`--cat-extra`/`--cat-vacaciones`, pedido del usuario tras comparar con la app).
+  No amerita relanzar el revisor-visual todavía porque el usuario aún NO aprobó el cambio — se le
+  mandaron capturas reales a 1440px y 375px por SendUserFile (dos rondas) y se espera su respuesta.
+  Si aprueba, corresponde re-renderizar y re-lanzar el revisor sobre landing antes de cerrar (regla 7).
+- **veredicto:landing/onboarding/paywall** (2026-09-28, rediseño de Asistencia — BORRADOR sin
+  aprobar todavía): app/(app)/asistencia/page.tsx y la nueva app/(app)/asistencia/[slug]/page.tsx
+  no son landing/onboarding/paywall. Asistencia es pantalla secundaria (no una de las 4 del
+  dinero) — no requiere revisor-visual obligatorio, pero SÍ es la primera pantalla de un tipo
+  nuevo (directorio de profesionales + artículos), así que si el usuario la aprueba, corresponde
+  pasarla por el revisor antes de declararla "lista" (regla 7 del SO). Por ahora sigue en revisión
+  con el usuario — nada de esto está publicado, solo local, a la espera de su aprobación.
+- **veredicto:landing/onboarding/paywall** (2026-09-28, historial de notificaciones en Inicio):
+  mismo motivo que las entradas de esta misma fecha — app/(app)/inicio/page.tsx es Inicio, no
+  landing/onboarding/paywall. No se relanza el revisor por esto.
 - **veredicto:landing/onboarding/paywall** (2026-09-28, recordatorio push de cuota): el gate
   señala app/(app)/ajustes/page.tsx y app/(app)/inicio/page.tsx como más nuevos que los 3
   veredictos — ninguno de los dos es landing/onboarding/paywall (se agregó la pregunta de rol a

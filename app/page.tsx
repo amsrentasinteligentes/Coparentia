@@ -62,7 +62,7 @@ export default function Home() {
         navLinks={[
           { label: 'Cómo funciona', href: '#como-funciona' },
           { label: 'Planes', href: '#oferta' },
-          { label: 'Para abogados', href: '#abogados' },
+          { label: 'Asistencia', href: '#asistencia' },
         ]}
         // Promesa en dos tiempos (FICHA-AVATAR: dolor = caos de gastos + acusaciones; deseo = paz):
         // primero lo concreto que se resuelve, después lo que la persona quiere sentir.
@@ -243,7 +243,7 @@ export default function Home() {
 
       {/* SECCIÓN EXTRA (fuera de la estructura canónica de 19, pedida por el usuario):
           audiencia distinta — abogados de familia que quieren anunciarse en la app. */}
-      <AnuncioAbogados id="abogados" contactoEmail="alianzas@coparentia.co" />
+      <AnuncioAbogados id="asistencia" contactoEmail="alianzas@coparentia.co" />
 
       {/* 10. FOOTER LEGAL */}
       <FooterLegal

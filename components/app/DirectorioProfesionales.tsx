@@ -1,0 +1,138 @@
+'use client';
+
+// DIRECTORIO DE PROFESIONALES — reemplaza a AbogadoDestacado.tsx (2026-09-28, pedido del usuario:
+// sumar Psicólogos familiares y Trabajadores sociales al espacio que antes solo tenía abogados).
+// Selector de 3 categorías arriba (ronda 2 del diseño, con referencia del usuario): solo se
+// muestra la lista de la categoría elegida, no las 3 apiladas — "más resumido y ordenado".
+//
+// Los datos (categorías + profesionales) viven en lib/profesionales.ts — misma fuente que usa
+// esta pantalla y la sección "Asistencia" de la página de ventas (2026-09-28): un profesional
+// nuevo se agrega una sola vez y aparece en los dos lugares.
+//
+// Mismo modelo de negocio de siempre: un profesional PAGA por su cupo en una categoría — "Espacio
+// publicitario" (el texto NO cambia: decisión explícita del usuario, aunque hoy sea gratis el
+// arranque, la intención real es que se pague más adelante).
+//
+// TRES ESTADOS POR CATEGORÍA, NUNCA UN PERFIL INVENTADO:
+//   · Con profesionales reales → sus tarjetas de perfil (foto, nombre, especialidad, ciudad, botón
+//     de WhatsApp), con la etiqueta "Patrocinado" — divulgación honesta de que es publicidad.
+//   · Sin ninguno todavía → estado honesto invitando a anunciarse, específico de esa categoría.
+
+import { useState } from 'react';
+import Image from 'next/image';
+import { Scale, MapPin, MessageCircle } from 'lucide-react';
+import { Tarjeta, IconoCirculo } from '@/components/app/ui';
+import { CATEGORIAS_PROFESIONAL, PROFESIONALES, CONTACTO_ALIANZAS, type CategoriaProfesional, type Profesional } from '@/lib/profesionales';
+
+// Formato de tarjeta (2026-09-28, referencia del usuario): foto + nombre + especialidad + ciudad +
+// botón de contacto — SIN calificaciones ni reseñas (pedido explícito: "elimina el tema de las
+// calificaciones" — además, inventar una reseña sería la misma prueba social falsa que el SO
+// prohíbe en toda la auditoría).
+function TarjetaPerfil({ profesional }: { profesional: Profesional }) {
+  return (
+    <Tarjeta destacada className="mt-3">
+      <div className="flex items-start justify-between gap-2">
+        <div className="flex items-start gap-3">
+          {profesional.fotoUrl ? (
+            <Image
+              src={profesional.fotoUrl}
+              alt={`Foto de ${profesional.nombre}`}
+              width={64}
+              height={64}
+              className="size-16 shrink-0 rounded-[var(--radius-card)] object-cover object-top"
+            />
+          ) : (
+            <IconoCirculo icon={Scale} size={22} />
+          )}
+          <div className="min-w-0 flex-1 pt-0.5">
+            <p className="text-[15px] font-bold leading-[1.25] text-[var(--text-primary)]">{profesional.nombre}</p>
+            <p className="mt-0.5 text-[13px] leading-[1.3] text-[var(--text-secondary)]">{profesional.especialidad}</p>
+            {profesional.ciudad && (
+              <p className="mt-1 flex items-center gap-1 text-[12px] text-[var(--text-tertiary)]">
+                <MapPin size={12} aria-hidden="true" />
+                {profesional.ciudad}
+              </p>
+            )}
+          </div>
+        </div>
+        <span className="shrink-0 rounded-full bg-[color-mix(in_oklab,var(--text-tertiary)_14%,transparent)] px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.04em] text-[var(--text-tertiary)]">
+          Patrocinado
+        </span>
+      </div>
+
+      <a
+        href={profesional.contactoUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="mt-4 flex h-11 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] bg-[var(--accent)] text-[13.5px] font-semibold text-[var(--on-accent,var(--bg))] [touch-action:manipulation]"
+      >
+        <MessageCircle size={16} aria-hidden="true" />
+        Contactar
+      </a>
+    </Tarjeta>
+  );
+}
+
+export function DirectorioProfesionales({ profesionales = PROFESIONALES }: { profesionales?: Profesional[] }) {
+  const [activa, setActiva] = useState<CategoriaProfesional>('abogado');
+  const categoria = CATEGORIAS_PROFESIONAL.find((c) => c.id === activa)!;
+  const deLaCategoria = profesionales.filter((p) => p.categoria === activa);
+
+  return (
+    <div className="mt-6">
+      <p className="text-[15px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">Profesionales que pueden ayudarte</p>
+
+      {/* Selector de categoría — solo la elegida muestra su lista abajo (pedido del usuario,
+          2026-09-28, ronda 2: "más resumido y ordenado" que las 3 apiladas). */}
+      <div className="mt-3 grid grid-cols-3 gap-2">
+        {CATEGORIAS_PROFESIONAL.map((cat) => {
+          const seleccionada = cat.id === activa;
+          return (
+            <button
+              key={cat.id}
+              type="button"
+              onClick={() => setActiva(cat.id)}
+              aria-pressed={seleccionada}
+              className="flex flex-col items-start gap-1.5 rounded-[var(--radius-card)] border p-3 text-left [touch-action:manipulation]"
+              style={{
+                borderColor: seleccionada ? cat.color : 'color-mix(in oklab, var(--text-tertiary) 18%, transparent)',
+                background: seleccionada ? cat.colorBg : 'var(--surface)',
+              }}
+            >
+              {/* El ícono SIEMPRE lleva el color propio de su categoría (no solo cuando está
+                  activa) — pedido del usuario, 2026-09-28: "que no se vea tan plano". */}
+              <cat.icon size={18} style={{ color: cat.color }} aria-hidden="true" />
+              <span className="text-[12.5px] font-bold leading-[1.2] text-[var(--text-primary)]" style={seleccionada ? { color: cat.color } : undefined}>
+                {cat.etiqueta}
+              </span>
+              <span className="text-[10.5px] leading-[1.3] text-[var(--text-tertiary)]">{cat.corta}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      {deLaCategoria.length > 0 ? (
+        deLaCategoria.map((p) => <TarjetaPerfil key={p.nombre} profesional={p} />)
+      ) : (
+        <Tarjeta className="mt-3">
+          <div className="flex items-start gap-3">
+            <IconoCirculo icon={categoria.icon} />
+            <div className="min-w-0 flex-1">
+              <p className="text-[13px] leading-[1.5] text-[var(--text-secondary)]">{categoria.motivoVacio}</p>
+            </div>
+          </div>
+          <a
+            href={`mailto:${CONTACTO_ALIANZAS}?subject=${encodeURIComponent(`Quiero anunciarme en Coparentia — ${categoria.etiqueta}`)}`}
+            className="mt-3 inline-block text-[12px] text-[var(--text-tertiary)] underline-offset-2 hover:underline [touch-action:manipulation]"
+          >
+            ¿Trabajas en esto? Anúnciate aquí
+          </a>
+        </Tarjeta>
+      )}
+
+      <p className="mt-3 text-[11px] leading-[1.5] text-[var(--text-tertiary)]">
+        Espacio publicitario. Coparentia no presta estos servicios ni responde por la asesoría de terceros.
+      </p>
+    </div>
+  );
+}

@@ -10,7 +10,8 @@ import { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
 import { MessageCircle, Send, Scale, MailCheck } from 'lucide-react';
 import { ContenedorApp, Tarjeta, IconoCirculo, CabeceraApp, TituloSeccion } from '@/components/app/ui';
-import { AbogadoDestacado } from '@/components/app/AbogadoDestacado';
+import { DirectorioProfesionales } from '@/components/app/DirectorioProfesionales';
+import { ArticulosAsistencia } from '@/components/app/ArticulosAsistencia';
 import { enviarConsulta } from './acciones';
 import { obtenerPerfil } from '@/lib/perfil';
 
@@ -58,7 +59,12 @@ export default function Asistencia() {
     <>
       <CabeceraApp />
       <ContenedorApp sinTope>
-      <TituloSeccion titulo="Asistencia jurídica" subtitulo="Escríbenos tu duda: te respondemos por correo o WhatsApp." icon={Scale} />
+      <TituloSeccion titulo="Asistencia" subtitulo="Profesionales, artículos y una consulta directa cuando la necesites." icon={Scale} />
+
+      {/* Directorio de profesionales y artículos, arriba de todo — orden pedido por el usuario,
+          2026-09-28 (antes del formulario, no después). */}
+      <DirectorioProfesionales />
+      <ArticulosAsistencia />
 
       {estado === 'enviado' ? (
         <Tarjeta className="mt-4 flex flex-col items-center text-center" role="status">
@@ -160,10 +166,6 @@ export default function Asistencia() {
         )}
       </Tarjeta>
       )}
-
-      {/* Espacio publicitario para abogados de familia — mudado aquí desde Expediente: este es el
-          momento donde el usuario ya está pensando en hablar con un abogado de verdad. */}
-      <AbogadoDestacado />
       </ContenedorApp>
     </>
   );
