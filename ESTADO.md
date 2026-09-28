@@ -1,3 +1,21 @@
+### Checkpoint (2026-09-28, cierre) — Panel de profesionales: error 500 real, corregido
+- El usuario reportó "This page couldn't load" en `/admin/profesionales` en producción, y que en
+  el celular la tarjeta ni aparecía. Causa raíz encontrada por revisión de código (no se pudo ver
+  el log real de Vercel — sin CLI vinculado; probar generando un enlace mágico o aflojando el gate
+  de /admin para reproducir fue BLOQUEADO por el clasificador de seguridad del entorno, correcto:
+  son atajos que no debía tomar. Se revirtió esa exploración de inmediato, sin dejar rastro):
+  `app/admin/profesionales/page.tsx` (Server Component) le pasaba el ÍCONO de Lucide como prop —
+  una referencia a función/componente — a `FilaProfesionalAdmin.tsx` (Client Component). Next.js
+  solo serializa datos planos entre ese límite; un componente de React no cruza — mismo bug ya
+  documentado en `components/admin/ui.tsx` (`TarjetaSeccion`, "Only plain objects can be
+  passed..."), pero esta vez no se aplicó esa lección al construir el panel nuevo.
+- **Corregido**: `ICONO_CATEGORIA`/`ETIQUETA_CATEGORIA` se movieron DENTRO de
+  `FilaProfesionalAdmin.tsx` (ya es Client Component) y se resuelven ahí mismo a partir de
+  `profesional.categoria` (un string, sí serializable) — `page.tsx` ya no arma ni pasa el ícono.
+- Verificado: `tsc --noEmit` ✓ · `npm run build` ✓. NO se pudo probar en vivo con la cuenta real
+  del usuario (mismo motivo de siempre: entrar como admin requiere sus credenciales). Publicado —
+  el usuario debe confirmar que ahora sí carga `/admin/profesionales` y que la tarjeta aparece en
+  `/admin` desde su cuenta, en computador y en celular.
 ### Checkpoint (2026-09-28) — Panel de profesionales: construido, SQL corrido por el usuario
 - El usuario pidió un panel en /admin para agregar/editar/pausar/quitar profesionales sin código
   (hasta ahora se lo pedía a Claude cada vez). Construido: tabla `profesionales` en Supabase

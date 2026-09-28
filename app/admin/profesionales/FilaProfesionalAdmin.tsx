@@ -8,21 +8,22 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { motion } from 'motion/react';
-import { Pencil, Trash2, Pause, Play, type LucideIcon } from 'lucide-react';
+import { Pencil, Trash2, Pause, Play, Scale, Brain, HeartHandshake } from 'lucide-react';
 import type { Profesional } from '@/lib/profesionales';
 import { actualizarProfesional, pausarProfesional, eliminarProfesional } from './acciones';
 
-export function FilaProfesionalAdmin({
-  profesional,
-  activo,
-  icono: Icono,
-  etiquetaCategoria,
-}: {
-  profesional: Profesional;
-  activo: boolean;
-  icono: LucideIcon;
-  etiquetaCategoria: string;
-}) {
+// Los componentes de ícono NO viajan bien como prop desde un Server Component (page.tsx) hacia
+// este Client Component — Next.js solo serializa datos planos por ese límite, no referencias a
+// funciones/componentes (mismo bug ya documentado en components/admin/ui.tsx → TarjetaSeccion:
+// "Only plain objects can be passed..."). Por eso el ícono y su etiqueta se resuelven AQUÍ, a
+// partir de `profesional.categoria` (un string, eso sí es serializable), en vez de recibirlos
+// como prop ya armados.
+const ICONO_CATEGORIA = { abogado: Scale, psicologo: Brain, trabajador_social: HeartHandshake } as const;
+const ETIQUETA_CATEGORIA = { abogado: 'Abogados de familia', psicologo: 'Psicólogos familiares', trabajador_social: 'Trabajadores sociales' } as const;
+
+export function FilaProfesionalAdmin({ profesional, activo }: { profesional: Profesional; activo: boolean }) {
+  const Icono = ICONO_CATEGORIA[profesional.categoria];
+  const etiquetaCategoria = ETIQUETA_CATEGORIA[profesional.categoria];
   const [editando, setEditando] = useState(false);
   const [confirmandoQuitar, setConfirmandoQuitar] = useState(false);
   const [ocupado, setOcupado] = useState(false);

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ArrowLeft, Scale, Brain, HeartHandshake } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { crearClienteSupabaseServidor } from '@/lib/supabase/server';
 import { ContenedorAdmin } from '@/components/admin/ui';
 import { filaAProfesional, type FilaProfesional } from '@/lib/profesionales';
@@ -7,9 +7,6 @@ import { FormularioProfesional } from './FormularioProfesional';
 import { FilaProfesionalAdmin } from './FilaProfesionalAdmin';
 
 export const dynamic = 'force-dynamic'; // el dueño necesita ver el cambio recién guardado, nunca una copia vieja en caché
-
-const ICONO_CATEGORIA = { abogado: Scale, psicologo: Brain, trabajador_social: HeartHandshake } as const;
-const ETIQUETA_CATEGORIA = { abogado: 'Abogados de familia', psicologo: 'Psicólogos familiares', trabajador_social: 'Trabajadores sociales' } as const;
 
 // El gate de "¿eres admin?" ya lo resuelve app/admin/layout.tsx (padre de esta ruta) — aquí solo
 // se consulta la tabla, con el mismo cliente de servidor de siempre.
@@ -52,13 +49,7 @@ export default async function PanelProfesionales() {
           <p className="text-[13px] text-[var(--text-secondary)]">Todavía no has agregado ningún profesional.</p>
         ) : (
           profesionales.map((p) => (
-            <FilaProfesionalAdmin
-              key={p.id}
-              profesional={p}
-              activo={p.activo}
-              icono={ICONO_CATEGORIA[p.categoria]}
-              etiquetaCategoria={ETIQUETA_CATEGORIA[p.categoria]}
-            />
+            <FilaProfesionalAdmin key={p.id} profesional={p} activo={p.activo} />
           ))
         )}
       </div>
