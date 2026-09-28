@@ -1,3 +1,35 @@
+### Checkpoint (2026-09-28) — Notificaciones push: el recordatorio de cuota, construido
+- El usuario pidió construir la última pieza pendiente del reporte de auditoría: "alertas en el
+  momento que elegiste". Acotado a v1: un recordatorio push antes del día de pago, diferenciado
+  por rol (quien paga: "sube tu comprobante"; quien recibe: "ya casi te llega") — pedido explícito
+  del usuario. Notificaciones ligadas a eventos del calendario o al "otro progenitor" (no existe
+  esa conexión entre cuentas) quedan fuera, para otra ronda.
+- **Hallazgo real en el camino**: el onboarding YA pregunta "¿pagas o recibes?" (paso 0) pero esa
+  respuesta nunca se guardaba — vivía solo en sessionStorage y se perdía al terminar el recorrido.
+  Se agregó de verdad la pregunta a "Primeros pasos" (Inicio) y al editor de cuota (Ajustes,
+  `EditorCuota`) — este último se corrigió con cuidado para que editar OTRO campo (ej. el monto)
+  nunca borre un `rol_pago` ya guardado.
+- **Construido**: `public/sw.js` (service worker), `lib/push.ts` (envío con la librería
+  `web-push`, instalada), 2 rutas nuevas
+  (`app/api/push/suscribir` guarda/borra la suscripción del navegador;
+  `app/api/cron/recordatorio-cuota` decide a quién avisar cada día — ventana de 4 días antes del
+  día de pago, una vez al mes, se salta si ya hay un pago de "cuota" registrado ese mes),
+  `components/app/NotificacionesPush.tsx` (el interruptor en Ajustes, reutiliza `useEsIOS`/
+  `useInstalada` de InstalarApp.tsx para el aviso de "instala la app primero" en iPhone).
+- **Par de claves VAPID generado UNA vez** (`NEXT_PUBLIC_VAPID_PUBLIC_KEY`/`VAPID_PRIVATE_KEY`) —
+  ya en `.env.local` local; pendiente que el dueño las pegue en Vercel (mismo par, si no las
+  suscripciones no sirven).
+- **Verificado de verdad, no solo con tsc**: el mecanismo de suscripción del navegador se probó
+  con una instancia de Chrome REAL (no la de Playwright — Chromium sin marca no soporta bien la
+  Push API, y el contexto por defecto de Playwright es modo incógnito, donde Chrome la bloquea
+  del todo: ambos hallazgos reales durante la prueba, no bugs de esta app). Con Chrome real, la
+  suscripción se completó con un endpoint genuino de `fcm.googleapis.com` — el único paso que
+  faltó probar fue guardarla (esperado: la migración de abajo aún no se había corrido).
+- **Pendiente del dueño**: correr `supabase/notificaciones-push.sql` (tabla `push_subscriptions` +
+  columnas `rol_pago`/`recordatorio_cuota_enviado_mes` en `titulos`) y pegar las 2 claves VAPID en
+  Vercel — después de eso, probar el envío real de punta a punta con la suscripción ya capturada.
+- Verificado: `tsc --noEmit` ✓ · `npm run build` ✓ (2 rutas nuevas + 1 cron nuevo listados).
+
 ### Checkpoint (2026-09-25) — Reconciliación semanal Hotmart↔base de datos + age-gate
 - El usuario pidió configurar HOTMART_PRODUCT_ID (hecho, verificado en producción con curl real)
   y luego seguir cerrando lo que quedaba pendiente del reporte de auditoría.
