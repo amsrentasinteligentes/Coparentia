@@ -1,3 +1,18 @@
+### Checkpoint (2026-09-28, cierre) — Probando en Android real: 2 hallazgos, corregidos
+- El usuario probó en su Android real (pedido explícito) y encontró dos cosas reales:
+- **No encontraba "Ajustes"**: la única puerta desde la navegación normal es una fila en Perfil
+  que decía "Cuota alimentaria y cuenta" — nunca dice "Ajustes" en ningún lado. Renombrada a
+  "Ajustes" a secas (app/(app)/perfil/page.tsx) — mismo hallazgo de descubribilidad que ya se
+  había anotado el 2026-09-24 para el botón de instalar, nunca se había corregido este otro caso.
+- **La bolita de los interruptores se salía del riel**: causa raíz real, no cosmética — un `<span>`
+  `absolute` sin `left` explícito, dentro de un `<button>` (que centra su contenido por defecto),
+  terminaba anclado al borde DERECHO del interruptor por su "posición estática" implícita — el
+  `translate-x-*` que debía moverlo nunca se notaba porque ya arrancaba ahí (confirmado midiendo
+  el `computedStyle.transform` real: daba `none`). Afectaba a LOS DOS interruptores que comparten
+  el patrón (Novedades y Recordatorio de cuota) — se corrigieron ambos con `left-1` explícito.
+  Verificado con captura ampliada (zoom real) en los dos estados de los dos interruptores.
+- Verificado: `tsc --noEmit` ✓ · `npm run build` ✓.
+
 ### Checkpoint (2026-09-28) — Notificaciones push: el recordatorio de cuota, construido
 - El usuario pidió construir la última pieza pendiente del reporte de auditoría: "alertas en el
   momento que elegiste". Acotado a v1: un recordatorio push antes del día de pago, diferenciado
@@ -2935,6 +2950,11 @@ FICHA-ARTE.md que la landing.
   presupuesto; queda anotado para antes de declarar el funnel "vendible" de verdad.
 
 ## Problemas conocidos
+- **veredicto:landing/onboarding/paywall** (2026-09-28, recordatorio push de cuota): el gate
+  señala app/(app)/ajustes/page.tsx y app/(app)/inicio/page.tsx como más nuevos que los 3
+  veredictos — ninguno de los dos es landing/onboarding/paywall (se agregó la pregunta de rol a
+  "Primeros pasos" y al editor de cuota, más el interruptor de notificaciones en Ajustes). No se
+  relanza el revisor sobre esas 3 por esto.
 - **veredicto:landing/onboarding/paywall** (2026-09-25, confirmación de mayoría de edad): mismo
   motivo que la entrada "boton de Google" de más abajo — app/(funnel)/entrar/page.tsx es el login,
   ninguna de las 4 pantallas del dinero. Solo se agregó una frase a la casilla de consentimiento
