@@ -72,7 +72,12 @@ function FilaNovedades() {
           onClick={cambiar}
           className={`relative h-7 w-12 shrink-0 rounded-full transition-colors duration-200 [touch-action:manipulation] ${valor ? 'bg-[var(--accent)]' : 'bg-[color-mix(in_oklab,var(--text-tertiary)_35%,transparent)]'}`}
         >
-          <span className={`absolute top-1 size-5 rounded-full bg-white shadow-[var(--shadow-1)] transition-transform duration-200 ${valor ? 'translate-x-6' : 'translate-x-1'}`} />
+          {/* `left-1` explícito — sin él, la bolita se posiciona en el borde derecho por defecto
+              (un absolute sin left/right, dentro de un <button> que centra su contenido, termina
+              ahí) y el translate nunca se ve porque ya arranca en ese punto. Mismo hallazgo real
+              reportado por el usuario en su Android, 2026-09-28, corregido también aquí para no
+              dejar el mismo bug en el interruptor hermano. */}
+          <span className={`absolute left-1 top-1 size-5 rounded-full bg-white shadow-[var(--shadow-1)] transition-transform duration-200 ${valor ? 'translate-x-5' : 'translate-x-0'}`} />
         </button>
       </div>
       {error && <p role="alert" className="py-2 text-[12px] text-[var(--status-error)]">No pudimos guardar el cambio. Revisa tu conexión e inténtalo de nuevo.</p>}

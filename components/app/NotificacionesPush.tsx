@@ -161,7 +161,13 @@ export function FilaNotificacionesPush() {
           onClick={prendido ? desactivar : activar}
           className={`relative h-7 w-12 shrink-0 rounded-full transition-colors duration-200 [touch-action:manipulation] disabled:opacity-40 ${prendido ? 'bg-[var(--accent)]' : 'bg-[color-mix(in_oklab,var(--text-tertiary)_35%,transparent)]'}`}
         >
-          <span className={`absolute top-1 size-5 rounded-full bg-white shadow-[var(--shadow-1)] transition-transform duration-200 ${prendido ? 'translate-x-6' : 'translate-x-1'}`} />
+          {/* `left-1` explícito (no depender de la posición "estática" implícita de un absolute
+              sin left/right — dentro de un <button>, que centra su contenido por defecto, esa
+              posición implícita termina pegada al borde derecho, y el transform nunca se ve
+              porque ya arranca ahí: hallazgo real reportado por el usuario en su Android,
+              2026-09-28). Con la base fija, `translate-x-5` mueve exactamente lo necesario para
+              dejar el mismo margen (4px) a ambos lados en el estado prendido. */}
+          <span className={`absolute left-1 top-1 size-5 rounded-full bg-white shadow-[var(--shadow-1)] transition-transform duration-200 ${prendido ? 'translate-x-5' : 'translate-x-0'}`} />
         </button>
       </div>
       {error && <p role="alert" className="py-2 text-[12px] text-[var(--status-error)]">{error}</p>}
