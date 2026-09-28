@@ -1,4 +1,4 @@
-### Checkpoint (2026-09-28) — Rediseño de Asistencia: BORRADOR local, sin publicar
+### Checkpoint (2026-09-28) — Rediseño de Asistencia: PUBLICADO (commit `07e8c5d`)
 - El usuario pidió, antes de vender, rediseñar Asistencia: reemplazar el espacio de "abogados
   patrocinados" por un directorio de 3 categorías (Abogados de familia, Psicólogos familiares,
   Trabajadores sociales) + un bloque de artículos rotativos, mostrando referencias de otra app.
@@ -16,10 +16,9 @@
   artículos después. El usuario mandó una imagen de referencia con el orden que quería.
 - **Ronda 2, orden corregido**: directorio de profesionales → artículos → formulario de consulta
   al final. Verificado con captura real a 375px de las 3 secciones, enviada al usuario.
-- **Estado: esperando aprobación del usuario — NADA de esto está commiteado ni publicado.** Es la
-  primera pantalla de un tipo nuevo (directorio + artículos): si se aprueba, corresponde pasarla
-  por el revisor-visual antes de declararla lista (regla 7 del SO) — Asistencia en sí es pantalla
-  secundaria, no una de las 4 del dinero, pero "primera de un tipo nuevo" sigue aplicando.
+- **Estado: aprobado por el usuario y publicado (commit `07e8c5d`, 2026-09-28).** Es la primera
+  pantalla de un tipo nuevo (directorio + artículos): PENDIENTE pasarla por el revisor-visual antes
+  de dar la pantalla por "lista" según regla 7 del SO — no se hizo aún, no bloquea lo publicado.
 - Verificado: `tsc --noEmit` ✓ · `npm run build` ✓ (ruta /asistencia/[slug] listada).
 
 ### Checkpoint (2026-09-28) — Asistencia ronda 3-4 + misma idea extendida a la landing
@@ -50,11 +49,10 @@
   `fotoUrl` con la foto real que envió el usuario (`public/anuncios/ivonne-reyes.png`, el banner
   viejo se borró). Especialidad actualizada a "Abogada especialista en relaciones jurídico
   negociables", ciudad "Bogotá D.C." — dato tal cual lo dio el usuario, nada inventado.
-- Sigue sin commitear NADA de este rediseño (Asistencia ni landing) — el usuario pidió ver el
-  resultado antes de publicar. Verificado: `tsc --noEmit` ✓ · `npm run build` ✓ (ruta pública
-  /articulos/[slug] listada) · probado en el navegador: categorías, tarjeta nueva de Ivonne Reyes
-  con foto real y sin calificaciones, los 3 artículos y la apertura de uno de ellos sin pedir
-  cuenta. Esperando aprobación del usuario.
+- **Publicado** (commit `07e8c5d`, push a `master` — el usuario dijo "publica todo"). Verificado
+  antes de publicar: `tsc --noEmit` ✓ · `npm run build` ✓ (ruta pública /articulos/[slug] listada) ·
+  probado en el navegador: categorías, tarjeta de Ivonne Reyes con foto real y sin calificaciones,
+  los 3 artículos y la apertura de uno de ellos sin pedir cuenta.
 - **Nota de herramienta (no es bug del producto)**: durante esta sesión las capturas tomadas con
   Playwright después de un salto instantáneo de scroll (`scrollIntoView` o `window.scrollTo` sin
   pasos intermedios) salieron en blanco — el IntersectionObserver de la animación de aparición
@@ -3014,14 +3012,13 @@ FICHA-ARTE.md que la landing.
   presupuesto; queda anotado para antes de declarar el funnel "vendible" de verdad.
 
 ## Problemas conocidos
-- **veredicto:landing** (2026-09-28, sección "Asistencia" en la landing — BORRADOR sin aprobar):
-  esta vez sí se tocó `app/page.tsx` (label del menú "Para abogados"→"Asistencia" y su ancla) y
-  `components/landing/AnuncioAbogados.tsx` (copy generalizado a 3 categorías; ronda 2: los 3
-  íconos ahora son las 3 categorías con los mismos colores que el directorio de la app —
-  `--cat-visita`/`--cat-extra`/`--cat-vacaciones`, pedido del usuario tras comparar con la app).
-  No amerita relanzar el revisor-visual todavía porque el usuario aún NO aprobó el cambio — se le
-  mandaron capturas reales a 1440px y 375px por SendUserFile (dos rondas) y se espera su respuesta.
-  Si aprueba, corresponde re-renderizar y re-lanzar el revisor sobre landing antes de cerrar (regla 7).
+- **veredicto:landing** (2026-09-28, sección "Asistencia" en la landing — PUBLICADO, commit
+  `07e8c5d`): el usuario aprobó ("publica todo") tras varias rondas mostradas en vivo. Se tocó
+  `app/page.tsx` (label del menú "Para abogados"→"Asistencia") y `components/landing/AnuncioAbogados.tsx`
+  (ahora embebe el directorio real + artículos, ver checkpoints de arriba). PENDIENTE real: al ser
+  landing (una de las 4 pantallas del dinero) corresponde pasar el revisor-visual formal sobre
+  ella antes de considerar el veredicto vigente (regla 7) — no se hizo en esta sesión por volumen
+  de rondas; queda anotado para la próxima sesión, no bloquea lo ya publicado.
 - **veredicto:landing/onboarding/paywall** (2026-09-28, rediseño de Asistencia — BORRADOR sin
   aprobar todavía): app/(app)/asistencia/page.tsx y la nueva app/(app)/asistencia/[slug]/page.tsx
   no son landing/onboarding/paywall. Asistencia es pantalla secundaria (no una de las 4 del
