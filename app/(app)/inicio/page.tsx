@@ -7,7 +7,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { motion, useReducedMotion } from 'motion/react';
-import { Upload, Check, CalendarClock, ShieldCheck, ChevronRight, FileCheck2, Globe, Wallet, CalendarDays, FolderOpen, Scale, ReceiptText, Phone, Video } from 'lucide-react';
+import { Upload, Check, CalendarClock, ShieldCheck, ChevronRight, FileCheck2, Globe, Wallet, HandCoins, CalendarDays, FolderOpen, Scale, ReceiptText, Phone, Video } from 'lucide-react';
 import { VistaPreviaArchivo } from '@/components/app/VistaPreviaArchivo';
 import { BarraAtras, Halo } from '@/components/funnel/ui';
 import Link from 'next/link';
@@ -103,6 +103,10 @@ function PrimerosPasos({ onListo }: { onListo: () => void }) {
   const [monto, setMonto] = useState('450000');
   const [dia, setDia] = useState('5');
   const [reajuste, setReajuste] = useState('IPC (Índice de Precios al Consumidor)');
+  // El onboarding YA preguntó esto antes de comprar, pero esa respuesta se pierde en el camino
+  // (vive solo en sessionStorage, nunca llega a la base de datos) — se vuelve a preguntar aquí,
+  // donde sí queda guardado de verdad, para poder diferenciar el recordatorio de notificaciones.
+  const [rolPago, setRolPago] = useState<'paga' | 'recibe' | ''>('');
   const [archivo, setArchivo] = useState<File | null>(null);
   const [procesando, setProcesando] = useState(false);
   const [errorSubida, setErrorSubida] = useState<string | null>(null);
@@ -128,7 +132,7 @@ function PrimerosPasos({ onListo }: { onListo: () => void }) {
   // encabezado de Inicio lo mostraba tal cual: dos puertas al mismo dato con reglas distintas.
   const montoNumero = Number(monto);
   const diaNumero = Number(dia);
-  const tituloValido = montoNumero > 0 && diaNumero >= 1 && diaNumero <= 31;
+  const tituloValido = montoNumero > 0 && diaNumero >= 1 && diaNumero <= 31 && rolPago !== '';
 
   const confirmarTitulo = async (): Promise<void> => {
     if (!tituloValido) return;
@@ -137,6 +141,7 @@ function PrimerosPasos({ onListo }: { onListo: () => void }) {
       diaPago: diaNumero,
       indiceReajuste: reajuste,
       fechaInicio: hoyEnColombia(),
+      rolPago: rolPago || undefined,
     };
     try {
       await guardarTitulo(t);
@@ -238,6 +243,31 @@ function PrimerosPasos({ onListo }: { onListo: () => void }) {
             onChange={(e) => setDia(e.target.value)}
             className="mt-2 h-14 w-full rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--surface)] px-4 text-[16px] tabular-nums text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)]"
           />
+
+          <label className="mt-5 text-[13px] font-medium text-[var(--text-secondary)]">Tu rol en esta cuota</label>
+          <div className="mt-2 grid grid-cols-2 gap-3">
+            {(
+              [
+                { valor: 'paga' as const, icon: Wallet, label: 'Yo pago' },
+                { valor: 'recibe' as const, icon: HandCoins, label: 'Yo recibo' },
+              ]
+            ).map(({ valor, icon: Icon, label }) => (
+              <button
+                key={valor}
+                type="button"
+                onClick={() => setRolPago(valor)}
+                className={`flex h-14 items-center justify-center gap-2 rounded-[var(--radius-button)] border text-[15px] font-semibold [touch-action:manipulation] ${
+                  rolPago === valor
+                    ? 'border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_10%,transparent)] text-[var(--accent)]'
+                    : 'border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--surface)] text-[var(--text-secondary)]'
+                }`}
+              >
+                <Icon size={18} aria-hidden="true" />
+                {label}
+              </button>
+            ))}
+          </div>
+          <p className="mt-1.5 text-[11.5px] text-[var(--text-secondary)]">Así podemos avisarte lo correcto: a quien paga, subir el comprobante; a quien recibe, que ya casi le llega.</p>
 
           <label className="mt-5 text-[13px] font-medium text-[var(--text-secondary)]">Reajuste anual</label>
           <select

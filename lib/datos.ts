@@ -16,6 +16,8 @@ export function esContacto(tipo: TipoEvento): boolean {
   return tipo === 'llamada' || tipo === 'videollamada';
 }
 
+export type RolPago = 'paga' | 'recibe';
+
 export interface Titulo {
   montoMensual: number; // COP — el valor de la cuota alimentaria, no el precio de la suscripción
   diaPago: number; // día del mes en que se cobra
@@ -23,6 +25,10 @@ export interface Titulo {
   fechaInicio: string; // ISO
   acuerdoPath?: string; // ruta en Storage del acta de conciliación / sentencia que fija la cuota
   acuerdoNombre?: string; // nombre real del archivo subido
+  // El onboarding YA pregunta esto (paso 0), pero esa respuesta se perdía al terminar el
+  // recorrido — se guarda aquí de verdad, en la pantalla donde la persona configura su cuota con
+  // sesión real, para poder diferenciar el recordatorio de notificaciones (2026-09-28).
+  rolPago?: RolPago;
 }
 
 export interface Pago {
@@ -194,6 +200,7 @@ export async function obtenerTitulo(): Promise<Titulo | null> {
     fechaInicio: data.fecha_inicio,
     acuerdoPath: data.acuerdo_path ?? undefined,
     acuerdoNombre: data.acuerdo_nombre ?? undefined,
+    rolPago: (data.rol_pago as RolPago | null) ?? undefined,
   };
 }
 
@@ -206,6 +213,7 @@ export async function guardarTitulo(t: Titulo): Promise<void> {
       dia_pago: t.diaPago,
       indice_reajuste: t.indiceReajuste,
       fecha_inicio: t.fechaInicio,
+      rol_pago: t.rolPago ?? null,
     },
     { onConflict: 'user_id' }
   );

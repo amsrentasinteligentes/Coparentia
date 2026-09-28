@@ -8,7 +8,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'motion/react';
-import { LogOut, ExternalLink, Trash2, AlertTriangle, UserRound, CreditCard, LifeBuoy, ShieldCheck, FileText, Scale, ChevronRight, CalendarCheck, Crown, Sparkles, Smartphone, type LucideIcon } from 'lucide-react';
+import { LogOut, ExternalLink, Trash2, AlertTriangle, UserRound, CreditCard, LifeBuoy, ShieldCheck, FileText, Scale, ChevronRight, CalendarCheck, Crown, Sparkles, Smartphone, Wallet, HandCoins, type LucideIcon } from 'lucide-react';
 import Link from 'next/link';
 import { ContenedorApp, Tarjeta, IconoCirculo, TarjetaSkeleton, ErrorDeCarga, CabeceraApp, TituloSeccion } from '@/components/app/ui';
 import { type Titulo, obtenerTitulo, guardarTitulo, obtenerPagos, formatoCOP } from '@/lib/datos';
@@ -17,6 +17,7 @@ import { crearClienteSupabase } from '@/lib/supabase/client';
 import { eliminarMiCuenta } from './acciones';
 import { obtenerPreferenciaNovedades, cambiarPreferenciaNovedades } from '@/lib/consentimiento';
 import { useEventoInstalacion, useInstalada, useEsIOS, HojaPasosInstalarIOS } from '@/components/app/InstalarApp';
+import { FilaNotificacionesPush } from '@/components/app/NotificacionesPush';
 
 /* ── <FilaNovedades> — la casilla opcional del consentimiento, editable después (la pantalla de
    autorizaciones promete "puedes cambiarla desde Ajustes"). Cada cambio inserta una fila nueva en
@@ -97,6 +98,7 @@ function EditorCuota() {
   const [monto, setMonto] = useState('');
   const [dia, setDia] = useState('');
   const [reajuste, setReajuste] = useState(OPCIONES_REAJUSTE[0]);
+  const [rolPago, setRolPago] = useState<'paga' | 'recibe' | ''>('');
   const [guardando, setGuardando] = useState(false);
   const [guardado, setGuardado] = useState(false);
   const [errorGuardar, setErrorGuardar] = useState<string | null>(null);
@@ -115,6 +117,7 @@ function EditorCuota() {
           // Si el valor guardado no está entre las opciones (viene de una versión anterior), se
           // conserva el que hay en vez de sobrescribirlo en silencio con el primero de la lista.
           setReajuste(OPCIONES_REAJUSTE.includes(t.indiceReajuste) ? t.indiceReajuste : OPCIONES_REAJUSTE[0]);
+          setRolPago(t.rolPago ?? '');
         }
         setCargando(false);
       })
@@ -130,12 +133,13 @@ function EditorCuota() {
 
   const diaNumero = Number(dia);
   const montoNumero = Number(monto);
-  const valido = montoNumero > 0 && diaNumero >= 1 && diaNumero <= 31;
+  const valido = montoNumero > 0 && diaNumero >= 1 && diaNumero <= 31 && rolPago !== '';
   const hayCambios =
     !original ||
     montoNumero !== original.montoMensual ||
     diaNumero !== original.diaPago ||
-    reajuste !== original.indiceReajuste;
+    reajuste !== original.indiceReajuste ||
+    rolPago !== (original.rolPago ?? '');
 
   const guardar = async (): Promise<void> => {
     if (guardando || !valido || !hayCambios) return;
@@ -146,6 +150,7 @@ function EditorCuota() {
       montoMensual: montoNumero,
       diaPago: diaNumero,
       indiceReajuste: reajuste,
+      rolPago: rolPago || undefined,
       // La fecha de inicio del título NO se toca al editar: es cuándo empezó la obligación, no
       // cuándo se corrigió el dato. Si no había título previo, se usa hoy.
       fechaInicio: original?.fechaInicio ?? hoyEnColombia(),
@@ -231,9 +236,38 @@ function EditorCuota() {
         ))}
       </select>
 
+      <label className="mt-4 block text-[13px] font-medium text-[var(--text-secondary)]">Tu rol en esta cuota</label>
+      <div className="mt-2 grid grid-cols-2 gap-3">
+        {(
+          [
+            { valor: 'paga' as const, icon: Wallet, label: 'Yo pago' },
+            { valor: 'recibe' as const, icon: HandCoins, label: 'Yo recibo' },
+          ]
+        ).map(({ valor, icon: Icon, label }) => (
+          <button
+            key={valor}
+            type="button"
+            onClick={() => {
+              setRolPago(valor);
+              setGuardado(false);
+            }}
+            className={`flex h-12 items-center justify-center gap-2 rounded-[var(--radius-button)] border text-[14px] font-semibold [touch-action:manipulation] ${
+              rolPago === valor
+                ? 'border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_10%,transparent)] text-[var(--accent)]'
+                : 'border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--bg)] text-[var(--text-secondary)]'
+            }`}
+          >
+            <Icon size={16} aria-hidden="true" />
+            {label}
+          </button>
+        ))}
+      </div>
+
       {!valido && (
         <p className="mt-3 text-[12.5px] text-[var(--status-error)]">
-          Revisa los datos: el monto debe ser mayor que cero y el día, entre 1 y 31.
+          {rolPago === ''
+            ? 'Elige tu rol (pagas o recibes) para poder guardar.'
+            : 'Revisa los datos: el monto debe ser mayor que cero y el día, entre 1 y 31.'}
         </p>
       )}
       {errorGuardar && (
@@ -368,6 +402,7 @@ export default function Ajustes() {
         <Tarjeta className="mt-3 py-1">
           <FilaInstalar />
           <FilaNovedades />
+          <FilaNotificacionesPush />
           <FilaAjuste icon={CreditCard} titulo="Suscripción y pagos" detalle="Se administra en Hotmart: cancelar, cambiar de plan, facturas" href="https://consumer.hotmart.com/" externo ultima />
         </Tarjeta>
         {/* Cómo cancelar: texto legal obligatorio (47), ahora bajo la lista */}
