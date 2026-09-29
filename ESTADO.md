@@ -3969,3 +3969,14 @@ levantado (ver diagnóstico de la sección `veredicto landing`).
 - **veredicto:landing**: se editó `app/page.tsx` (sección "¿Te suena?", ahora 6 preguntas
   intercaladas paga/recibe, pedido del usuario). El usuario aprobó y se publicó — pendiente
   relanzar el revisor-visual formal sobre landing en una próxima sesión (regla 7), no bloquea.
+
+### Checkpoint (2026-09-29) — 3 artículos reemplazados por la versión del equipo jurídico
+- El usuario pegó los 3 artículos revisados por su equipo jurídico, para reemplazar los 3 que yo
+  había escrito (2026-09-28, nunca revisados por un abogado real). Reemplazados en
+  `lib/articulos.ts` tal cual el texto que pegó, solo divididos en párrafos: "Cómo hablar de
+  dinero sin que cada gasto termine en una pelea", "¿Qué hacer cuando no se paga la cuota
+  alimentaria?", "Acuerdos claros para que tus hijos no queden en medio". Slugs nuevos (los viejos
+  ya no existen — si alguien tenía guardado un enlace directo al artículo viejo, ahora da 404,
+  aceptable: no hay tráfico externo apuntando a esos enlaces todavía).
+- Mismo componente para la app y la landing (fuente única, `lib/articulos.ts`) — verificado en el
+  navegador que ya se ven los 3 nuevos. Verificado: `tsc --noEmit` ✓ · `npm run build` ✓.
