@@ -60,99 +60,119 @@ async function subirFotoSiViene(supabase: Awaited<ReturnType<typeof crearCliente
 }
 
 export async function crearProfesional(formData: FormData): Promise<ResultadoAccion> {
-  const { esAdmin } = await usuarioAdminActual();
-  if (!esAdmin) return { ok: false, mensaje: 'No tienes permiso para hacer esto.' };
+  // Red de seguridad: cualquier excepción no prevista aquí adentro rompía TODA la página con un
+  // error 500 genérico (hallazgo real, 2026-09-28 — el usuario probó agregar un profesional de
+  // prueba y le salió "This page couldn't load"). Ahora, pase lo que pase, esta acción devuelve
+  // un mensaje que el formulario puede mostrar, nunca tumba la pantalla completa.
+  try {
+    const { esAdmin } = await usuarioAdminActual();
+    if (!esAdmin) return { ok: false, mensaje: 'No tienes permiso para hacer esto.' };
 
-  const datos: DatosProfesional = {
-    categoria: String(formData.get('categoria') ?? ''),
-    nombre: String(formData.get('nombre') ?? ''),
-    especialidad: String(formData.get('especialidad') ?? ''),
-    ciudad: String(formData.get('ciudad') ?? ''),
-    contactoUrl: String(formData.get('contacto') ?? ''),
-  };
-  const errorValidacion = validar(datos);
-  if (errorValidacion) return { ok: false, mensaje: errorValidacion };
+    const datos: DatosProfesional = {
+      categoria: String(formData.get('categoria') ?? ''),
+      nombre: String(formData.get('nombre') ?? ''),
+      especialidad: String(formData.get('especialidad') ?? ''),
+      ciudad: String(formData.get('ciudad') ?? ''),
+      contactoUrl: String(formData.get('contacto') ?? ''),
+    };
+    const errorValidacion = validar(datos);
+    if (errorValidacion) return { ok: false, mensaje: errorValidacion };
 
-  const supabase = await crearClienteSupabaseServidor();
-  const { url: fotoUrl, error: errorFoto } = await subirFotoSiViene(supabase, formData.get('foto') as unknown as File | null);
-  if (errorFoto) return { ok: false, mensaje: errorFoto };
+    const supabase = await crearClienteSupabaseServidor();
+    const { url: fotoUrl, error: errorFoto } = await subirFotoSiViene(supabase, formData.get('foto') as unknown as File | null);
+    if (errorFoto) return { ok: false, mensaje: errorFoto };
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-  const { error } = await supabase.from('profesionales').insert({
-    categoria: datos.categoria,
-    nombre: datos.nombre.trim(),
-    especialidad: datos.especialidad.trim(),
-    ciudad: datos.ciudad.trim() || null,
-    contacto_url: normalizarContacto(datos.contactoUrl),
-    foto_url: fotoUrl ?? null,
-    creado_por: user?.id ?? null,
-  });
-  if (error) return { ok: false, mensaje: 'No se pudo guardar. Intenta de nuevo en un momento.' };
+    const { error } = await supabase.from('profesionales').insert({
+      categoria: datos.categoria,
+      nombre: datos.nombre.trim(),
+      especialidad: datos.especialidad.trim(),
+      ciudad: datos.ciudad.trim() || null,
+      contacto_url: normalizarContacto(datos.contactoUrl),
+      foto_url: fotoUrl ?? null,
+      creado_por: user?.id ?? null,
+    });
+    if (error) return { ok: false, mensaje: `No se pudo guardar: ${error.message}` };
 
-  revalidatePath('/admin/profesionales');
-  return { ok: true, mensaje: `${datos.nombre.trim()} ya aparece en el directorio.` };
+    revalidatePath('/admin/profesionales');
+    return { ok: true, mensaje: `${datos.nombre.trim()} ya aparece en el directorio.` };
+  } catch (e) {
+    return { ok: false, mensaje: `Ocurrió un error inesperado: ${e instanceof Error ? e.message : String(e)}` };
+  }
 }
 
 export async function actualizarProfesional(id: string, formData: FormData): Promise<ResultadoAccion> {
-  const { esAdmin } = await usuarioAdminActual();
-  if (!esAdmin) return { ok: false, mensaje: 'No tienes permiso para hacer esto.' };
+  try {
+    const { esAdmin } = await usuarioAdminActual();
+    if (!esAdmin) return { ok: false, mensaje: 'No tienes permiso para hacer esto.' };
 
-  const datos: DatosProfesional = {
-    categoria: String(formData.get('categoria') ?? ''),
-    nombre: String(formData.get('nombre') ?? ''),
-    especialidad: String(formData.get('especialidad') ?? ''),
-    ciudad: String(formData.get('ciudad') ?? ''),
-    contactoUrl: String(formData.get('contacto') ?? ''),
-  };
-  const errorValidacion = validar(datos);
-  if (errorValidacion) return { ok: false, mensaje: errorValidacion };
+    const datos: DatosProfesional = {
+      categoria: String(formData.get('categoria') ?? ''),
+      nombre: String(formData.get('nombre') ?? ''),
+      especialidad: String(formData.get('especialidad') ?? ''),
+      ciudad: String(formData.get('ciudad') ?? ''),
+      contactoUrl: String(formData.get('contacto') ?? ''),
+    };
+    const errorValidacion = validar(datos);
+    if (errorValidacion) return { ok: false, mensaje: errorValidacion };
 
-  const supabase = await crearClienteSupabaseServidor();
-  const { url: fotoUrl, error: errorFoto } = await subirFotoSiViene(supabase, formData.get('foto') as unknown as File | null);
-  if (errorFoto) return { ok: false, mensaje: errorFoto };
+    const supabase = await crearClienteSupabaseServidor();
+    const { url: fotoUrl, error: errorFoto } = await subirFotoSiViene(supabase, formData.get('foto') as unknown as File | null);
+    if (errorFoto) return { ok: false, mensaje: errorFoto };
 
-  const cambios: Record<string, unknown> = {
-    categoria: datos.categoria,
-    nombre: datos.nombre.trim(),
-    especialidad: datos.especialidad.trim(),
-    ciudad: datos.ciudad.trim() || null,
-    contacto_url: normalizarContacto(datos.contactoUrl),
-  };
-  if (fotoUrl) cambios.foto_url = fotoUrl; // solo se pisa la foto si subieron una nueva
+    const cambios: Record<string, unknown> = {
+      categoria: datos.categoria,
+      nombre: datos.nombre.trim(),
+      especialidad: datos.especialidad.trim(),
+      ciudad: datos.ciudad.trim() || null,
+      contacto_url: normalizarContacto(datos.contactoUrl),
+    };
+    if (fotoUrl) cambios.foto_url = fotoUrl; // solo se pisa la foto si subieron una nueva
 
-  const { error } = await supabase.from('profesionales').update(cambios).eq('id', id);
-  if (error) return { ok: false, mensaje: 'No se pudo guardar el cambio. Intenta de nuevo.' };
+    const { error } = await supabase.from('profesionales').update(cambios).eq('id', id);
+    if (error) return { ok: false, mensaje: `No se pudo guardar el cambio: ${error.message}` };
 
-  revalidatePath('/admin/profesionales');
-  return { ok: true, mensaje: 'Cambios guardados.' };
+    revalidatePath('/admin/profesionales');
+    return { ok: true, mensaje: 'Cambios guardados.' };
+  } catch (e) {
+    return { ok: false, mensaje: `Ocurrió un error inesperado: ${e instanceof Error ? e.message : String(e)}` };
+  }
 }
 
 // Pausar/reactivar en vez de un único botón "activo": permite reactivar sin volver a llenar el
 // formulario — pedido implícito de cualquier catálogo de anuncios (alguien deja de pagar por
 // una temporada y vuelve después).
 export async function pausarProfesional(id: string, activo: boolean): Promise<ResultadoAccion> {
-  const { esAdmin } = await usuarioAdminActual();
-  if (!esAdmin) return { ok: false, mensaje: 'No tienes permiso para hacer esto.' };
+  try {
+    const { esAdmin } = await usuarioAdminActual();
+    if (!esAdmin) return { ok: false, mensaje: 'No tienes permiso para hacer esto.' };
 
-  const supabase = await crearClienteSupabaseServidor();
-  const { error } = await supabase.from('profesionales').update({ activo }).eq('id', id);
-  if (error) return { ok: false, mensaje: 'No se pudo guardar el cambio.' };
+    const supabase = await crearClienteSupabaseServidor();
+    const { error } = await supabase.from('profesionales').update({ activo }).eq('id', id);
+    if (error) return { ok: false, mensaje: `No se pudo guardar el cambio: ${error.message}` };
 
-  revalidatePath('/admin/profesionales');
-  return { ok: true, mensaje: activo ? 'Reactivado.' : 'Pausado — ya no aparece en la app ni en la página de ventas.' };
+    revalidatePath('/admin/profesionales');
+    return { ok: true, mensaje: activo ? 'Reactivado.' : 'Pausado — ya no aparece en la app ni en la página de ventas.' };
+  } catch (e) {
+    return { ok: false, mensaje: `Ocurrió un error inesperado: ${e instanceof Error ? e.message : String(e)}` };
+  }
 }
 
 export async function eliminarProfesional(id: string): Promise<ResultadoAccion> {
-  const { esAdmin } = await usuarioAdminActual();
-  if (!esAdmin) return { ok: false, mensaje: 'No tienes permiso para hacer esto.' };
+  try {
+    const { esAdmin } = await usuarioAdminActual();
+    if (!esAdmin) return { ok: false, mensaje: 'No tienes permiso para hacer esto.' };
 
-  const supabase = await crearClienteSupabaseServidor();
-  const { error } = await supabase.from('profesionales').delete().eq('id', id);
-  if (error) return { ok: false, mensaje: 'No se pudo quitar. Intenta de nuevo.' };
+    const supabase = await crearClienteSupabaseServidor();
+    const { error } = await supabase.from('profesionales').delete().eq('id', id);
+    if (error) return { ok: false, mensaje: `No se pudo quitar: ${error.message}` };
 
-  revalidatePath('/admin/profesionales');
-  return { ok: true, mensaje: 'Profesional quitado.' };
+    revalidatePath('/admin/profesionales');
+    return { ok: true, mensaje: 'Profesional quitado.' };
+  } catch (e) {
+    return { ok: false, mensaje: `Ocurrió un error inesperado: ${e instanceof Error ? e.message : String(e)}` };
+  }
 }

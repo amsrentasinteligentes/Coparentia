@@ -16,6 +16,25 @@
   requiere las credenciales del usuario). Verificado: `tsc --noEmit` ✓ · `npm run build` ✓. En la
   base de datos, el profesional de prueba del usuario YA NO existe (no se sabe si él mismo lo
   borró o si la creación nunca llegó a completarse) — no se tocó nada de la base en este arreglo.
+- **El usuario probó de nuevo tras el arreglo y le volvió a salir el mismo error** (digest
+  distinto: `778281220`). Diagnóstico con `SUPABASE_SERVICE_ROLE_KEY` desde un script aparte (sin
+  tocar el gate de /admin ni generar accesos — esos dos atajos ya los bloqueó el clasificador de
+  seguridad antes, correctamente): la tabla `profesionales` seguía con SOLO Ivonne — el alta de
+  prueba nunca llegó a insertarse, lo que apunta a que la propia Server Action `crearProfesional`
+  lanzó una excepción no controlada (eso sí tumba toda la página en Next.js), no a un problema de
+  renderizado de la lista. Un insert de prueba idéntico hecho directo con la service role SÍ
+  funcionó sin problema, así que la tabla/RLS están bien — el fallo está en algo específico del
+  camino Formulario → Server Action que todavía no se reprodujo con certeza.
+- **Corregido (defensivo)**: las 4 acciones de `app/admin/profesionales/acciones.ts` (crear,
+  editar, pausar, eliminar) ahora envuelven todo su cuerpo en `try/catch` — cualquier excepción no
+  prevista ya NO tumba la página completa, se devuelve como mensaje de error legible en el propio
+  formulario. Esto no descarta que exista otra causa de raíz distinta a `remotePatterns`, pero
+  convierte cualquier crash futuro en un mensaje diagnosticable en vez de una pantalla en blanco.
+- Se dejó un profesional de prueba real en la base ("Prueba Prueba", categoría psicólogo) CON una
+  foto real subida al bucket de Supabase (mismo camino exacto que tomaría el panel), para que la
+  próxima carga de `/admin/profesionales` sea la prueba definitiva de si `remotePatterns` ya
+  resolvió el problema de la foto. Si el usuario confirma que carga bien, borrar esa fila de
+  prueba (o dejar que él la borre desde el propio botón "Quitar" del panel).
 ### Checkpoint (2026-09-28) — Contador de clics en "Contactar", publicado
 - El usuario preguntó si se puede llevar récord de cuántos tocaron "Contactar" a un profesional.
   Construido con el mismo `event_log` que ya usa el resto del panel (36-ANALITICA-Y-EVENTOS.md):
