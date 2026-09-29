@@ -3983,13 +3983,11 @@ levantado (ver diagnóstico de la sección `veredicto landing`).
 
 ### Checkpoint (2026-09-29) — Asistencia en el carrusel + "Patrocinado" quitado, publicados
 - El usuario pidió incluir la pantalla de Asistencia en el carrusel de la landing (antes solo
-  tenía Inicio/Pagos/Calendario/Expediente/Perfil). Agregada en `app/page.tsx` — SIN captura real
-  todavía (no hay forma de entrar con su cuenta para tomarla; no se piden credenciales ni se abren
-  sesiones ajenas), usa el placeholder honesto que el propio componente `AppPorDentro` ya trae
-  para este caso (ícono + etiqueta, nunca una imagen inventada). Esperando que el usuario mande la
-  captura real de su celular para reemplazarlo por `src: '/frame-asistencia.png'`.
-- Verificado: `tsc --noEmit` ✓ · `npm run build` ✓ · contenido confirmado por texto de la página
-  (get_page_text) — el panel de vista previa no tomó captura visual esta vez (parecía minimizado).
+  tenía Inicio/Pagos/Calendario/Expediente/Perfil). Agregada en `app/page.tsx`, primero con el
+  placeholder honesto del componente (sin captura, sin poder entrar con su cuenta), y después el
+  usuario mandó la captura real de su celular (`public/frame-asistencia.png`) — ya reemplazada.
+- Verificado: `tsc --noEmit` ✓ · `npm run build` ✓ · confirmado que la imagen carga (ref con su
+  texto alternativo en la página) — el panel de vista previa no tomó captura visual esta vez.
 - **"Patrocinado" eliminado** de las tarjetas de profesionales (pedido explícito del usuario,
   2026-09-29, tras que yo avisara del riesgo de publicidad no revelada ante la SIC — eligió
   quitarlo de todas formas: opción 1 de 3 que le di). Aplica a la app Y a la landing (mismo
