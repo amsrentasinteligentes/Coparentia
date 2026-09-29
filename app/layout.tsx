@@ -47,6 +47,13 @@ export const viewport: Viewport = {
   // Tiñe la barra de direcciones del navegador (Android/Chrome) con el acento de marca — no cambia
   // nada dentro de la app instalada, esa parte ya la fija manifest.ts (theme_color).
   themeColor: ACCENT_HEX,
+  // Sin esto, Chrome/Android con el celular en modo oscuro REPINTA la página por su cuenta (su
+  // función "Tema oscuro" / auto-dark) porque nunca le dijimos qué tema tiene la página — así se
+  // explica que las tarjetas de "Trabajadores sociales"/"Psicólogos" se vieran oscuras en Android
+  // aunque en el código y en el computed style todo estuviera correcto (2026-09-29, 3ª ronda: los
+  // dos fixes anteriores de color-mix no cambiaron nada porque el navegador los sobreescribía
+  // DESPUÉS). Toda la landing, el funnel y el interior de la app son claros — esto lo declara.
+  colorScheme: "light",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

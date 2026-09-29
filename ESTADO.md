@@ -4140,3 +4140,26 @@ levantado (ver diagnóstico de la sección `veredicto landing`).
 - ⚠️ Sigue sin poder probarse en hardware Android real desde aquí — si el usuario reporta que
   AÚN se ve mal, hay que auditar TODO el codebase por más `color-mix(...,transparent)` en vez de
   seguir corrigiendo caso por caso (grep: `color-mix(in oklab` en todo `components/`).
+
+### Checkpoint (2026-09-29) — Tercera ronda: causa raíz real del "fondo oscuro en Android" — faltaba declarar color-scheme
+- El usuario confirmó con una TERCERA captura que, tras los dos fixes de color-mix, "sigue igual"
+  — y esta vez la captura mostraba TODO el bloque "Directorio de especialistas" en fondo oscuro
+  (no solo una tarjeta), con el texto en blanco — es decir, la sección entera se veía con el TEMA
+  OSCURO en vez del claro, pese a que el computed style verificado en escritorio (¡en esta misma
+  sesión!) mostraba los valores CORRECTOS en `.tema-claro`.
+- Causa raíz real (las dos rondas anteriores estaban corrigiendo síntomas, no la causa): la app
+  nunca declaraba `color-scheme` en el `<head>`. Sin eso, Chrome en Android con el celular en modo
+  oscuro activa su función "Tema oscuro" / auto-dark, que REPINTA la página por su cuenta después
+  de que el CSS ya cargó correctamente — por eso los valores hex de mis dos fixes anteriores eran
+  perfectamente correctos y el navegador los sobreescribía de todos modos.
+- Corregido: `app/layout.tsx` ahora declara `colorScheme: "light"` en el `export const viewport`
+  (Next.js lo traduce en `<meta name="color-scheme" content="light">`) — le dice a CUALQUIER
+  navegador (no solo Android) que la app ya tiene su propio tema claro definido y no necesita
+  "ayuda". Aplica a toda la app: landing, funnel (onboarding/paywall/login) e interior — todos
+  claros hoy; solo legales/admin siguen en el tema oscuro de fallback (no se tocó ese caso).
+- Verificado: `tsc --noEmit` ✓ · `build` ✓ · confirmado en el HTML local que el meta tag
+  `<meta name="color-scheme" content="light">` ya está presente.
+- ⚠️ Esta es la corrección con más probabilidad de resolver el problema de raíz (no un parche de
+  color más). Publicado — pendiente de que el usuario confirme en su Android. Si AÚN se ve oscuro
+  después de esto, el problema no es de CSS sino de otra causa (revisar si el usuario tiene el
+  MODO OSCURO activado a nivel de SISTEMA/app instalada, no solo el navegador).
