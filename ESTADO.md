@@ -3980,3 +3980,21 @@ levantado (ver diagnóstico de la sección `veredicto landing`).
   aceptable: no hay tráfico externo apuntando a esos enlaces todavía).
 - Mismo componente para la app y la landing (fuente única, `lib/articulos.ts`) — verificado en el
   navegador que ya se ven los 3 nuevos. Verificado: `tsc --noEmit` ✓ · `npm run build` ✓.
+
+### Checkpoint (2026-09-29) — Asistencia en el carrusel + "Patrocinado" quitado, publicados
+- El usuario pidió incluir la pantalla de Asistencia en el carrusel de la landing (antes solo
+  tenía Inicio/Pagos/Calendario/Expediente/Perfil). Agregada en `app/page.tsx` — SIN captura real
+  todavía (no hay forma de entrar con su cuenta para tomarla; no se piden credenciales ni se abren
+  sesiones ajenas), usa el placeholder honesto que el propio componente `AppPorDentro` ya trae
+  para este caso (ícono + etiqueta, nunca una imagen inventada). Esperando que el usuario mande la
+  captura real de su celular para reemplazarlo por `src: '/frame-asistencia.png'`.
+- Verificado: `tsc --noEmit` ✓ · `npm run build` ✓ · contenido confirmado por texto de la página
+  (get_page_text) — el panel de vista previa no tomó captura visual esta vez (parecía minimizado).
+- **"Patrocinado" eliminado** de las tarjetas de profesionales (pedido explícito del usuario,
+  2026-09-29, tras que yo avisara del riesgo de publicidad no revelada ante la SIC — eligió
+  quitarlo de todas formas: opción 1 de 3 que le di). Aplica a la app Y a la landing (mismo
+  componente `TarjetaPerfil` en `DirectorioProfesionales.tsx`) — también a cualquier profesional
+  que se agregue de ahora en adelante, no hace falta repetir el cambio. El texto legal
+  "Espacio publicitario..." de abajo NO se tocó (sigue ahí, sin pedido de quitarlo).
+- Publicados los dos cambios juntos (commit siguiente) — confirmado por el usuario que antes de
+  publicar "Patrocinado" seguía visible en su celular (esperado, no había push todavía).

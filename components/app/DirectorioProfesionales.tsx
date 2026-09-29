@@ -54,33 +54,28 @@ function registrarClicContactar(profesional: Profesional): void {
 function TarjetaPerfil({ profesional }: { profesional: Profesional }) {
   return (
     <Tarjeta destacada className="mt-3">
-      <div className="flex items-start justify-between gap-2">
-        <div className="flex items-start gap-3">
-          {profesional.fotoUrl ? (
-            <Image
-              src={profesional.fotoUrl}
-              alt={`Foto de ${profesional.nombre}`}
-              width={64}
-              height={64}
-              className="size-16 shrink-0 rounded-[var(--radius-card)] object-cover object-top"
-            />
-          ) : (
-            <IconoCirculo icon={Scale} size={22} />
+      <div className="flex items-start gap-3">
+        {profesional.fotoUrl ? (
+          <Image
+            src={profesional.fotoUrl}
+            alt={`Foto de ${profesional.nombre}`}
+            width={64}
+            height={64}
+            className="size-16 shrink-0 rounded-[var(--radius-card)] object-cover object-top"
+          />
+        ) : (
+          <IconoCirculo icon={Scale} size={22} />
+        )}
+        <div className="min-w-0 flex-1 pt-0.5">
+          <p className="text-[15px] font-bold leading-[1.25] text-[var(--text-primary)]">{profesional.nombre}</p>
+          <p className="mt-0.5 text-[13px] leading-[1.3] text-[var(--text-secondary)]">{profesional.especialidad}</p>
+          {profesional.ciudad && (
+            <p className="mt-1 flex items-center gap-1 text-[12px] text-[var(--text-tertiary)]">
+              <MapPin size={12} aria-hidden="true" />
+              {profesional.ciudad}
+            </p>
           )}
-          <div className="min-w-0 flex-1 pt-0.5">
-            <p className="text-[15px] font-bold leading-[1.25] text-[var(--text-primary)]">{profesional.nombre}</p>
-            <p className="mt-0.5 text-[13px] leading-[1.3] text-[var(--text-secondary)]">{profesional.especialidad}</p>
-            {profesional.ciudad && (
-              <p className="mt-1 flex items-center gap-1 text-[12px] text-[var(--text-tertiary)]">
-                <MapPin size={12} aria-hidden="true" />
-                {profesional.ciudad}
-              </p>
-            )}
-          </div>
         </div>
-        <span className="shrink-0 rounded-full bg-[color-mix(in_oklab,var(--text-tertiary)_14%,transparent)] px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.04em] text-[var(--text-tertiary)]">
-          Patrocinado
-        </span>
       </div>
 
       <a

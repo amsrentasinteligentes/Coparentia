@@ -11,7 +11,7 @@
 
 import { useEffect, useState } from 'react';
 import { Figtree, Nunito_Sans } from 'next/font/google';
-import { MessageCircleWarning, ReceiptText, ShieldAlert, AlarmClock, Wallet, FileQuestion, CalendarDays, Home as HomeIcon, ListChecks, CreditCard, Upload } from 'lucide-react';
+import { MessageCircleWarning, ReceiptText, ShieldAlert, AlarmClock, Wallet, FileQuestion, CalendarDays, Home as HomeIcon, ListChecks, CreditCard, Upload, Scale } from 'lucide-react';
 import { obtenerTRM } from '@/lib/trm';
 import { aproximadoEnPesos } from '@/lib/formato-cop';
 import { Hero } from '@/components/landing/Hero';
@@ -148,6 +148,12 @@ export default function Home() {
           { label: 'Tu cuota y tus comprobantes', src: '/frame-pagos.png', nombrePantalla: 'Pagos', iconoPlaceholder: Upload },
           { label: 'Visitas, citas y actividades', src: '/frame-calendario.png', nombrePantalla: 'Calendario', iconoPlaceholder: CalendarDays },
           { label: 'Tu expediente en PDF, en 1 toque', src: '/frame-expediente.png', nombrePantalla: 'Expediente', iconoPlaceholder: ListChecks },
+          // SIN src a propósito (2026-09-29, pedido del usuario: mostrar Asistencia en el carrusel):
+          // no tengo forma de entrar con su cuenta para tomar la captura real (no se piden
+          // credenciales ni se abren sesiones ajenas) — placeholder honesto mientras el usuario
+          // manda la captura real de su propio celular; se reemplaza con `src: '/frame-asistencia.png'`
+          // en cuanto la tenga.
+          { label: 'Profesionales y artículos para ti', nombrePantalla: 'Asistencia', iconoPlaceholder: Scale },
           { label: 'Tu cuenta y tu suscripción', src: '/frame-perfil.png', nombrePantalla: 'Perfil', iconoPlaceholder: CreditCard },
         ]}
         ctaLabel={CTA_LABEL}
