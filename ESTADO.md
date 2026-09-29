@@ -4014,3 +4014,10 @@ levantado (ver diagnóstico de la sección `veredicto landing`).
 - `components/landing/AnuncioAbogados.tsx` — se quitó el `<h2>`, el `<Kicker>` ahora lleva el
   nuevo título. Verificado con captura de texto de la página (get_page_text, el panel de vista
   previa no tomó captura visual). `tsc --noEmit` ✓ · `npm run build` ✓.
+
+### Checkpoint (2026-09-29) — "Directorio de especialistas" ahora en negrilla y negro, publicado
+- El usuario pidió que el título se vea resaltado (mayúsculas, negrilla, negro) como se veía el
+  h2 anterior — el `<Kicker>` que usé es un componente para etiquetas pequeñas en el color de
+  acento (azul), no para títulos principales. Reemplazado por un `<h2>` real (22-28px, negrilla,
+  mayúsculas, `text-primary`) en vez del Kicker.
+- Verificado: `tsc --noEmit` ✓ · `npm run build` ✓.
