@@ -13,6 +13,7 @@ import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
 import { ChevronLeft, ChevronRight, Plus, X, Users, HeartPulse, Plane, Trophy, Globe, Paperclip, CalendarDays, Phone, Video, ShieldCheck, PhoneOff, PhoneMissed, Clock, Loader2 } from 'lucide-react';
 import { SelloConfianza } from '@/components/app/SelloConfianza';
 import { ContenedorApp, Tarjeta, IconoCirculo, BotonFlotante, ErrorDeCarga, CabeceraApp, TituloSeccion, NumeroContado } from '@/components/app/ui';
+import { AyudaContextual } from '@/components/app/AyudaContextual';
 import { VisorImagen } from '@/components/app/VisorImagen';
 import { Portal } from '@/components/app/Portal';
 import { SelectorHijo, useHijos, type ValorHijo } from '@/components/app/SelectorHijo';
@@ -139,7 +140,20 @@ export default function Calendario() {
     <>
       <CabeceraApp aviso={proximos.length > 0} />
       <ContenedorApp conFab sinTope>
-        <TituloSeccion titulo="Calendario" subtitulo="Organiza visitas, citas y actividades de tus hijos." icon={CalendarDays} />
+        <TituloSeccion
+          titulo="Calendario"
+          subtitulo="Organiza visitas, citas y actividades de tus hijos."
+          accion={
+            <div className="flex items-center gap-1">
+              <AyudaContextual titulo="Calendario">
+                <p>Aquí registras visitas, citas médicas, vacaciones y actividades — y también llamadas o videollamadas con tus hijos.</p>
+                <p>No necesitas que la otra parte confirme nada: cada evento que registras queda guardado como parte de tu historial, con la fecha y la hora reales.</p>
+                <p>Las llamadas y videollamadas también sirven como <strong className="text-[var(--text-primary)]">prueba de contacto</strong> — útil si alguna vez necesitas mostrar que mantienes comunicación con tus hijos.</p>
+              </AyudaContextual>
+              <IconoCirculo icon={CalendarDays} size={22} grande />
+            </div>
+          }
+        />
 
         {/* Celular: una columna; computador: lista a la izquierda, calendario a la derecha. */}
         <div className="mt-4 flex flex-col gap-3 md:grid md:grid-cols-2 md:items-start md:gap-4">

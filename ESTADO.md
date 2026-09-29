@@ -4205,3 +4205,12 @@ levantado (ver diagnóstico de la sección `veredicto landing`).
   desde aquí. El usuario vio la captura y aprobó antes de publicar.
 - Publicado. Reusable: el mismo componente `AyudaContextual` sirve para sumar ayuda puntual a
   otras pantallas (Calendario, Ajustes) más adelante si se decide seguir con esta estrategia.
+
+### Checkpoint (2026-09-29) — Ayuda contextual también en Calendario
+- El usuario confirmó que le gustó la ayuda contextual de Pagos/Expediente ("me gusta se ve bien")
+  y pidió sumarla en Calendario. Explica que TODO evento registrado (incluyendo llamadas y
+  videollamadas) queda guardado sin depender de que la otra parte confirme, y que las llamadas
+  también sirven como prueba de contacto — el matiz menos obvio de esa pantalla.
+- Verificado: `tsc --noEmit` ✓ · `build` ✓. Publicado.
+- El patrón de ayuda contextual queda ahora en 3 pantallas (Pagos, Expediente, Calendario) — listo
+  para sumarse a Ajustes u otras si el usuario lo pide más adelante.
