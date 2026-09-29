@@ -4235,3 +4235,13 @@ levantado (ver diagnóstico de la sección `veredicto landing`).
   El usuario vio la captura y aprobó antes de publicar.
 - Publicado. El usuario pidió el mismo trato que con la ayuda contextual: si no le gusta al verlo
   en la app real, se deshace sin problema (mismo criterio, commits pequeños y reversibles).
+
+### Checkpoint (2026-09-29) — Cifras de cierre de Pagos ahora coinciden con el mes que se ve
+- El usuario detectó (con captura) que las dos tarjetas de abajo ("Cuotas este año", "Con Sello")
+  seguían mostrando totales del AÑO/de siempre sin importar qué mes se estaba navegando arriba —
+  entrar a un mes vacío decía "nada registrado en agosto" arriba y "2 · 7" abajo, contradictorio.
+- Corregido: esas dos tarjetas ahora reflejan el mes que se está viendo (`mesLista`) — "Cuotas de
+  [mes]" y "Con Sello" del mismo mes. Si el usuario activó "ver todos los meses" (al tocar un hijo
+  en "Gastos extra por hijo"), ahí sí vuelven a mostrar el total del año/de siempre, porque en ese
+  modo la persona pidió explícitamente ver todo.
+- Verificado: `tsc --noEmit` ✓ · `build` ✓. Publicado.

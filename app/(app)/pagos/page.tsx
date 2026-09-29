@@ -159,6 +159,17 @@ export default function Pagos() {
   const totalExtrasMes = extrasDelMes.reduce((acc, p) => acc + p.monto, 0);
   const anioActual = String(anioEnColombia());
   const cuotasDelAnio = pagos.filter((p) => p.tipo === 'cuota' && p.fecha.startsWith(anioActual)).length;
+
+  // Las CIFRAS DE CIERRE de abajo deben coincidir con el mes que se está viendo arriba — antes
+  // mostraban el AÑO completo sin importar el mes navegado, así que un mes vacío decía "nada
+  // registrado" arriba y "2 cuotas, 7 con Sello" abajo, en la misma pantalla (hallazgo del
+  // usuario, 2026-09-29, con captura). Con "ver todos los meses" activo sí tiene sentido mostrar
+  // el total, porque ahí la persona pidió explícitamente ver todo.
+  const pagosDelMesLista = pagos.filter((p) => p.fecha.slice(0, 7) === claveMes(mesLista));
+  const cuotasCierre = verTodosLosMeses ? cuotasDelAnio : pagosDelMesLista.filter((p) => p.tipo === 'cuota').length;
+  const conSelloCierre = verTodosLosMeses ? pagos.length : pagosDelMesLista.length;
+  const labelCierreCuotas = verTodosLosMeses ? 'Cuotas este año' : `Cuotas de ${nombreMes(mesLista).toLowerCase()}`;
+
   const nombreMesRaw = new Intl.DateTimeFormat('es-CO', { month: 'long', year: 'numeric', timeZone: 'America/Bogota' }).format(new Date());
   // Próximo vencimiento: el día de pago de este mes si no ha pasado; si ya pasó, el del mes siguiente.
   const proximoVencimiento = (() => {
@@ -431,15 +442,16 @@ export default function Pagos() {
               )}
             </Tarjeta>
 
-            {/* CIFRAS DE CIERRE — pagos este año y comprobantes con Sello */}
+            {/* CIFRAS DE CIERRE — coinciden con el mes que se está viendo arriba (o con el total,
+                si "ver todos los meses" está activo) para no contradecir a la lista de encima. */}
             <div className="mt-3 grid grid-cols-2 gap-3">
               <Tarjeta indice={5} className="flex items-center gap-3">
                 <IconoCirculo icon={BarChart3} />
-                <div><p className="text-[11.5px] text-[var(--text-secondary)]">Cuotas este año</p><p className="text-[17px] font-extrabold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">{cuotasDelAnio}</p></div>
+                <div><p className="text-[11.5px] text-[var(--text-secondary)]">{labelCierreCuotas}</p><p className="text-[17px] font-extrabold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">{cuotasCierre}</p></div>
               </Tarjeta>
               <Tarjeta indice={6} className="flex items-center gap-3">
                 <IconoCirculo icon={ShieldCheck} tono="exito" />
-                <div><p className="text-[11.5px] text-[var(--text-secondary)]">Con Sello</p><p className="text-[17px] font-extrabold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">{pagos.length}</p></div>
+                <div><p className="text-[11.5px] text-[var(--text-secondary)]">Con Sello</p><p className="text-[17px] font-extrabold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">{conSelloCierre}</p></div>
               </Tarjeta>
             </div>
           </>
