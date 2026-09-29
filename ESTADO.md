@@ -3964,3 +3964,8 @@ Sesión 4 (onboarding/paywall/login) TERMINADA — sus 3 gates (`veredicto:landi
 Al reemplazar los placeholders del carrusel "La app por dentro" de la landing con las capturas
 reales de esta sesión, se vuelve a correr el revisor-visual sobre landing con el techo ya
 levantado (ver diagnóstico de la sección `veredicto landing`).
+
+## Problemas conocidos (nota rápida, 2026-09-29)
+- **veredicto:landing**: se editó `app/page.tsx` (sección "¿Te suena?", ahora 6 preguntas
+  intercaladas paga/recibe, pedido del usuario). El usuario aprobó y se publicó — pendiente
+  relanzar el revisor-visual formal sobre landing en una próxima sesión (regla 7), no bloquea.

@@ -11,7 +11,7 @@
 
 import { useEffect, useState } from 'react';
 import { Figtree, Nunito_Sans } from 'next/font/google';
-import { MessageCircleWarning, ReceiptText, ShieldAlert, CalendarDays, Home as HomeIcon, ListChecks, CreditCard, Upload } from 'lucide-react';
+import { MessageCircleWarning, ReceiptText, ShieldAlert, AlarmClock, Wallet, FileQuestion, CalendarDays, Home as HomeIcon, ListChecks, CreditCard, Upload } from 'lucide-react';
 import { obtenerTRM } from '@/lib/trm';
 import { aproximadoEnPesos } from '@/lib/formato-cop';
 import { Hero } from '@/components/landing/Hero';
@@ -92,10 +92,16 @@ export default function Home() {
       <Problema
         titulo="¿Te suena?"
         preguntas={[
-          // Dolor ★ #1 de FICHA-AVATAR, con sus palabras: "por más que pago… me tratan de mala paga".
+          // 6 preguntas intercaladas (pedido del usuario, 2026-09-29): alternan el lado de quien
+          // RECIBE la cuota (dolores inferidos, sub-avatar secundario de FICHA-AVATAR.md) con el
+          // lado de quien PAGA (dolor ★ #1 de FICHA-AVATAR y los suyos, investigación original) —
+          // se quitó "¿Te reclaman pagos que ya hiciste...?" (pedido explícito, tachada por el
+          // usuario en su captura) para dejar espacio a las 3 nuevas sin superar el total de 6.
+          { icon: AlarmClock, textoMarked: '¿Te toca [b]perseguir la cuota[/b] cada mes para que llegue completa?' },
           { icon: MessageCircleWarning, textoMarked: '¿Por más que pagas te siguen tratando de [b]"mala paga"[/b]?' },
-          { icon: ReceiptText, textoMarked: '¿Te reclaman pagos que [b]ya hiciste[/b] y no encuentras el comprobante?' },
+          { icon: Wallet, textoMarked: '¿Cubres tú [b]sola los gastos extra[/b] y nadie te lo reconoce?' },
           { icon: ReceiptText, textoMarked: '¿Te piden dinero para gastos "urgentes" sin ningún soporte?' },
+          { icon: FileQuestion, textoMarked: '¿Te da miedo que digan que [b]no fuiste clara[/b] con las cuentas?' },
           { icon: ShieldAlert, textoMarked: '¿Vives con miedo a una demanda que no sabrías cómo responder?' },
         ]}
       />
