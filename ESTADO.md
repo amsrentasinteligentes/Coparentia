@@ -4030,3 +4030,11 @@ levantado (ver diagnóstico de la sección `veredicto landing`).
   landing, misma fuente). `components/app/AbogadoDestacado.tsx` (el componente viejo, sin usar en
   ningún lado) tiene un texto parecido pero NO se tocó — no está en producción.
 - Verificado: `tsc --noEmit` ✓ · `npm run build` ✓.
+
+### Checkpoint (2026-09-29) — Bloque de agitación reemplazado por texto del usuario, publicado
+- El usuario pidió quitar el bloque de "Cada mes sin un registro claro..." + las tarjetas
+  "Hoy / En 6 meses" y reemplazarlo por un texto nuevo que dio él, con la primera frase en
+  negrilla y mayúscula (mismo tamaño que las demás — sección §3 Agitación ya usa un solo tamaño
+  para todas sus frases). Se quitó por completo el prop `contraste` (las tarjetas Hoy/6 meses) —
+  el texto nuevo no tiene esa estructura de comparación.
+- Verificado: `tsc --noEmit` ✓ · `npm run build` ✓.
