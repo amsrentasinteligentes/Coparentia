@@ -106,9 +106,12 @@ export function DirectorioProfesionales() {
     let vigente = true;
     crearClienteSupabase()
       .from('profesionales')
-      .select('id, categoria, nombre, especialidad, ciudad, contacto_url, foto_url, activo')
+      .select('id, categoria, nombre, especialidad, ciudad, contacto_url, foto_url, activo, orden')
       .eq('activo', true)
-      .order('created_at', { ascending: false })
+      // Orden fijado desde /admin/profesionales primero; sin uno asignado, por nombre (A-Z) —
+      // así "fijar a alguien primero y el resto alfabético" es solo mover a esa persona una vez.
+      .order('orden', { ascending: true, nullsFirst: false })
+      .order('nombre', { ascending: true })
       .then(({ data, error: errorConsulta }) => {
         if (!vigente) return;
         if (errorConsulta) {

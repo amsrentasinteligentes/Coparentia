@@ -32,6 +32,8 @@ export interface FilaProfesional {
   contacto_url: string;
   foto_url: string | null;
   activo: boolean;
+  /** NULL = se ordena por nombre (A-Z); un número = orden manual fijado desde el panel. */
+  orden: number | null;
 }
 
 export function filaAProfesional(fila: FilaProfesional): Profesional {

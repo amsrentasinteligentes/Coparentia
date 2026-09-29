@@ -8,9 +8,9 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { motion } from 'motion/react';
-import { Pencil, Trash2, Pause, Play, MessageCircle, Scale, Brain, HeartHandshake } from 'lucide-react';
+import { Pencil, Trash2, Pause, Play, MessageCircle, ChevronUp, ChevronDown, Scale, Brain, HeartHandshake } from 'lucide-react';
 import type { Profesional } from '@/lib/profesionales';
-import { actualizarProfesional, pausarProfesional, eliminarProfesional } from './acciones';
+import { actualizarProfesional, pausarProfesional, eliminarProfesional, moverProfesional } from './acciones';
 
 // Los componentes de ícono NO viajan bien como prop desde un Server Component (page.tsx) hacia
 // este Client Component — Next.js solo serializa datos planos por ese límite, no referencias a
@@ -21,13 +21,33 @@ import { actualizarProfesional, pausarProfesional, eliminarProfesional } from '.
 const ICONO_CATEGORIA = { abogado: Scale, psicologo: Brain, trabajador_social: HeartHandshake } as const;
 const ETIQUETA_CATEGORIA = { abogado: 'Abogados de familia', psicologo: 'Psicólogos familiares', trabajador_social: 'Trabajadores sociales' } as const;
 
-export function FilaProfesionalAdmin({ profesional, activo, contactos }: { profesional: Profesional; activo: boolean; contactos: number }) {
+export function FilaProfesionalAdmin({
+  profesional,
+  activo,
+  contactos,
+  esPrimero,
+  esUltimo,
+}: {
+  profesional: Profesional;
+  activo: boolean;
+  contactos: number;
+  esPrimero: boolean;
+  esUltimo: boolean;
+}) {
   const Icono = ICONO_CATEGORIA[profesional.categoria];
   const etiquetaCategoria = ETIQUETA_CATEGORIA[profesional.categoria];
   const [editando, setEditando] = useState(false);
   const [confirmandoQuitar, setConfirmandoQuitar] = useState(false);
   const [ocupado, setOcupado] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const mover = async (direccion: 'arriba' | 'abajo') => {
+    setOcupado(true);
+    setError(null);
+    const r = await moverProfesional(profesional.id, direccion);
+    if (!r.ok) setError(r.mensaje);
+    setOcupado(false);
+  };
 
   const togglePausa = async () => {
     setOcupado(true);
@@ -83,6 +103,26 @@ export function FilaProfesionalAdmin({ profesional, activo, contactos }: { profe
       </div>
 
       <div className="flex shrink-0 items-center gap-1">
+        <div className="flex flex-col">
+          <button
+            type="button"
+            onClick={() => mover('arriba')}
+            disabled={ocupado || esPrimero}
+            className="flex h-4 w-9 items-center justify-center text-[var(--text-tertiary)] disabled:opacity-20 [touch-action:manipulation]"
+            aria-label="Subir"
+          >
+            <ChevronUp size={14} aria-hidden="true" />
+          </button>
+          <button
+            type="button"
+            onClick={() => mover('abajo')}
+            disabled={ocupado || esUltimo}
+            className="flex h-4 w-9 items-center justify-center text-[var(--text-tertiary)] disabled:opacity-20 [touch-action:manipulation]"
+            aria-label="Bajar"
+          >
+            <ChevronDown size={14} aria-hidden="true" />
+          </button>
+        </div>
         <button
           type="button"
           onClick={() => setEditando(true)}

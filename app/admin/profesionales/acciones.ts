@@ -161,6 +161,61 @@ export async function pausarProfesional(id: string, activo: boolean): Promise<Re
   }
 }
 
+// Sube/baja a un profesional un puesto (pedido del usuario, 2026-09-29: "poder ubicarlos en el
+// orden que yo desee"). Al mover CUALQUIERA, se les asigna a TODOS un número de orden explícito
+// (0, 1, 2…) según el orden que se ve en ese momento — así "fijar a alguien primero y el resto
+// alfabético" es tan simple como moverlo una vez arriba de todo, y una vez movidos, el orden
+// queda fijo (ya no se recalcula solo si agregas a alguien nuevo — el nuevo entra al final).
+export async function moverProfesional(id: string, direccion: 'arriba' | 'abajo'): Promise<ResultadoAccion> {
+  try {
+    const { esAdmin } = await usuarioAdminActual();
+    if (!esAdmin) return { ok: false, mensaje: 'No tienes permiso para hacer esto.' };
+
+    const supabase = await crearClienteSupabaseServidor();
+    const { data, error } = await supabase
+      .from('profesionales')
+      .select('id')
+      .order('orden', { ascending: true, nullsFirst: false })
+      .order('nombre', { ascending: true });
+    if (error) return { ok: false, mensaje: `No se pudo leer el orden actual: ${error.message}` };
+
+    const lista = data ?? [];
+    const i = lista.findIndex((p) => p.id === id);
+    if (i === -1) return { ok: false, mensaje: 'No se encontró ese profesional.' };
+    const j = direccion === 'arriba' ? i - 1 : i + 1;
+    if (j < 0 || j >= lista.length) return { ok: true, mensaje: 'Ya está en esa posición.' };
+
+    [lista[i], lista[j]] = [lista[j], lista[i]];
+
+    const { error: errorGuardado } = await Promise.all(
+      lista.map((p, indice) => supabase.from('profesionales').update({ orden: indice }).eq('id', p.id))
+    ).then((resultados) => ({ error: resultados.find((r) => r.error)?.error }));
+    if (errorGuardado) return { ok: false, mensaje: `No se pudo guardar el nuevo orden: ${errorGuardado.message}` };
+
+    revalidatePath('/admin/profesionales');
+    return { ok: true, mensaje: 'Orden actualizado.' };
+  } catch (e) {
+    return { ok: false, mensaje: `Ocurrió un error inesperado: ${e instanceof Error ? e.message : String(e)}` };
+  }
+}
+
+// Vuelve al orden alfabético puro — deshace cualquier orden manual fijado con moverProfesional.
+export async function reordenarAlfabeticamente(): Promise<ResultadoAccion> {
+  try {
+    const { esAdmin } = await usuarioAdminActual();
+    if (!esAdmin) return { ok: false, mensaje: 'No tienes permiso para hacer esto.' };
+
+    const supabase = await crearClienteSupabaseServidor();
+    const { error } = await supabase.from('profesionales').update({ orden: null }).not('id', 'is', null);
+    if (error) return { ok: false, mensaje: `No se pudo reordenar: ${error.message}` };
+
+    revalidatePath('/admin/profesionales');
+    return { ok: true, mensaje: 'Directorio ordenado alfabéticamente.' };
+  } catch (e) {
+    return { ok: false, mensaje: `Ocurrió un error inesperado: ${e instanceof Error ? e.message : String(e)}` };
+  }
+}
+
 export async function eliminarProfesional(id: string): Promise<ResultadoAccion> {
   try {
     const { esAdmin } = await usuarioAdminActual();

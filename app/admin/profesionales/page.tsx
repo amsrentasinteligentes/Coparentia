@@ -5,6 +5,7 @@ import { ContenedorAdmin } from '@/components/admin/ui';
 import { filaAProfesional, type FilaProfesional } from '@/lib/profesionales';
 import { FormularioProfesional } from './FormularioProfesional';
 import { FilaProfesionalAdmin } from './FilaProfesionalAdmin';
+import { BotonOrdenAlfabetico } from './BotonOrdenAlfabetico';
 
 export const dynamic = 'force-dynamic'; // el dueño necesita ver el cambio recién guardado, nunca una copia vieja en caché
 
@@ -15,8 +16,11 @@ export default async function PanelProfesionales() {
   const [{ data }, { data: clics }] = await Promise.all([
     supabase
       .from('profesionales')
-      .select('id, categoria, nombre, especialidad, ciudad, contacto_url, foto_url, activo')
-      .order('created_at', { ascending: false }),
+      .select('id, categoria, nombre, especialidad, ciudad, contacto_url, foto_url, activo, orden')
+      // Mismo orden que ve el usuario final (ver components/app/DirectorioProfesionales.tsx):
+      // el que el dueño fijó a mano primero, y por nombre (A-Z) el resto.
+      .order('orden', { ascending: true, nullsFirst: false })
+      .order('nombre', { ascending: true }),
     // Cuántas veces se tocó "Contactar" por profesional (pedido del usuario, 2026-09-28) —
     // event_log no tiene una columna propia para esto, así que se cuenta a mano desde
     // `propiedades` (ver el registro en components/app/DirectorioProfesionales.tsx).
@@ -60,12 +64,26 @@ export default async function PanelProfesionales() {
         </div>
       </section>
 
-      <div className="mt-8 flex flex-col gap-3">
+      <div className="mt-8 flex items-center justify-between gap-3">
+        <p className="text-[13px] text-[var(--text-secondary)]">
+          Usa las flechas para fijar el orden — sin tocarlas, se ordena por nombre.
+        </p>
+        <BotonOrdenAlfabetico />
+      </div>
+
+      <div className="mt-3 flex flex-col gap-3">
         {profesionales.length === 0 ? (
           <p className="text-[13px] text-[var(--text-secondary)]">Todavía no has agregado ningún profesional.</p>
         ) : (
-          profesionales.map((p) => (
-            <FilaProfesionalAdmin key={p.id} profesional={p} activo={p.activo} contactos={p.contactos} />
+          profesionales.map((p, i) => (
+            <FilaProfesionalAdmin
+              key={p.id}
+              profesional={p}
+              activo={p.activo}
+              contactos={p.contactos}
+              esPrimero={i === 0}
+              esUltimo={i === profesionales.length - 1}
+            />
           ))
         )}
       </div>

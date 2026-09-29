@@ -1,3 +1,16 @@
+### Checkpoint (2026-09-29) — Orden manual del directorio, publicado
+- El usuario pidió controlar el ORDEN en que aparecen los profesionales — manual, o fijar a
+  alguien primero y el resto alfabético, o alfabético puro. Construido: columna `orden` nueva
+  (NULL = alfabético por nombre; un número = orden manual). Flechas subir/bajar por fila en
+  `/admin/profesionales` (server action `moverProfesional`: mueve uno y fija el orden explícito
+  de TODA la lista según lo que se ve en ese momento — así "fijar a alguien primero" es moverlo
+  una vez arriba). Botón "Ordenar A-Z" (`reordenarAlfabeticamente`) deshace cualquier orden manual.
+  `components/app/DirectorioProfesionales.tsx` (app + landing) y `/admin/profesionales` ordenan
+  igual: `orden` primero, nombre después.
+- `supabase/profesionales-orden.sql`: el usuario lo corrió ("Success") — columna `orden`
+  confirmada con una lectura de prueba (service role): ya existe y aparece en `null` para los 2
+  profesionales reales de hoy (Ivonne Reyes, Liliana Peñuela).
+- Verificado: `tsc --noEmit` ✓ · `npm run build` ✓. Publicado.
 ### Checkpoint (2026-09-28) — Segundo error 500 en /admin/profesionales: foto sin dominio permitido
 - El usuario probó agregar un profesional de prueba (con foto) y le volvió a salir "This page
   couldn't load". Esta vez la causa fue distinta a la anterior: `next.config.ts` no tenía
