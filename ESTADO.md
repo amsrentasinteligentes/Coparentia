@@ -1,3 +1,19 @@
+### Checkpoint (2026-09-29) — Botón "Fijar siempre primero", publicado
+- El usuario preguntó si podía dejar a Ivonne "siempre" primera y el resto alfabético — con solo
+  las flechas de mover, eso NO quedaba garantizado: si más adelante agrega a alguien cuyo nombre
+  va antes alfabéticamente, ese nuevo profesional le ganaría el puesto a Ivonne por accidente.
+- Agregado un botón dedicado (ícono de pin) por fila: "Fijar siempre primero" pone a ese
+  profesional con `orden=0` y a TODOS los demás en `orden=null` (alfabético) de una vez — deshace
+  cualquier orden manual previo, a propósito. Tocarlo de nuevo (ahora dice "Quitar fijo") vuelve
+  todo a alfabético puro.
+- También se corrigió `moverProfesional` (las flechas) para usar el mismo criterio robusto:
+  calcula el PREFIJO MÍNIMO que necesita `orden` explícito (función `calcularPrefijoFijado`) en
+  vez de materializar un número a TODA la lista — antes, mover a alguien "de paso" fijaba también
+  a los demás sin que el usuario lo pidiera, rompiendo la garantía de "alfabético para siempre".
+  Verificado el algoritmo con un script de Node aparte (sin tocar la base): casos con alguien
+  fijado primero y con todo ya alfabético dan el resultado esperado.
+- No requiere SQL nuevo (reutiliza la columna `orden` de `profesionales-orden.sql`, ya corrida).
+  Verificado: `tsc --noEmit` ✓ · `npm run build` ✓. Publicado.
 ### Checkpoint (2026-09-29) — Orden manual del directorio, publicado
 - El usuario pidió controlar el ORDEN en que aparecen los profesionales — manual, o fijar a
   alguien primero y el resto alfabético, o alfabético puro. Construido: columna `orden` nueva

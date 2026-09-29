@@ -36,6 +36,7 @@ export default async function PanelProfesionales() {
   const profesionales = ((data ?? []) as FilaProfesional[]).map((fila) => ({
     ...filaAProfesional(fila),
     activo: fila.activo,
+    orden: fila.orden,
     contactos: conteoClics.get(fila.id) ?? 0,
   }));
 
@@ -66,7 +67,7 @@ export default async function PanelProfesionales() {
 
       <div className="mt-8 flex items-center justify-between gap-3">
         <p className="text-[13px] text-[var(--text-secondary)]">
-          Usa las flechas para fijar el orden — sin tocarlas, se ordena por nombre.
+          El botón del pin fija a alguien siempre primero (el resto queda alfabético); las flechas mueven el orden a mano.
         </p>
         <BotonOrdenAlfabetico />
       </div>
@@ -83,6 +84,7 @@ export default async function PanelProfesionales() {
               contactos={p.contactos}
               esPrimero={i === 0}
               esUltimo={i === profesionales.length - 1}
+              esFijoPrimero={p.orden === 0}
             />
           ))
         )}

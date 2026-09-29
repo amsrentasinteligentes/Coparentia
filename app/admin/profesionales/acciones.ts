@@ -161,11 +161,35 @@ export async function pausarProfesional(id: string, activo: boolean): Promise<Re
   }
 }
 
+// El PREFIJO FIJADO más chico posible: recorre la lista buscando desde dónde el resto ya queda
+// alfabético por sí solo — todo lo que esté ANTES de ese punto necesita un `orden` explícito;
+// todo lo que esté DESPUÉS se deja en null para que siempre sea alfabético, sin importar quién se
+// agregue más adelante (2026-09-29, pedido del usuario: "que Ivonne quede SIEMPRE de primera y el
+// resto por orden alfabético" — con un `orden` fijo para todos, un profesional nuevo con nombre
+// que alfabéticamente vaya antes rompería eso; con esto, solo Ivonne queda con `orden`, el resto
+// null, así que cualquier nombre nuevo siempre se ordena bien entre ellos).
+function calcularPrefijoFijado<T extends { id: string; nombre: string }>(lista: T[]): number {
+  for (let k = 0; k <= lista.length; k++) {
+    const sufijo = lista.slice(k);
+    const sufijoAlfabetico = [...sufijo].sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'));
+    if (sufijo.every((p, idx) => p.id === sufijoAlfabetico[idx].id)) return k;
+  }
+  return lista.length;
+}
+
+async function guardarOrden(
+  supabase: Awaited<ReturnType<typeof crearClienteSupabaseServidor>>,
+  lista: { id: string; nombre: string }[]
+): Promise<string | null> {
+  const k = calcularPrefijoFijado(lista);
+  const resultados = await Promise.all(
+    lista.map((p, indice) => supabase.from('profesionales').update({ orden: indice < k ? indice : null }).eq('id', p.id))
+  );
+  return resultados.find((r) => r.error)?.error?.message ?? null;
+}
+
 // Sube/baja a un profesional un puesto (pedido del usuario, 2026-09-29: "poder ubicarlos en el
-// orden que yo desee"). Al mover CUALQUIERA, se les asigna a TODOS un número de orden explícito
-// (0, 1, 2…) según el orden que se ve en ese momento — así "fijar a alguien primero y el resto
-// alfabético" es tan simple como moverlo una vez arriba de todo, y una vez movidos, el orden
-// queda fijo (ya no se recalcula solo si agregas a alguien nuevo — el nuevo entra al final).
+// orden que yo desee").
 export async function moverProfesional(id: string, direccion: 'arriba' | 'abajo'): Promise<ResultadoAccion> {
   try {
     const { esAdmin } = await usuarioAdminActual();
@@ -174,7 +198,7 @@ export async function moverProfesional(id: string, direccion: 'arriba' | 'abajo'
     const supabase = await crearClienteSupabaseServidor();
     const { data, error } = await supabase
       .from('profesionales')
-      .select('id')
+      .select('id, nombre')
       .order('orden', { ascending: true, nullsFirst: false })
       .order('nombre', { ascending: true });
     if (error) return { ok: false, mensaje: `No se pudo leer el orden actual: ${error.message}` };
@@ -187,10 +211,8 @@ export async function moverProfesional(id: string, direccion: 'arriba' | 'abajo'
 
     [lista[i], lista[j]] = [lista[j], lista[i]];
 
-    const { error: errorGuardado } = await Promise.all(
-      lista.map((p, indice) => supabase.from('profesionales').update({ orden: indice }).eq('id', p.id))
-    ).then((resultados) => ({ error: resultados.find((r) => r.error)?.error }));
-    if (errorGuardado) return { ok: false, mensaje: `No se pudo guardar el nuevo orden: ${errorGuardado.message}` };
+    const errorGuardado = await guardarOrden(supabase, lista);
+    if (errorGuardado) return { ok: false, mensaje: `No se pudo guardar el nuevo orden: ${errorGuardado}` };
 
     revalidatePath('/admin/profesionales');
     return { ok: true, mensaje: 'Orden actualizado.' };
@@ -199,7 +221,30 @@ export async function moverProfesional(id: string, direccion: 'arriba' | 'abajo'
   }
 }
 
-// Vuelve al orden alfabético puro — deshace cualquier orden manual fijado con moverProfesional.
+// "Que este quede SIEMPRE primero y el resto por orden alfabético" (pedido del usuario,
+// 2026-09-29) — un solo botón, sin tener que entender qué es `orden`. Deja a este con posición
+// fija y a TODOS los demás en null (alfabético), aunque antes tuvieran un orden manual propio.
+export async function fijarPrimero(id: string): Promise<ResultadoAccion> {
+  try {
+    const { esAdmin } = await usuarioAdminActual();
+    if (!esAdmin) return { ok: false, mensaje: 'No tienes permiso para hacer esto.' };
+
+    const supabase = await crearClienteSupabaseServidor();
+    const [{ error: error1 }, { error: error2 }] = await Promise.all([
+      supabase.from('profesionales').update({ orden: 0 }).eq('id', id),
+      supabase.from('profesionales').update({ orden: null }).neq('id', id),
+    ]);
+    const error = error1 ?? error2;
+    if (error) return { ok: false, mensaje: `No se pudo fijar: ${error.message}` };
+
+    revalidatePath('/admin/profesionales');
+    return { ok: true, mensaje: 'Listo — queda siempre primero, el resto en orden alfabético.' };
+  } catch (e) {
+    return { ok: false, mensaje: `Ocurrió un error inesperado: ${e instanceof Error ? e.message : String(e)}` };
+  }
+}
+
+// Deshace `fijarPrimero` — vuelve TODO el directorio a orden alfabético puro.
 export async function reordenarAlfabeticamente(): Promise<ResultadoAccion> {
   try {
     const { esAdmin } = await usuarioAdminActual();

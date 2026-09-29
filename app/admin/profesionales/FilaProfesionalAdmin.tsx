@@ -8,9 +8,9 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { motion } from 'motion/react';
-import { Pencil, Trash2, Pause, Play, MessageCircle, ChevronUp, ChevronDown, Scale, Brain, HeartHandshake } from 'lucide-react';
+import { Pencil, Trash2, Pause, Play, MessageCircle, ChevronUp, ChevronDown, Pin, PinOff, Scale, Brain, HeartHandshake } from 'lucide-react';
 import type { Profesional } from '@/lib/profesionales';
-import { actualizarProfesional, pausarProfesional, eliminarProfesional, moverProfesional } from './acciones';
+import { actualizarProfesional, pausarProfesional, eliminarProfesional, moverProfesional, fijarPrimero, reordenarAlfabeticamente } from './acciones';
 
 // Los componentes de ícono NO viajan bien como prop desde un Server Component (page.tsx) hacia
 // este Client Component — Next.js solo serializa datos planos por ese límite, no referencias a
@@ -27,12 +27,15 @@ export function FilaProfesionalAdmin({
   contactos,
   esPrimero,
   esUltimo,
+  esFijoPrimero,
 }: {
   profesional: Profesional;
   activo: boolean;
   contactos: number;
   esPrimero: boolean;
   esUltimo: boolean;
+  /** true si este es el que quedó fijado con "Fijar siempre primero" (orden === 0). */
+  esFijoPrimero: boolean;
 }) {
   const Icono = ICONO_CATEGORIA[profesional.categoria];
   const etiquetaCategoria = ETIQUETA_CATEGORIA[profesional.categoria];
@@ -45,6 +48,14 @@ export function FilaProfesionalAdmin({
     setOcupado(true);
     setError(null);
     const r = await moverProfesional(profesional.id, direccion);
+    if (!r.ok) setError(r.mensaje);
+    setOcupado(false);
+  };
+
+  const alternarFijo = async () => {
+    setOcupado(true);
+    setError(null);
+    const r = esFijoPrimero ? await reordenarAlfabeticamente() : await fijarPrimero(profesional.id);
     if (!r.ok) setError(r.mensaje);
     setOcupado(false);
   };
@@ -103,6 +114,17 @@ export function FilaProfesionalAdmin({
       </div>
 
       <div className="flex shrink-0 items-center gap-1">
+        <button
+          type="button"
+          onClick={alternarFijo}
+          disabled={ocupado}
+          className="flex size-9 items-center justify-center rounded-full disabled:opacity-40 [touch-action:manipulation]"
+          style={{ color: esFijoPrimero ? 'var(--accent)' : 'var(--text-tertiary)' }}
+          aria-label={esFijoPrimero ? 'Quitar de fijo primero' : 'Fijar siempre primero'}
+          title={esFijoPrimero ? 'Siempre primero — toca para volver a alfabético' : 'Fijar siempre primero (el resto queda alfabético)'}
+        >
+          {esFijoPrimero ? <Pin size={15} aria-hidden="true" /> : <PinOff size={15} aria-hidden="true" />}
+        </button>
         <div className="flex flex-col">
           <button
             type="button"
