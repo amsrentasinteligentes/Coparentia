@@ -46,11 +46,14 @@ export function Agitacion({ titulo, frases, contraste, id }: AgitacionProps) {
         className="mx-auto max-w-[620px] lg:max-w-[760px] lg:max-w-[900px]"
       >
         {titulo && (
-          // Una sola línea a partir de `sm` (pedido del usuario) — en mobile angosto se deja
-          // envolver normal, nunca desbordado ni con scroll horizontal (regla 5 del SO).
+          // Mismo tamaño y alineación (izquierda, no centrado) que el h2 de §4 Solución
+          // ("Tu prueba, lista antes de que te pidan") — pedido del usuario, 2026-09-29, para que
+          // no se vea "tan diferente" al resto de títulos de la landing. El bloque completo sigue
+          // centrado DENTRO de la sección gracias al `mx-auto` del contenedor de arriba — lo que
+          // cambia es que el TEXTO adentro ya no se centra, se alinea a la izquierda como el resto.
           <motion.h2
             variants={item}
-            className="text-center text-[16px] font-bold uppercase text-[var(--text-primary)] [font-family:var(--font-display)] sm:whitespace-nowrap lg:text-[22px]"
+            className="text-balance text-[30px] font-bold uppercase leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)] md:text-[40px] lg:text-[46px]"
           >
             <MarkedCopy text={titulo} />
           </motion.h2>

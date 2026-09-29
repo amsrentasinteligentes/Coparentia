@@ -4062,3 +4062,16 @@ levantado (ver diagnóstico de la sección `veredicto landing`).
 - Probado con el navegador en 1280px, 1024px, 1023px y 375px (móvil): una sola línea en los 4,
   `scrollWidth === clientWidth` en todos (sin scroll horizontal). Verificado: `tsc --noEmit` ✓ ·
   `npm run build` ✓.
+
+### Checkpoint (2026-09-29) — Título de Agitación: mismo tamaño y alineación que §4, publicado
+- El usuario pidió que el título usara el mismo tamaño de letra que "Tu prueba, lista antes de
+  que te pidan" (título de §4 Solución) y quedara alineado a la izquierda igual que los párrafos
+  de abajo (no centrado) — el bloque completo sigue centrado DENTRO de la sección por el `mx-auto`
+  de siempre, lo que cambió es la alineación del TEXTO adentro.
+- `Agitacion.tsx`: el h2 del título pasa a `text-[30px] md:text-[40px] lg:text-[46px]` (mismos
+  tamaños exactos que `Solucion.tsx`), sin `text-center` (alineación natural a la izquierda) — se
+  quitó el `whitespace-nowrap`/límite de una sola línea del pedido anterior (a este tamaño más
+  grande, envolver a 2 líneas es esperable y coherente con cómo se vería el título de abajo si
+  fuera igual de largo).
+- Verificado en el navegador: título y primer párrafo alineados al mismo borde izquierdo (20px),
+  tamaño 30px confirmado. `tsc --noEmit` ✓ · `npm run build` ✓.
