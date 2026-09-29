@@ -50,6 +50,10 @@
   --cat-llamada: #b9731a;      --cat-llamada-bg: #fdf1dc;   /* contacto: llamada (ámbar cálido) */
   --cat-video: #8a4b9f;        --cat-video-bg: #f1e4f6;     /* contacto: videollamada */
 
+  /* Borde sutil (tarjeta de categoría sin seleccionar) — hex8 plano, mismo motivo que en
+     tokens-claro.css: evita el color-mix(...,transparent) que falla en algunos Android. */
+  --borde-sutil: #6b7a932e;
+
   /* ── FORMA: tarjetas 18px, chips 14px, botones redondos (referencia) ── */
   --radius-card: 18px;
   --radius-button: 999px;

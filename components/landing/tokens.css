@@ -87,6 +87,10 @@
   --cat-salida: #5bc8d4;            --cat-salida-bg: color-mix(in oklab, #5bc8d4 14%, transparent);
   --cat-llamada: #e0a75a;           --cat-llamada-bg: color-mix(in oklab, #e0a75a 14%, transparent);
   --cat-video: #c48ad6;             --cat-video-bg: color-mix(in oklab, #c48ad6 14%, transparent);
+
+  /* Borde sutil (tarjeta de categoría sin seleccionar) — hex8 plano, mismo motivo que en
+     tokens-claro.css: evita el color-mix(...,transparent) que falla en algunos Android. */
+  --borde-sutil: #7f93b32e;
 }
 
 /* ============================================================================

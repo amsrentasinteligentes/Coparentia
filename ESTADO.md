@@ -4121,3 +4121,22 @@ levantado (ver diagnóstico de la sección `veredicto landing`).
   confirme en su celular tras el despliegue. Verificado: `tsc --noEmit` ✓ · `npm run build` ✓ ·
   confirmado con `getComputedStyle` que `--cat-vacaciones-bg` dentro de `.tema-claro` ya resuelve
   a `#dff5ea` (sólido) en vez de la mezcla con transparencia.
+
+### Checkpoint (2026-09-29) — Segunda ronda del fix de Android: el borde de las tarjetas NO seleccionadas
+- El usuario confirmó con nueva captura que "Psicólogos familiares" y "Trabajadores sociales"
+  (las tarjetas de categoría SIN seleccionar) seguían viéndose oscuras/grises en Android tras el
+  primer fix — "sigue igual".
+- Causa raíz real (la que faltaba): el primer fix solo cubrió el FONDO de la tarjeta SELECCIONADA
+  (`--cat-*-bg`). El BORDE de las tarjetas sin seleccionar usaba otro `color-mix(in oklab, ...,
+  transparent)` inline en `components/app/DirectorioProfesionales.tsx` (línea con `borderColor`),
+  el mismo patrón con el mismo bug de Android — se me había pasado en la primera revisión.
+- Corregido: se creó el token `--borde-sutil` (hex8 plano, sin color-mix) en los 3 archivos de
+  temas — `tokens-claro.css` (#5b6d882e), `tokens-app-claro.css` (#6b7a932e), `tokens.css`
+  (#7f93b32e) — y `DirectorioProfesionales.tsx` ahora usa `var(--borde-sutil)` en vez del
+  color-mix inline. Mismo criterio que el fix anterior: hex de 8 dígitos (RRGGBBAA) en vez de
+  mezclar colores, para que ningún navegador tenga que calcular la transparencia en tiempo real.
+- Verificado: `tsc --noEmit` ✓ · `build` ✓ · `getComputedStyle` confirma `--borde-sutil` resuelve
+  a `#5b6d882e` (sólido) en local. Publicado y pendiente de confirmación del usuario en su Android.
+- ⚠️ Sigue sin poder probarse en hardware Android real desde aquí — si el usuario reporta que
+  AÚN se ve mal, hay que auditar TODO el codebase por más `color-mix(...,transparent)` en vez de
+  seguir corrigiendo caso por caso (grep: `color-mix(in oklab` en todo `components/`).

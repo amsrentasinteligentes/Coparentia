@@ -140,7 +140,7 @@ export function DirectorioProfesionales() {
               aria-pressed={seleccionada}
               className="flex flex-col items-start gap-1.5 rounded-[var(--radius-card)] border p-3 text-left [touch-action:manipulation]"
               style={{
-                borderColor: seleccionada ? cat.color : 'color-mix(in oklab, var(--text-tertiary) 18%, transparent)',
+                borderColor: seleccionada ? cat.color : 'var(--borde-sutil)',
                 background: seleccionada ? cat.colorBg : 'var(--surface)',
               }}
             >

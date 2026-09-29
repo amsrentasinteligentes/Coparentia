@@ -77,6 +77,13 @@
   --cat-vacaciones: #157a4f;   --cat-vacaciones-bg: #dff5ea;
   --cat-extra: #6c4ab6;        --cat-extra-bg: #e9e2fb;
 
+  /* ── Borde sutil (tarjeta de categoría sin seleccionar en DirectorioProfesionales) — mismo
+        motivo que arriba: reemplaza `color-mix(in oklab, var(--text-tertiary) 18%, transparent)`
+        por un hex de 8 dígitos (RRGGBBAA) — es una simple transparencia, no una mezcla en oklab,
+        así que no dispara el mismo bug de Android (2026-09-29, segunda ronda: el usuario seguía
+        viendo las tarjetas "Psicólogos" y "Trabajadores sociales" —las NO seleccionadas— oscuras). */
+  --borde-sutil: #5b6d882e;
+
   background: var(--bg);
   color: var(--text-primary);
   font-family: var(--font-body);
