@@ -4163,3 +4163,22 @@ levantado (ver diagnóstico de la sección `veredicto landing`).
   color más). Publicado — pendiente de que el usuario confirme en su Android. Si AÚN se ve oscuro
   después de esto, el problema no es de CSS sino de otra causa (revisar si el usuario tiene el
   MODO OSCURO activado a nivel de SISTEMA/app instalada, no solo el navegador).
+
+### Checkpoint (2026-09-29) — Cuarta ronda: el problema real era texto desbordado, no color
+- El usuario aclaró con una captura marcada: "el problema no son los colores es que el texto en
+  android se sale del cajón" — en la tarjeta "Trabajadores sociales" el texto "Acompañamiento
+  social a tu familia" se salía del borde redondeado en Android; en iPhone se veía bien (cabía).
+  Los 3 fixes anteriores (color-mix, borde, color-scheme) eran reales y quedan, pero no atacaban
+  este síntoma — el diagnóstico correcto solo llegó con la captura marcada por el usuario.
+- Causa raíz: en `components/app/DirectorioProfesionales.tsx`, el botón de cada categoría es un
+  `flex flex-col` sin `min-w-0`. Un ítem flex por defecto tiene `min-width: auto`, así que cuando
+  el texto no cabe en una sola línea, el navegador puede optar por NO partirlo y dejar que se
+  desborde en vez de bajarlo a una línea nueva — Chrome/Android lo hizo así con "Acompañamiento
+  social a tu familia" (texto largo, columna angosta al ser 3 por fila); Safari/iPhone calculó el
+  ancho distinto y ahí sí partió el texto solo.
+- Corregido: se agregó `min-w-0 w-full` al botón y `w-full break-words` a los dos `<span>` de
+  texto — ahora el texto SIEMPRE se parte dentro del ancho disponible, sin depender de cómo cada
+  navegador decida hacerlo por su cuenta.
+- Verificado: `tsc --noEmit` ✓ · `build` ✓ · medido con `getBoundingClientRect` en local a 375px:
+  el texto de "Trabajadores sociales" queda 13px DENTRO del borde derecho de la tarjeta (antes se
+  desbordaba). Publicado.

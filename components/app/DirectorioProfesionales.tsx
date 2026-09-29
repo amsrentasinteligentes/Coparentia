@@ -138,7 +138,7 @@ export function DirectorioProfesionales() {
               type="button"
               onClick={() => setActiva(cat.id)}
               aria-pressed={seleccionada}
-              className="flex flex-col items-start gap-1.5 rounded-[var(--radius-card)] border p-3 text-left [touch-action:manipulation]"
+              className="flex min-w-0 w-full flex-col items-start gap-1.5 rounded-[var(--radius-card)] border p-3 text-left [touch-action:manipulation]"
               style={{
                 borderColor: seleccionada ? cat.color : 'var(--borde-sutil)',
                 background: seleccionada ? cat.colorBg : 'var(--surface)',
@@ -147,10 +147,15 @@ export function DirectorioProfesionales() {
               {/* El ícono SIEMPRE lleva el color propio de su categoría (no solo cuando está
                   activa) — pedido del usuario, 2026-09-28: "que no se vea tan plano". */}
               <cat.icon size={18} style={{ color: cat.color }} aria-hidden="true" />
-              <span className="text-[12.5px] font-bold leading-[1.2] text-[var(--text-primary)]" style={seleccionada ? { color: cat.color } : undefined}>
+              {/* `min-w-0` en el botón + `break-words` aquí: sin esto, en Chrome/Android el texto
+                  largo ("Trabajadores sociales", "Acompañamiento social a tu familia") se salía
+                  del cajón en vez de partirse en más líneas — Safari/iPhone lo partía solo, por
+                  eso ahí se veía bien y en Android no (2026-09-29, 4ª ronda: no era un problema de
+                  color, era que el texto se desbordaba). */}
+              <span className="w-full break-words text-[12.5px] font-bold leading-[1.2] text-[var(--text-primary)]" style={seleccionada ? { color: cat.color } : undefined}>
                 {cat.etiqueta}
               </span>
-              <span className="text-[10.5px] leading-[1.3] text-[var(--text-tertiary)]">{cat.corta}</span>
+              <span className="w-full break-words text-[10.5px] leading-[1.3] text-[var(--text-tertiary)]">{cat.corta}</span>
             </button>
           );
         })}
