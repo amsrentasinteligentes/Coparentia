@@ -4021,3 +4021,12 @@ levantado (ver diagnóstico de la sección `veredicto landing`).
   acento (azul), no para títulos principales. Reemplazado por un `<h2>` real (22-28px, negrilla,
   mayúsculas, `text-primary`) en vez del Kicker.
 - Verificado: `tsc --noEmit` ✓ · `npm run build` ✓.
+
+### Checkpoint (2026-09-29) — Texto legal del directorio actualizado, publicado
+- El usuario pidió (esta vez él mismo, no yo) reemplazar el texto "Espacio publicitario.
+  Coparentia no presta estos servicios..." por "La atención profesional no es gratuita. El valor
+  y las condiciones del servicio se acordarán directamente con el especialista que elijas." —
+  mismo tamaño/tipo de letra. Cambiado en `components/app/DirectorioProfesionales.tsx` (app y
+  landing, misma fuente). `components/app/AbogadoDestacado.tsx` (el componente viejo, sin usar en
+  ningún lado) tiene un texto parecido pero NO se tocó — no está en producción.
+- Verificado: `tsc --noEmit` ✓ · `npm run build` ✓.

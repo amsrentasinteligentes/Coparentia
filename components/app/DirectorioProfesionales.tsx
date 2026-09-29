@@ -186,7 +186,7 @@ export function DirectorioProfesionales() {
       )}
 
       <p className="mt-3 text-[11px] leading-[1.5] text-[var(--text-tertiary)]">
-        Espacio publicitario. Coparentia no presta estos servicios ni responde por la asesoría de terceros.
+        La atención profesional no es gratuita. El valor y las condiciones del servicio se acordarán directamente con el especialista que elijas.
       </p>
     </div>
   );
