@@ -4049,3 +4049,16 @@ levantado (ver diagnóstico de la sección `veredicto landing`).
   resto (centrado vs justificado), imposible de lograr con todas las frases en el mismo `<p>` map.
   Solo un usuario del componente (`app/page.tsx`) — sin efecto en ningún otro lado.
 - Verificado: `tsc --noEmit` ✓ · `npm run build` ✓.
+
+### Checkpoint (2026-09-29) — Título de Agitación en una sola línea + color azul, publicado
+- El usuario pidió: el título en una sola línea (no dos), y la parte que estaba dentro del óvalo
+  verde de su captura ("no se pierdan entre mensajes") en azul, como el acento de "Tu prueba,
+  lista antes de que te pidan" de la sección de abajo.
+- `Agitacion.tsx`: el `<h2>` del título ahora usa `MarkedCopy` (soporta `[acento]`), tamaños más
+  chicos y responsivos (16px móvil → 22px en pantallas grandes, sin el salto brusco a 28px de
+  antes) y `sm:whitespace-nowrap` — en mobile se deja envolver si hiciera falta (nunca overflow
+  horizontal, regla 5 del SO), desde `sm` se fuerza una sola línea. `app/page.tsx` le agregó
+  `[acento]...[/acento]` a "no se pierdan entre mensajes".
+- Probado con el navegador en 1280px, 1024px, 1023px y 375px (móvil): una sola línea en los 4,
+  `scrollWidth === clientWidth` en todos (sin scroll horizontal). Verificado: `tsc --noEmit` ✓ ·
+  `npm run build` ✓.

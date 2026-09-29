@@ -46,11 +46,13 @@ export function Agitacion({ titulo, frases, contraste, id }: AgitacionProps) {
         className="mx-auto max-w-[620px] lg:max-w-[760px] lg:max-w-[900px]"
       >
         {titulo && (
+          // Una sola línea a partir de `sm` (pedido del usuario) — en mobile angosto se deja
+          // envolver normal, nunca desbordado ni con scroll horizontal (regla 5 del SO).
           <motion.h2
             variants={item}
-            className="text-balance text-center text-[22px] font-bold uppercase tracking-[0.02em] text-[var(--text-primary)] [font-family:var(--font-display)] md:text-[28px]"
+            className="text-center text-[16px] font-bold uppercase text-[var(--text-primary)] [font-family:var(--font-display)] sm:whitespace-nowrap lg:text-[22px]"
           >
-            {titulo}
+            <MarkedCopy text={titulo} />
           </motion.h2>
         )}
         <div className={`flex flex-col gap-4 ${titulo ? 'mt-4' : ''}`}>
