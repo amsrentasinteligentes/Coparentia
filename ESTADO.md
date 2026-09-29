@@ -3996,3 +3996,12 @@ levantado (ver diagnóstico de la sección `veredicto landing`).
   "Espacio publicitario..." de abajo NO se tocó (sigue ahí, sin pedido de quitarlo).
 - Publicados los dos cambios juntos (commit siguiente) — confirmado por el usuario que antes de
   publicar "Patrocinado" seguía visible en su celular (esperado, no había push todavía).
+
+### Checkpoint (2026-09-29) — Captura de Asistencia: ajuste de tamaño, publicado
+- El usuario mandó la captura real de Asistencia pero venía en una resolución distinta a las
+  otras del carrusel (218×441 vs 375×812 de las demás) — con `object-cover` sobre un marco fijo
+  9:19.5, eso hacía que se viera "recortada"/con zoom respecto a las otras.
+- Corregido con `sharp` (ya estaba en el proyecto): reescalada a 375×812 con `fit: 'contain'` y
+  relleno blanco (mismo color que el fondo real del encabezado y del nav de esa captura, así el
+  relleno no se nota) — mismo tamaño exacto que las demás, sin recortar nada del contenido real.
+- Verificado pidiendo la imagen directo en producción: ya sirve 375×812. Publicado.
