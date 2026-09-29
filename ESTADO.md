@@ -4214,3 +4214,24 @@ levantado (ver diagnóstico de la sección `veredicto landing`).
 - Verificado: `tsc --noEmit` ✓ · `build` ✓. Publicado.
 - El patrón de ayuda contextual queda ahora en 3 pantallas (Pagos, Expediente, Calendario) — listo
   para sumarse a Ajustes u otras si el usuario lo pide más adelante.
+
+### Checkpoint (2026-09-29) — Navegación mes a mes en Pagos (evita historial interminable)
+- El usuario preguntó cómo estaba organizado el historial al terminar el mes — se descubrió que
+  Pagos mostraba TODO el historial junto, sin separar por mes (solo filtraba por tipo/hijo), a
+  diferencia de Calendario que ya navega mes a mes. Pidió igualarlo: "que mes a mes se pueda ver
+  lo que realmente se ha efectuado y no tener que ver una lista interminable de cosas".
+- Construido: `lib/fecha.ts` ganó dos helpers compartidos (`claveMes`, `nombreMes`) que antes
+  vivían duplicados solo dentro de `calendario/page.tsx` — se centralizaron y Calendario ahora los
+  importa en vez de tener su propia copia (causa raíz, no duplicación).
+- `app/(app)/pagos/page.tsx`: nuevo estado `mesLista` (mes que se está viendo, default el actual)
+  con flechas ← → arriba de la tarjeta de lista, igual que Calendario. La lista (`visibles`) ahora
+  también filtra por ese mes. Caso especial: tocar un hijo en "Gastos extra por hijo" (esa sección
+  es del AÑO completo) activa `verTodosLosMeses` y muestra un aviso + enlace para volver al mes
+  actual — para no esconder resultados que el usuario ya vio resumidos arriba. Vacío del mes
+  ahora dice "nada registrado en [mes]" e invita a usar las flechas, en vez de sugerir que no hay
+  nada guardado en absoluto.
+- Verificado: `tsc --noEmit` ✓ · `build` ✓ · probado visualmente con datos de ejemplo en una ruta
+  temporal fuera del login (`app/preview-mes-temp`, nunca commiteada, borrada antes de publicar).
+  El usuario vio la captura y aprobó antes de publicar.
+- Publicado. El usuario pidió el mismo trato que con la ayuda contextual: si no le gusta al verlo
+  en la app real, se deshace sin problema (mismo criterio, commits pequeños y reversibles).

@@ -70,3 +70,15 @@ export function inicioDelDiaColombiaUTC(fecha: string = hoyEnColombia()): string
 export function inicioDelMesColombiaUTC(): string {
   return inicioDelDiaColombiaUTC(`${mesEnColombia()}-01`);
 }
+
+/** "2026-09" a partir de un Date — para comparar contra `fecha.slice(0, 7)` de un registro guardado.
+ *  Compartido entre Calendario y Pagos: ambos navegan sus listas mes a mes (regla 13 del SO). */
+export function claveMes(d: Date): string {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+}
+
+/** "Septiembre 2026" a partir de un Date, con la primera letra en mayúscula. */
+export function nombreMes(d: Date): string {
+  const s = d.toLocaleDateString('es-CO', { month: 'long', year: 'numeric' });
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}

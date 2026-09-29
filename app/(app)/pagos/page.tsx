@@ -7,7 +7,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'motion/react';
-import { Upload, ShieldCheck, FileCheck2, X, ChevronRight, Sparkles, CalendarDays, CreditCard, BarChart3, ReceiptText, Wallet, Users } from 'lucide-react';
+import { Upload, ShieldCheck, FileCheck2, X, ChevronRight, ChevronLeft, Sparkles, CalendarDays, CreditCard, BarChart3, ReceiptText, Wallet, Users } from 'lucide-react';
 import { ContenedorApp, Tarjeta, IconoCirculo, BotonFlotante, ErrorDeCarga, CabeceraApp, Pildora, TituloSeccion } from '@/components/app/ui';
 import { AyudaContextual } from '@/components/app/AyudaContextual';
 import { VisorImagen } from '@/components/app/VisorImagen';
@@ -29,7 +29,7 @@ import {
   formatoFechaLarga,
   validarArchivoAdjunto,
 } from '@/lib/datos';
-import { hoyEnColombia, mesEnColombia, diaDelMesEnColombia, anioEnColombia } from '@/lib/fecha';
+import { hoyEnColombia, mesEnColombia, diaDelMesEnColombia, anioEnColombia, claveMes, nombreMes } from '@/lib/fecha';
 import { leerMontoDeRecibo } from '@/lib/ocr-recibo';
 import { comprimirParaLectura } from '@/lib/comprimir-imagen';
 
@@ -41,6 +41,13 @@ export default function Pagos() {
   const [pagos, setPagos] = useState<Pago[]>([]);
   const [titulo, setTitulo] = useState<Titulo | null>(null);
   const [filtro, setFiltro] = useState<Filtro>('todos');
+  // Historial navegable mes a mes (2026-09-29, pedido del usuario: "no tener que ver una lista
+  // interminable de cosas") — mismo patrón de Calendario, con flechas ← → sobre fechas reales
+  // (regla 13 del SO). Nada se borra: solo cambia qué mes se está mirando.
+  const [mesLista, setMesLista] = useState(() => new Date());
+  // "Gastos extra por hijo" resume el AÑO completo (no un mes) — al tocar una fila de ahí, la
+  // lista de abajo debe mostrar TODOS los meses de ese hijo, no solo el mes que se estaba viendo.
+  const [verTodosLosMeses, setVerTodosLosMeses] = useState(false);
   // Hijos del perfil: con 2 o más, los gastos se agrupan y filtran por cada uno (pedido del
   // usuario 2026-09-18: "que las cuentas puedan quedar claras").
   const { hijos } = useHijos();
@@ -115,7 +122,11 @@ export default function Pagos() {
   const visibles = pagos
     .filter((p) => filtro === 'todos' || p.tipo === filtro)
     .filter((p) => filtroHijo === 'todos' || (filtroHijo === 'sin' ? !p.hijoId : p.hijoId === filtroHijo))
+    .filter((p) => verTodosLosMeses || p.fecha.slice(0, 7) === claveMes(mesLista))
     .sort((a, b) => b.fecha.localeCompare(a.fecha));
+  // Para saber si hay algo en meses anteriores/siguientes cuando el mes elegido está vacío —
+  // así el vacío dice "no hay nada en ESTE mes" en vez de sugerir que no hay nada en absoluto.
+  const hayAlgunPago = pagos.length > 0;
 
   // Cuentas por hijo (solo gastos extra: la cuota alimentaria es de todos). Año en curso.
   const anioEnCurso = String(anioEnColombia());
@@ -129,6 +140,7 @@ export default function Pagos() {
   const verGastosDe = (v: FiltroHijo): void => {
     setFiltro('gasto_extra');
     setFiltroHijo(v);
+    setVerTodosLosMeses(true); // "por hijo" es del año completo, no de un mes suelto
   };
 
   const totalVisible = visibles.reduce((acc, p) => acc + p.monto, 0);
@@ -283,7 +295,7 @@ export default function Pagos() {
                   type="button"
                   role="tab"
                   aria-selected={filtro === valor}
-                  onClick={() => { setFiltro(valor); setFiltroHijo('todos'); }}
+                  onClick={() => { setFiltro(valor); setFiltroHijo('todos'); setVerTodosLosMeses(false); }}
                   className={`h-9 rounded-[var(--radius-button)] text-[13px] font-bold transition-colors duration-150 [touch-action:manipulation] ${
                     filtro === valor ? 'bg-[var(--accent)] text-[var(--on-accent,var(--bg))] shadow-[var(--shadow-1)]' : 'text-[var(--accent-ink,var(--accent))]'
                   }`}
@@ -313,8 +325,42 @@ export default function Pagos() {
               </div>
             )}
 
+            {/* NAVEGADOR DE MES — mismo patrón de Calendario (fechas reales, regla 13 del SO):
+                sin esto el Historial era una lista interminable con todo lo registrado alguna vez. */}
+            <div className="mt-3 flex items-center justify-between">
+              {verTodosLosMeses ? (
+                <button
+                  type="button"
+                  onClick={() => setVerTodosLosMeses(false)}
+                  className="text-[12.5px] font-semibold text-[var(--accent-ink,var(--accent))] underline-offset-2 hover:underline [touch-action:manipulation]"
+                >
+                  Viendo todos los meses · volver al mes actual
+                </button>
+              ) : (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => setMesLista((d) => new Date(d.getFullYear(), d.getMonth() - 1, 1))}
+                    aria-label="Mes anterior"
+                    className="flex size-9 items-center justify-center rounded-full text-[var(--text-secondary)] [touch-action:manipulation]"
+                  >
+                    <ChevronLeft size={20} aria-hidden="true" />
+                  </button>
+                  <p className="text-[13.5px] font-bold text-[var(--text-primary)]">{nombreMes(mesLista)}</p>
+                  <button
+                    type="button"
+                    onClick={() => setMesLista((d) => new Date(d.getFullYear(), d.getMonth() + 1, 1))}
+                    aria-label="Mes siguiente"
+                    className="flex size-9 items-center justify-center rounded-full text-[var(--text-secondary)] [touch-action:manipulation]"
+                  >
+                    <ChevronRight size={20} aria-hidden="true" />
+                  </button>
+                </>
+              )}
+            </div>
+
             {/* LISTA — dentro de una tarjeta, filas con chip, mes/fecha, monto y estado */}
-            <Tarjeta indice={4} className="mt-3">
+            <Tarjeta indice={4} className="mt-2">
               <div className="flex items-center justify-between">
                 <h2 className="truncate text-[15px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">
                   {filtro === 'cuota' ? 'Detalle de cuotas' : filtro === 'gasto_extra' ? 'Gastos extra' : 'Historial'}
@@ -328,10 +374,12 @@ export default function Pagos() {
                 <div className="flex flex-col items-center py-6 text-center">
                   <IconoCirculo icon={filtro === 'gasto_extra' ? FileCheck2 : ShieldCheck} size={22} />
                   <p className="mt-3 text-[14px] font-bold text-[var(--text-primary)]">
-                    {filtroHijo !== 'todos' ? 'Nada registrado con este filtro' : filtro === 'todos' ? 'Todavía no hay comprobantes' : filtro === 'cuota' ? 'Ninguna cuota registrada aún' : 'Ningún gasto extra aún'}
+                    {filtroHijo !== 'todos' ? 'Nada registrado con este filtro' : hayAlgunPago && !verTodosLosMeses ? `Nada registrado en ${nombreMes(mesLista).toLowerCase()}` : filtro === 'todos' ? 'Todavía no hay comprobantes' : filtro === 'cuota' ? 'Ninguna cuota registrada aún' : 'Ningún gasto extra aún'}
                   </p>
                   <p className="mt-1 max-w-[30ch] text-[13px] text-[var(--text-secondary)]">
-                    Toca "Registrar", sube la foto del comprobante y queda fechado con el Sello de Confianza.
+                    {hayAlgunPago && !verTodosLosMeses
+                      ? 'Usa las flechas de arriba para revisar otro mes.'
+                      : 'Toca "Registrar", sube la foto del comprobante y queda fechado con el Sello de Confianza.'}
                   </p>
                 </div>
               ) : (

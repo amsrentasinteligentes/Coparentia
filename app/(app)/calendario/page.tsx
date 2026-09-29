@@ -19,7 +19,7 @@ import { Portal } from '@/components/app/Portal';
 import { SelectorHijo, useHijos, type ValorHijo } from '@/components/app/SelectorHijo';
 import { type Hijo } from '@/lib/perfil';
 import { type Evento, type TipoEvento, type MedioContacto, type ResultadoContacto, esContacto, obtenerEventos, agregarEvento, obtenerUrlArchivo, formatoFechaLarga, formatoFechaCorta, validarArchivoAdjunto } from '@/lib/datos';
-import { hoyEnColombia } from '@/lib/fecha';
+import { hoyEnColombia, claveMes, nombreMes } from '@/lib/fecha';
 
 // CONTACTO CON LOS HIJOS (2026-09-21): dos tipos nuevos —llamada y videollamada— que registran el
 // HECHO del contacto (fecha, hora, duración, medio, si contestaron) como prueba de presencia.
@@ -69,13 +69,6 @@ const LABEL_CONTEO: Record<TipoEvento, (n: number) => string> = {
   videollamada: (n) => (n === 1 ? '1 videollamada' : `${n} videollamadas`),
 };
 
-function claveMes(d: Date): string {
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-}
-function nombreMes(d: Date): string {
-  const s = d.toLocaleDateString('es-CO', { month: 'long', year: 'numeric' });
-  return s.charAt(0).toUpperCase() + s.slice(1);
-}
 function horaHumana(hhmm: string): string {
   const [h, m] = hhmm.split(':').map(Number);
   if (Number.isNaN(h)) return hhmm;
