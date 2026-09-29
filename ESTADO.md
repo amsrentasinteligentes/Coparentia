@@ -4088,3 +4088,15 @@ levantado (ver diagnóstico de la sección `veredicto landing`).
   vez, y esta fue la instrucción más reciente, así que primero. Probado en 375px, 640px y 1280px:
   1 sola línea y `scrollWidth === clientWidth` (sin desborde) en los 3. `tsc --noEmit` ✓ ·
   `npm run build` ✓.
+
+### Checkpoint (2026-09-29) — Título de Agitación: el tamaño más grande posible sin desborde, publicado
+- El usuario pidió no bajar tanto el tamaño (quería quedarse cerca del tamaño de "Tu prueba,
+  lista antes de que te pidan", 30-46px) pero SIN romper la línea única. Medí con el navegador
+  (clonando el título fuera de pantalla y probando tamaños 20-36px) el ancho real que ocupa esta
+  frase específica a cada tamaño, para encontrar el máximo que cabe en el ancho del contenedor sin
+  desbordar (46px desbordaba 79px en pantallas de 1440px — de ahí el scroll horizontal que hubiera
+  causado). Resultado: 34px es el máximo real que cabe en el contenedor grande (900px, desde
+  `lg`) sin desbordar — más cerca del pedido original que los 22-26px de la ronda anterior.
+  Escala final: 20px (mobile, con margen) → 22px (`sm`, 640px+) → 34px (`lg`, 1024px+).
+- Probado en el navegador en 4 anchos (375, 640, 1024, 1440): una sola línea y
+  `scrollWidth === clientWidth` (sin desborde) en los 4. `tsc --noEmit` ✓ · `npm run build` ✓.
