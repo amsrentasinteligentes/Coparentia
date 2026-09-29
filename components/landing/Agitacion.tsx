@@ -12,6 +12,10 @@ import { MiniRing, SectionShell, useReveal, VIEWPORT_ONCE } from './ui';
 import { MarkedCopy, warnCopy, warnRango } from './MarkedCopy';
 
 export interface AgitacionProps {
+  /** Título opcional, centrado, mismo estilo que el h2 de "Directorio de especialistas"
+   *  (2026-09-29, pedido del usuario) — para cuando la sección abre con una frase-ancla en vez
+   *  de entrar directo a las frases justificadas. */
+  titulo?: string;
   /** 2-4 frases MARCADAS y cortas — el array es el contrato: nada de párrafos. */
   frases: string[];
   /** Mini-card opcional "hoy vs en 6 meses" (55 §3). anilloValor (0-100) es
@@ -27,7 +31,7 @@ export interface AgitacionProps {
   id?: string;
 }
 
-export function Agitacion({ frases, contraste, id }: AgitacionProps) {
+export function Agitacion({ titulo, frases, contraste, id }: AgitacionProps) {
   warnRango('Agitación → frases', frases.length, 2, 4);
   frases.forEach((f, i) => warnCopy(`Agitación → frase ${i + 1}`, f, 18));
   const { contenedor, item } = useReveal();
@@ -41,12 +45,20 @@ export function Agitacion({ frases, contraste, id }: AgitacionProps) {
         viewport={VIEWPORT_ONCE}
         className="mx-auto max-w-[620px] lg:max-w-[760px] lg:max-w-[900px]"
       >
-        <div className="flex flex-col gap-4">
+        {titulo && (
+          <motion.h2
+            variants={item}
+            className="text-balance text-center text-[22px] font-bold uppercase tracking-[0.02em] text-[var(--text-primary)] [font-family:var(--font-display)] md:text-[28px]"
+          >
+            {titulo}
+          </motion.h2>
+        )}
+        <div className={`flex flex-col gap-4 ${titulo ? 'mt-4' : ''}`}>
           {frases.map((f, i) => (
             <motion.p
               key={i}
               variants={item}
-              className="text-[17px] leading-[1.6] text-[var(--text-secondary)] lg:text-[19px]"
+              className="text-justify text-[17px] leading-[1.6] text-[var(--text-secondary)] lg:text-[19px]"
             >
               <MarkedCopy text={f} />
             </motion.p>

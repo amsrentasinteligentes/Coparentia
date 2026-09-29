@@ -108,8 +108,8 @@ export default function Home() {
 
       {/* 3. AGITACIÓN */}
       <Agitacion
+        titulo="Que los acuerdos de crianza no se pierdan entre mensajes"
         frases={[
-          '[b]QUE LOS ACUERDOS DE CRIANZA NO SE PIERDAN ENTRE MENSAJES[/b]',
           'Los pagos, las visitas y las decisiones sobre tus hijos necesitan claridad. Con COPARENTIA puedes llevar un registro de lo acordado, organizar los soportes y consultar la información cuando la necesites. Así evitas volver a discutir sobre lo que ya quedó registrado.',
           'Y si surge una reclamación, tendrás la información reunida para preparar una respuesta o sustentar una actuación judicial o extrajudicial.',
           'Empieza hoy a organizar tu crianza compartida con COPARENTIA.',

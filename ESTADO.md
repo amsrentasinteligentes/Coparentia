@@ -4038,3 +4038,14 @@ levantado (ver diagnóstico de la sección `veredicto landing`).
   para todas sus frases). Se quitó por completo el prop `contraste` (las tarjetas Hoy/6 meses) —
   el texto nuevo no tiene esa estructura de comparación.
 - Verificado: `tsc --noEmit` ✓ · `npm run build` ✓.
+
+### Checkpoint (2026-09-29) — Título centrado + párrafos justificados en Agitación, publicado
+- El usuario pidió: centrar el título ("Que los acuerdos de crianza..."), justificar el resto del
+  texto, y darle al título el mismo tipo/tamaño de letra que "Directorio de especialistas".
+- `components/landing/Agitacion.tsx` ganó un prop `titulo` opcional (h2 centrado, negrilla,
+  mayúscula, mismo estilo — 22-28px, font-display — que el h2 de AnuncioAbogados.tsx) separado de
+  `frases` (que ahora llevan `text-justify`). Antes el título vivía como la primera frase del
+  arreglo (con [b][/b]) — se sacó a su propio prop porque necesitaba texto-align distinto al
+  resto (centrado vs justificado), imposible de lograr con todas las frases en el mismo `<p>` map.
+  Solo un usuario del componente (`app/page.tsx`) — sin efecto en ningún otro lado.
+- Verificado: `tsc --noEmit` ✓ · `npm run build` ✓.
