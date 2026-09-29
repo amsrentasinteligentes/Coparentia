@@ -4075,3 +4075,16 @@ levantado (ver diagnóstico de la sección `veredicto landing`).
   fuera igual de largo).
 - Verificado en el navegador: título y primer párrafo alineados al mismo borde izquierdo (20px),
   tamaño 30px confirmado. `tsc --noEmit` ✓ · `npm run build` ✓.
+
+### Checkpoint (2026-09-29) — Título de Agitación en minúscula (menos la primera letra) y en una línea, publicado
+- El usuario pidió priorizar UNA SOLA LÍNEA sobre las mayúsculas: "así dejes solo la 1a en
+  mayúscula y el resto en minúscula". Quitado `uppercase` del h2 (el texto ya estaba escrito en
+  formato oración en `app/page.tsx` — solo se mostraba en mayúscula por CSS). Sentence-case ocupa
+  menos ancho que mayúscula sostenida, lo que ayudó a que cupiera en una línea.
+- Tamaños ajustados (empíricamente probados con el navegador, no solo calculados): 18px en mobile
+  (envuelve si hiciera falta, pero a este tamaño ya cabe en 1 línea incluso a 375px), 17px +
+  `whitespace-nowrap` desde `sm` (640px), 26px en `lg` (1280px) — más chico que el pedido anterior
+  de "mismo tamaño que Solución" (30-46px): ese pedido y "una sola línea" eran incompatibles a la
+  vez, y esta fue la instrucción más reciente, así que primero. Probado en 375px, 640px y 1280px:
+  1 sola línea y `scrollWidth === clientWidth` (sin desborde) en los 3. `tsc --noEmit` ✓ ·
+  `npm run build` ✓.
