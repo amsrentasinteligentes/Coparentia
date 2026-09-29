@@ -8,12 +8,22 @@ import { motion } from 'motion/react';
 import { UserPlus } from 'lucide-react';
 import { crearProfesional } from './acciones';
 
+// Mismo tope que valida acciones.ts (5 MB) — revisarlo AQUÍ también, antes de enviar, evita el
+// error real que le pasó al usuario (2026-09-29): una foto de celular sin comprimir superaba el
+// límite de la Server Action y la subida reventaba toda la página en vez de mostrar un aviso.
+const FOTO_MAXIMA_MB = 5;
+
 export function FormularioProfesional() {
   const formRef = useRef<HTMLFormElement>(null);
   const [enviando, setEnviando] = useState(false);
   const [resultado, setResultado] = useState<{ ok: boolean; mensaje: string } | null>(null);
 
   const enviar = async (formData: FormData) => {
+    const foto = formData.get('foto');
+    if (foto instanceof File && foto.size > FOTO_MAXIMA_MB * 1024 * 1024) {
+      setResultado({ ok: false, mensaje: `Esa foto pesa demasiado (máximo ${FOTO_MAXIMA_MB} MB) — prueba con otra o recórtala antes de subirla.` });
+      return;
+    }
     setEnviando(true);
     setResultado(null);
     const r = await crearProfesional(formData);

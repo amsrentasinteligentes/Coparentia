@@ -188,11 +188,20 @@ export function FilaProfesionalAdmin({
   );
 }
 
+// Mismo tope de FormularioProfesional.tsx — revisarlo antes de enviar evita reventar la página
+// completa con una foto de celular sin comprimir (hallazgo real, 2026-09-29).
+const FOTO_MAXIMA_MB = 5;
+
 function FormularioEdicion({ profesional, onCancelar, onGuardado }: { profesional: Profesional; onCancelar: () => void; onGuardado: () => void }) {
   const [enviando, setEnviando] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const enviar = async (formData: FormData) => {
+    const foto = formData.get('foto');
+    if (foto instanceof File && foto.size > FOTO_MAXIMA_MB * 1024 * 1024) {
+      setError(`Esa foto pesa demasiado (máximo ${FOTO_MAXIMA_MB} MB) — prueba con otra o recórtala antes de subirla.`);
+      return;
+    }
     setEnviando(true);
     setError(null);
     const r = await actualizarProfesional(profesional.id, formData);

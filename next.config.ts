@@ -8,6 +8,16 @@ import type { NextConfig } from "next";
 // que esta app nunca usa.
 const nextConfig: NextConfig = {
   devIndicators: false,
+  // El límite por defecto de una Server Action es 1 MB — una foto de celular sin comprimir lo
+  // supera fácil y la subida se rechaza ANTES de que corra el código del formulario (nunca llega
+  // a mostrar un mensaje de error legible: revienta la página completa). Hallazgo real,
+  // 2026-09-29 — el usuario probó subir la foto de un psicólogo y le volvió a salir el error 500.
+  // 6mb da margen sobre el tope de 5 MB que ya valida app/admin/profesionales/acciones.ts.
+  experimental: {
+    serverActions: {
+      bodySizeLimit: '6mb',
+    },
+  },
   // Fotos de profesionales subidas desde /admin/profesionales (2026-09-28) viven en el bucket
   // público "profesionales" de Supabase Storage — next/image rechaza cualquier dominio externo
   // que no esté en esta lista (por diseño, para no optimizar imágenes de orígenes arbitrarios).
