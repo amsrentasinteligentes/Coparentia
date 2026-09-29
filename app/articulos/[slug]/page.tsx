@@ -33,7 +33,7 @@ export default async function ArticuloPublico({ params }: { params: Promise<{ sl
         </div>
 
         <Link
-          href="/#asistencia"
+          href="/"
           className="mt-12 inline-flex h-12 items-center rounded-[var(--radius-button)] bg-[var(--accent)] px-6 text-[14px] font-semibold text-[var(--on-accent,var(--bg))]"
         >
           Conocer Coparentia
