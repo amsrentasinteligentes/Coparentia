@@ -1,4 +1,4 @@
-### Checkpoint (2026-09-29) — Tercer error 500: la foto excedía el límite de la Server Action
+### Checkpoint (2026-09-29) — Tercer error 500: la foto excedía el límite de la Server Action — CONFIRMADO RESUELTO
 - El usuario probó agregar un psicólogo (con foto) y le volvió a salir el mismo error (mismo
   digest que el incidente anterior, `778281220`). Diagnóstico: la tabla YA tenía 3 abogados reales
   agregados con foto sin problema (fotos de 139-320 KB, ya comprimidas) — la del psicólogo
@@ -11,7 +11,8 @@
   `acciones.ts`. (2) `FormularioProfesional.tsx` y `FilaProfesionalAdmin.tsx` (edición) ahora
   revisan el tamaño de la foto ANTES de enviarla — si pesa más de 5 MB, avisan en la propia
   pantalla sin llegar a tocar el servidor, para cualquier caso futuro que supere incluso los 6 MB.
-- No se probó en vivo (mismo motivo de siempre). Verificado: `tsc --noEmit` ✓ · `npm run build` ✓.
+- **El usuario confirmó que ya agregó al psicólogo sin problema.** Verificado: `tsc --noEmit` ✓ ·
+  `npm run build` ✓. Panel de profesionales — CERRADO.
 ### Checkpoint (2026-09-29) — Botón "Fijar siempre primero", publicado
 - El usuario preguntó si podía dejar a Ivonne "siempre" primera y el resto alfabético — con solo
   las flechas de mover, eso NO quedaba garantizado: si más adelante agrega a alguien cuyo nombre
