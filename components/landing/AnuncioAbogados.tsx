@@ -41,14 +41,12 @@ export function AnuncioAbogados({ contactoEmail, id = 'asistencia' }: AnuncioAbo
         className="mx-auto max-w-[720px] rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--text-tertiary)_22%,transparent)] bg-[var(--bg)] p-6 md:p-10"
       >
         <motion.div variants={item} className="text-center">
-          <Kicker>ASISTENCIA PROFESIONAL</Kicker>
-          <h2 className="text-balance text-[24px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)] md:text-[32px]">
-            Sé quien aparece cuando lo necesitan
-          </h2>
+          <Kicker>DIRECTORIO DE ESPECIALISTAS</Kicker>
           <p className="mx-auto mt-3 max-w-[52ch] text-[15px] leading-relaxed text-[var(--text-secondary)] lg:text-[17px]">
-            Los padres que usan Coparentia documentan su caso mes a mes y, cuando necesitan un
-            abogado de familia, un psicólogo o un trabajador social, lo buscan desde la misma app.
-            Anúnciate y sé tú quien aparece en ese momento.
+            En Coparentia podrás consultar perfiles de especialistas para resolver tus dudas y
+            recibir orientación sobre la crianza coparental. Encontrarás abogados de familia que
+            ofrecen asesoría y representación judicial o extrajudicial, así como profesionales de
+            psicología, trabajo social y otras especialidades que pueden acompañar a tu familia.
           </p>
         </motion.div>
 

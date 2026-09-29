@@ -4005,3 +4005,12 @@ levantado (ver diagnóstico de la sección `veredicto landing`).
   relleno blanco (mismo color que el fondo real del encabezado y del nav de esa captura, así el
   relleno no se nota) — mismo tamaño exacto que las demás, sin recortar nada del contenido real.
 - Verificado pidiendo la imagen directo en producción: ya sirve 375×812. Publicado.
+
+### Checkpoint (2026-09-29) — Título y texto de la sección "Asistencia" en la landing, publicado
+- El usuario pidió cambiar el título de la sección de profesionales en la landing: se juntó el
+  kicker ("ASISTENCIA PROFESIONAL") y el h2 ("Sé quien aparece cuando lo necesitan") en un solo
+  título ("DIRECTORIO DE ESPECIALISTAS") y se reemplazó el párrafo de abajo por el texto que dio
+  el usuario (enfocado en qué encuentra el usuario: abogados, psicólogos, trabajo social).
+- `components/landing/AnuncioAbogados.tsx` — se quitó el `<h2>`, el `<Kicker>` ahora lleva el
+  nuevo título. Verificado con captura de texto de la página (get_page_text, el panel de vista
+  previa no tomó captura visual). `tsc --noEmit` ✓ · `npm run build` ✓.
