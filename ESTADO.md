@@ -4182,3 +4182,10 @@ levantado (ver diagnóstico de la sección `veredicto landing`).
 - Verificado: `tsc --noEmit` ✓ · `build` ✓ · medido con `getBoundingClientRect` en local a 375px:
   el texto de "Trabajadores sociales" queda 13px DENTRO del borde derecho de la tarjeta (antes se
   desbordaba). Publicado.
+
+### Checkpoint (2026-09-29) — Bug de Android en el directorio de especialistas: CONFIRMADO RESUELTO
+- El usuario confirmó en su celular Android real: "ya quedo bien". Se cierra el hilo que tomó 4
+  rondas de diagnóstico (color-mix del fondo → color-mix del borde → falta de color-scheme →
+  causa real: texto desbordado por falta de min-w-0 en un flex). Los 4 fixes quedan en producción;
+  el que resolvió el síntoma reportado fue el último (min-w-0/break-words en
+  DirectorioProfesionales.tsx), pero los otros 3 eran mejoras reales y también quedan.
