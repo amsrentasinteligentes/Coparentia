@@ -4100,3 +4100,24 @@ levantado (ver diagnóstico de la sección `veredicto landing`).
   Escala final: 20px (mobile, con margen) → 22px (`sm`, 640px+) → 34px (`lg`, 1024px+).
 - Probado en el navegador en 4 anchos (375, 640, 1024, 1440): una sola línea y
   `scrollWidth === clientWidth` (sin desborde) en los 4. `tsc --noEmit` ✓ · `npm run build` ✓.
+
+### Checkpoint (2026-09-29) — Corregido fondo negro en "Trabajadores sociales" (Android), publicado
+- El usuario reportó (con captura de su celular Android) que la tarjeta "Trabajadores sociales"
+  del selector de categorías se veía con fondo negro/roto en la landing — en iPhone se veía bien.
+- Causa raíz encontrada: `lib/profesionales.ts` usa `var(--cat-vacaciones-bg)` para ese color, y
+  en la landing (clase `.tema-claro`) ese token NUNCA se redefinía — quedaba cayendo al valor por
+  defecto de `components/landing/tokens.css` (el tema oscuro base), que lo define como
+  `color-mix(in oklab, #63b58f 14%, transparent)`. Mezclar con `transparent` en espacio `oklab` es
+  un bug documentado de Chrome/WebView en ciertas versiones de Android (por eso solo fallaba ahí,
+  nunca en iPhone/Safari) — el mismo patrón se usa para `--cat-visita-bg`/`--cat-extra-bg`, así
+  que en teoría cualquiera de las 3 categorías podía fallar igual en el dispositivo/GPU correcto.
+- **Corregido de raíz, no parcheado**: `components/landing/tokens-claro.css` ahora redefine las 3
+  categorías (`--cat-visita`, `--cat-vacaciones`, `--cat-extra`, sus `-bg`) con los MISMOS valores
+  hex planos que ya usa `tokens-app-claro.css` dentro de la app — sin `color-mix`, sin `oklab`, sin
+  el riesgo de este bug en ningún navegador. De paso, deja el directorio de la landing con
+  EXACTAMENTE los mismos colores que el de dentro de la app (antes eran ligeramente distintos:
+  otro verde/morado, sin que nadie lo hubiera notado).
+- No se pudo reproducir en un Android real desde aquí (sin ese hardware) — pedir al usuario que
+  confirme en su celular tras el despliegue. Verificado: `tsc --noEmit` ✓ · `npm run build` ✓ ·
+  confirmado con `getComputedStyle` que `--cat-vacaciones-bg` dentro de `.tema-claro` ya resuelve
+  a `#dff5ea` (sólido) en vez de la mezcla con transparencia.

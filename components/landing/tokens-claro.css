@@ -66,6 +66,17 @@
   --foto-1: #e3c2ad;
   --foto-2: #9a6d5a;
 
+  /* ── CATEGORÍAS del directorio de profesionales — mismos valores EXACTOS que
+        tokens-app-claro.css (para que se vea igual que dentro de la app), en hex plano en vez de
+        `color-mix(in oklab, …, transparent)` como venían por defecto de tokens.css: el usuario
+        encontró un fondo negro/roto justo en la tarjeta "Trabajadores sociales" en Android
+        (2026-09-29) — `color-mix()` mezclando con `transparent` en oklab es un bug conocido de
+        Chrome/WebView en ciertas versiones de Android; con hex plano ese riesgo desaparece del
+        todo, no solo se esconde. */
+  --cat-visita: #1a63dc;       --cat-visita-bg: #e3edfc;
+  --cat-vacaciones: #157a4f;   --cat-vacaciones-bg: #dff5ea;
+  --cat-extra: #6c4ab6;        --cat-extra-bg: #e9e2fb;
+
   background: var(--bg);
   color: var(--text-primary);
   font-family: var(--font-body);
