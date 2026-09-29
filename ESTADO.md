@@ -4245,3 +4245,26 @@ levantado (ver diagnóstico de la sección `veredicto landing`).
   en "Gastos extra por hijo"), ahí sí vuelven a mostrar el total del año/de siempre, porque en ese
   modo la persona pidió explícitamente ver todo.
 - Verificado: `tsc --noEmit` ✓ · `build` ✓. Publicado.
+
+### Checkpoint (2026-09-29) — Login con contraseña (para auditoría externa) + usuario de prueba
+- El usuario va a enviar la app a una auditoría externa; el equipo pidió entrar con correo y
+  contraseña (no aceptan enlace mágico ni GitHub). Hoy el login SOLO tenía enlace mágico/código +
+  Google — sin contraseña en absoluto.
+- `app/(funnel)/entrar/page.tsx`: se agregó un camino secundario con contraseña (oculto detrás de
+  un enlace "¿Tienes una contraseña? Entra con ella", debajo del botón de Google) que usa
+  `supabase.auth.signInWithPassword`. El flujo passwordless sigue siendo el principal — nadie
+  pierde lo que ya tenía, regla dura de "no romper lo que funciona".
+- Usuario de auditoría creado con un script de un solo uso (`@supabase/supabase-js` + la
+  SUPABASE_SERVICE_ROLE_KEY del propio proyecto, ejecutado y borrado en el momento — nunca quedó
+  en el repo): correo `auditoriasrentas@gmail.com`, YA CONFIRMADO (sin pasar por el correo), y con
+  `profiles.creado_manualmente = true` — el mismo mecanismo que ya usa la app para altas manuales
+  de soporte/pruebas, que salta el candado de suscripción y da acceso completo a la app pagada.
+  La contraseña real se le entregó al usuario en el chat (es su información, para que se la pase
+  al equipo de auditoría) — no vive en ningún archivo del proyecto.
+- ⚠️ Pendiente de decisión del usuario: NO se le dio rol de administrador (`/admin`, el panel para
+  gestionar el directorio de profesionales) — eso es la trastienda del NEGOCIO, no una función
+  premium de la app, así que se dejó fuera hasta que el usuario confirme si quiere incluirlo.
+- Verificado: `tsc --noEmit` ✓ · `build` ✓. No se pudo previsualizar visualmente en el navegador de
+  pruebas (el permiso para abrir /entrar fue denegado por el clasificador de seguridad del entorno,
+  probablemente por ser una pantalla de credenciales) — publicado con verificación de código
+  solamente; pedir al usuario que confirme visualmente tras publicar.

@@ -17,6 +17,7 @@ import { crearClienteSupabase } from '@/lib/supabase/client';
 type Estado = 'idle' | 'enviando' | 'enviado' | 'error' | 'enlace_invalido';
 type EstadoCodigo = 'idle' | 'verificando' | 'error';
 type EstadoGoogle = 'idle' | 'redirigiendo' | 'error';
+type EstadoPassword = 'idle' | 'entrando' | 'error';
 
 // El código que de verdad manda Supabase en `{{ .Token }}` tiene 8 dígitos (confirmado con un
 // correo real, 2026-09-17) — no 6 como sugiere la doctrina genérica de 26-AUTH-MODERNO.md.
@@ -47,6 +48,12 @@ function EntrarInterno() {
   const [codigo, setCodigo] = useState('');
   const [estadoCodigo, setEstadoCodigo] = useState<EstadoCodigo>('idle');
   const [estadoGoogle, setEstadoGoogle] = useState<EstadoGoogle>('idle');
+  // Entrar con contraseña: camino secundario, oculto hasta que alguien lo pide — la app sigue
+  // siendo passwordless por defecto (26-AUTH-MODERNO.md). Existe para cuentas que SÍ tienen
+  // contraseña asignada (p. ej. una cuenta de prueba dada de alta a mano desde el panel).
+  const [mostrarPassword, setMostrarPassword] = useState(false);
+  const [password, setPassword] = useState('');
+  const [estadoPassword, setEstadoPassword] = useState<EstadoPassword>('idle');
 
   useEffect(() => {
     if (params.get('error') === 'enlace_invalido') setEstado('enlace_invalido');
@@ -101,6 +108,19 @@ function EntrarInterno() {
     // Con OAuth, si no hay error el navegador YA está saliendo hacia Google — este estado de error
     // solo se ve si la redirección ni siquiera pudo empezar (proveedor no configurado, sin red).
     if (error) setEstadoGoogle('error');
+  };
+
+  const entrarConPassword = async (e: React.FormEvent): Promise<void> => {
+    e.preventDefault();
+    if (!email.includes('@') || !password || estadoPassword === 'entrando') return;
+    setEstadoPassword('entrando');
+    const supabase = crearClienteSupabase();
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) {
+      setEstadoPassword('error');
+      return;
+    }
+    router.push('/inicio');
   };
 
   const reenviar = async (): Promise<void> => {
@@ -229,6 +249,37 @@ function EntrarInterno() {
               <p role="alert" className="mt-2 text-[13px] text-[var(--status-error)]">
                 No pudimos abrir Google. Revisa tu conexión e inténtalo de nuevo.
               </p>
+            )}
+
+            {/* Camino secundario para cuentas con contraseña asignada (soporte/pruebas) — oculto
+                por defecto para no distraer del flujo passwordless, que sigue siendo el principal. */}
+            {mostrarPassword ? (
+              <form onSubmit={entrarConPassword} className="mt-4 flex flex-col gap-3 border-t border-[color-mix(in_oklab,var(--text-tertiary)_16%,transparent)] pt-4">
+                <input
+                  type="password"
+                  autoComplete="current-password"
+                  value={password}
+                  onChange={(e) => { setPassword(e.target.value); if (estadoPassword === 'error') setEstadoPassword('idle'); }}
+                  placeholder="Tu contraseña"
+                  className="h-14 w-full rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--surface)] px-4 text-[16px] text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)]"
+                />
+                <CtaFunnel type="submit" disabled={!email.includes('@') || !password || estadoPassword === 'entrando'}>
+                  {estadoPassword === 'entrando' ? 'Entrando…' : 'Iniciar sesión con contraseña'}
+                </CtaFunnel>
+                {estadoPassword === 'error' && (
+                  <p role="alert" className="text-[13px] text-[var(--status-error)]">
+                    Correo o contraseña incorrectos.
+                  </p>
+                )}
+              </form>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setMostrarPassword(true)}
+                className="mt-3 text-[13px] font-medium text-[var(--text-tertiary)] underline-offset-2 hover:underline [touch-action:manipulation]"
+              >
+                ¿Tienes una contraseña? Entra con ella
+              </button>
             )}
 
             <p className="mt-4 flex items-center gap-1.5 text-[13px] text-[var(--text-tertiary)]">
