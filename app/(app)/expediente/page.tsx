@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
 import { Download, FileCheck2, Scale, FolderOpen } from 'lucide-react';
 import { ContenedorApp, Tarjeta, IconoCirculo, Pildora, ErrorDeCarga, CabeceraApp, TituloSeccion } from '@/components/app/ui';
+import { AyudaContextual } from '@/components/app/AyudaContextual';
 import { exportarExpedientePdf } from '@/lib/exportar-expediente';
 import { AcuerdoCuota } from '@/components/app/AcuerdoCuota';
 import { ConstanciaOtraParte } from '@/components/app/ConstanciaOtraParte';
@@ -91,7 +92,16 @@ export default function Expediente() {
       <TituloSeccion
         titulo="Expediente"
         subtitulo={pendientes > 0 ? `${pendientes} ${pendientes === 1 ? 'autorización pendiente' : 'autorizaciones pendientes'}` : 'Todo al día · listo para exportar'}
-        icon={FolderOpen}
+        accion={
+          <div className="flex items-center gap-1">
+            <AyudaContextual titulo="Expediente">
+              <p>Aquí queda organizado todo lo que puedes necesitar como prueba: pagos, autorizaciones y el acuerdo o sentencia que fija tu cuota.</p>
+              <p>El botón <strong className="text-[var(--text-primary)]">Exportar expediente</strong> arma un PDF real, foliado, con la foto de cada comprobante adentro — listo para entregar a tu abogado o conciliador.</p>
+              <p>No necesitas hacer nada más para que esto funcione: cada pago o autorización que registras en la app queda aquí automáticamente.</p>
+            </AyudaContextual>
+            <IconoCirculo icon={FolderOpen} size={22} grande />
+          </div>
+        }
       />
 
       {/* TARJETA DEL PDF — el "sector azul" de la referencia dentro de la app: degradé de marca */}

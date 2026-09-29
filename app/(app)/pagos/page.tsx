@@ -9,6 +9,7 @@ import { useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'motion/react';
 import { Upload, ShieldCheck, FileCheck2, X, ChevronRight, Sparkles, CalendarDays, CreditCard, BarChart3, ReceiptText, Wallet, Users } from 'lucide-react';
 import { ContenedorApp, Tarjeta, IconoCirculo, BotonFlotante, ErrorDeCarga, CabeceraApp, Pildora, TituloSeccion } from '@/components/app/ui';
+import { AyudaContextual } from '@/components/app/AyudaContextual';
 import { VisorImagen } from '@/components/app/VisorImagen';
 import { Portal } from '@/components/app/Portal';
 import { SelloConfianza } from '@/components/app/SelloConfianza';
@@ -160,7 +161,20 @@ export default function Pagos() {
     <>
       <CabeceraApp aviso={vencida} />
       <ContenedorApp conFab sinTope>
-        <TituloSeccion titulo="Pagos y cuota alimentaria" subtitulo="Controla tu cuota, los gastos extra y sus comprobantes." icon={Wallet} />
+        <TituloSeccion
+          titulo="Pagos y cuota alimentaria"
+          subtitulo="Controla tu cuota, los gastos extra y sus comprobantes."
+          accion={
+            <div className="flex items-center gap-1">
+              <AyudaContextual titulo="Pagos y cuota alimentaria">
+                <p>Aquí registras cada pago con su comprobante — la cuota mensual y cualquier gasto extra (médico, colegio, etc.).</p>
+                <p>Cuando subes una foto del comprobante, la app lee el monto por ti — revísalo antes de guardar, siempre puedes corregirlo.</p>
+                <p>Al guardar, el registro recibe un <strong className="text-[var(--text-primary)]">Sello de Confianza</strong>: queda fechado de forma que sirve como prueba si algún día lo necesitas.</p>
+              </AyudaContextual>
+              <IconoCirculo icon={Wallet} size={22} grande />
+            </div>
+          }
+        />
 
         {falloCarga ? (
           <ErrorDeCarga onReintentar={() => setIntento((n) => n + 1)} />

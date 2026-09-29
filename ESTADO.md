@@ -4189,3 +4189,19 @@ levantado (ver diagnóstico de la sección `veredicto landing`).
   causa real: texto desbordado por falta de min-w-0 en un flex). Los 4 fixes quedan en producción;
   el que resolvió el síntoma reportado fue el último (min-w-0/break-words en
   DirectorioProfesionales.tsx), pero los otros 3 eran mejoras reales y también quedan.
+
+### Checkpoint (2026-09-29) — Ayuda contextual en Pagos y Expediente (post-compra, retención)
+- El usuario pidió enfocarse en el usuario DESPUÉS de la compra: le propuse ayuda contextual
+  puntual y opcional (nunca tutoriales forzados, que son anti-patrón del SO) — un botón "?"
+  junto al título de la pantalla que abre una hoja corta explicando el propósito de esa pantalla
+  y su mecanismo menos obvio. Aprobado tras verlo en una vista previa temporal (borrada después).
+- Construido: `components/app/AyudaContextual.tsx` (componente reutilizable — botón "?" +
+  hoja inferior con `Portal`/`AnimatePresence`, mismo patrón visual que `ModalRegistro` de Pagos).
+  Integrado en `app/(app)/pagos/page.tsx` (explica el Sello de Confianza y la lectura automática
+  del monto) y `app/(app)/expediente/page.tsx` (explica qué trae el PDF exportado).
+- Verificado: `tsc --noEmit` ✓ · `build` ✓ · probado visualmente en una ruta temporal fuera del
+  login (`app/preview-ayuda-temp`, NUNCA commiteada, borrada antes de publicar) porque estas
+  pantallas están detrás del gate de sesión y no hay forma de iniciar sesión como el usuario real
+  desde aquí. El usuario vio la captura y aprobó antes de publicar.
+- Publicado. Reusable: el mismo componente `AyudaContextual` sirve para sumar ayuda puntual a
+  otras pantallas (Calendario, Ajustes) más adelante si se decide seguir con esta estrategia.
