@@ -4336,3 +4336,16 @@ levantado (ver diagnóstico de la sección `veredicto landing`).
   plataforma; el código `?src=` solo distingue DE QUÉ PILAR vino la persona, sin importar la red.
 - Pendiente de retomar: punto 4 del plan de mercadeo — la caja de herramientas de IA (avatar de
   la esposa abogada + generación de los videos dramatizados con personas de IA no reales).
+
+### Checkpoint (2026-10-01) — Táctica de lead magnet por comentario sumada al plan
+- El usuario encontró un reel ajeno (creador "Manuel Murcia - El Hipster") usando la táctica
+  "comenta una palabra clave y te lo mando gratis por mensaje privado" — se revisó el reel real
+  (iniciando sesión él mismo en Facebook, yo solo observé la pantalla para la tarea, sin tocar
+  nada más) y se decidió sumarla al plan de mercadeo.
+- Integración: reservada SOLO para el Pilar 1 ("No tengo cómo probarlo") — CTA del tipo
+  "Comenta 'EXPEDIENTE' y te mando gratis la plantilla para organizar tus comprobantes de cuota".
+  El resto de los pilares sigue usando el link en la bio (Linktree) ya configurado, sin cambios.
+- Pendiente: diseñar la plantilla real (Canva o Google Sheets) que se envía por DM cuando alguien
+  comenta la palabra clave.
+- Próximo paso: armar la semana 1 completa (guion + ambientación + pasos de generación por
+  herramienta) para las 5 piezas del calendario — EN CURSO, pendiente de retomar.
