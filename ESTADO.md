@@ -4268,3 +4268,20 @@ levantado (ver diagnóstico de la sección `veredicto landing`).
   pruebas (el permiso para abrir /entrar fue denegado por el clasificador de seguridad del entorno,
   probablemente por ser una pantalla de credenciales) — publicado con verificación de código
   solamente; pedir al usuario que confirme visualmente tras publicar.
+
+### Checkpoint (2026-10-01) — Inicio más limpio: quitada la tarjeta "Contacto con tus hijos"
+- El usuario pidió opinión (con captura marcada) sobre varios bloques de la pantalla de Inicio
+  que sentía como desorden: la notificación "Prueba del tutorial", "Próximo evento" y "Contacto
+  con tus hijos". Se le explicó la diferencia entre cada uno antes de tocar nada:
+  - "Prueba del tutorial" NO es diseño — es una notificación de PRUEBA que quedó en su cuenta de
+    cuando probamos los avisos push en una sesión anterior. Se resuelve tocando el check (✓) que
+    ya tiene la tarjeta, sin tocar código — no requirió cambio.
+  - "Próximo evento" se recomendó MANTENER — es la señal más útil arriba de todo (qué hay
+    agendado), no es ruido.
+  - "Contacto con tus hijos" se recomendó QUITAR — en su estado vacío solo repetía la invitación a
+    ir a Calendario que ya hace "Próximo evento", sin aportar nada nuevo cuando no hay registros.
+  El usuario aprobó: "si, vamos por ahí".
+- Quitado de `app/(app)/inicio/page.tsx`: el bloque completo de la tarjeta "Contacto con tus
+  hijos" (Link + Tarjeta con el ícono de teléfono) y las variables que solo ella usaba
+  (`contactosMes`, `contestadosMes`). `esContacto` se queda (sigue usándose para "Próximo evento").
+- Verificado: `tsc --noEmit` ✓ · `build` ✓. Publicado.

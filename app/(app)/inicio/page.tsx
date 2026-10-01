@@ -562,8 +562,6 @@ function Dashboard() {
         : `Recuerda registrar la cuota antes del día ${titulo?.diaPago ?? '—'}.`;
 
   const gastosExtraMes = pagos.filter((p) => p.tipo !== 'cuota' && p.fecha.slice(0, 7) === mesActual);
-  const contactosMes = eventos.filter((e) => esContacto(e.tipo) && e.fecha.slice(0, 7) === mesActual);
-  const contestadosMes = contactosMes.filter((e) => e.resultado === 'contestada').length;
   const totalExtraMes = gastosExtraMes.reduce((acc, p) => acc + p.monto, 0);
 
   return (
@@ -684,29 +682,6 @@ function Dashboard() {
                 </Tarjeta>
               </Link>
             </div>
-
-            {/* CONTACTO CON TUS HIJOS (2026-09-21) — la app ya probaba DINERO; esto prueba PRESENCIA.
-                Cifra del mes: llamadas/videollamadas registradas y cuántas contestaron. */}
-            <Link href="/calendario" className="mt-3 block transition-transform duration-100 active:scale-[0.99] [touch-action:manipulation]">
-              <Tarjeta className="flex items-center gap-3">
-                {/* El color por categoría (ámbar de "llamada") vive en Calendario; aquí es un 4º
-                    color no neutro de más sobre azul+verde+morado (hallazgo del revisor-visual,
-                    2026-09-25) — se usa el mismo acento neutro que el resto de Inicio. */}
-                <IconoCirculo icon={Phone} size={20} />
-                <div className="min-w-0 flex-1">
-                  <p className="text-[14px] font-bold text-[var(--text-primary)] [font-family:var(--font-display)]">Contacto con tus hijos</p>
-                  {contactosMes.length > 0 ? (
-                    <p className="mt-0.5 text-[12.5px] text-[var(--text-secondary)]">
-                      <span className="font-extrabold tabular-nums text-[var(--text-primary)]">{contactosMes.length}</span> {contactosMes.length === 1 ? 'contacto' : 'contactos'} este mes ·{' '}
-                      <span className="font-bold text-[var(--status-success)]">{contestadosMes} {contestadosMes === 1 ? 'contestado' : 'contestados'}</span>
-                    </p>
-                  ) : (
-                    <p className="mt-0.5 text-[12.5px] text-[var(--text-secondary)]">Registra tus llamadas y videollamadas: quedan con Sello como prueba de presencia.</p>
-                  )}
-                </div>
-                <ChevronRight size={16} className="shrink-0 text-[var(--text-tertiary)]" aria-hidden="true" />
-              </Tarjeta>
-            </Link>
 
             <AccesosRapidos items={ACCESOS} />
 
