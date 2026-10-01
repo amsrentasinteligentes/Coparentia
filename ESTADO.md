@@ -4285,3 +4285,37 @@ levantado (ver diagnóstico de la sección `veredicto landing`).
   hijos" (Link + Tarjeta con el ícono de teléfono) y las variables que solo ella usaba
   (`contactosMes`, `contestadosMes`). `esContacto` se queda (sigue usándose para "Próximo evento").
 - Verificado: `tsc --noEmit` ✓ · `build` ✓. Publicado.
+
+### Checkpoint (2026-10-01) — Plan de mercadeo: mapa general + pilares de contenido (Frente 2)
+- Arrancó con el usuario el Frente 2 (skill /adquisicion): plan de mercadeo de largo plazo, de lo
+  macro a lo micro. Contexto real recogido (ver también memoria de proyecto
+  `contexto_marketing_coparentia.md`): 0 clientes, 0 audiencia (TikTok e Instagram creadas, falta
+  Facebook), $0 de presupuesto de ads. No quiere salir él en cámara — usará un AVATAR DE IA de su
+  esposa (abogada) como la cara del contenido.
+- **Mapa general (punto 1, aprobado):** etapa 0 clientes del mapa de `34-ADQUISICION-Y-TRAFICO.md`
+  → canal principal = contenido orgánico (avatar de la abogada) + afiliados Hotmart. Nada de paid
+  ads todavía (sin CAC/LTV ni mensaje validado). Meta: primeras 10-30 ventas + 5-10 testimonios
+  reales.
+- **Hallazgo importante durante los pilares:** el usuario señaló (con criterio propio, sin fuente
+  todavía) que en Colombia la mayoría de incumplimientos de cuota los comete el padre, y quien
+  más sufre por no recibir el pago suele ser la madre — pidió mi opinión sincera. Se buscó y
+  CONFIRMÓ con una fuente real: Fiscalía General de la Nación (vía El Tiempo) — 86% de las
+  40.311+3.593=46.499 personas procesadas por inasistencia alimentaria (2019-2020) son hombres.
+  Dato guardado con fuente y fecha en `FICHA-MERCADO.md` sección 7.
+- **Decisión explícita del usuario:** NO toca la app ni la landing/paywall (el mecanismo ya sirve
+  a ambos lados, y el lado Carlos tiene VoC real documentada — no se reescribe el copy de venta
+  sin evidencia directa de ese segmento, mismo criterio que ya fijaba FICHA-AVATAR.md). El cambio
+  es SOLO en el plan de mercadeo/contenido.
+- **Punto 2 (pilares de contenido) — REDEFINIDOS por pedido del usuario** para no tratar al lado
+  receptor (mayoría madres) como un pilar secundario al final, sino integrar el dolor de AMBOS
+  lados en cada pilar:
+  1. "No tengo cómo probarlo" — el dolor central del producto, dos caras (Carlos prueba que
+     pagó; quien recibe prueba que no le han pagado o qué cubrió sola/o).
+  2. "La plata que se volvió guerra" — el conflicto relacional, visto desde las dos orillas.
+  3. "Lo que dice la ley (y lo que no)" — la abogada responde dudas legales de ambos lados.
+  4. "Las cifras que nadie cuenta" (NUEVO, nace de este hallazgo) — datos duros y verificables
+     (el 86%, la pobreza en hogares con jefatura femenina) como gancho de contenido/autoridad.
+  5. "Historias que cualquiera reconoce" — escenarios dramatizados (NUNCA testimonios reales
+     inventados), alternando protagonista entre un papá y una mamá.
+- Próximo paso: punto 3 del plan (calendario y formatos: cuántas piezas por semana, de qué tipo,
+  en qué plataforma) — EN CURSO, pendiente de retomar.

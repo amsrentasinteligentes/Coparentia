@@ -68,3 +68,22 @@
 - Regulación que afecta la venta: datos de menores y financieros — ver anexo jurídico en
   ESTADO.md (Ley 1581/2012, Ley 1098/2006) y `47-LEGAL-FISCAL-Y-PRIVACIDAD.md` (pendiente
   aplicar en Sesión 6).
+
+## 7. QUIÉN NO RECIBE EL PAGO (dato para el plan de mercadeo, 2026-10-01)
+- Hallazgo: según cifras de la **Fiscalía General de la Nación** (citadas por El Tiempo), entre
+  2019 y 2020 de 46.499 personas procesadas por inasistencia alimentaria en Colombia, **40.311
+  (86%) fueron hombres** y 3.593 (7.72%) mujeres | fuente:
+  https://www.eltiempo.com/justicia/delitos/cifras-de-estadisticas-sobre-denuncias-y-demandas-por-cuotas-de-alimentos-561999
+  | fecha de la búsqueda: 2026-10-01.
+- Dato complementario: según el DANE, 37.7% de los hogares con jefatura femenina viven en
+  pobreza monetaria, frente a 29.5% de los de jefatura masculina | fuente citada en la misma
+  búsqueda | fecha de la búsqueda: 2026-10-01.
+- Implicación para MERCADEO (no para producto — el mecanismo ya sirve a ambos lados por igual,
+  el usuario decidió NO tocar app ni landing): el lado que RECIBE la cuota (mayoritariamente
+  madres, según este dato) es probablemente una audiencia igual de grande o más urgente que
+  Carlos para el CONTENIDO orgánico — su dolor es más agudo (necesita pruebas para reclamar, no
+  solo para defenderse). Los 5 pilares de contenido de la estrategia de adquisición (ver
+  ESTADO.md, sesión 2026-10-01) se redefinieron para darle este peso. La landing/paywall siguen
+  hablándole a Carlos (es el lado con VoC real documentada en FICHA-AVATAR.md) hasta que se
+  recopile evidencia directa (comentarios/DMs reales) del lado receptor — mismo criterio que ya
+  fijaba FICHA-AVATAR.md antes de este hallazgo.
