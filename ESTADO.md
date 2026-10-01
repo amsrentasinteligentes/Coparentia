@@ -4319,3 +4319,20 @@ levantado (ver diagnóstico de la sección `veredicto landing`).
      inventados), alternando protagonista entre un papá y una mamá.
 - Próximo paso: punto 3 del plan (calendario y formatos: cuántas piezas por semana, de qué tipo,
   en qué plataforma) — EN CURSO, pendiente de retomar.
+
+### Checkpoint (2026-10-01) — Linktree configurado con los 5 botones de medición
+- Se guió al usuario paso a paso (clic por clic) para crear su cuenta de Linktree (gratis) y
+  armar los 5 botones de medición, uno por pilar de contenido, cada uno apuntando a
+  `https://coparentia.co/?src=pilarN` (N=1 a 5) — usando el sistema `?src=` que ya existía en el
+  código (`lib/datos.ts`/`36-ANALITICA-Y-EVENTOS.md`) para atribuir de dónde viene cada visitante.
+- Perfiles de Instagram (`coparentia`) y TikTok (`coparentiaapp`) conectados al Linktree; Facebook
+  queda pendiente de crear. Bio del Linktree en español, tono de marca ("Tu expediente de cuota y
+  gastos, organizado y en confianza").
+- Los 5 botones (textos finales, en el mismo orden del plan): "¿Cómo demostrar que pagaste?"
+  (pilar1) · "Cuando el dinero se vuelve guerra" (pilar2) · "Lo que dice la ley (y lo que no)"
+  (pilar3) · "Las cifras que nadie cuenta" (pilar4) · "Historias que cualquiera reconoce" (pilar5).
+- Confirmado con el usuario: UN solo código por pilar alcanza (no 15 = 5 pilares × 3 redes) — el
+  desempeño POR RED (TikTok vs Instagram vs Facebook) ya lo da gratis el panel propio de cada
+  plataforma; el código `?src=` solo distingue DE QUÉ PILAR vino la persona, sin importar la red.
+- Pendiente de retomar: punto 4 del plan de mercadeo — la caja de herramientas de IA (avatar de
+  la esposa abogada + generación de los videos dramatizados con personas de IA no reales).
