@@ -4349,3 +4349,27 @@ levantado (ver diagnóstico de la sección `veredicto landing`).
   comenta la palabra clave.
 - Próximo paso: armar la semana 1 completa (guion + ambientación + pasos de generación por
   herramienta) para las 5 piezas del calendario — EN CURSO, pendiente de retomar.
+
+### Checkpoint (2026-10-02) — Bienvenida duplicada y "baja a prueba" tras la compra completa (Hotmart)
+- Reporte del usuario: a Ivonne (clienta que ya pagó) le llegó otra vez "Tu acceso a Coparentia ya
+  está listo" (00:01 hora Colombia). Diagnóstico con lectura de la base + captura de Hotmart:
+  - Hotmart mandó `PURCHASE_COMPLETE` ("compra completa") ~16 días DESPUÉS de la compra gratis de la
+    prueba (16/09, fin de su garantía de 15 días). Trae monto 0 → `estadoParaEvento` lo leyó como
+    inicio de prueba → su fila pasó de `active` a `trialing` con una prueba nueva hasta el 9/10.
+  - Ivonne SÍ paga: cobro real el 23/09 ("cuota 2", USD 77,33 recibidos, Aprobada — plan anual).
+  - La bienvenida se reenvió porque la función de la base en producción probablemente sigue siendo
+    la VIEJA (sin `previous_status`): `fix-devuelve-estado-anterior.sql` figura como pendiente del
+    usuario en este archivo desde la sesión de los correos y nunca se anotó como corrido.
+  - Alcance: le pasaría a CADA cliente que empiece por la prueba gratis, ~2 semanas después (y
+    reactivaría a quien canceló). Riesgo extra: `aviso-pre-cobro` habría mandado "te cobraremos el 9".
+- Hecho: (1) `supabase/fix-completa-no-reactiva.sql` (NUEVO — el usuario debe correrlo en Supabase;
+  incluye lo de fix-devuelve-estado-anterior): `PURCHASE_COMPLETE` solo confirma si ya se conoce a
+  la persona (devuelve `ignored`), `active` nunca vuelve a `trialing`, y se devuelve
+  `previous_status`/`email`. (2) `app/api/webhooks/hotmart/route.ts`: `ignored` se registra como
+  `duplicate`. (3) Fila de Ivonne corregida con permiso del usuario: `trialing` → `active`,
+  `trial_ends_at` null (lectura previa + update con candados; sin tocar nada más).
+- ⚠️ PENDIENTE (solo el usuario): correr `supabase/fix-completa-no-reactiva.sql` en Supabase. Hasta
+  entonces la falla sigue viva para los demás clientes.
+- Verificado: `tsc --noEmit` ✓ · `build` ✓. Lección: la suposición "monto > 0 = cobro real" del
+  webhook (marcada como placeholder en `membership-fsm.ts`) quedó confirmada como frágil por un caso
+  real; no se cambió más allá de estas reglas.

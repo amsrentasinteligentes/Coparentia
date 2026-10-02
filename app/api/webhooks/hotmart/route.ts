@@ -151,7 +151,13 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   const respuestaRpc = resultadoRpc as RespuestaRpc | null;
   const estadoRpc = respuestaRpc?.status;
   const resultado =
-    estadoRpc === 'applied' ? 'applied' : estadoRpc === 'duplicate' ? 'duplicate' : estadoRpc === 'no_match' ? 'no_match' : 'illegal';
+    estadoRpc === 'applied'
+      ? 'applied'
+      : estadoRpc === 'duplicate' || estadoRpc === 'ignored' // "ignored" = aviso de confirmación sobre alguien ya conocido
+        ? 'duplicate'
+        : estadoRpc === 'no_match'
+          ? 'no_match'
+          : 'illegal';
   await registrar(eventId, evento, resultado);
 
   // 8. CORREOS — solo cuando el aviso de verdad se APLICÓ (nunca en duplicados: Hotmart reenvía
