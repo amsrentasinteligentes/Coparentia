@@ -4380,3 +4380,33 @@ levantado (ver diagnóstico de la sección `veredicto landing`).
   confirma a quien ya se conoce, `active` no vuelve a `trialing`, y la función devuelve
   `previous_status`/`email` (el pendiente viejo de `fix-devuelve-estado-anterior.sql` queda cubierto).
   El ⚠️ PENDIENTE del checkpoint anterior (2026-10-02, bienvenida duplicada) queda CERRADO.
+
+### Checkpoint (2026-10-02) — Plan de mercadeo: reglas de personajes, serie mensual y pieza 1 ajustada
+- **Ivonne (la abogada, esposa del usuario) no está disponible por ahora** → su avatar de HeyGen y los
+  reels del pilar 3 ("Lo que dice la ley") quedan EN PAUSA hasta que pueda grabarse (2-5 min, con
+  verificación de consentimiento en vivo) y revisar los guiones. Semana 1 se reordenó SIN ella:
+  lun video dramatizado (pilar 2) · mar carrusel (pilar 4, cifra Fiscalía) · mié video dramatizado
+  (pilar 5) · jue video de la app en pantalla con voz en off (pilar 1) · vie carrusel (pilar 5).
+- **Regla de personajes (aprobada por el usuario):** en los videos dramatizados los personajes son
+  DISTINTOS cada vez (hombres/mujeres, edades, regiones, y roles variados: quien paga y quien recibe,
+  sin culpar a un solo lado — coherente con la neutralidad de FICHA-AVATAR). Dentro de un mismo video,
+  la cara de cada persona sale en UN solo plano; el resto son manos, celular, objetos o de espaldas
+  (ropa descrita igual en los prompts para dar continuidad). Evita pagar/gastar créditos en
+  consistencia de personaje.
+- **Serie mensual con personajes fijos (idea del usuario, aprobada):** reemplaza el rol de los jueves
+  del pilar 5 ("Historias que cualquiera reconoce"): una mini-serie de 4 episodios por mes (1 por
+  semana), 15-25 s, gancho + final abierto + CTA "sigue para la parte N". La evidencia encontrada es
+  débil (blogs/casos anecdóticos, no un estudio sólido) → se trata como HIPÓTESIS a medir: retención y
+  seguidores nuevos de la serie vs escenas sueltas. Arranca cuando haya herramienta elegida (necesita
+  mantener la cara del personaje: Kling "Bind Subject", Runway, etc.).
+- **Herramientas (verificado, fuentes de terceros — confirmar en páginas oficiales):** ningún plan
+  gratis sirve para publicar (marca de agua y sin uso comercial). Kling: cuenta del usuario con 6
+  créditos; un clip de 5 s en 1080p con VIDEO 1.5 cuesta 35 créditos; Estándar $6,99 el 1er mes
+  ($8,80 luego, 660 créditos ≈ 18 clips). Corrección: antes se dijo "66 créditos diarios sin marca de
+  agua" y era incorrecto (política oficial: 1080p y sin marca requieren membresía). Alternativas
+  comparadas: Google Flow/Veo, Dreamina-Seedance, Hailuo, Runway (Standard $15), Luma (sin plan
+  gratis). PENDIENTE: prueba comparativa con el mismo texto en los planes gratis (solo para
+  comparar, no publicar) y pagar un mes de la ganadora.
+- Etiquetado: todo video con personas hechas por IA se marca como contenido de IA y lleva «Escena
+  ilustrativa creada con IA» (TikTok etiqueta contenido IA; Instagram anunció el 31/08/2026 una
+  etiqueta para perfiles con persona generada por IA — fuente secundaria, verificar en Meta).
