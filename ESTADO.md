@@ -4373,3 +4373,10 @@ levantado (ver diagnóstico de la sección `veredicto landing`).
 - Verificado: `tsc --noEmit` ✓ · `build` ✓. Lección: la suposición "monto > 0 = cobro real" del
   webhook (marcada como placeholder en `membership-fsm.ts`) quedó confirmada como frágil por un caso
   real; no se cambió más allá de estas reglas.
+
+### Checkpoint (2026-10-02) — RESUELTO: `fix-completa-no-reactiva.sql` corrido en Supabase
+- El usuario pegó y corrió `supabase/fix-completa-no-reactiva.sql` (SQL Editor → Run → "Success. No
+  rows returned", captura vista). Con esto quedan activas en producción: `PURCHASE_COMPLETE` solo
+  confirma a quien ya se conoce, `active` no vuelve a `trialing`, y la función devuelve
+  `previous_status`/`email` (el pendiente viejo de `fix-devuelve-estado-anterior.sql` queda cubierto).
+  El ⚠️ PENDIENTE del checkpoint anterior (2026-10-02, bienvenida duplicada) queda CERRADO.
