@@ -4424,3 +4424,21 @@ levantado (ver diagnóstico de la sección `veredicto landing`).
 - Datos del carrusel "Las cifras que nadie cuenta" (FICHA-MERCADO §7 corregida): Fiscalía 86% =
   procesados 2019-2020 (no "quién no paga"); DANE 2024: 36,1% vs 28,4% (jefatura femenina vs
   masculina) — la cifra 37,7/29,5 anotada el 01/10 se descartó. Verificar la página del boletín DANE.
+
+### Checkpoint (2026-10-02) — STANDBY del plan de mercadeo: llegó el resultado de la auditoría externa
+- El usuario pausó el mercadeo porque llegó el informe de la auditoría y hay ajustes que hacer en la
+  app. Prioridad ahora: la auditoría. (Mercadeo: no publicar contenido que lleve tráfico a la
+  landing hasta cerrar los ajustes; las piezas educativas pueden salir antes si el usuario quiere.)
+- Para RETOMAR el plan de mercadeo (en este orden):
+  1. Decisión de compra de video: recomendado Google AI Pro (COP 20.000/mes por 3 meses, luego
+     COP 79.000; 1.000 créditos Flow/mes ≈ 50 clips Veo 3.1 Fast a 20 créditos). Plus (200) se queda
+     corto. El usuario aún NO compró. Tras comprar: verificar saldo 1.000 y modelo Veo 3.1 Fast.
+  2. Pegar el párrafo de "Licencias/Condiciones" de Flow (uso comercial) — sigue sin confirmarse.
+  3. Planos 3 y 4 del video del lunes (pilar 2) en Flow (planos 1 y 2 ya hechos); pieza del miércoles
+     (pilar 5, escena suelta), episodio 1 de la serie, video de la app en pantalla (jueves).
+  4. Carrusel del martes (pilar 4): copy listo (7 láminas) — falta diseñarlo en Canva y abrir el
+     boletín DANE 2024 para anotar la página de la cifra 36,1% vs 28,4%.
+  5. Ivonne: su avatar (HeyGen Creator ≈ $29/mes, un solo mes) y los guiones del pilar 3 esperan a
+     que pueda grabarse y revisar; no pagar HeyGen antes.
+  6. Linktree ya listo (5 botones ?src=pilar1..5); Instagram `coparentia`, TikTok `coparentiaapp`,
+     Facebook pendiente de crear.
