@@ -4410,3 +4410,17 @@ levantado (ver diagnóstico de la sección `veredicto landing`).
 - Etiquetado: todo video con personas hechas por IA se marca como contenido de IA y lleva «Escena
   ilustrativa creada con IA» (TikTok etiqueta contenido IA; Instagram anunció el 31/08/2026 una
   etiqueta para perfiles con persona generada por IA — fuente secundaria, verificar en Meta).
+
+### Checkpoint (2026-10-02) — Pruebas de herramientas de video y datos del carrusel (pilar 4) corregidos
+- Pruebas hechas (solo comparación, no publicar): Flow (Veo 3.1 Fast): planos 1 y 2 (caras/gestos muy
+  buenos, sin marca de agua visible, 20 créditos/clip, 50 créditos gratis al día). Hailuo (MiniMax H3,
+  150 créditos de bienvenida): planos 3 y 4 con la imagen de referencia (manos buenas; marca de agua
+  "MINIMAX | Hailuo AI"; 35 créditos/clip a 768p 5s); un clip duplicado por doble clic en Create.
+  Dreamina: sin créditos gratis visibles (plan Basic COL$55.506/mes, 1.575 créditos). Kling: 6 créditos.
+  PENDIENTE: comparar caras en Hailuo (plano 1, en generación), planos 3-4 en Flow mañana, y la
+  LICENCIA de uso comercial del plan gratis de Flow (el usuario debe pegar el párrafo de "Condiciones
+  del Servicio / Licencias" de su cuenta). Decisión del usuario: NO se quitan marcas de agua (se
+  explicó por qué); si hace falta, se paga un mes de la herramienta ganadora.
+- Datos del carrusel "Las cifras que nadie cuenta" (FICHA-MERCADO §7 corregida): Fiscalía 86% =
+  procesados 2019-2020 (no "quién no paga"); DANE 2024: 36,1% vs 28,4% (jefatura femenina vs
+  masculina) — la cifra 37,7/29,5 anotada el 01/10 se descartó. Verificar la página del boletín DANE.

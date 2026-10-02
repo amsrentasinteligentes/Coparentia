@@ -75,9 +75,21 @@
   (86%) fueron hombres** y 3.593 (7.72%) mujeres | fuente:
   https://www.eltiempo.com/justicia/delitos/cifras-de-estadisticas-sobre-denuncias-y-demandas-por-cuotas-de-alimentos-561999
   | fecha de la búsqueda: 2026-10-01.
-- Dato complementario: según el DANE, 37.7% de los hogares con jefatura femenina viven en
-  pobreza monetaria, frente a 29.5% de los de jefatura masculina | fuente citada en la misma
-  búsqueda | fecha de la búsqueda: 2026-10-01.
+- ⚠️ MATIZ DEL DATO ANTERIOR (2026-10-02): el 86% es de personas PROCESADAS (imputadas) por
+  inasistencia alimentaria, del periodo **2019-2020** (nota publicada el 21/01/2021, actualizada el
+  05/10/2021; fuente de origen: Fiscalía General de la Nación) — es un dato de hace años y de
+  procesados, no de "quién deja de pagar" en general. Citarlo siempre con ese periodo y esa
+  palabra. Verificado abriendo el artículo de El Tiempo.
+- Dato complementario CORREGIDO (2026-10-02): según el DANE, en **2024** el 36,1% de las
+  personas en hogares con jefatura FEMENINA estaba en pobreza monetaria, frente a 28,4% en
+  hogares con jefatura MASCULINA (diferencia de 7,7 puntos) | fuente: DANE, Boletín técnico
+  "Pobreza monetaria en Colombia 2024", 24/07/2025,
+  https://www.dane.gov.co/files/operaciones/PM/bol-PM-2024.pdf (comunicado de prensa:
+  https://www.dane.gov.co/files/operaciones/PM/cp-PM-2024.pdf). Las cifras 37,7% / 29,5% que se
+  anotaron el 01/10 venían de una fuente secundaria y de otro año: DESCARTADAS.
+  ⚠️ Los 36,1% / 28,4% se confirmaron en dos resultados de búsqueda; la tabla del PDF no se pudo
+  leer directamente → antes de publicar, abrir el boletín y anotar la página exacta.
+  Ojo: "jefatura femenina" NO equivale a "madre que recibe cuota": no usar el dato para afirmar eso.
 - Implicación para MERCADEO (no para producto — el mecanismo ya sirve a ambos lados por igual,
   el usuario decidió NO tocar app ni landing): el lado que RECIBE la cuota (mayoritariamente
   madres, según este dato) es probablemente una audiencia igual de grande o más urgente que
