@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { CambiarCookies } from '@/components/CambiarCookies';
 
 // POLÍTICA INTEGRAL DE TRATAMIENTO DE DATOS PERSONALES — texto completo revisado y aportado por
 // el equipo jurídico del usuario (2026-09-25), incorporado tal cual, sin recortar ni reinterpretar
@@ -30,7 +31,7 @@ export default function Privacidad() {
           Política Integral de Tratamiento de Datos Personales de Coparentia
         </h1>
         <p className="mt-2 text-sm text-[var(--text-tertiary)]">
-          Vigente desde el 25 de septiembre de 2026 · Última actualización: septiembre de 2026
+          Vigente desde el 25 de septiembre de 2026 · Última actualización: octubre de 2026
         </p>
 
         <div className="mt-8 space-y-10 text-[var(--text-secondary)] leading-relaxed">
@@ -533,12 +534,19 @@ export default function Privacidad() {
               El sitio web y la aplicación podrán utilizar cookies, SDK u otras tecnologías
               necesarias para autenticación, seguridad, preferencias y funcionamiento. Las
               herramientas no esenciales que involucren datos personales se sujetarán a la
-              información y autorización aplicables. Hoy Coparentia usa únicamente una cookie de
-              sesión (de nuestro proveedor de autenticación) estrictamente necesaria para mantenerte
-              con la sesión iniciada — no usamos cookies de publicidad ni de analítica de terceros.
-              Coparentia no autorizará a terceros a utilizar datos sensibles o datos de NNA para
+              información y autorización aplicables. Coparentia usa una cookie de sesión (de nuestro proveedor de autenticación),
+              estrictamente necesaria para mantenerte con la sesión iniciada. Además, en las páginas
+              públicas (la página principal, el recorrido de inicio y la pantalla de planes) usamos el
+              Pixel de Meta, una herramienta de medición de publicidad, únicamente si tú lo aceptas en
+              el aviso que aparece al entrar. Si lo aceptas, Meta recibe qué páginas y pasos visitas,
+              en qué botones haces clic, qué plan eliges y cuándo empiezas tu prueba, junto con datos
+              técnicos del navegador (como la dirección IP y las cookies de Meta). No le enviamos tu
+              correo, tu nombre, tus respuestas ni ningún contenido de tu expediente. Si lo rechazas, no
+              se carga nada de Meta. Puedes cambiar tu elección en cualquier momento con el botón de
+              abajo. Coparentia no autorizará a terceros a utilizar datos sensibles o datos de NNA para
               publicidad comportamental.
             </p>
+            <CambiarCookies />
           </Seccion>
 
           <Seccion numero="27" titulo="Registro Nacional de Bases de Datos">

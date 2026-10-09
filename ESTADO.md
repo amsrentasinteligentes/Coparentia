@@ -1,3 +1,39 @@
+### Checkpoint (2026-10-09) — Mercadeo: carrusel del pilar 4 LISTO para subir (7 láminas PNG)
+- Hecho en la sesión de mercadeo (la auditoría y el Pixel siguen en la otra sesión): las 7 láminas del
+  carrusel "Las cifras que nadie cuenta" quedaron como imágenes 1080×1350, no solo como copy para Canva.
+  Carpeta `docs/marketing/pilar4-cifras/`: `lamina-1.png` … `lamina-7.png`, `carrusel.html` (fuente
+  editable; se renderiza con `?s=N` y el Chrome headless de Playwright) y `texto-del-post.txt`
+  (texto, hashtags, fuentes y lista de verificación previa).
+- Identidad: tokens de la landing clara (fondo #F3F7FC, texto #14233A, acento #2F6FDC), Figtree + Nunito
+  Sans, formas orgánicas, chips SVG (cero emojis), isotipo + wordmark en el pie.
+- Decisión de honestidad: las barras de la lámina 4 van en escala real 0–100 % (no recortadas a 40 %), la
+  lámina 2 aclara "procesados, no quién deja de pagar", la 7 aclara que "jefatura femenina" ≠ "madre que
+  recibe cuota", y la 5 que ordenar la información no garantiza el resultado de un proceso.
+- ⚠️ PENDIENTE (usuario) antes de publicar: abrir el boletín DANE 2024 y confirmar 36,1 % / 28,4 %
+  (no se pudo leer la tabla del PDF), y verificar que el botón del Linktree apunte a `?src=pilar4`.
+  Este carrusel no lleva personas de IA → sin etiqueta de IA.
+
+### Checkpoint (2026-10-09) — Mercadeo: Flow queda como herramienta de video principal (licencia por confirmar)
+- Conclusión de la prueba comparativa (pegada por el usuario): Flow (Veo 3.1 Fast) gana en realismo,
+  sin marca de agua y menor costo; Hailuo gana en obedecer el texto y sus manos en los planos 3-4
+  salieron bien. Ambas utilizables. Kling y Dreamina quedan descartadas por ahora; los 10 créditos
+  restantes de Hailuo no se usan.
+- Con 50 créditos gratis/día en Flow (20 por clip) salen ~75 clips/mes sin pagar — más que Google AI Pro.
+  Por eso la COMPRA de Google AI Pro (recomendada el 10-02) queda condicionada a la licencia.
+- ⚠️ PENDIENTE (usuario): pegar el párrafo de "Condiciones del Servicio / Licencias" de su cuenta de
+  Flow (uso comercial del contenido generado en el plan gratis). Hasta verlo NO se publica ningún video
+  hecho en Flow. La afirmación previa "ningún plan gratis permite publicar" venía de terceros, sin
+  verificar en la página oficial.
+- Mañana, después de las 11:59 a. m.: generar los planos 3 y 4 del video del lunes (pilar 2) en Flow
+  (planos 1-2 ya hechos), para que los 4 salgan del mismo modelo.
+- Resto de pendientes del mercadeo, sin cambios respecto al checkpoint del 2026-10-02 (STANDBY): carrusel
+  del pilar 4 (copy listo, falta Canva + página del boletín DANE 2024), pieza del miércoles, episodio 1
+  de la serie, video de la app en pantalla, plantilla del lead magnet "EXPEDIENTE", página de Facebook;
+  avatar de Ivonne / HeyGen en pausa. Pregunta abierta al usuario: ¿ya cerraron los ajustes de la
+  auditoría para reanudar el mercadeo? Además: el Pixel de Meta (sesión "Sistema Operativo instalación")
+  debe estar instalado antes de empujar tráfico a la landing.
+- Esta sesión no modificó código (los cambios sin commitear en app/ son de la otra sesión, el Pixel).
+
 ### Checkpoint (2026-09-29) — Tercer error 500: la foto excedía el límite de la Server Action — CONFIRMADO RESUELTO
 - El usuario probó agregar un psicólogo (con foto) y le volvió a salir el mismo error (mismo
   digest que el incidente anterior, `778281220`). Diagnóstico: la tabla YA tenía 3 abogados reales
@@ -3142,6 +3178,11 @@ FICHA-ARTE.md que la landing.
   presupuesto; queda anotado para antes de declarar el funnel "vendible" de verdad.
 
 ## Problemas conocidos
+- **veredicto:landing/onboarding/paywall** (2026-10-09, sesión de mercadeo): el gate avisa "caducado" por
+  mtime de app/(app)/ajustes/page.tsx y app/(app)/asistencia/** — ninguna es landing/onboarding/paywall,
+  y esta sesión no tocó código. Los tres veredictos siguen vigentes (landing 37/40·17/20·18/20,
+  onboarding y paywall 36/40·16/20). Si el Pixel de Meta (otra sesión) modifica archivos del funnel, esa
+  sesión re-verifica lo que toque. No se relanza el revisor por esto.
 - **veredicto:landing** (2026-09-28, sección "Asistencia" en la landing — PUBLICADO, commit
   `07e8c5d`): el usuario aprobó ("publica todo") tras varias rondas mostradas en vivo. Se tocó
   `app/page.tsx` (label del menú "Para abogados"→"Asistencia") y `components/landing/AnuncioAbogados.tsx`
@@ -4442,3 +4483,9 @@ levantado (ver diagnóstico de la sección `veredicto landing`).
      que pueda grabarse y revisar; no pagar HeyGen antes.
   6. Linktree ya listo (5 botones ?src=pilar1..5); Instagram `coparentia`, TikTok `coparentiaapp`,
      Facebook pendiente de crear.
+
+### Checkpoint (2026-10-09) — Auditoría hallazgo 1: Pixel de Meta instalado (falta publicar)
+- Pixel ID 1119359600533179 (variable pública `NEXT_PUBLIC_META_PIXEL_ID`, pendiente de poner en Vercel + redeploy). Carga SOLO si la persona acepta el aviso de cookies (`BannerCookies`); sin datos personales.
+- Archivos: `lib/meta-pixel.ts`, `components/MetaPixel.tsx`, `BannerCookies.tsx`, `CambiarCookies.tsx`, `components/app/EventoInicioPrueba.tsx` (StartTrial una sola vez, marca en `user_metadata.meta_inicio_prueba`, sin cambio de BD); editados `app/layout.tsx`, `landing/ui.tsx`, `landing/Hero.tsx`, onboarding, paywall, `(app)/layout.tsx`, `privacidad` (sección 26 + fecha oct-2026), `.env.example`.
+- Eventos: PageView (/, /onboarding, /paywall), Lead (botones a /onboarding), OnboardingPregunta 1-7, VerPlan, InitiateCheckout(plan), StartTrial. Probado en local con ID falso: rechazar = nada se carga; aceptar = todos disparan. StartTrial NO probado de punta a punta (requiere suscripción real).
+- Pendiente: decisión del usuario sobre re-consentimiento por cambio de política; `?src=pilarN` aún no se captura; apagar "Coincidencias avanzadas automáticas" en Meta. Siguiente en auditoría: hallazgos 2 y 4. Decisión #8 (Colombia vs varios países) sigue abierta.

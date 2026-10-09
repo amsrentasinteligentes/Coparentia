@@ -45,6 +45,7 @@ import {
 } from '@/components/funnel/ui';
 import { PanelExpediente, type FilaExpediente } from '@/components/funnel/PanelExpediente';
 import { Blob } from '@/components/landing/ui';
+import { trackMeta } from '@/lib/meta-pixel';
 
 /* Check de los reconocimientos sobre la FORMA ORGÁNICA de la variante clara (FICHA-ARTE: blobs
    en degradé azul — el dispositivo ownable que al funnel le faltaba, revisor claro r1). */
@@ -229,7 +230,13 @@ export default function Onboarding() {
   }, [confirmarReinicio]);
 
   const avanzar = (patch?: Partial<Respuestas>): void => {
-    if (patch) setR((prev) => ({ ...prev, ...patch }));
+    if (patch) {
+      setR((prev) => ({ ...prev, ...patch }));
+      // Medición (auditoría 2026-10-02): una respuesta = un evento, solo con el NÚMERO de la
+      // pregunta (1 a 7) — jamás el texto de lo que contestó.
+      const numero = PASOS_PREGUNTA.indexOf(paso) + 1;
+      if (numero > 0) trackMeta('OnboardingPregunta', { pregunta: numero }, { personalizado: true });
+    }
     // Solo avanza desde el paso que disparó el toque: durante los 200ms de la salida animada el
     // paso anterior sigue montado y un segundo toque volvía a sumar (saltaba una pregunta).
     const origen = paso;
@@ -885,7 +892,14 @@ function ReconocimientoFinal({ respuestas, onContinuar }: { respuestas: Respuest
         </p>
       </div>
       <div className="mt-10 w-full lg:mt-auto lg:pt-8">
-        <CtaFunnel onClick={onContinuar}>Ver mi plan</CtaFunnel>
+        <CtaFunnel
+          onClick={() => {
+            trackMeta('VerPlan', { desde: 'onboarding' }, { personalizado: true });
+            onContinuar();
+          }}
+        >
+          Ver mi plan
+        </CtaFunnel>
       </div>
     </div>
   );

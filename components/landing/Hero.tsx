@@ -17,6 +17,7 @@ import type { ReactNode } from 'react';
 import { motion, useReducedMotion } from 'motion/react';
 import { Camera } from 'lucide-react';
 import { Blob, CheckCustom, CtaButton, useReveal } from './ui';
+import { rastrearClicCta } from '@/lib/meta-pixel';
 import { MarkedCopy, truncarMarcado, warnCopy } from './MarkedCopy';
 
 export interface EnlaceNav {
@@ -126,6 +127,7 @@ export function Hero({
             )}
             <a
               href={ctaHref}
+              onClick={() => rastrearClicCta(ctaHref, ctaLabel)}
               className="cta-solid hidden h-10 items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] px-5 text-[14px] font-semibold text-[var(--on-accent)] shadow-[0_8px_24px_-8px_color-mix(in_oklab,var(--accent)_55%,transparent)] md:inline-flex lg:text-[16px]"
             >
               {ctaLabel}
@@ -176,6 +178,7 @@ export function Hero({
                  CTA, nunca a nada (regla 11 de UX). */
               <a
                 href={ctaHref}
+                onClick={() => rastrearClicCta(ctaHref, ctaLabel)}
                 aria-label={ctaLabel}
                 className="absolute bottom-0 left-0 block w-[38%] max-w-[180px] overflow-hidden rounded-[var(--radius-phone)] border-[5px] border-[color-mix(in_oklab,var(--text-primary)_92%,var(--accent))] bg-[var(--text-primary)] shadow-[var(--shadow-2)] transition-transform duration-150 active:scale-[0.99] lg:bottom-4 lg:left-[4%]"
               >

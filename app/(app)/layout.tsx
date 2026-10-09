@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation';
 import { BottomNav } from '@/components/app/ui';
 import { AvisoSinConexion } from '@/components/app/AvisoSinConexion';
 import { RegistradorEventos } from '@/components/app/RegistradorEventos';
+import { EventoInicioPrueba } from '@/components/app/EventoInicioPrueba';
 import { BannerInstalar } from '@/components/app/InstalarApp';
 import { AlturaEstandalone } from '@/components/app/AlturaEstandalone';
 import { crearClienteSupabaseServidor } from '@/lib/supabase/server';
@@ -42,6 +43,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
   // Hotmart — se saltan el candado a propósito, igual que ya se saltaban el resto de la app.
   const exento = perfil?.role === 'admin' || perfil?.creado_manualmente === true;
 
+  let suscripcionViva = false;
   if (!exento) {
     const { data: suscripcion, error: errorSuscripcion } = await supabase
       .from('suscripciones')
@@ -85,6 +87,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
     if (!tieneAcceso) {
       redirect('/paywall');
     }
+    suscripcionViva = suscripcion?.status === 'trialing' || suscripcion?.status === 'active';
   }
 
   // CONSENTIMIENTO EXPRESO (2026-09-21, equipo jurídico del usuario): la primera vez que entra tras
@@ -119,6 +122,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
       <AlturaEstandalone />
       <AvisoSinConexion />
       <RegistradorEventos />
+      {suscripcionViva && <EventoInicioPrueba />}
       {/* Aviso de instalación (2026-09-24): arriba de CUALQUIER pantalla — nadie debería tener que
           buscar "Ajustes" para encontrarlo (el dueño lo probó y no lo encontró: no está en el menú
           de abajo, hay que entrar a Perfil y bajar hasta una fila con otro nombre). Fuera de

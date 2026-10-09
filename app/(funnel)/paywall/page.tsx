@@ -20,6 +20,7 @@ import { BarraAtras, CtaFunnel, FunnelHeader, Halo, MarcoFunnel, Marcador, usePa
 import { PanelExpediente, type FilaExpediente } from '@/components/funnel/PanelExpediente';
 import { obtenerTRM } from '@/lib/trm';
 import { aproximadoEnPesos } from '@/lib/formato-cop';
+import { trackMeta } from '@/lib/meta-pixel';
 
 /* ── <PrecioContado> — el número héroe cuenta desde 0 hasta su valor (baseline 2 de las 7
    animaciones del SO, que a esta pantalla le faltaba: el precio aparecía estático). Cuenta con
@@ -153,7 +154,12 @@ export default function Paywall() {
     } catch {}
     // Checkout REAL en Hotmart — es un sitio externo, así que es una navegación de navegador
     // (`window.location`), no una ruta interna de Next (`router.push`).
-    window.location.href = CHECKOUT_HOTMART[plan];
+    // InitiateCheckout (Meta): solo el plan, nada personal. Si el evento se envió, 150 ms de margen
+    // para que salga antes de abandonar la página; si no (sin consentimiento) la salida es inmediata.
+    const medido = trackMeta('InitiateCheckout', { plan });
+    const destino = CHECKOUT_HOTMART[plan];
+    if (medido) setTimeout(() => { window.location.href = destino; }, 150);
+    else window.location.href = destino;
     // Red de seguridad: si la navegación no ocurre (red caída, el enlace no abre), sin esto el
     // botón se quedaba en "Abriendo…" y DESHABILITADO para siempre, dejando a la persona encerrada
     // en el último paso de la venta. Y liberarlo en silencio tampoco basta: sin explicación, quien
@@ -276,7 +282,10 @@ export default function Paywall() {
                 situacion={r?.situacion}
                 n={nRespuestas}
                 plan={plan}
-                onContinuar={() => setPaso(1)}
+                onContinuar={() => {
+                  trackMeta('VerPlan', { desde: 'paywall' }, { personalizado: true });
+                  setPaso(1);
+                }}
                 onCorregir={() => router.push('/onboarding')}
               />
             )}

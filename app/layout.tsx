@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Spectral, IBM_Plex_Sans } from "next/font/google";
 import { ACCENT_HEX } from "@/lib/marca";
+import { MetaPixel } from "@/components/MetaPixel";
+import { BannerCookies } from "@/components/BannerCookies";
 import "./globals.css";
 
 const spectral = Spectral({
@@ -68,6 +70,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           Saltar al contenido
         </a>
         {children}
+        {/* Medición de anuncios (auditoría 2026-10-02): inertes sin NEXT_PUBLIC_META_PIXEL_ID y el
+            Pixel solo se carga si la persona acepta el aviso. Ver lib/meta-pixel.ts. */}
+        <MetaPixel />
+        <BannerCookies />
       </body>
     </html>
   );

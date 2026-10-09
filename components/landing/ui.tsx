@@ -19,6 +19,7 @@ import {
 } from 'motion/react';
 import { Camera, Check, X } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
+import { rastrearClicCta } from '@/lib/meta-pixel';
 
 /* ── <CountUp> — cifra héroe que cuenta desde 0 al entrar en viewport (eje
    MOVIMIENTO del craft). Recibe el texto YA formateado ("$7.42", "$9.99") y
@@ -310,7 +311,12 @@ export function CtaButton({
     <motion.a
       whileTap={{ scale: 0.97 }}
       href={href}
-      onClick={() => setYendo(true)}
+      onClick={() => {
+        setYendo(true);
+        // Medición (auditoría 2026-10-02): solo los botones que llevan al embudo (/onboarding...),
+        // con su texto como etiqueta; los de correo u otras anclas no se miden.
+        if (typeof children === 'string') rastrearClicCta(href, children);
+      }}
       aria-busy={yendo || undefined}
       data-cta-pagina=""
       className={`inline-flex items-center justify-center rounded-[var(--radius-button)] px-8 text-[17px] font-semibold transition-[colors,opacity] lg:px-10 lg:text-[18px] duration-150 [touch-action:manipulation] ${yendo ? 'opacity-80' : ''} ${
@@ -434,6 +440,9 @@ export function StickyCtaMobile({
           <motion.a
             whileTap={{ scale: 0.97 }}
             href={ofertaVista ? href : `#${ofertaId}`}
+            onClick={() => {
+              if (ofertaVista) rastrearClicCta(href, labelComercial);
+            }}
             className="flex h-12 flex-1 items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-[16px] font-semibold text-[var(--on-accent)] [touch-action:manipulation] lg:text-[18px]"
           >
             {ofertaVista ? labelComercial : labelPre}
