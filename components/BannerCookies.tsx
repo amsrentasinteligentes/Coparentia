@@ -41,7 +41,7 @@ export function BannerCookies() {
     >
       <div className="mx-auto max-w-[720px]">
         <p className="text-[13px] leading-[1.5] text-[var(--text-secondary)]">
-          Usamos el Pixel de Meta para medir qué pasos del proceso funcionan y mejorar nuestros anuncios. No enviamos tu correo,
+          Usamos cookies del Pixel de Meta para medir qué pasos del proceso funcionan y mejorar nuestros anuncios. No enviamos tu correo,
           tu nombre ni lo que respondes. Tú decides.{' '}
           <Link href="/privacidad" className="font-semibold text-[var(--accent-ink)] underline">
             Más información
