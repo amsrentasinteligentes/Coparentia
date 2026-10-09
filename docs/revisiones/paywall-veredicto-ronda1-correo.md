@@ -1,0 +1,25 @@
+# VEREDICTO revisor-visual — paywall (paso 2 de 2: precio, con campo de correo + autorización)
+Fecha: 2026-10-09 12:00
+Screenshot: docs/revisiones/paywall-correo-375.jpg (estado normal) y docs/revisiones/paywall-correo-otro-correo-375.jpg (enlace desplegado)
+Usabilidad: 29/40
+Craft: 14/20
+Copy (si vende): 16/20
+Fidelidad (si hubo referencia): N-A
+Veredicto: NO LISTA
+Top defectos:
+1. [Campo "Tu correo" + enlace "Ya pagué con otro correo"] El campo sigue editable aunque haya sesión: quien entró como A puede escribir B, pagar con B y recrear exactamente el desajuste que el cambio quería evitar. No hay aviso cuando el correo del campo difiere del de la sesión. En la segunda captura se ve el caso: campo "prueba.local@ejemplo.com", panel "Entraste con otro.correo@ejemplo.com", sin ninguna advertencia. Fix: con sesión, mostrar el correo como línea fija "Pagarás con: x · Cambiar" y avisar en línea ("Entraste con otro correo; tras pagar entra con el de la compra") si difieren.
+2. [Casilla de autorización] Es el control nativo del navegador, gris y sin tematizar, junto a un campo en píldora azul. Rompe el kit (checkmark custom con círculo de acento) y se ve ajeno. Además, si solo falta marcar la casilla, el error sale abajo en texto pequeño sin resaltar la casilla ni llevarle el foco. Fix: casilla custom con acento y borde rojo en error; focus() a la casilla cuando es lo único que falta.
+3. [Bloque entre el formulario y el botón fijo] Quedan apilados el hairline, "Ver condiciones de la devolución", la garantía + pago seguro, el botón y su microcopy, más 4 enlaces de pie. Antes de pagar hay demasiadas capas legales y de confianza. La fricción del correo + casilla es aceptable (dos controles, error específico, botón nunca deshabilitado), pero se suma a este ruido. Fix: fusionar "condiciones de la devolución" con la línea de garantía y bajar el pie de enlaces fuera del primer scroll.
+4. [Pie, "Términos · / Privacidad"] A 375px el separador "·" queda huérfano al final de la primera línea ("Términos ·" y abajo "Privacidad"). Es el mismo defecto que ya se corrigió en las señales de confianza. Fix: quitar los puntos y separar con gap, o usar un grid de 2 columnas.
+5. [Enlace "Ya pagué con otro correo"] Se muestra a toda persona con sesión y sin suscripción, incluida quien nunca pagó, que es el caso más común. Le inserta un enlace de acción de "ya pagué" en plena decisión de compra. "Cerrar sesión y entrar con el correo de la compra" es destructiva y no pide confirmación. El panel se abre sin transición, a diferencia del resto de la pantalla. Fix: moverlo a /entrar o mostrarlo solo tras volver de Hotmart; confirmar el cierre de sesión; animar la apertura con motion.
+
+Notas del revisor:
+- Gate de carga cognitiva: 0-1 fallas, no es sobrecarga crítica. Una sola acción primaria. 2 campos nuevos es dentro de lo razonable.
+- Copy del formulario: claro y de confianza. La autorización dice qué se guarda y para qué, y enlaza la política. Falta una línea que explique POR QUÉ se pide el correo antes de pagar ("para que tu compra quede a tu nombre"); hoy solo dice "usa el mismo correo".
+- Copy /20: idea 3 · especificidad 3 · emoción 3 · oferta 3 · acción 4. Las piezas se trazan a la ficha: objeción 1 (funciona sin la otra persona), objeción 4 y VoC ($100 por correo de abogado), dolor de la captura de WhatsApp. FICHA-AVATAR cita Stripe/Mercado Pago como pasarela y la UI dice Hotmart (ficha desactualizada, no es defecto de la pantalla). El plazo y nombre de la garantía están junto al CTA, pero las condiciones reales quedan ocultas en un desplegable.
+- Botón fijo: por código (`sticky bottom-0`, fondo propio, safe-area) no tapa el formulario, porque el formulario va antes en el flujo. En las capturas se ve el botón al final del scroll, sin tapar nada. NO se verificó visualmente la posición del botón fijo con el formulario a media pantalla, ni el estado de error, ni el teclado abierto: no hay captura de esos estados.
+- CTA héroe vivo: contraste OK, whileTap en el componente, nunca deshabilitado por defecto (valida al clic con mensaje), alto y ancho completo. Cumple los 4.
+- Heurísticas por código: h3 3 (X, atrás, "Ahora no"; el cierre de sesión sin confirmar); h5 2 (valida al clic con mensajes específicos, pero no detecta el desajuste sesión/campo ni valida al salir del campo); h7 3 (autocompletado, correo recordado, plan recordado, inputMode).
+- Movimiento (código): baseline presentes: stagger de las tarjetas, conteo del precio, whileTap, transición de paso, reduced-motion. Faltan el stagger de beneficios y el formulario, el error y el panel nuevos entran sin animación. Sin celebración (no aplica).
+- Fichas: variante clara con tokens de la landing (azul #2F6FDC, Figtree/Nunito Sans) coherente con FICHA-ARTE; no se detecta desvío de paleta. Identidad (blobs, halo, marcador) fuera de las capturas, solo verificada en código.
+- Detalle: usabilidad h1:3 h2:3 h3:3 h4:3 h5:2 h6:3 h7:3 h8:3 h9:3 h10:3. Craft: jerarquía 3, profundidad 3, identidad 3, movimiento 3, encaje 2.

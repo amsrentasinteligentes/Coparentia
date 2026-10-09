@@ -20,10 +20,17 @@
   restantes de Hailuo no se usan.
 - Con 50 créditos gratis/día en Flow (20 por clip) salen ~75 clips/mes sin pagar — más que Google AI Pro.
   Por eso la COMPRA de Google AI Pro (recomendada el 10-02) queda condicionada a la licencia.
-- ⚠️ PENDIENTE (usuario): pegar el párrafo de "Condiciones del Servicio / Licencias" de su cuenta de
-  Flow (uso comercial del contenido generado en el plan gratis). Hasta verlo NO se publica ningún video
-  hecho en Flow. La afirmación previa "ningún plan gratis permite publicar" venía de terceros, sin
-  verificar en la página oficial.
+- LICENCIA REVISADA (2026-10-09, el usuario pegó las Condiciones del Servicio de Google, vigentes 30/07/2026):
+  dicen que en los servicios que permiten generar contenido original "Google no reclamará la propiedad de
+  ese contenido"; NO dicen nada explícito sobre uso comercial ni sobre diferencias gratis/pago. Las
+  Condiciones adicionales de IA generativa ya no aplican desde 22/05/2024 y la ayuda oficial de Flow remite
+  a las Condiciones generales. No se encontró restricción ni permiso explícito → riesgo bajo, no es asesoría
+  legal; se publica con etiqueta de IA y se conserva copia/captura de las condiciones con fecha. Regla que SÍ
+  aplica: está prohibido "engañar a otros para que piensen que un humano creó el contenido de la IA
+  generativa" → todo video con personas de IA lleva «Escena ilustrativa creada con IA» y nunca se presenta
+  como testimonio real. Todo clip de Flow lleva marca SynthID invisible (no removible). La afirmación previa
+  "ningún plan gratis permite publicar" venía de terceros y queda corregida. Sugerencia: que Ivonne (abogada)
+  le dé un visto bueno si el volumen o los anuncios crecen.
 - Mañana, después de las 11:59 a. m.: generar los planos 3 y 4 del video del lunes (pilar 2) en Flow
   (planos 1-2 ya hechos), para que los 4 salgan del mismo modelo.
 - Resto de pendientes del mercadeo, sin cambios respecto al checkpoint del 2026-10-02 (STANDBY): carrusel
@@ -3178,6 +3185,8 @@ FICHA-ARTE.md que la landing.
   presupuesto; queda anotado para antes de declarar el funnel "vendible" de verdad.
 
 ## Problemas conocidos
+
+- **veredicto:paywall** (2026-10-09, hallazgo 2 de la auditoría — campo de correo + casilla de autorización + "Ya pagué con otro correo"): 11 rondas del revisor-visual, NO LISTA: r1 29/40·14/20·16 → r11 **36/40 · 15/20 · copy 17/20** (r10 con FICHA-AVATAR leída bajó el copy por el dato "≈US$100 el correo de un abogado", de una sola fuente extranjera: PENDIENTE de claims para la segunda auditoría) (usabilidad ya en el umbral; falta +1 de craft: el revisor pide tocar el diseño ANTERIOR — mancha azul del titular y pastillas de precio — decisión de identidad pendiente del dueño) (meseta: cada ronda aparece un defecto nuevo de pulido; la r6 en realidad sumaba 34) (faltan +1 usabilidad y +1 craft; fixes baratos: "Cerrar mi sesión" como botón secundario, una sola fila de confianza con dos chips, garantía subrayada) (antes del cambio estaba LISTA 36/40·16/20·18). Faltan +2 usabilidad y +1 craft. Defectos vivos (pulido, no funcionales): aviso en línea y panel abierto repiten "Entraste con X"; el panel abierto pesa más que el botón; plazo y vía de la garantía solo dentro del desplegable; jerarquía plana (13-14px gris) en el tramo previo al botón; pie de 2 filas con hueco. Veredictos intermedios en docs/revisiones/paywall-veredicto-ronda1…4-correo.md. El flujo SÍ está verificado en local (validaciones, guardado, Hotmart con email prellenado, /entrar prefill, sesión simulada). Pendientes de diseño que el revisor sigue pidiendo para craft 16 (todos del diseño anterior): mover "Te sale a US$0.24 al día" dentro de la tarjeta Anual, logo en azul (asset), ritmo vertical 24/24 antes de la garantía. Decisión del dueño pendiente: publicar así o seguir.
 - **veredicto:landing/onboarding/paywall** (2026-10-09, sesión de mercadeo): el gate avisa "caducado" por
   mtime de app/(app)/ajustes/page.tsx y app/(app)/asistencia/** — ninguna es landing/onboarding/paywall,
   y esta sesión no tocó código. Los tres veredictos siguen vigentes (landing 37/40·17/20·18/20,
@@ -4489,3 +4498,19 @@ levantado (ver diagnóstico de la sección `veredicto landing`).
 - Archivos: `lib/meta-pixel.ts`, `components/MetaPixel.tsx`, `BannerCookies.tsx`, `CambiarCookies.tsx`, `components/app/EventoInicioPrueba.tsx` (StartTrial una sola vez, marca en `user_metadata.meta_inicio_prueba`, sin cambio de BD); editados `app/layout.tsx`, `landing/ui.tsx`, `landing/Hero.tsx`, onboarding, paywall, `(app)/layout.tsx`, `privacidad` (sección 26 + fecha oct-2026), `.env.example`.
 - Eventos: PageView (/, /onboarding, /paywall), Lead (botones a /onboarding), OnboardingPregunta 1-7, VerPlan, InitiateCheckout(plan), StartTrial. Probado en local con ID falso: rechazar = nada se carga; aceptar = todos disparan. StartTrial NO probado de punta a punta (requiere suscripción real).
 - Pendiente: decisión del usuario sobre re-consentimiento por cambio de política; `?src=pilarN` aún no se captura; apagar "Coincidencias avanzadas automáticas" en Meta. Siguiente en auditoría: hallazgos 2 y 4. Decisión #8 (Colombia vs varios países) sigue abierta.
+
+### Checkpoint (2026-10-09) — Auditoría hallazgo 2: correo antes del pago (hecho en local, SIN publicar)
+- Paywall paso 2: campo de correo + casilla de autorización (nunca premarcada) antes del botón; sin correo válido/autorización no abre Hotmart y dice qué falta. Al pagar: guarda el correo en `localStorage` (`coparentia_correo_compra`), lo manda a `POST /api/contacto-interesado` (service_role, máx. 1,5 s de espera, si falla NO bloquea el pago) y abre Hotmart con `&email=` (parámetro documentado; probado: "Tu email" y "Confirma tu email" llegan rellenos).
+- Tabla `contactos_interesados` en `supabase/contactos-interesados.sql` (RLS sin políticas + revoke a anon/authenticated). **PENDIENTE: el usuario debe correr el SQL en Supabase** antes de que el guardado funcione (sin él el endpoint responde 500 y el pago sigue igual).
+- `/entrar` prefill del correo guardado. `/paywall` con sesión y sin suscripción viva: "Ya pagué con otro correo" (cerrar sesión y entrar / mailto a soporte con ambos correos). Privacidad: nuevo 6.8. NO se tocó `(app)/layout.tsx` ni el webhook.
+- No probado de punta a punta: sesión real sin suscripción (se simuló con sesión falsa en el navegador), y el guardado real en la tabla (falta correr el SQL). Lint: 2 errores `set-state-in-effect` nuevos del mismo tipo que ya tenía el archivo.
+
+### Checkpoint (2026-10-09) — Hallazgo 2: ronda 12 aplicada, SIN verificar ni revisar; sin publicar
+- Aplicado en `app/(funnel)/paywall/page.tsx` (tsc OK): "Te sale a US$X al día" movido DENTRO de las tarjetas de plan y fuera de la lista de beneficios; frase del abogado suavizada (sin la cifra de US$100). El isotipo gris metálico NO se toca (decisión del dueño: identidad de seriedad y confianza).
+- FALTA: capturar a 375px la ronda 12 (arriba/medio/final), medir el ritmo 24/24 antes de la garantía (última medición: 33px entre enlace y línea; mover `pt-6` del contenedor previo al botón), re-lanzar revisor-visual (r11 = 36/40·15/20·copy 17), y publicar (commit+push) con el visto bueno del dueño. SQL `contactos_interesados` YA corrido en Supabase (Éxito).
+- Sin commit: archivos modificados `(funnel)/paywall`, `(funnel)/entrar`, `privacidad`, `ESTADO.md`, más los nuevos `app/api/contacto-interesado/`, `supabase/contactos-interesados.sql` y capturas en `docs/revisiones/`.
+
+### Checkpoint (2026-10-09) — Hallazgo 2: ronda 12 verificada, revisor en curso; sin publicar
+- Ronda 12 aplicada y verificada a 375px en `app/(funnel)/paywall/page.tsx`: "Te sale a US$X al día" dentro de cada tarjeta de plan; frase del abogado sin la cifra de US$100; ritmo vertical medido 25px/22px alrededor de la línea divisoria (contenedor `mt-auto pt-4` de `Precio`, sticky `pt-4`, línea al 55%). Isotipo gris metálico INTACTO (decisión del dueño). tsc OK. Capturas en `docs/revisiones/paywall-correo-ronda12-*.jpg`.
+- Veredictos previos: r11 = 36/40·15/20·copy 17 (backups `paywall-veredicto-ronda1…11-correo.md`). Veredicto r12 (leído): NO LISTA 36/40·15/20·copy 17. Cambio mínimo que pide para 16: mancha del titular sin desbordar el margen (`-inset-x-0`) + unificar radios (pastilla interior ~14px, casilla 8px); opcional: bajar escala tipográfica. Isotipo gris metálico respetado (decisión del dueño). Decisión pendiente: publicar así o ronda 13 con esos dos cambios.
+- Pendiente: leer el veredicto r12; con visto bueno del dueño, commit+push del hallazgo 2 (paywall, entrar, privacidad, `app/api/contacto-interesado/`, `supabase/contactos-interesados.sql` [ya corrido en Supabase], capturas). Luego hallazgo 4 de la auditoría, #3/#9, compra real para cerrar el 10; decisión #8 (Colombia vs varios países) abierta.

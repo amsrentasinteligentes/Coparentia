@@ -59,6 +59,14 @@ function EntrarInterno() {
     if (params.get('error') === 'enlace_invalido') setEstado('enlace_invalido');
   }, [params]);
 
+  // Si la persona pasó por el paywall, su correo ya está escrito: debe ser el mismo con el que pagó.
+  useEffect(() => {
+    try {
+      const guardado = localStorage.getItem('coparentia_correo_compra');
+      if (guardado) setEmail((actual) => actual || guardado);
+    } catch {}
+  }, []);
+
   // El contador vive en un efecto con su propia limpieza. Antes era un `setInterval` suelto dentro
   // del envío: si la persona salía de la pantalla antes de que llegara a cero, el temporizador
   // seguía corriendo y escribiendo estado sobre un componente que ya no existía.

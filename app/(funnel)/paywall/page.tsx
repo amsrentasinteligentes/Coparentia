@@ -14,13 +14,14 @@
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
-import { X, Check, ShieldCheck, Lock, FileCheck2, HeartHandshake, ChevronDown, Loader2 } from 'lucide-react';
+import { X, Check, ShieldCheck, Lock, FileCheck2, HeartHandshake, Loader2 } from 'lucide-react';
 import { Blob } from '@/components/landing/ui';
 import { BarraAtras, CtaFunnel, FunnelHeader, Halo, MarcoFunnel, Marcador, usePasoVariants } from '@/components/funnel/ui';
 import { PanelExpediente, type FilaExpediente } from '@/components/funnel/PanelExpediente';
 import { obtenerTRM } from '@/lib/trm';
 import { aproximadoEnPesos } from '@/lib/formato-cop';
 import { trackMeta } from '@/lib/meta-pixel';
+import { crearClienteSupabase } from '@/lib/supabase/client';
 
 /* ── <PrecioContado> — el número héroe cuenta desde 0 hasta su valor (baseline 2 de las 7
    animaciones del SO, que a esta pantalla le faltaba: el precio aparecía estático). Cuenta con
@@ -102,6 +103,12 @@ const CHECKOUT_HOTMART = {
   mensual: 'https://pay.hotmart.com/E107570580Y?off=56bomp71',
 } as const;
 
+// El correo con el que la persona pagará (y luego entrará a la app) se pide AQUÍ, antes de abrir
+// Hotmart: Hotmart lo recibe en el enlace (`email=`, parámetro documentado de su checkout) y la
+// app lo recuerda para mostrarlo ya escrito en /entrar. Auditoría externa 2026-10-09, hallazgo 2.
+const CLAVE_CORREO = 'coparentia_correo_compra';
+const FORMATO_CORREO = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
 export default function Paywall() {
   const router = useRouter();
   const [paso, setPaso] = useState(0);
@@ -109,6 +116,11 @@ export default function Paywall() {
   const [plan, setPlan] = useState<'anual' | 'mensual'>('anual');
   const [yendo, setYendo] = useState(false);
   const [falloAlAbrir, setFalloAlAbrir] = useState(false);
+  const [correo, setCorreo] = useState('');
+  const [autoriza, setAutoriza] = useState(false);
+  const [errorCorreo, setErrorCorreo] = useState<string | null>(null);
+  const [sesionEmail, setSesionEmail] = useState<string | null>(null);
+  const correoTocado = useRef(false);
   const [trm, setTrm] = useState<number | null>(null);
   const temporizador = useRef<ReturnType<typeof setTimeout> | null>(null);
   // Sin esto el temporizador seguia vivo tras salir de la pantalla.
@@ -127,8 +139,27 @@ export default function Paywall() {
     obtenerTRM().then(setTrm).catch(() => setTrm(null));
   }, []);
 
+  // Quien ya tiene sesión pero no tiene una suscripción viva: se le ofrece "Ya pagué con otro
+  // correo" (pagó con un correo y entró con otro). Su correo de sesión queda como sugerencia.
+  useEffect(() => {
+    const supabase = crearClienteSupabase();
+    supabase.auth
+      .getUser()
+      .then(async ({ data: { user } }) => {
+        if (!user?.email) return;
+        const correoSesion = user.email;
+        const { data } = await supabase.from('suscripciones').select('status').eq('email', correoSesion).maybeSingle();
+        if (data?.status === 'trialing' || data?.status === 'active') return;
+        setSesionEmail(correoSesion);
+        setCorreo((c) => (correoTocado.current ? c : correoSesion));
+      })
+      .catch(() => {});
+  }, []);
+
   useEffect(() => {
     try {
+      const guardado = localStorage.getItem(CLAVE_CORREO);
+      if (guardado) setCorreo(guardado);
       const raw = sessionStorage.getItem('coparentia_onboarding');
       if (raw) setR(JSON.parse(raw));
       // El plan que la persona ya había elegido se guardaba al salir al checkout, pero nunca se
@@ -143,21 +174,49 @@ export default function Paywall() {
   // `yendo` bloquea el doble tap en la acción crítica del funnel y deja el botón en estado de
   // espera: sin esto, un tap nervioso en una red lenta dispara dos navegaciones (regla del SO
   // "prevenir doble-click en acciones críticas" — el revisor lo marcó como faltante).
-  const irAlPago = (): void => {
+  const irAlPago = async (): Promise<void> => {
     if (yendo) return;
+    const limpio = correo.trim().toLowerCase();
+    // Sin correo válido y sin la autorización, el botón NO abre Hotmart: dice qué falta y lleva el
+    // foco al campo para que se corrija sin buscar.
+    if (!FORMATO_CORREO.test(limpio) || !autoriza) {
+      setErrorCorreo(
+        !limpio
+          ? 'Escribe tu correo para continuar.'
+          : !FORMATO_CORREO.test(limpio)
+            ? 'Revisa tu correo: parece incompleto (falta algo como @ o .com).'
+            : 'Marca la autorización de tus datos para continuar.'
+      );
+      const correoMal = !limpio || !FORMATO_CORREO.test(limpio);
+      const destino = document.getElementById(correoMal ? 'paywall-correo' : 'paywall-autoriza');
+      destino?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      destino?.focus({ preventScroll: true });
+      return;
+    }
+    setErrorCorreo(null);
     setFalloAlAbrir(false);
     setYendo(true);
     // Se guarda el plan elegido ANTES de salir de la app: útil el día que exista una pantalla de
     // "vuelve aquí tras pagar" que necesite saber cuál era, ya que Hotmart no lo devuelve solo.
     try {
       sessionStorage.setItem('coparentia_plan_elegido', plan);
+      localStorage.setItem(CLAVE_CORREO, limpio);
     } catch {}
+    // Se guarda como contacto interesado. Máx. 1,5 s de espera y, si falla, se sigue igual: perder
+    // un contacto es mucho mejor que bloquear un pago.
+    const guardado = fetch('/api/contacto-interesado', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: limpio, plan, autoriza: true }),
+      keepalive: true,
+    }).catch(() => {});
+    await Promise.race([guardado, new Promise((r) => setTimeout(r, 1500))]);
     // Checkout REAL en Hotmart — es un sitio externo, así que es una navegación de navegador
     // (`window.location`), no una ruta interna de Next (`router.push`).
     // InitiateCheckout (Meta): solo el plan, nada personal. Si el evento se envió, 150 ms de margen
     // para que salga antes de abandonar la página; si no (sin consentimiento) la salida es inmediata.
     const medido = trackMeta('InitiateCheckout', { plan });
-    const destino = CHECKOUT_HOTMART[plan];
+    const destino = `${CHECKOUT_HOTMART[plan]}&email=${encodeURIComponent(limpio)}`;
     if (medido) setTimeout(() => { window.location.href = destino; }, 150);
     else window.location.href = destino;
     // Red de seguridad: si la navegación no ocurre (red caída, el enlace no abre), sin esto el
@@ -290,7 +349,32 @@ export default function Paywall() {
               />
             )}
             {paso === 1 && (
-              <Precio plan={plan} onCambiarPlan={setPlan} onCta={irAlPago} onAhoraNo={cerrar} yendo={yendo} falloAlAbrir={falloAlAbrir} trm={trm} />
+              <Precio
+                plan={plan}
+                onCambiarPlan={setPlan}
+                onCta={irAlPago}
+                onAhoraNo={cerrar}
+                yendo={yendo}
+                falloAlAbrir={falloAlAbrir}
+                trm={trm}
+                correo={correo}
+                onCorreo={(v) => {
+                  correoTocado.current = true;
+                  setCorreo(v);
+                  setErrorCorreo(null);
+                }}
+                autoriza={autoriza}
+                onAutoriza={(v) => {
+                  setAutoriza(v);
+                  setErrorCorreo(null);
+                }}
+                errorCorreo={errorCorreo}
+                sesionEmail={sesionEmail}
+                onCerrarSesion={async () => {
+                  await crearClienteSupabase().auth.signOut();
+                  router.push('/entrar');
+                }}
+              />
             )}
           </motion.div>
         </AnimatePresence>
@@ -457,6 +541,13 @@ function Precio({
   yendo,
   falloAlAbrir,
   trm,
+  correo,
+  onCorreo,
+  autoriza,
+  onAutoriza,
+  errorCorreo,
+  sesionEmail,
+  onCerrarSesion,
 }: {
   plan: 'anual' | 'mensual';
   onCambiarPlan: (p: 'anual' | 'mensual') => void;
@@ -465,23 +556,40 @@ function Precio({
   yendo: boolean;
   falloAlAbrir: boolean;
   trm: number | null;
+  correo: string;
+  onCorreo: (v: string) => void;
+  autoriza: boolean;
+  onAutoriza: (v: boolean) => void;
+  errorCorreo: string | null;
+  sesionEmail: string | null;
+  onCerrarSesion: () => void;
 }) {
   const reduce = useReducedMotion();
-  // Derivado del precio REAL del plan activo, no un número de marketing: $89/365 = $0.24 ·
-  // $9.99/30 = $0.33. Cualquiera puede comprobarlo con la calculadora, que es justo lo que
-  // este avatar hace antes de confiar en una cuenta.
-  const costoDiario = plan === 'anual' ? PLAN_ANUAL.costoDia : PLAN_MENSUAL.costoDia;
+  const [abiertoOtroCorreo, setAbiertoOtroCorreo] = useState(false);
+  const [confirmaSalir, setConfirmaSalir] = useState(false);
+  const [saliendo, setSaliendo] = useState(false);
+  const [editandoCorreo, setEditandoCorreo] = useState(false);
+  const correoFijo = Boolean(sesionEmail) && !editandoCorreo && correo.trim().toLowerCase() === (sesionEmail ?? '').toLowerCase();
+  const correoValido = FORMATO_CORREO.test(correo.trim());
+  const mensajeSoporte = encodeURIComponent(
+    `Hola, ya pagué mi suscripción de Coparentia pero la app no la encuentra.\n\nEntré con el correo: ${sesionEmail ?? ''}\nPagué con el correo: ${correoValido ? correo.trim() : '(escríbelo aquí)'}\n\nGracias.`
+  );
   return (
     <div className="relative flex flex-1 flex-col">
       {/* FORMA ORGÁNICA de la variante clara (FICHA-ARTE: blobs en degradé azul) detrás del
           titular — el dispositivo ownable que al paywall le faltaba (revisor claro r1). */}
-      <Blob className="right-2 -top-1 -z-10 h-28 w-44 lg:top-0 lg:h-20" opacidad={0.14} />
       <h1 className="relative text-balance text-[28px] font-bold leading-[1.12] text-[var(--text-primary)] [font-family:var(--font-display)]">
         <Halo />
         {/* El <Marcador> envolvía "captura de WhatsApp": a 375px esa frase cruza tres renglones y
             el subrayado se partía en tres trazos sueltos que parecían marcar palabras al azar.
             Marcando UNA sola palabra —la memorable— el trazo siempre cae entero en un renglón. */}
-        Una captura de WhatsApp se pierde — tu expediente <span className="text-[var(--accent-ink,var(--accent))]">queda fechado</span>
+        Una captura de WhatsApp se pierde — tu expediente{' '}
+        <span className="relative text-[var(--accent-ink,var(--accent))]">
+          {/* La mancha ahora nace DETRÁS de las palabras que venden (ronda 10 del revisor): antes caía
+              a la derecha del titular, detrás de "se pierde — tu", y se leía como un manchón suelto. */}
+          <Blob className="-inset-x-1 -inset-y-1 -z-10" opacidad={0.14} />
+          queda fechado
+        </span>
       </h1>
 
       {/* `radiogroup` + `aria-checked`: las dos tarjetas eran <button> sueltos y el check estaba
@@ -539,9 +647,12 @@ function Precio({
                   tenía fondo base y tarjeta elevada; FICHA-ARTE declara tres niveles. La referencia
                   en pesos —dato de apoyo, no el precio— va sobre una superficie HUNDIDA: se
                   distingue del precio principal sin agregar otro color ni otro tamaño de letra. */}
-              <p className="mt-1.5 min-h-[2.6em] rounded-[var(--radius-button)] bg-[var(--surface-2)] px-3 py-1 text-[13px] text-[var(--text-secondary)] shadow-[inset_0_1px_2px_rgb(20_40_80_/_0.08)] lg:min-h-0">
+              <p className={`mt-1.5 min-h-[2.6em] rounded-[12px] ${plan === 'anual' ? 'bg-[var(--surface)]' : 'bg-[var(--surface-2)]'} px-3 py-1 text-[13px] text-[var(--text-secondary)] shadow-[inset_0_1px_2px_rgb(20_40_80_/_0.08)] lg:min-h-0`}>
                 {PLAN_ANUAL.totalAnual}
                 {trm && <span className="block text-[var(--text-tertiary)] lg:ml-2 lg:inline">≈ {aproximadoEnPesos(PLAN_ANUAL.cobroAnual, trm)} COP</span>}
+                <span className="block text-[var(--text-primary)] lg:ml-2 lg:inline">
+                  Te sale a <span className="font-semibold">{PLAN_ANUAL.costoDia}</span> al día
+                </span>
               </p>
             </div>
           </div>
@@ -573,9 +684,12 @@ function Precio({
             </div>
             {/* Solo la tarjeta Anual mostraba su total, así que el "ahorras US$30.88" no se podía
                 comprobar contra nada: faltaba el término de comparación. */}
-            <p className="mt-1.5 min-h-[2.6em] rounded-[var(--radius-button)] bg-[var(--surface-2)] px-3 py-1 text-[13px] text-[var(--text-secondary)] shadow-[inset_0_1px_2px_rgb(20_40_80_/_0.08)] lg:min-h-0">
+            <p className={`mt-1.5 min-h-[2.6em] rounded-[12px] ${plan === 'mensual' ? 'bg-[var(--surface)]' : 'bg-[var(--surface-2)]'} px-3 py-1 text-[13px] text-[var(--text-secondary)] shadow-[inset_0_1px_2px_rgb(20_40_80_/_0.08)] lg:min-h-0`}>
               {PLAN_MENSUAL.totalAnual}
               {trm && <span className="block text-[var(--text-tertiary)] lg:ml-2 lg:inline">≈ {aproximadoEnPesos(PLAN_MENSUAL.cobroAnual, trm)} COP</span>}
+              <span className="block text-[var(--text-primary)] lg:ml-2 lg:inline">
+                Te sale a <span className="font-semibold">{PLAN_MENSUAL.costoDia}</span> al día
+              </span>
             </p>
           </div>
         </motion.button>
@@ -588,9 +702,8 @@ function Precio({
           otra parte, y qué pasa si me arrepiento. Los tres son hechos comprobables del producto. */}
       <div className="mt-3 flex flex-col gap-2">
         {[
-          { icon: ShieldCheck, pre: 'Te sale a ', fuerte: costoDiario, post: ' al día.' },
           { icon: HeartHandshake, pre: 'Funciona ', fuerte: 'aunque la otra persona no la use', post: '.' },
-          { icon: FileCheck2, pre: 'Menos que ', fuerte: 'un correo de tu abogado', post: ' (≈US$100).' },
+          { icon: FileCheck2, pre: 'Menos que lo que ', fuerte: 'algunos abogados cobran', post: ' por un correo.' },
         ].map(({ icon: Icon, pre, fuerte, post }) => (
           <div key={fuerte} className="flex items-center gap-3">
             <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[color-mix(in_oklab,var(--accent)_12%,transparent)]">
@@ -611,15 +724,188 @@ function Precio({
           (a) señales de confianza JUNTAS sobre el CTA — garantía y pago seguro son lo mismo;
           (b) el CTA con su aviso de renovación (obligatorio, no se toca);
           (c) la salida y la letra chica, separadas 16px del resto para que no compitan. */}
+      {/* CORREO (hallazgo 2 de la auditoría): el mismo con el que pagará y entrará. Va ANTES del pie
+          y del botón fijo para que no tape el campo. La autorización de datos es una casilla nunca
+          premarcada (Ley 1581 de 2012), igual que en /entrar. */}
+      <div className="mt-4">
+        <label htmlFor="paywall-correo" className="text-[14px] font-semibold text-[var(--text-primary)]">
+          Tu correo
+        </label>
+        <p id="paywall-correo-ayuda" className="mt-0.5 text-[13px] text-[var(--text-secondary)]">
+          Usa este mismo correo para pagar y para entrar a tu expediente: así tu compra queda a tu nombre.
+        </p>
+        {correoFijo ? (
+          <div className="mt-2 flex h-12 items-center justify-between gap-3 rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--surface)] px-4">
+            <span className="min-w-0 truncate text-[16px] text-[var(--text-primary)]">{sesionEmail}</span>
+            <button
+              type="button"
+              onClick={() => {
+                setEditandoCorreo(true);
+                setTimeout(() => document.getElementById('paywall-correo')?.focus(), 50);
+              }}
+              className="-mr-2 shrink-0 px-2 py-2 text-[14px] font-semibold text-[var(--accent-ink,var(--accent))] underline underline-offset-2 [touch-action:manipulation]"
+            >
+              Cambiar
+            </button>
+          </div>
+        ) : (
+        <input
+          id="paywall-correo"
+          type="email"
+          inputMode="email"
+          autoComplete="email"
+          value={correo}
+          onChange={(e) => onCorreo(e.target.value)}
+          placeholder="tu@correo.com"
+          aria-invalid={errorCorreo ? true : undefined}
+          aria-describedby={errorCorreo ? 'paywall-correo-ayuda paywall-correo-error' : 'paywall-correo-ayuda'}
+          className="mt-2 h-12 w-full rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--surface)] px-4 text-[16px] text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)]"
+        />
+        )}
+        <label className="mt-3 flex items-start gap-2.5 [touch-action:manipulation]">
+          <input
+            id="paywall-autoriza"
+            type="checkbox"
+            checked={autoriza}
+            onChange={(e) => onAutoriza(e.target.checked)}
+            aria-invalid={errorCorreo && !autoriza && FORMATO_CORREO.test(correo.trim()) ? true : undefined}
+            className="peer sr-only"
+          />
+          <span
+            aria-hidden="true"
+            className={`mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-[6px] border-2 transition-colors peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[var(--text-primary)] ${
+              autoriza
+                ? 'border-[var(--accent)] bg-[var(--accent)]'
+                : errorCorreo && correoValido
+                  ? 'border-[var(--status-error)] bg-[var(--surface)]'
+                  : 'border-[color-mix(in_oklab,var(--text-tertiary)_55%,transparent)] bg-[var(--surface)]'
+            }`}
+          >
+            {autoriza && <Check size={13} strokeWidth={3} color="var(--on-accent, var(--bg))" />}
+          </span>
+          <span className="text-[13px] leading-[1.5] text-[var(--text-secondary)]">
+            Autorizo guardar mi correo para vincular mi compra y contactarme, según la{' '}
+            <a href="/privacidad" target="_blank" rel="noreferrer" className="whitespace-nowrap text-[var(--accent-ink,var(--accent))] underline">
+              Política de Privacidad
+            </a>
+            .
+          </span>
+        </label>
+        <AnimatePresence initial={false}>
+          {errorCorreo && (
+            <motion.p
+              key="error"
+              id="paywall-correo-error"
+              role="alert"
+              initial={{ opacity: 0, y: reduce ? 0 : 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: reduce ? 0 : 0.2 }}
+              className="mt-2 text-[13px] leading-[1.5] text-[var(--status-error)]"
+            >
+              {errorCorreo}
+            </motion.p>
+          )}
+          {sesionEmail && !abiertoOtroCorreo && correoValido && correo.trim().toLowerCase() !== sesionEmail.toLowerCase() && (
+            <motion.p
+              key="distinto"
+              initial={{ opacity: 0, y: reduce ? 0 : 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: reduce ? 0 : 0.2 }}
+              className="mt-2 text-[13px] leading-[1.5] text-[var(--text-secondary)]"
+            >
+              Entraste con <span className="font-semibold text-[var(--text-primary)]">{sesionEmail}</span>. Si pagas con otro
+              correo, después tendrás que entrar con ese.
+            </motion.p>
+          )}
+        </AnimatePresence>
+        {sesionEmail && (
+          <div className="mt-2">
+            <button
+              type="button"
+              onClick={() => {
+                if (!abiertoOtroCorreo) setTimeout(() => document.getElementById('paywall-otro-correo')?.scrollIntoView({ block: 'center', behavior: 'smooth' }), 80);
+                setConfirmaSalir(false);
+                setAbiertoOtroCorreo((v) => !v);
+              }}
+              aria-expanded={abiertoOtroCorreo}
+              className="py-2 text-[14px] font-semibold text-[var(--accent-ink,var(--accent))] underline underline-offset-2 [touch-action:manipulation]"
+            >
+              Ya pagué con otro correo
+            </button>
+            <AnimatePresence initial={false}>
+            {abiertoOtroCorreo && (
+              <motion.div
+                id="paywall-otro-correo"
+                initial={{ opacity: 0, y: reduce ? 0 : 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: reduce ? 0 : 0.2 }}
+                className="mt-1 rounded-[var(--radius-card)] bg-[var(--surface-2)] p-3 text-[13px] leading-[1.5] text-[var(--text-secondary)]"
+              >
+                <p>
+                  Entraste con <span className="font-semibold text-[var(--text-primary)]">{sesionEmail}</span>. Si pagaste con
+                  otro, entra con ese: tu pago está a salvo.
+                </p>
+                <div className="mt-1 flex flex-col">
+                  <a
+                    href={`mailto:soporte@coparentia.co?subject=${encodeURIComponent('Ya pagué con otro correo')}&body=${mensajeSoporte}`}
+                    className="flex min-h-11 items-center text-[13px] font-normal text-[var(--text-secondary)] underline decoration-[color-mix(in_oklab,var(--text-tertiary)_40%,transparent)] underline-offset-2 [touch-action:manipulation]"
+                  >
+                    Escribir a soporte con mi correo de compra
+                  </a>
+
+                  {confirmaSalir ? (
+                    <div className="flex flex-col gap-2 py-1">
+                      <div className="flex gap-2">
+                        <button
+                          type="button"
+                          disabled={saliendo}
+                          onClick={async () => {
+                            setSaliendo(true);
+                            await onCerrarSesion();
+                          }}
+                          className="h-11 flex-1 rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-primary)_35%,transparent)] bg-[var(--surface)] text-[14px] font-semibold text-[var(--text-primary)] disabled:opacity-70 [touch-action:manipulation]"
+                        >
+                          {saliendo ? 'Cerrando sesión…' : 'Cerrar mi sesión'}
+                        </button>
+                        <button
+                          type="button"
+                          disabled={saliendo}
+                          onClick={() => setConfirmaSalir(false)}
+                          className="h-11 flex-1 rounded-[var(--radius-button)] text-[14px] font-medium text-[var(--text-secondary)] underline underline-offset-2 [touch-action:manipulation]"
+                        >
+                          Cancelar
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setConfirmaSalir(true)}
+                      className="py-2 text-left text-[14px] font-semibold text-[var(--text-primary)] underline underline-offset-2 [touch-action:manipulation]"
+                    >
+                      Cerrar sesión y entrar con el correo de la compra
+                    </button>
+                  )}
+                </div>
+              </motion.div>
+            )}
+            </AnimatePresence>
+          </div>
+        )}
+      </div>
+
       <div className="mt-auto pt-4">
         {/* Hairline degradada también aquí: existía solo en el paso 1, así que el sistema de
             profundidad cambiaba entre dos pantallas seguidas (defecto del revisor). */}
         <div
           aria-hidden="true"
-          className="mb-4 h-px w-full"
+          className="mb-0 h-px w-full"
           style={{
             background:
-              'linear-gradient(to right, transparent, color-mix(in oklab, var(--accent) 38%, transparent), transparent)',
+              'linear-gradient(to right, transparent, color-mix(in oklab, var(--accent) 55%, transparent), transparent)',
           }}
         />
         {/* PIE COMPACTADO (2026-09-17, defecto #1 del revisor-visual): eran cuatro bloques de texto
@@ -629,16 +915,6 @@ function Precio({
             alguien lo busca (<details> nativo: cero JS, accesible por teclado). */}
         {/* El detalle de la garantía queda FUERA del bloque fijo (se lee una vez, no hace falta
             tenerlo siempre a la vista); el nombre y el sello de pago seguro sí entran con el CTA. */}
-        <details className="mb-2 w-full text-center">
-          <summary className="inline-flex cursor-pointer list-none items-center gap-1 py-2 text-[13px] text-[var(--text-secondary)] underline underline-offset-2 [touch-action:manipulation]">
-            Ver condiciones de la devolución
-            <ChevronDown size={14} aria-hidden="true" />
-          </summary>
-          <p className="mt-2 text-[13px] leading-[1.5] text-[var(--text-secondary)]">
-            Es la Garantía del Primer Expediente: si en 15 días tu expediente no te sirve, escribes
-            a soporte y te devolvemos todo. Sin explicaciones.
-          </p>
-        </details>
       </div>
         {/* CTA PEGADO AL FONDO EN CELULAR (2026-09-17). El revisor-visual encontró que a 375px la
             pantalla de decisión abría SIN el botón visible: con dos tarjetas de plan, tres
@@ -662,18 +938,26 @@ function Precio({
           />
           {/* El pt-3 va AQUÍ, dentro del div con fondo: en el contenedor sticky dejaba una franja
               transparente de 12px por la que se veía pasar el contenido (revisor, 5ª ronda). */}
-          <div className="relative bg-[var(--bg)] pt-3 pb-[max(8px,env(safe-area-inset-bottom))] lg:bg-transparent lg:pb-0 lg:pt-0">
+          <div className="relative bg-[var(--bg)] pt-4 pb-[max(8px,env(safe-area-inset-bottom))] lg:bg-transparent lg:pb-0 lg:pt-0">
             {/* Sin punto medio entre las dos señales: a 375px la línea siempre parte en dos y el
                 "·" quedaba huérfano al final de la primera. Los íconos ya separan cada señal. */}
-            <div className="mb-2 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-center text-[13px] font-medium text-[var(--text-secondary)]">
-              <span className="flex items-center gap-1.5">
-                <ShieldCheck size={14} color="var(--accent)" aria-hidden="true" />
-                Garantía del Primer Expediente · 15 días
-              </span>
-              <span className="flex items-center gap-1.5">
-                <Lock size={13} color="var(--accent)" aria-hidden="true" />
-                Pago seguro con Hotmart
-              </span>
+            <div className="mb-4">
+              <div className="flex items-center justify-center gap-5 text-[13px] font-medium text-[var(--text-primary)]">
+                <a
+                  href="/reembolsos"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="-my-1.5 flex min-h-11 items-center gap-1.5 whitespace-nowrap underline decoration-[color-mix(in_oklab,var(--text-tertiary)_60%,transparent)] underline-offset-2 [touch-action:manipulation]"
+                >
+                  <ShieldCheck size={14} color="var(--accent)" aria-hidden="true" />
+                  Garantía de 15 días
+                </a>
+                <span className="flex items-center gap-1.5 whitespace-nowrap">
+                  <Lock size={13} color="var(--accent)" aria-hidden="true" />
+                  Pago seguro Hotmart
+                </span>
+              </div>
+              <p className="text-center text-[12px] text-[var(--text-secondary)]">Si no te sirve, te devolvemos todo.</p>
             </div>
             <CtaFunnel onClick={onCta} disabled={yendo}>
               {yendo ? (
@@ -692,26 +976,29 @@ function Precio({
                 No pudimos abrir el siguiente paso. Revisa tu conexión y toca el botón otra vez.
               </p>
             )}
-            <p className="mt-2 text-center text-[13px] text-[var(--text-secondary)]">
-              Hoy no pagas nada · Primer cobro el día 7: {plan === 'anual' ? PLAN_ANUAL.cobro : PLAN_MENSUAL.cobro} · Cancelas cuando quieras
+            <p className="mt-2 text-center text-[13px] leading-[1.45] text-[var(--text-secondary)]">
+              Hoy no pagas nada · Primer cobro el día 7:{' '}
+              <span className="font-semibold text-[var(--text-primary)]">{plan === 'anual' ? PLAN_ANUAL.cobro : PLAN_MENSUAL.cobro}</span> · Cancelas cuando quieras
             </p>
           </div>
         </div>
 
-      {/* UNA sola fila de pie: 'Ahora no · ¿Dudas?' y la letra chica juntas. En dos filas, a
-          1440×900 la última quedaba cortada contra el borde inferior (revisor, 4ª ronda). */}
-      <div className="mt-4 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-[13px] text-[var(--text-secondary)] lg:mt-2">
-        <button type="button" onClick={onAhoraNo} className="py-2 [touch-action:manipulation]">
+      {/* PIE: en celular dos filas (salidas arriba, legales abajo, 44px de alto táctil: ronda 5 del
+          revisor); desde `lg` UNA sola fila, porque en dos filas a 1440×900 la última quedaba cortada
+          contra el borde inferior (revisor, 4ª ronda del diseño original). */}
+      <div className="mt-6 flex flex-col items-center text-[13px] text-[var(--text-secondary)] lg:mt-2 lg:flex-row lg:justify-center lg:gap-x-6">
+      <div className="flex flex-wrap items-center justify-center gap-x-6">
+        <button type="button" onClick={onAhoraNo} className="min-h-11 py-2 text-[13px] text-[var(--text-secondary)] [touch-action:manipulation]">
           Ahora no
         </button>
-        <span aria-hidden="true" className="text-[var(--text-tertiary)]">·</span>
-        <a href="mailto:soporte@coparentia.co" className="py-2 underline-offset-2 hover:underline [touch-action:manipulation]">
+        <a href="mailto:soporte@coparentia.co" className="flex min-h-11 items-center py-2 text-[13px] text-[var(--text-secondary)] underline-offset-2 hover:underline [touch-action:manipulation]">
           ¿Dudas? Escríbenos
         </a>
-        <span aria-hidden="true" className="text-[var(--text-tertiary)]">·</span>
-        <a href="/terminos" className="py-2 text-[13px] text-[var(--text-tertiary)] underline-offset-2 hover:underline">Términos</a>
-        <span aria-hidden="true" className="text-[13px] text-[var(--text-tertiary)]">·</span>
-        <a href="/privacidad" className="py-2 text-[13px] text-[var(--text-tertiary)] underline-offset-2 hover:underline">Privacidad</a>
+      </div>
+      <div className="flex flex-wrap items-center justify-center gap-x-6">
+        <a href="/terminos" className="flex min-h-11 items-center py-2 text-[12px] text-[var(--text-tertiary)] underline-offset-2 hover:underline">Términos</a>
+        <a href="/privacidad" className="flex min-h-11 items-center py-2 text-[12px] text-[var(--text-tertiary)] underline-offset-2 hover:underline">Privacidad</a>
+      </div>
       </div>
     </div>
   );

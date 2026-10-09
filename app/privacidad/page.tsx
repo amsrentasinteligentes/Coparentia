@@ -188,6 +188,16 @@ export default function Privacidad() {
               requerirá información previa y autorización expresa y separada para datos sensibles,
               además de medidas reforzadas de seguridad.
             </p>
+            <p>
+              <strong>6.8. Personas interesadas antes de la compra.</strong> Si escribes tu correo
+              electrónico en la pantalla de planes antes de ir a pagar, lo guardamos junto con el
+              plan que elegiste y la fecha. Lo usamos para dos fines: (i) vincular tu compra en
+              Hotmart con tu cuenta cuando entres a la aplicación, y (ii) escribirte, si lo
+              necesitas, para ayudarte a completar tu suscripción o aclarar dudas sobre ella. Solo
+              se guarda después de que marcas la autorización en esa pantalla, no se comparte con
+              terceros con fines publicitarios y puedes pedir que lo eliminemos escribiendo a
+              soporte@coparentia.co.
+            </p>
           </Seccion>
 
           <Seccion numero="7" titulo="Finalidades del tratamiento">
