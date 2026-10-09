@@ -16,7 +16,7 @@ export function MetaPixel() {
     // de la página donde aceptó no se pierde.
     const medirVista = (): void => {
       if (leerEleccion() !== 'aceptado') return;
-      if (cargarPixel()) trackMeta('PageView');
+      if (cargarPixel()) trackMeta('PageView', { ruta: pathname });
     };
     medirVista();
     window.addEventListener(EVENTO_CAMBIO, medirVista);
