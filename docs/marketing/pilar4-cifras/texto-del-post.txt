@@ -1,0 +1,23 @@
+CARRUSEL PILAR 4 — "Las cifras que nadie cuenta"
+Subir las 7 imágenes en orden: lamina-1.png ... lamina-7.png (1080 x 1350, vertical 4:5)
+Sirve para Instagram y TikTok (modo fotos/carrusel). En Facebook, como álbum de fotos.
+
+TEXTO DEL POST
+¿Quién deja de pagar la cuota? Estas cifras casi nadie las cuenta. Guárdalo.
+Link en la bio: botón "Las cifras que nadie cuenta".
+
+HASHTAGS
+#CuotaAlimentaria #PadresSeparados #Coparentalidad #Colombia #Custodia
+
+ANTES DE PUBLICAR
+1. Abrir el boletín técnico del DANE (Pobreza monetaria 2024, 24/07/2025) y confirmar que 36,1 % y 28,4 %
+   aparecen tal cual (jefatura femenina vs masculina). Anotar la página en FICHA-MERCADO.md sección 7.
+2. Confirmar que el botón "Las cifras que nadie cuenta" del Linktree apunta a https://coparentia.co/?src=pilar4
+3. Este carrusel no usa personas generadas con IA: no lleva la etiqueta "Escena ilustrativa creada con IA".
+
+FUENTES (también están en la lámina 7)
+- Fiscalía General de la Nación, vía El Tiempo, 21/01/2021: 40.311 hombres y 3.593 mujeres procesados
+  por inasistencia alimentaria entre 2019 y 2020 (46.499 en total, 86 % hombres).
+  https://www.eltiempo.com/justicia/delitos/cifras-de-estadisticas-sobre-denuncias-y-demandas-por-cuotas-de-alimentos-561999
+- DANE, Pobreza monetaria 2024, boletín técnico (24/07/2025): 36,1 % (jefatura femenina) vs 28,4 % (jefatura masculina).
+  https://www.dane.gov.co/files/operaciones/PM/bol-PM-2024.pdf

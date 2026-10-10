@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@600;700;800&family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{width:1080px;height:1920px;background:transparent;overflow:hidden}
+  body{font-family:'Figtree',sans-serif;position:relative;-webkit-font-smoothing:antialiased}
+  .s{display:none;position:absolute;inset:0}
+  .s.on{display:block}
+  .cap{position:absolute;left:70px;right:70px;bottom:330px;text-align:center;color:#F3F7FC;
+       text-shadow:0 4px 24px rgba(0,0,0,.75),0 1px 3px rgba(0,0,0,.9)}
+  .cap small{display:block;font:700 44px/1.2 'Figtree',sans-serif;letter-spacing:.04em;opacity:.92;margin-bottom:14px}
+  .cap b{display:block;font:800 84px/1.08 'Figtree',sans-serif;letter-spacing:-.02em}
+  .cap b em{font-style:normal;color:#8FB6F2}
+  .ia{position:absolute;left:0;right:0;bottom:120px;text-align:center;color:rgba(243,247,252,.85);
+      font:600 30px 'Nunito Sans',sans-serif;text-shadow:0 2px 10px rgba(0,0,0,.8)}
+  /* tarjeta final */
+  .card{background:radial-gradient(900px 900px at 50% 38%,rgba(91,147,232,.28),rgba(91,147,232,0) 70%),linear-gradient(180deg,#0B1524 0%,#13233A 100%)}
+  .card .logo{position:absolute;top:360px;left:0;right:0;display:flex;justify-content:center}
+  .card .logo img{width:640px;height:auto;display:block;filter:brightness(1.15)}
+  .card h2{position:absolute;top:760px;left:80px;right:80px;text-align:center;color:#E6EDF7;font:800 100px/1.08 'Figtree',sans-serif;letter-spacing:-.02em}
+  .card h2 em{font-style:normal;color:#5B93E8}
+  .card .pill{position:absolute;top:1190px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:22px;
+     background:#5B93E8;color:#0B1524;border-radius:999px;padding:38px 70px;font:800 54px 'Figtree',sans-serif;white-space:nowrap}
+  .card .pill svg{width:54px;height:54px;stroke:#0B1524;fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+</style></head><body>
+<div class="s" data-s="texto1"><div class="cap"><small>Mensaje de tu ex:</small><b>¿Y la cuota de <em>este mes?</em></b></div></div>
+<div class="s" data-s="texto2"><div class="cap"><small>Del otro lado:</small><b>otra semana <em>esperando</em></b></div></div>
+<div class="s" data-s="texto3"><div class="cap"><b>Los dos buscando <em>pruebas</em> en chats viejos</b></div></div>
+<div class="s" data-s="aviso-ia"><div class="ia">Escena ilustrativa creada con IA</div></div>
+<div class="s card" data-s="tarjeta-final">
+  <div class="logo"><img src="../../../marca/logo-horizontal-transparente-2026-09-18.webp" alt="Coparentia"></div>
+  <h2>Tu <em>expediente,</em><br>en confianza</h2>
+  <div class="pill">Link en la bio <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+</div>
+<script>
+  const s=new URLSearchParams(location.search).get('s');
+  document.querySelectorAll('.s').forEach(e=>{if(e.dataset.s===s)e.classList.add('on')});
+</script>
+</body></html>

@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Carrusel pilar 4 — Las cifras que nadie cuenta</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@600;700;800&family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F3F7FC; --surface:#FFFFFF; --surface-2:#E7EEF8;
+    --ink:#14233A; --ink-2:#4B5C78; --ink-3:#5B6D88;
+    --accent:#2F6FDC; --accent-2:#5B93E8; --accent-deep:#2757A8;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{width:1080px;height:1350px;background:var(--bg)}
+  body{font-family:'Nunito Sans',system-ui,sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased}
+  .slide{display:none;position:relative;width:1080px;height:1350px;overflow:hidden;background:var(--bg);padding:96px 88px 0}
+  .slide.on{display:block}
+  .blob{position:absolute;border-radius:58% 42% 55% 45% / 48% 60% 40% 52%;background:linear-gradient(145deg,var(--accent-2),var(--accent));opacity:.14}
+  .blob.b2{opacity:.09;border-radius:42% 58% 45% 55% / 60% 40% 52% 48%}
+  .kicker{font:700 30px/1.2 'Figtree',sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-deep)}
+  h1,h2,h3{font-family:'Figtree',sans-serif;font-weight:800;letter-spacing:-.02em;color:var(--ink)}
+  .mk{color:var(--accent-deep)}
+  .foot{position:absolute;left:88px;right:88px;bottom:64px;display:flex;align-items:center;justify-content:space-between;color:var(--ink-3);font:600 26px 'Nunito Sans',sans-serif}
+  .brand{display:flex;align-items:center;gap:14px}.brand img{height:64px;width:64px;display:block;mix-blend-mode:multiply}.brand b{font:800 36px Figtree,sans-serif;color:var(--ink);letter-spacing:-.01em}
+  .pager{font:700 26px 'Figtree',sans-serif;color:var(--ink-3);letter-spacing:.04em}
+  .body{font-size:44px;line-height:1.38;color:var(--ink-2);font-weight:400}
+  .body b{color:var(--ink);font-weight:700}
+  .small{font-size:28px;line-height:1.4;color:var(--ink-3)}
+
+  /* 1 portada */
+  .s1 h1{font-size:112px;line-height:1.04;margin-top:150px;max-width:880px}
+  .s1 .sub{margin-top:56px;font:600 46px/1.3 'Figtree',sans-serif;color:var(--ink-2)}
+  .s1 .swipe{position:absolute;left:88px;bottom:168px;display:flex;align-items:center;gap:16px;font:700 30px 'Figtree',sans-serif;color:var(--accent-deep)}
+  .s1 .swipe svg{width:44px;height:44px}
+
+  /* 2 y 4 cifras */
+  .big{font:800 330px/0.95 'Figtree',sans-serif;letter-spacing:-.04em;color:var(--accent-deep);margin-top:90px}
+  .big small{font-size:190px}
+  .s2 .body{margin-top:44px;max-width:880px}
+  .s2 .src{margin-top:36px}.dots{position:absolute;left:88px;right:88px;bottom:236px;display:grid;grid-template-columns:repeat(20,1fr);gap:12px}.dots i{aspect-ratio:1;border-radius:50%;background:var(--accent);display:block}.dots i.o{background:transparent;box-shadow:inset 0 0 0 3px #A8B7CF}.dots-cap{position:absolute;left:88px;bottom:180px;font-size:26px;color:var(--ink-3)}
+
+  /* 3 matiz */
+  .s3 h2{font-size:100px;line-height:1.08;margin-top:250px}
+  .s3 .body{margin-top:64px;max-width:880px}
+  .quote{position:absolute;left:88px;right:88px;bottom:190px;background:var(--surface);border-radius:22px;padding:44px 48px;border:2px solid var(--surface-2);box-shadow:0 18px 40px -22px rgba(20,35,58,.28);font:700 40px/1.35 'Figtree',sans-serif;color:var(--ink)}
+
+  /* 4 comparación */
+  .s4 h2{font-size:78px;line-height:1.08;margin-top:46px}
+  .bars{margin-top:110px;display:flex;flex-direction:column;gap:70px}
+  .bar-label{font:700 34px 'Figtree',sans-serif;color:var(--ink);margin-bottom:14px;display:flex;justify-content:space-between;align-items:baseline}
+  .bar-label span:last-child{font-size:84px;font-weight:800;letter-spacing:-.03em;color:var(--accent-deep)}
+  .bar-label.muted span:last-child{color:var(--ink-2)}
+  .track{height:84px;background:var(--surface-2);border-radius:999px;overflow:hidden}
+  .fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--accent-2),var(--accent))}
+  .fill.muted{background:linear-gradient(90deg,#A8B7CF,#8497B4)}
+  .s4 .body{margin-top:96px;font-size:44px}
+
+  /* 5 pruebas */
+  .s5 h2{font-size:84px;line-height:1.08;margin-top:46px}
+  .list{margin-top:60px;display:flex;flex-direction:column;gap:30px}
+  .item{display:flex;align-items:center;gap:36px;background:var(--surface);border-radius:22px;padding:40px 44px;border:2px solid var(--surface-2);box-shadow:0 18px 40px -22px rgba(20,35,58,.28)}
+  .chip{flex:none;width:104px;height:104px;border-radius:26px;background:rgba(47,111,220,.10);display:grid;place-items:center}
+  .chip svg{width:56px;height:56px;stroke:var(--accent-deep);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .item p{font:700 40px/1.25 'Figtree',sans-serif;color:var(--ink)}
+  .item p span{display:block;font:400 30px/1.35 'Nunito Sans',sans-serif;color:var(--ink-2);margin-top:6px}
+  .s5 .small{margin-top:44px}
+
+  /* 6 cierre */
+  .s6 h2{font-size:112px;line-height:1.05;margin-top:190px}
+  .s6 .body{margin-top:50px;max-width:860px}
+  .cta{margin-top:70px;display:inline-flex;align-items:center;gap:22px;background:var(--accent);color:#fff;border-radius:999px;padding:34px 56px;font:800 40px 'Figtree',sans-serif;box-shadow:0 22px 40px -18px rgba(47,111,220,.6)}
+  .cta svg{width:42px;height:42px;stroke:#fff;fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+  .cta-sub{margin-top:26px;font:600 34px/1.35 'Nunito Sans',sans-serif;color:var(--ink-2)}.cta-sub b{color:var(--ink);font-weight:700}.save{margin-top:56px;display:flex;align-items:center;gap:16px;font:700 36px 'Figtree',sans-serif;color:var(--accent-deep)}
+  .save svg{width:44px;height:44px;stroke:var(--accent-deep);fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+
+  /* 7 fuentes */
+  .s7 h2{font-size:80px;line-height:1.08;margin-top:46px}
+  .src-list{margin-top:50px;display:flex;flex-direction:column;gap:28px}
+  .src-item{background:var(--surface);border-radius:22px;padding:38px 50px;border:2px solid var(--surface-2)}
+  .src-item b{display:block;font:800 44px 'Figtree',sans-serif;color:var(--ink);margin-bottom:8px}
+  .src-item span{font-size:34px;line-height:1.4;color:var(--ink-2)}
+  .s7 .note{margin-top:40px;font-size:34px;line-height:1.45;color:var(--ink-2)}
+  .disc{margin-top:34px;font:700 38px 'Figtree',sans-serif;color:var(--ink)}
+.nw{white-space:nowrap}</style>
+</head>
+<body>
+
+<!-- 1 PORTADA -->
+<section class="slide s1" data-s="1">
+  <div class="blob" style="width:760px;height:700px;right:-220px;top:360px"></div>
+  <div class="blob b2" style="width:520px;height:480px;right:120px;top:700px"></div>
+  <div class="kicker">Las cifras que casi nadie cuenta</div>
+  <h1>¿Quién deja de pagar la <span class="mk">cuota alimentaria</span> en Colombia?</h1>
+  <div class="swipe">Desliza <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+  <div class="foot"><span class="brand"><img src="../../marca/isotipo-2026-09-18.webp" alt=""><b>Coparentia</b></span><span class="pager">1/7</span></div>
+</section>
+
+<!-- 2 EL 86% -->
+<section class="slide s2" data-s="2">
+  <div class="blob" style="width:700px;height:640px;right:-200px;top:120px"></div>
+  <div class="kicker">Dato 1 · Fiscalía</div>
+  <div class="big">86<small>%</small></div>
+  <p class="body">de las personas <b>procesadas por inasistencia alimentaria</b> entre 2019 y 2020 fueron hombres <b>(40.311 de 46.499)</b>.</p>
+  <p class="small src">Procesados, no «quién deja de pagar». Fuente: Fiscalía General de la Nación, vía El Tiempo.</p>
+  <div class="dots" id="dots"></div>
+  <div class="dots-cap">Cada punto es 1 de cada 100 personas procesadas.</div>
+  <div class="foot"><span class="brand"><img src="../../marca/isotipo-2026-09-18.webp" alt=""><b>Coparentia</b></span><span class="pager">2/7</span></div>
+</section>
+
+<!-- 3 MATIZ -->
+<section class="slide s3" data-s="3">
+  <div class="blob b2" style="width:620px;height:560px;right:-180px;top:80px"></div>
+  <div class="kicker">Ojo con el matiz</div>
+  <h2>Esto no es una pelea de <span class="mk">géneros.</span></h2>
+  <div class="quote">Y quien sí paga, si no tiene comprobantes, queda con su palabra contra la del otro.</div>
+  <div class="foot"><span class="brand"><img src="../../marca/isotipo-2026-09-18.webp" alt=""><b>Coparentia</b></span><span class="pager">3/7</span></div>
+</section>
+
+<!-- 4 DANE -->
+<section class="slide s4" data-s="4">
+  <div class="kicker">Dato 2 · DANE 2024</div>
+  <h2>Pobreza monetaria según quién encabeza el hogar</h2>
+  <div class="bars">
+    <div>
+      <div class="bar-label"><span>Jefatura femenina</span><span>36,1%</span></div>
+      <div class="track"><div class="fill" style="width:36.1%"></div></div>
+    </div>
+    <div>
+      <div class="bar-label muted"><span>Jefatura masculina</span><span>28,4%</span></div>
+      <div class="track"><div class="fill muted" style="width:28.4%"></div></div>
+    </div>
+  </div>
+  <p class="body">Cuando la cuota llega <b>incompleta o tarde</b>, cada peso pesa más.</p>
+  <div class="foot"><span class="brand"><img src="../../marca/isotipo-2026-09-18.webp" alt=""><b>Coparentia</b></span><span class="pager">4/7</span></div>
+</section>
+
+<!-- 5 PRUEBAS -->
+<section class="slide s5" data-s="5">
+  <div class="kicker">Qué cambia con pruebas</div>
+  <h2>Ordenar lo que ya haces te protege</h2>
+  <div class="list">
+    <div class="item">
+      <div class="chip"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M3 9h18M8 2v4M16 2v4M8 14l2.5 2.5L16 12"/></svg></div>
+      <p>Comprobantes con fecha<span>Cada pago queda registrado, con día y monto.</span></p>
+    </div>
+    <div class="item">
+      <div class="chip"><svg viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg></div>
+      <p>Gastos extra acordados por escrito<span>Lo que se pactó, a la vista de los dos.</span></p>
+    </div>
+    <div class="item">
+      <div class="chip"><svg viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 14l2 2 4-4"/></svg></div>
+      <p>Un expediente listo para tu abogado<span>Todo en un solo lugar, sin buscar capturas.</span></p>
+    </div>
+  </div>
+  <p class="small">Ordenar tu información no garantiza el resultado de un proceso.</p>
+  <div class="foot"><span class="brand"><img src="../../marca/isotipo-2026-09-18.webp" alt=""><b>Coparentia</b></span><span class="pager">5/7</span></div>
+</section>
+
+<!-- 6 CIERRE -->
+<section class="slide s6" data-s="6">
+  <div class="blob" style="width:760px;height:700px;right:-240px;top:60px"></div>
+  <div class="blob b2" style="width:480px;height:440px;right:140px;top:440px"></div>
+  <div class="kicker">Si pagas o si recibes</div>
+  <h2>Organiza tu <span class="mk">expediente.</span></h2>
+  <p class="body">Tu palabra vale más cuando tiene fechas y comprobantes.</p>
+  <div class="cta">Link en la bio
+    <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+  <p class="cta-sub">Toca el botón <b>«Las cifras que nadie cuenta»</b></p>
+  <div class="save"><svg viewBox="0 0 24 24"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg>Guarda este post</div>
+  <div class="foot"><span class="brand"><img src="../../marca/isotipo-2026-09-18.webp" alt=""><b>Coparentia</b></span><span class="pager">6/7</span></div>
+</section>
+
+<!-- 7 FUENTES -->
+<section class="slide s7" data-s="7">
+  <div class="kicker">De dónde salen las cifras</div>
+  <h2>Fuentes</h2>
+  <div class="src-list">
+    <div class="src-item"><b>86%</b><span>Fiscalía General de la Nación, vía El Tiempo (21/01/2021). Personas procesadas por inasistencia alimentaria, <span class="nw">2019–2020</span>.</span></div>
+    <div class="src-item"><b>36,1% vs 28,4%</b><span>DANE, Pobreza monetaria 2024 (boletín técnico, 24/07/2025). Pobreza monetaria por sexo del jefe del hogar.</span></div>
+  </div>
+  <p class="note">«Jefatura femenina» no significa «madre que recibe cuota alimentaria»: son datos distintos.</p>
+  <p class="disc">Información general. No es asesoría legal.</p>
+  <div class="foot"><span class="brand"><img src="../../marca/isotipo-2026-09-18.webp" alt=""><b>Coparentia</b></span><span class="pager">7/7</span></div>
+</section>
+
+<script>
+  const s=new URLSearchParams(location.search).get('s')||'1';
+  const d=document.getElementById('dots');for(let i=0;i<100;i++){const e=document.createElement('i');if(i>=86)e.className='o';d.appendChild(e);}
+  document.querySelectorAll('.slide').forEach(e=>{ if(e.dataset.s===s) e.classList.add('on'); });
+</script>
+</body>
+</html>
