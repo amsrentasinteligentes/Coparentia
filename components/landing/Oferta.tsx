@@ -158,9 +158,10 @@ export function Oferta({
                       contexto que no compite. Antes eran 4 renglones de dinero al mismo nivel y el
                       ojo apurado no sabía cuál era el número que importa (defecto del revisor). */}
                   <p className="mt-1 text-[14px] font-semibold text-[var(--text-primary)] lg:text-[16px]">{anual.totalAnual}</p>
-                  <p className="mt-0.5 min-h-[18px] text-[12px] text-[var(--text-tertiary)] lg:min-h-[20px] lg:text-[13px]">
-                    Se cobra al terminar la prueba · {FRASE_MONTO_HOTMART}
-                  </p>
+                  <p className="mt-0.5 text-[12px] text-[var(--text-tertiary)] lg:text-[13px]">Se cobra al terminar la prueba.</p>
+                  {/* El aviso del monto en pesos va en SU propia línea, un nivel más legible (13px, tinta secundaria):
+                      antes iba pegado a la línea de arriba, en 12px terciario y a dos renglones. */}
+                  <p className="mt-1 text-[13px] leading-[1.45] text-[var(--text-secondary)] lg:text-[14px]">{FRASE_MONTO_HOTMART}</p>
                   {anual.ahorro && <p className="mt-2 text-[15px] font-semibold text-[var(--accent-ink,var(--accent))] lg:text-[17px]">{anual.ahorro}</p>}
                 </div>
                 <Features items={anual.features} origen="Oferta → anual" />
