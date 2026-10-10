@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { DIA_PRIMER_COBRO, TRIAL_DIAS } from '@/lib/precios';
 
 export const metadata = { title: 'Términos y Condiciones — Coparentia' };
 
@@ -57,8 +58,8 @@ export default function Terminos() {
           <h2 className="text-xl font-semibold text-[var(--text-primary)]">Suscripción y cobros</h2>
           <p>
             El acceso a Coparentia se vende a través de Hotmart y se usa dentro de esta aplicación.
-            La suscripción se cobra de forma mensual o anual según el plan elegido, con 7 días de
-            prueba gratuita, y <strong>se renueva automáticamente</strong> al terminar cada periodo
+            La suscripción se cobra de forma mensual o anual según el plan elegido, con {TRIAL_DIAS} días de
+            prueba gratuita (el primer cobro se hace el día {DIA_PRIMER_COBRO}, contando el día en que empiezas como día 1), y <strong>se renueva automáticamente</strong> al terminar cada periodo
             hasta que la canceles. Puedes cancelar en cualquier momento desde{' '}
             <strong>Expediente → Ajustes → Cómo cancelar</strong> dentro de la app, o directamente
             en el portal de compras de Hotmart; la cancelación detiene los cobros futuros y aplica

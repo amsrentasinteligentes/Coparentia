@@ -11,6 +11,7 @@ import { createClient } from '@supabase/supabase-js';
 import { verificarHotmart } from '@/lib/hotmart-verify';
 import { estadoParaEvento, tieneAccesoCompleto, type Status } from '@/lib/membership-fsm';
 import { enviarCorreoBienvenida, enviarCorreoCancelacion, enviarCorreoPagoFallido } from '@/lib/email';
+import { TRIAL_DIAS } from '@/lib/precios';
 
 export const runtime = 'nodejs'; // node:crypto y raw body — no corre en Edge
 
@@ -26,7 +27,7 @@ const admin = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SU
 // justo cuando más importa no perder ese aviso. 48h da margen real a reintentos tardíos legítimos
 // y sigue cortando el caso que de verdad importa: un aviso capturado y reenviado semanas después.
 const VENTANA_REPLAY_MS = 48 * 60 * 60 * 1000;
-const DIAS_PRUEBA = 7; // FICHA-MERCADO §4 — mismo plazo que promete el paywall
+const DIAS_PRUEBA = TRIAL_DIAS; // lib/precios.ts: la misma prueba que promete el paywall y la página principal
 
 /** Registra un intento (éxito o no) — es lo único que permite ver después si algo se rompió. */
 async function registrar(eventId: string | null, tipo: string | null, resultado: string): Promise<void> {

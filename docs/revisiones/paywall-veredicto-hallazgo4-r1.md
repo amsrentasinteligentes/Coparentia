@@ -1,0 +1,22 @@
+# VEREDICTO revisor-visual — paywall (paso 2 de 2: precio) — hallazgo 4 (cifras y día de cobro)
+Fecha: 2026-10-10 12:00
+Screenshot: docs/revisiones/hallazgo4-paywall-375.jpg
+Usabilidad: 36/40
+Craft: 15/20
+Copy (si vende): 16/20
+Fidelidad (si hubo referencia): N-A
+Veredicto: NO LISTA
+Top defectos: 1) Mancha de "queda fechado" sigue pasando el margen derecho (~x=726 vs 718 a 2x), defecto arrastrado de la ronda 12 y sin corregir: usar -inset-x-0 en el Blob. 2) Escala tipográfica de 6-7 tamaños (28/22/16/15/14/13/12) y ahora tres líneas de 12px en el bloque fijo: subir "Si no te sirve" y la línea del vendedor a 13px y unificar. 3) Bloque fijo de ~210px tapa las filas de beneficios a 812px (la primera sale cortada por el degradado): compactar la línea del vendedor junto a "Pago seguro Hotmart" o moverla fuera del bloque fijo. 4) Radios mezclados (tarjeta 22, pastilla 12, casilla 6, input/botón 999) sin documentar. 5) Sin cifra en pesos, el avatar colombiano debe convertir por su cuenta: la frase de Hotmart avisa pero no da orden de magnitud.
+
+Notas del revisor:
+- Las dos líneas nuevas AÑADEN claridad. "El monto final en tu moneda lo calcula Hotmart al pagar" reemplaza una cifra que no cuadraba con el checkout (el avatar castiga justo eso) y es honesta. La línea del vendedor adelanta el nombre raro "amsrentasinteligentes" que verá en el checkout, y por eso reduce desconfianza. Costo: se pierde la referencia local en pesos, así que oferta baja de 4 a 3, y una línea más densifica el bloque fijo.
+- Legibilidad del 12px: el contraste es correcto (#4B5C78 sobre #F3F7FC, ~6.5:1; el nombre del vendedor va en primario con peso medio). Se lee en la captura, pero 12px es el piso: en Android gama media y con fatiga es la letra más chica de la zona de decisión, justo la que lleva la información de confianza. Pasa, sin margen. El aviso de cobro bajo el botón está a 13px y el de garantía/vendedor a 12px: dos tamaños casi iguales para el mismo tipo de dato (inconsistencia menor).
+- Coherencia de cifras verificada en código: todo sale de lib/precios.ts. DIA_PRIMER_COBRO = 8 se usa en la línea de tiempo del paso 1 y en el aviso del paso 2; el cobro cambia con el plan. Que Hotmart cobre de verdad el día 8 y que el vendedor se llame así no se puede comprobar desde la captura ni el código: es afirmación del autor, hay que confirmarla en un checkout real.
+- Captura de formulario y pie (paywall-correo-ronda12-2-medio-final-375.jpg) está desactualizada: aún muestra "≈ $385.900 COP" y "Primer cobro el día 7". Solo sirve para el diseño del formulario; las cifras vigentes son las de hallazgo4-paywall-375.jpg.
+- Usabilidad: h1:3 h2:4 h3:4 h4:4 h5:4 h6:3 h7:3 h8:3 h9:4 h10:4 = 36 (sin margen). h3/h7 verificados en código (X, atrás, "Ahora no", flechas en radiogroup, plan y correo recordados, doble-tap bloqueado, aviso de fallo con role="alert"). h6 3: sin pesos, hay que recordar o calcular la conversión. h8 3: formulario, casilla, enlace, pie y salidas siguen siendo mucho para el último paso. Nota de consistencia: el paso 1 dice "Garantía del Primer Expediente · 15 días" y el paso 2 "Garantía de 15 días".
+- Craft: jerarquía 3, profundidad 3, identidad 3, movimiento 3, encaje 3 = 15. Sin cambios: esta ronda tocó solo copy/cifras y no resolvió los defectos de craft pedidos antes (mancha fuera del margen, escala tipográfica, radios). Movimiento verificado en código: stagger, conteo del precio, whileTap 0.97, reduced-motion; sin celebración (no aplica). Para 16/20 basta corregir la mancha y unificar radios, y recapturar.
+- Copy (FICHA-AVATAR leída): idea 3, especificidad 3, emoción 3, oferta 3, acción 4 = 16/20, ningún eje <=2. Garantía con nombre y plazo junto al CTA: pasa. Message-match: no verificable sin dato de anuncio. Trazas: "Funciona aunque la otra persona no la use" a objeción 1; "menos que lo que algunos abogados cobran" a objeción 4 y VoC "$100 por cada correo"; titular a dolor 3 ("capturas"). El dolor #1 ("mala paga") sigue sin aparecer en esta pantalla.
+- CTA héroe vivo: cumple los 4 (contraste blanco sobre #2F6FDC, whileTap, habilitado por defecto con validación al tocar, alto >=48px y ancho completo).
+- Gate de carga cognitiva: 0 fallas formales, pero el bloque fijo roza el límite de texto.
+- Fichas: paleta azul #2F6FDC, Figtree/Nunito Sans y radios de la variante clara coherentes con FICHA-ARTE; no coincide con los kits vetados. Isotipo gris respetado por decisión del dueño.
+- GATE DOBLE: 36/40 pasa, craft 15/20 no llega a 16. NO LISTA por un punto de craft.

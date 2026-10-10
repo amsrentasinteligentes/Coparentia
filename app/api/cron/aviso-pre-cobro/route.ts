@@ -1,6 +1,6 @@
 // AVISO ANTES DEL PRIMER COBRO (2026-09-25, hallazgo de auditoría externa) — lo llama Vercel una
 // vez al día (vercel.json). Cumple la promesa activa del onboarding/paywall ("te avisamos por
-// correo antes del día 7"): a cada prueba gratis que termina en 1-3 días y todavía no recibió el
+// correo antes del primer cobro, el día 8"): a cada prueba gratis que termina en 1-3 días y todavía no recibió el
 // aviso, le manda el correo una sola vez (la columna `aviso_pre_cobro_enviado` evita repetirlo si
 // el cron corre más de un día dentro de esa ventana).
 //

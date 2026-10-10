@@ -80,7 +80,8 @@ function escaparHtml(texto: string): string {
  * Se manda al confirmarse el ACCESO por primera vez. `esPrueba` distingue las DOS situaciones
  * reales que disparan este correo — decirlas mal es una promesa de dinero incumplida:
  *   - true  → empieza la prueba gratis (nadie ha pagado nada todavía, `trialEndsAt` = cuándo sería
- *             el primer cobro real). NUNCA decir "tu compra se confirmó" aquí.
+ *             el primer cobro real: hoy + TRIAL_DIAS, o sea DIA_PRIMER_COBRO de lib/precios.ts
+ *             contando el día de la compra como día 1). NUNCA decir "tu compra se confirmó" aquí.
  *   - false → hubo un cobro real directo (sin prueba, o la prueba ya se convirtió en pago).
  */
 export async function enviarCorreoBienvenida(
@@ -214,7 +215,7 @@ export async function enviarConsultaJuridica(emailUsuario: string, mensaje: stri
 
 /**
  * Aviso ANTES del primer cobro (promesa activa desde el onboarding/paywall — "te avisamos por
- * correo antes del día 7"). Lo dispara el cron de app/api/cron/aviso-pre-cobro/route.ts, 2 días
+ * correo antes del primer cobro, el día 8"). Lo dispara el cron de app/api/cron/aviso-pre-cobro/route.ts, 2 días
  * antes de que termine la prueba gratis. Sin monto ni periodicidad: la tabla `suscripciones` no
  * guarda cuál plan (mensual/anual) eligió cada quien, y decir un monto que podría no ser el
  * correcto es peor que no decirlo — el enlace a Hotmart siempre tiene el dato exacto y real.

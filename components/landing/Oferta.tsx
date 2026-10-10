@@ -11,6 +11,7 @@
 import { motion } from 'motion/react';
 import { CheckCustom, CtaButton, Hairline, Kicker, SectionShell, useReveal, VIEWPORT_ONCE } from './ui';
 import { MarkedCopy, warnCopy, warnRango } from './MarkedCopy';
+import { DIA_PRIMER_COBRO, FRASE_MONTO_HOTMART } from '@/lib/precios';
 
 export interface PlanOferta {
   nombre: string;
@@ -41,10 +42,6 @@ export interface OfertaProps {
     badge?: string;
   };
   mensual: PlanOferta;
-  /** Referencia en COP del cargo anual ("≈ $275.900 COP"), calculada con la TRM oficial.
-   *  El cobro real de Hotmart es en USD; sin esta línea un comprador colombiano lee "$89" como
-   *  pesos y se lleva un susto en el checkout (misma corrección que ya está en el paywall). */
-  refCopAnual?: string;
   /** Stack de valor Hormozi opcional — total TACHADO del stack, jamás precio falso. */
   stack?: {
     lineas: { resultado: string; valor: string }[];
@@ -96,7 +93,6 @@ export function Oferta({
   anual,
   mensual,
   stack,
-  refCopAnual,
   id = 'oferta',
 }: OfertaProps) {
   warnCopy('Oferta → título', tituloMarked, 8);
@@ -163,7 +159,7 @@ export function Oferta({
                       ojo apurado no sabía cuál era el número que importa (defecto del revisor). */}
                   <p className="mt-1 text-[14px] font-semibold text-[var(--text-primary)] lg:text-[16px]">{anual.totalAnual}</p>
                   <p className="mt-0.5 min-h-[18px] text-[12px] text-[var(--text-tertiary)] lg:min-h-[20px] lg:text-[13px]">
-                    Se cobra al terminar la prueba{refCopAnual ? ` · ${refCopAnual}` : ''}
+                    Se cobra al terminar la prueba · {FRASE_MONTO_HOTMART}
                   </p>
                   {anual.ahorro && <p className="mt-2 text-[15px] font-semibold text-[var(--accent-ink,var(--accent))] lg:text-[17px]">{anual.ahorro}</p>}
                 </div>
@@ -175,7 +171,7 @@ export function Oferta({
                   {trialDias !== undefined && (
                     <p className="mt-2 text-center text-[13px] text-[var(--text-secondary)] lg:text-[15px]">
                       Incluye {trialDias} días de prueba, sin cobro
-                      <span className="mt-0.5 block text-[12px] text-[var(--text-tertiary)] lg:text-[13px]">Registras tu medio de pago hoy; el primer cobro entra el día {trialDias + 1}.</span>
+                      <span className="mt-0.5 block text-[12px] text-[var(--text-tertiary)] lg:text-[13px]">Registras tu medio de pago hoy; el primer cobro entra el día {DIA_PRIMER_COBRO}.</span>
                     </p>
                   )}
                 </div>
@@ -202,7 +198,7 @@ export function Oferta({
               {trialDias !== undefined && (
                 <p className="mt-2 text-center text-[13px] text-[var(--text-secondary)] lg:text-[15px]">
                   Incluye {trialDias} días de prueba, sin cobro
-                  <span className="mt-0.5 block text-[12px] text-[var(--text-tertiary)] lg:text-[13px]">Registras tu medio de pago hoy; el primer cobro entra el día {trialDias + 1}.</span>
+                  <span className="mt-0.5 block text-[12px] text-[var(--text-tertiary)] lg:text-[13px]">Registras tu medio de pago hoy; el primer cobro entra el día {DIA_PRIMER_COBRO}.</span>
                 </p>
               )}
             </div>

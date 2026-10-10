@@ -1,5 +1,7 @@
 import Link from 'next/link';
 
+import { DIA_PRIMER_COBRO, TRIAL_DIAS } from '@/lib/precios';
+
 export const metadata = { title: 'Política de Reembolsos — Coparentia' };
 
 export default function Reembolsos() {
@@ -25,8 +27,9 @@ export default function Reembolsos() {
               soporte@coparentia.co
             </a>{' '}
             y te devolvemos el 100% de tu pago. Sin preguntas, sin formularios. (Nota: la prueba
-            gratuita dura 7 días — la garantía de devolución, 15, para que siempre tengas margen
-            real de decidir después del primer cobro.)
+            gratuita dura {TRIAL_DIAS} días y el primer cobro se hace el día {DIA_PRIMER_COBRO}, contando el día en
+            que empiezas como día 1 — la garantía de devolución dura 15, para que siempre tengas
+            margen real de decidir después del primer cobro.)
           </p>
 
           <h2 className="text-xl font-semibold text-[var(--text-primary)]">Piso legal</h2>

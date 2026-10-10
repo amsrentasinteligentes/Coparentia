@@ -18,8 +18,7 @@ import { X, Check, ShieldCheck, Lock, FileCheck2, HeartHandshake, Loader2 } from
 import { Blob } from '@/components/landing/ui';
 import { BarraAtras, CtaFunnel, FunnelHeader, Halo, MarcoFunnel, Marcador, usePasoVariants } from '@/components/funnel/ui';
 import { PanelExpediente, type FilaExpediente } from '@/components/funnel/PanelExpediente';
-import { obtenerTRM } from '@/lib/trm';
-import { aproximadoEnPesos } from '@/lib/formato-cop';
+import { DIA_PRIMER_COBRO, FRASE_MONTO_HOTMART, NOMBRE_VENDEDOR_HOTMART, PRECIOS, TRIAL_DIAS, usd } from '@/lib/precios';
 import { trackMeta } from '@/lib/meta-pixel';
 import { crearClienteSupabase } from '@/lib/supabase/client';
 
@@ -93,8 +92,18 @@ type Respuestas = {
 // Precios en UN solo lugar y como NÚMEROS: el conteo animado los necesita numéricos, y tenerlos
 // duplicados como texto era la vía directa a que un cambio de precio actualizara una pantalla y
 // no la otra. El costo por día se deriva aquí mismo, nunca se escribe a mano.
-const PLAN_ANUAL = { precioMes: 7.42, cobroAnual: 89, totalAnual: 'Se cobra US$89 al año', costoDia: 'US$0.24', cobro: 'US$89 al año' };
-const PLAN_MENSUAL = { precioMes: 9.99, cobroAnual: 119.88, totalAnual: 'Serían US$119.88 al año', costoDia: 'US$0.33', cobro: 'US$9.99 al mes' };
+const PLAN_ANUAL = {
+  precioMes: PRECIOS.anual.mesUsd,
+  totalAnual: `Se cobra ${usd(PRECIOS.anual.cobroUsd)} al año`,
+  costoDia: usd(PRECIOS.anual.diaUsd),
+  cobro: `${usd(PRECIOS.anual.cobroUsd)} al año`,
+};
+const PLAN_MENSUAL = {
+  precioMes: PRECIOS.mensual.cobroUsd,
+  totalAnual: `Serían ${usd(PRECIOS.mensualPorAnoUsd)} al año`,
+  costoDia: usd(PRECIOS.mensual.diaUsd),
+  cobro: `${usd(PRECIOS.mensual.cobroUsd)} al mes`,
+};
 
 // Enlaces REALES del checkout de Hotmart, uno por plan — el producto ya existe en Hotmart
 // (creado 2026-09-11). Si el precio o el plan cambian ahí, hay que traer el enlace nuevo aquí.
@@ -121,7 +130,6 @@ export default function Paywall() {
   const [errorCorreo, setErrorCorreo] = useState<string | null>(null);
   const [sesionEmail, setSesionEmail] = useState<string | null>(null);
   const correoTocado = useRef(false);
-  const [trm, setTrm] = useState<number | null>(null);
   const temporizador = useRef<ReturnType<typeof setTimeout> | null>(null);
   // Sin esto el temporizador seguia vivo tras salir de la pantalla.
   useEffect(() => () => { if (temporizador.current) clearTimeout(temporizador.current); }, []);
@@ -132,12 +140,6 @@ export default function Paywall() {
   const nRespuestas = r
     ? [r.rol, r.situacion, r.preocupacion, String(r.metaMeses), r.momento, r.atribucion].filter(Boolean).length
     : 0;
-
-  // La TRM oficial se pide una sola vez al abrir. Si falla, `trm` queda en null y la pantalla
-  // simplemente muestra solo dolares: nunca un precio en pesos inventado.
-  useEffect(() => {
-    obtenerTRM().then(setTrm).catch(() => setTrm(null));
-  }, []);
 
   // Quien ya tiene sesión pero no tiene una suscripción viva: se le ofrece "Ya pagué con otro
   // correo" (pagó con un correo y entró con otro). Su correo de sesión queda como sugerencia.
@@ -356,7 +358,6 @@ export default function Paywall() {
                 onAhoraNo={cerrar}
                 yendo={yendo}
                 falloAlAbrir={falloAlAbrir}
-                trm={trm}
                 correo={correo}
                 onCorreo={(v) => {
                   correoTocado.current = true;
@@ -415,11 +416,11 @@ function ValorYPrueba({
   ];
   // El cobro se deriva del plan elegido: antes decía "$89/año" fijo, así que quien volvía atrás
   // con el plan Mensual leía un precio que no era el suyo.
-  const cobro = plan === 'anual' ? 'US$89 al año' : 'US$9.99 al mes';
+  const cobro = plan === 'anual' ? PLAN_ANUAL.cobro : PLAN_MENSUAL.cobro;
   const nodos = [
     { titulo: 'Hoy — acceso completo', detalle: 'Todo tu expediente, sin límites', activo: true },
     { titulo: 'Día 5 — te avisamos', detalle: 'Correo antes de cualquier cobro', activo: true },
-    { titulo: `Día 7 — primer cobro: ${cobro}`, detalle: 'Cancela antes sin costo', activo: false },
+    { titulo: `Día ${DIA_PRIMER_COBRO} — primer cobro: ${cobro}`, detalle: 'Cancela antes sin costo', activo: false },
   ];
 
   return (
@@ -481,7 +482,7 @@ function ValorYPrueba({
           se relee antes de decidir: merece su propio plano. */}
       <div className="rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--text-tertiary)_16%,transparent)] bg-[var(--surface)] p-4 shadow-[var(--shadow-1)]">
         <h2 className="text-[19px] font-bold leading-[1.2] text-[var(--text-primary)] [font-family:var(--font-display)]">
-          7 días gratis, sin sorpresas
+          {TRIAL_DIAS} días gratis, sin sorpresas
         </h2>
         <div className="mt-4 flex flex-col">
           {nodos.map((nodo, i) => (
@@ -540,7 +541,6 @@ function Precio({
   onAhoraNo,
   yendo,
   falloAlAbrir,
-  trm,
   correo,
   onCorreo,
   autoriza,
@@ -555,7 +555,6 @@ function Precio({
   onAhoraNo: () => void;
   yendo: boolean;
   falloAlAbrir: boolean;
-  trm: number | null;
   correo: string;
   onCorreo: (v: string) => void;
   autoriza: boolean;
@@ -587,7 +586,7 @@ function Precio({
         <span className="relative text-[var(--accent-ink,var(--accent))]">
           {/* La mancha ahora nace DETRÁS de las palabras que venden (ronda 10 del revisor): antes caía
               a la derecha del titular, detrás de "se pierde — tu", y se leía como un manchón suelto. */}
-          <Blob className="-inset-x-1 -inset-y-1 -z-10" opacidad={0.14} />
+          <Blob className="-left-1 right-0 -inset-y-1 -z-10" opacidad={0.14} />
           queda fechado
         </span>
       </h1>
@@ -632,7 +631,7 @@ function Precio({
               así que no hay ningún plan que sea "el más popular". Sustituido por el único dato
               verificable y comprobable con la calculadora: $9.99×12 = $119.88 vs $89 = $30.88. */}
           <span className="mb-3 self-start rounded-full bg-[color-mix(in_oklab,var(--accent)_14%,transparent)] px-2.5 py-1 text-[13px] font-bold uppercase tracking-[0.06em] text-[var(--accent-ink,var(--accent))]">
-            Ahorras 3 meses · US$30.88 al año
+            Ahorras 3 meses · {usd(PRECIOS.ahorroAnualUsd)} al año
           </span>
           <div className="flex w-full items-start gap-3">
             <CheckPlan activo={plan === 'anual'} />
@@ -647,9 +646,8 @@ function Precio({
                   tenía fondo base y tarjeta elevada; FICHA-ARTE declara tres niveles. La referencia
                   en pesos —dato de apoyo, no el precio— va sobre una superficie HUNDIDA: se
                   distingue del precio principal sin agregar otro color ni otro tamaño de letra. */}
-              <p className={`mt-1.5 min-h-[2.6em] rounded-[12px] ${plan === 'anual' ? 'bg-[var(--surface)]' : 'bg-[var(--surface-2)]'} px-3 py-1 text-[13px] text-[var(--text-secondary)] shadow-[inset_0_1px_2px_rgb(20_40_80_/_0.08)] lg:min-h-0`}>
+              <p className={`mt-1.5 min-h-[2.6em] rounded-[14px] ${plan === 'anual' ? 'bg-[var(--surface)]' : 'bg-[var(--surface-2)]'} px-3 py-1 text-[13px] text-[var(--text-secondary)] shadow-[inset_0_1px_2px_rgb(20_40_80_/_0.08)] lg:min-h-0`}>
                 {PLAN_ANUAL.totalAnual}
-                {trm && <span className="block text-[var(--text-tertiary)] lg:ml-2 lg:inline">≈ {aproximadoEnPesos(PLAN_ANUAL.cobroAnual, trm)} COP</span>}
                 <span className="block text-[var(--text-primary)] lg:ml-2 lg:inline">
                   Te sale a <span className="font-semibold">{PLAN_ANUAL.costoDia}</span> al día
                 </span>
@@ -684,9 +682,8 @@ function Precio({
             </div>
             {/* Solo la tarjeta Anual mostraba su total, así que el "ahorras US$30.88" no se podía
                 comprobar contra nada: faltaba el término de comparación. */}
-            <p className={`mt-1.5 min-h-[2.6em] rounded-[12px] ${plan === 'mensual' ? 'bg-[var(--surface)]' : 'bg-[var(--surface-2)]'} px-3 py-1 text-[13px] text-[var(--text-secondary)] shadow-[inset_0_1px_2px_rgb(20_40_80_/_0.08)] lg:min-h-0`}>
+            <p className={`mt-1.5 min-h-[2.6em] rounded-[14px] ${plan === 'mensual' ? 'bg-[var(--surface)]' : 'bg-[var(--surface-2)]'} px-3 py-1 text-[13px] text-[var(--text-secondary)] shadow-[inset_0_1px_2px_rgb(20_40_80_/_0.08)] lg:min-h-0`}>
               {PLAN_MENSUAL.totalAnual}
-              {trm && <span className="block text-[var(--text-tertiary)] lg:ml-2 lg:inline">≈ {aproximadoEnPesos(PLAN_MENSUAL.cobroAnual, trm)} COP</span>}
               <span className="block text-[var(--text-primary)] lg:ml-2 lg:inline">
                 Te sale a <span className="font-semibold">{PLAN_MENSUAL.costoDia}</span> al día
               </span>
@@ -694,6 +691,11 @@ function Precio({
           </div>
         </motion.button>
       </div>
+
+      <p className="mt-2 text-[13px] leading-[1.45] text-[var(--text-secondary)]">
+        {FRASE_MONTO_HOTMART} Verás a{' '}
+        <span className="font-medium text-[var(--text-primary)]">{NOMBRE_VENDEDOR_HOTMART}</span>{' '}como vendedor.
+      </p>
 
       {/* Estas 3 filas repetían los MISMOS beneficios del paso anterior (y dos decían literalmente
           lo mismo: "fecha y hora exactas" / "fecha exacta"). A un tap de distancia, leer dos veces
@@ -773,7 +775,7 @@ function Precio({
           />
           <span
             aria-hidden="true"
-            className={`mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-[6px] border-2 transition-colors peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[var(--text-primary)] ${
+            className={`mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-[8px] border-2 transition-colors peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[var(--text-primary)] ${
               autoriza
                 ? 'border-[var(--accent)] bg-[var(--accent)]'
                 : errorCorreo && correoValido
@@ -957,7 +959,7 @@ function Precio({
                   Pago seguro Hotmart
                 </span>
               </div>
-              <p className="text-center text-[12px] text-[var(--text-secondary)]">Si no te sirve, te devolvemos todo.</p>
+              <p className="text-center text-[13px] text-[var(--text-secondary)]">Si no te sirve, te devolvemos todo.</p>
             </div>
             <CtaFunnel onClick={onCta} disabled={yendo}>
               {yendo ? (
@@ -966,7 +968,7 @@ function Precio({
                   Abriendo el pago seguro…
                 </span>
               ) : (
-                'Empezar mis 7 días gratis'
+                `Empezar mis ${TRIAL_DIAS} días gratis`
               )}
             </CtaFunnel>
             {/* `role="alert"`, no "status": que el pago no se pudiera abrir es un fallo que hay que
@@ -977,7 +979,7 @@ function Precio({
               </p>
             )}
             <p className="mt-2 text-center text-[13px] leading-[1.45] text-[var(--text-secondary)]">
-              Hoy no pagas nada · Primer cobro el día 7:{' '}
+              Hoy no pagas nada · Primer cobro el día {DIA_PRIMER_COBRO}:{' '}
               <span className="font-semibold text-[var(--text-primary)]">{plan === 'anual' ? PLAN_ANUAL.cobro : PLAN_MENSUAL.cobro}</span> · Cancelas cuando quieras
             </p>
           </div>
@@ -996,8 +998,8 @@ function Precio({
         </a>
       </div>
       <div className="flex flex-wrap items-center justify-center gap-x-6">
-        <a href="/terminos" className="flex min-h-11 items-center py-2 text-[12px] text-[var(--text-tertiary)] underline-offset-2 hover:underline">Términos</a>
-        <a href="/privacidad" className="flex min-h-11 items-center py-2 text-[12px] text-[var(--text-tertiary)] underline-offset-2 hover:underline">Privacidad</a>
+        <a href="/terminos" className="flex min-h-11 items-center py-2 text-[13px] text-[var(--text-tertiary)] underline-offset-2 hover:underline">Términos</a>
+        <a href="/privacidad" className="flex min-h-11 items-center py-2 text-[13px] text-[var(--text-tertiary)] underline-offset-2 hover:underline">Privacidad</a>
       </div>
       </div>
     </div>

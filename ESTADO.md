@@ -1,3 +1,12 @@
+### Checkpoint (2026-10-09, tarde) — Mercadeo: los 4 clips del video del lunes (pilar 2) generados en Flow
+- Planos 3 y 4 hechos en Veo 3.1 Lite, 10 créditos c/u, en MODO MANUAL con imagen vertical de partida (Nano Banana
+  cuesta 0 créditos; el agente de Flow ignoró la imagen vertical y dejó franjas negras). Los dos clips llenan 9:16, sin cara.
+- Lecciones y prompts en `docs/marketing/semana1/pieza1-lunes-planos-3-4-flow.md`; armado en CapCut en
+  `docs/marketing/semana1/pieza1-lunes-capcut.md`; guion del jueves (app en pantalla, sin plantilla gratis porque aún no existe)
+  en `docs/marketing/semana1/pieza4-jueves-app-en-pantalla.md`.
+- Pendiente (usuario): armar y exportar el video del lunes en CapCut, publicar con etiqueta de IA. Créditos de Flow: se renuevan
+  50/día a las 11:59 a. m. y NO se acumulan.
+
 ### Checkpoint (2026-10-09) — Mercadeo: carrusel del pilar 4 LISTO para subir (7 láminas PNG)
 - Hecho en la sesión de mercadeo (la auditoría y el Pixel siguen en la otra sesión): las 7 láminas del
   carrusel "Las cifras que nadie cuenta" quedaron como imágenes 1080×1350, no solo como copy para Canva.
@@ -4514,3 +4523,18 @@ levantado (ver diagnóstico de la sección `veredicto landing`).
 - Ronda 12 aplicada y verificada a 375px en `app/(funnel)/paywall/page.tsx`: "Te sale a US$X al día" dentro de cada tarjeta de plan; frase del abogado sin la cifra de US$100; ritmo vertical medido 25px/22px alrededor de la línea divisoria (contenedor `mt-auto pt-4` de `Precio`, sticky `pt-4`, línea al 55%). Isotipo gris metálico INTACTO (decisión del dueño). tsc OK. Capturas en `docs/revisiones/paywall-correo-ronda12-*.jpg`.
 - Veredictos previos: r11 = 36/40·15/20·copy 17 (backups `paywall-veredicto-ronda1…11-correo.md`). Veredicto r12 (leído): NO LISTA 36/40·15/20·copy 17. Cambio mínimo que pide para 16: mancha del titular sin desbordar el margen (`-inset-x-0`) + unificar radios (pastilla interior ~14px, casilla 8px); opcional: bajar escala tipográfica. Isotipo gris metálico respetado (decisión del dueño). Decisión pendiente: publicar así o ronda 13 con esos dos cambios.
 - Pendiente: leer el veredicto r12; con visto bueno del dueño, commit+push del hallazgo 2 (paywall, entrar, privacidad, `app/api/contacto-interesado/`, `supabase/contactos-interesados.sql` [ya corrido en Supabase], capturas). Luego hallazgo 4 de la auditoría, #3/#9, compra real para cerrar el 10; decisión #8 (Colombia vs varios países) abierta.
+
+### Checkpoint (2026-10-09) — Hallazgo 2 PUBLICADO y VERIFICADO en producción
+- Commit `cc961c7` en Production (Vercel Ready). Prueba real del dueño en ventana privada de coparentia.co: Hotmart abre con "Tu email" y "Confirma tu email" prellenados; en Supabase `contactos_interesados` apareció la fila (correo del dueño, plan `anual`, `autoriza` = verdadero, fecha 2026-10-09). Guardado real comprobado. Esa fila es de prueba del dueño; no se borra sin su permiso.
+- Pendiente de cierre: sesión real sin suscripción para "Ya pagué con otro correo" (solo probado con sesión simulada). Siguiente en la auditoría: hallazgo 4 (igualar cifras paywall/Hotmart), luego compra real para cerrar el 10, luego 3 y 9. Decisión #8 abierta.
+
+### Checkpoint (2026-10-10) — Hallazgo 4: cifras de precio y día de cobro igualadas (en local, revisor en curso; sin publicar)
+- Datos verificados por el dueño en Hotmart: ambos planes (Mensual US$9,99 y Anual US$89,00) con 7 días de prueba y momento de cobro "Período de prueba" → regla de Hotmart: primer cobro el DÍA 8 (día 1 = compra). El monto en pesos del checkout CAMBIA a diario (anual $302.915 el 9-oct, $300.024 el 10-oct) frente al ≈$284.300 que calculaba el paywall con la TRM. Decisión del dueño: OPCIÓN B (solo dólares + "El monto final en tu moneda lo calcula Hotmart al pagar").
+- Nuevo `lib/precios.ts` (fuente única: TRIAL_DIAS=7, DIA_PRIMER_COBRO=8, NOMBRE_VENDEDOR_HOTMART='amsrentasinteligentes', PRECIOS, usd()). Leen de ahí: paywall, `app/page.tsx` (hero, tarjetas, PS), `components/landing/Oferta.tsx`, `/reembolsos`, `/terminos` y el webhook (`DIAS_PRUEBA = TRIAL_DIAS`, mismo valor). Quitada la conversión a pesos del paywall y de la landing (`lib/trm.ts` y `lib/formato-cop.ts` quedan sin usar, no se borraron). Paso 2 del paywall: frase de Hotmart + "En el pago, el vendedor aparece como amsrentasinteligentes". Los correos ya muestran la fecha real (hoy + 7 días = día 8): solo se actualizaron comentarios.
+- Verificado en local: día 8 en landing/paywall/reembolsos/términos; cambio Anual↔Mensual coherente; sin "día 7" ni pesos de suscripción en el código; tsc y build OK. Capturas `docs/revisiones/hallazgo4-*.jpg`.
+- Pendiente: veredictos del revisor (paywall y landing), commit+push con el visto bueno del dueño y comprobar en producción. FAQ de la landing repite "US$100 que puede cobrar un abogado" (claim sin fuente local; fuera de este arreglo, decide el dueño). Reembolsos/términos cambiaron de texto sin subir la fecha/versión legal: avisar al equipo jurídico. Correo de bienvenida: verificar con una compra real.
+
+### Checkpoint (2026-10-10) — Hallazgo 4 PUBLICADO
+- Retoque final aplicado: mancha del titular sin pasar el margen, sin textos de 12px en la zona de decisión, pastilla 14px/casilla 8px, línea del vendedor fuera del bloque fijo (junto a la frase de Hotmart bajo las tarjetas). Veredicto paywall: NO LISTA 36/40·15/20·copy 16/20 (igual que antes del retoque, sin regresión). Landing: LISTA 36/40·16/20·copy 17/20.
+- Pendiente de craft para 16/20 (todo del diseño anterior): unificar textos de 14px/15px, pastilla a 8px (concéntrica), degradado del bloque fijo, divisoria casi invisible. Sin cifra en pesos el avatar debe convertir por su cuenta (decisión B del dueño, asumida).
+- Por confirmar en un checkout/compra real: que Hotmart cobre el día 8, que el vendedor figure como "amsrentasinteligentes", y el correo de bienvenida. Aviso al equipo jurídico: /reembolsos y /terminos cambiaron de texto (día 8) sin subir fecha/versión legal. FAQ de la landing aún dice "US$100 por un correo de abogado" (sin fuente local).

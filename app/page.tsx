@@ -9,11 +9,9 @@
 // `.tema-claro` redefine los tokens del kit (components/landing/tokens-claro.css); el interior de
 // la app, el onboarding y el paywall siguen oscuros y no se tocan.
 
-import { useEffect, useState } from 'react';
 import { Figtree, Nunito_Sans } from 'next/font/google';
 import { MessageCircleWarning, ReceiptText, ShieldAlert, AlarmClock, Wallet, FileQuestion, CalendarDays, Home as HomeIcon, ListChecks, CreditCard, Upload, Scale } from 'lucide-react';
-import { obtenerTRM } from '@/lib/trm';
-import { aproximadoEnPesos } from '@/lib/formato-cop';
+import { DIA_PRIMER_COBRO, PRECIOS, TRIAL_DIAS, usd } from '@/lib/precios';
 import { Hero } from '@/components/landing/Hero';
 import { Problema } from '@/components/landing/Problema';
 import { Agitacion } from '@/components/landing/Agitacion';
@@ -36,21 +34,10 @@ const nunitoSans = Nunito_Sans({ variable: '--font-nunito-sans', subsets: ['lati
 const CTA_HREF = '/onboarding';
 const CTA_LABEL = 'Crear mi expediente gratis';
 
-// Cobro anual real en USD (FICHA-MERCADO: Hotmart internacional cobra en dólares).
-const COBRO_ANUAL_USD = 89;
+// Los precios, la prueba gratis y el día del primer cobro viven en lib/precios.ts (una sola fuente).
+// Aquí NO hay ninguna conversión a pesos: la hace Hotmart al pagar (hallazgo 4 de la auditoría).
 
 export default function Home() {
-  // Referencia en pesos del cargo anual, con la TRM oficial. Si la fuente falla, `refCop` queda
-  // vacío y la landing muestra solo dólares — nunca un número en pesos inventado.
-  const [refCop, setRefCop] = useState<string | null>(null);
-  useEffect(() => {
-    obtenerTRM()
-      .then((trm) => {
-        if (trm) setRefCop(`≈ ${aproximadoEnPesos(COBRO_ANUAL_USD, trm)} COP al año`);
-      })
-      .catch(() => setRefCop(null));
-  }, []);
-
   return (
     <div id="main" className={`tema-claro ${figtree.variable} ${nunitoSans.variable} min-h-dvh bg-[var(--bg)] text-[var(--text-primary)] [font-family:var(--font-body)]`}>
       {/* 1. HERO */}
@@ -72,9 +59,9 @@ export default function Home() {
         ctaHref={CTA_HREF}
         socialProof={
           <span className="block">
-            7 días gratis · Garantía de 15 días
+            {TRIAL_DIAS} días gratis · Garantía de 15 días
             <span className="mt-0.5 block text-[12px] text-[var(--text-tertiary)] lg:text-[13px]">
-              Registras tu medio de pago hoy; el primer cobro entra el día 8.
+              Registras tu medio de pago hoy; el primer cobro entra el día {DIA_PRIMER_COBRO}.
             </span>
           </span>
         }
@@ -153,23 +140,22 @@ export default function Home() {
       {/* 6. OFERTA */}
       <Oferta
         tituloMarked="Empieza gratis. Sigue por [acento]menos de US$0.25/día[/acento]"
-        trialDias={7}
-        refCopAnual={refCop ?? undefined}
+        trialDias={TRIAL_DIAS}
         stack={{
           lineas: [
-            { resultado: 'Coparentia Pro con el Sello de Confianza — 12 meses, pagando mes a mes', valor: 'US$119.88' },
+            { resultado: 'Coparentia Pro con el Sello de Confianza — 12 meses, pagando mes a mes', valor: usd(PRECIOS.mensualPorAnoUsd) },
             { resultado: 'Plantilla de autorización de gastos extraordinarios', valor: 'Incluida' },
             { resultado: 'Guía "Tu primer expediente en 10 minutos"', valor: 'Incluida' },
           ],
-          totalTachado: 'US$119.88',
+          totalTachado: usd(PRECIOS.mensualPorAnoUsd),
           etiquetaTotal: 'Pagando mes a mes',
-          nota: 'Hoy no pagas nada. Después: US$89 al año con el plan Anual (US$7.42/mes) — US$30.88 menos que pagando mes a mes',
+          nota: `Hoy no pagas nada. Después: ${usd(PRECIOS.anual.cobroUsd)} al año con el plan Anual (${usd(PRECIOS.anual.mesUsd)}/mes) — ${usd(PRECIOS.ahorroAnualUsd)} menos que pagando mes a mes`,
         }}
         anual={{
           nombre: 'Anual',
-          badge: 'AHORRAS US$30.88 AL AÑO',
-          precioMes: 'US$7.42',
-          totalAnual: 'Se cobra US$89 al año',
+          badge: `AHORRAS ${usd(PRECIOS.ahorroAnualUsd)} AL AÑO`,
+          precioMes: usd(PRECIOS.anual.mesUsd),
+          totalAnual: `Se cobra ${usd(PRECIOS.anual.cobroUsd)} al año`,
           ctaLabel: 'Crear mi expediente gratis',
           ctaHref: '/onboarding?plan=anual',
           features: [
@@ -182,7 +168,7 @@ export default function Home() {
         }}
         mensual={{
           nombre: 'Mensual',
-          precioMes: 'US$9.99',
+          precioMes: usd(PRECIOS.mensual.cobroUsd),
           ctaLabel: 'Empezar mi plan mensual',
           ctaHref: '/onboarding?plan=mensual',
           // Antes repetía 4 de los 5 bullets del plan anual y el diferenciador real se diluía.
@@ -239,8 +225,8 @@ export default function Home() {
         futurePacingMarked="La próxima vez que te reclamen por WhatsApp, abres tu expediente y respondes con hechos — no con capturas sueltas."
         ctaLabel={CTA_LABEL}
         ctaHref={CTA_HREF}
-        recap="7 días gratis · Garantía de 15 días"
-        psMarked="PS: Coparentia convierte tus comprobantes en un expediente fechado y listo para mostrar con el Sello de Confianza. Hoy entras con 7 días gratis —registras tu medio de pago, pero no se te cobra nada hasta el día 8— y, si no armas tu primer expediente en 15 días, te devolvemos todo."
+        recap={`${TRIAL_DIAS} días gratis · Garantía de 15 días`}
+        psMarked={`PS: Coparentia convierte tus comprobantes en un expediente fechado y listo para mostrar con el Sello de Confianza. Hoy entras con ${TRIAL_DIAS} días gratis —registras tu medio de pago, pero no se te cobra nada hasta el día ${DIA_PRIMER_COBRO}— y, si no armas tu primer expediente en 15 días, te devolvemos todo.`}
       />
 
       {/* SECCIÓN EXTRA (fuera de la estructura canónica de 19, pedida por el usuario):
