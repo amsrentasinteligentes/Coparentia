@@ -35,16 +35,16 @@ function validarFoto(archivo: File): string | null {
 }
 
 /* ── <FilaAjuste> — fila de la lista "Ajustes y cuenta": chip + título + subtítulo + flecha ── */
-function FilaAjuste({ icon, tono = 'accent', titulo, detalle, href, externo = false, ultima = false }: {
+function FilaAjuste({ icon, tono = 'accent', titulo, detalle, href, externo = false, ultima = false, variasLineas = false }: {
   icon: LucideIcon; tono?: 'accent' | 'exito' | 'info' | 'pendiente'; titulo: string; detalle: string;
-  href: string; externo?: boolean; ultima?: boolean;
+  href: string; externo?: boolean; ultima?: boolean; variasLineas?: boolean;
 }) {
   const contenido = (
     <>
       <IconoCirculo icon={icon} size={18} tono={tono} />
       <span className="min-w-0 flex-1 text-left">
         <span className="block text-[14px] font-bold text-[var(--text-primary)]">{titulo}</span>
-        <span className="block truncate text-[12px] text-[var(--text-secondary)]">{detalle}</span>
+        <span className={`block text-[12px] text-[var(--text-secondary)] ${variasLineas ? 'leading-snug' : 'truncate'}`}>{detalle}</span>
       </span>
       {externo ? <ExternalLink size={16} className="shrink-0 text-[var(--text-tertiary)]" aria-hidden="true" /> : <ChevronRight size={18} className="shrink-0 text-[var(--text-tertiary)]" aria-hidden="true" />}
     </>
@@ -221,7 +221,7 @@ export default function PerfilPage() {
 
   const iniciales = perfil ? (perfil.nombre ? perfil.nombre.trim().split(/\s+/).map((p) => p[0]).slice(0, 2).join('').toUpperCase() : perfil.email.slice(0, 2).toUpperCase()) : '';
   const rolTexto = perfil?.rolFamiliar === 'papa' ? 'Papá' : perfil?.rolFamiliar === 'mama' ? 'Mamá' : 'Tu rol';
-  const desde = perfil?.creadoEl ? new Intl.DateTimeFormat('es-CO', { month: 'long', year: 'numeric', timeZone: 'America/Bogota' }).format(new Date(perfil.creadoEl)) : '—';
+  const desde = perfil?.creadoEl ? new Intl.DateTimeFormat('es-CO', { month: 'long', year: 'numeric', timeZone: 'America/Bogota' }).format(new Date(perfil.creadoEl)).replace(/^./, (c) => c.toUpperCase()) : '—';
 
   return (
     <>
@@ -401,7 +401,7 @@ export default function PerfilPage() {
                   (que es donde vive el interruptor de notificaciones, entre otras cosas) y no lo
                   encontró con ese nombre (hallazgo real, 2026-09-28). */}
               <FilaAjuste icon={Settings} titulo="Ajustes" detalle={titulo ? `Cuota, notificaciones y cuenta — ${formatoCOP(titulo.montoMensual)} · día ${titulo.diaPago}` : 'Cuota, notificaciones y cuenta'} href="/ajustes" />
-              <FilaAjuste icon={CreditCard} titulo="Suscripción y pagos" detalle="Se administra en Hotmart: cancelar, cambiar de plan, facturas" href="https://consumer.hotmart.com/" externo />
+              <FilaAjuste icon={CreditCard} titulo="Suscripción y pagos" detalle="Para cancelar, entra a Hotmart con el correo con el que pagaste (te llega un código)" href="https://consumer.hotmart.com/" externo variasLineas />
               <FilaAjuste icon={Scale} tono="info" titulo="Asistencia jurídica" detalle="Escríbenos tu duda o contacta a un abogado" href="/asistencia" />
               <FilaAjuste icon={LifeBuoy} tono="exito" titulo="Ayuda y soporte" detalle="soporte@coparentia.co · respondemos en menos de 48 h" href="mailto:soporte@coparentia.co" externo />
               <FilaAjuste icon={ShieldCheck} titulo="Privacidad" detalle="Qué guardamos, dónde y cómo borrarlo" href="/privacidad" />
@@ -411,7 +411,7 @@ export default function PerfilPage() {
             <div className="mt-3 grid grid-cols-2 gap-3">
               <Tarjeta indice={3} className="flex flex-col gap-2 p-3">
                 <IconoCirculo icon={CalendarCheck} size={18} />
-                <div><p className="text-[11px] text-[var(--text-secondary)]">Miembro desde</p><p className="text-[13px] font-extrabold capitalize leading-tight text-[var(--text-primary)]">{desde}</p></div>
+                <div><p className="text-[11px] text-[var(--text-secondary)]">Miembro desde</p><p className="text-[13px] font-extrabold leading-tight text-[var(--text-primary)]">{desde}</p></div>
               </Tarjeta>
               <Tarjeta indice={4} className="flex flex-col gap-2 p-3">
                 <IconoCirculo icon={Crown} size={18} tono="pendiente" />

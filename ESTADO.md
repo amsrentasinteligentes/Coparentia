@@ -4603,3 +4603,7 @@ Se hacen juntos al tocar la sección de planes (hallazgos 3 y 9), para revisar u
 - Puntos 1 y 4 publicados (888eb1e); punto 2 y 3 cerrados con compra real (c002376): webhook lee data.date_next_charge/data.subscriber.code en la cancelación. Fila de prueba alejo.mu100 corregida a mano (access_until 20/10, con permiso del dueño); Perfil muestra "Cancelada — acceso hasta el 20 de octubre". Anti-repetición confirmado (reproceso = duplicate).
 - Sin probar con aviso real: primer cobro (día 8, price>0 → active, guarda next_charge_at) y reembolso/contracargo. Cuenta de prueba alejo.mu100@gmail.com sigue existiendo (no borrar sin permiso).
 - Pendientes del dueño/Hotmart y de pulido: ver checkpoint anterior (correo de Hotmart "curso", guía de cancelación en Perfil, contacto arqmunoz10, plazo reembolso 27 vs 28/10 vs "15 días", "Octubre De").
+
+### Checkpoint (2026-10-13) — Pulido de Perfil publicado (sin revisor: pantalla secundaria)
+- "Suscripción y pagos" explica cómo cancelar (entrar a Hotmart con el correo de pago, llega un código) y puede ocupar 2 líneas; "Miembro desde" sin la D mayúscula. Los 15 días de garantía SÍ coinciden con Hotmart (día 1 = 13/10, día 15 = 27/10): no se tocó ningún texto de garantía.
+- Falta verificación visual a 375px en producción (Perfil exige sesión): la hace el dueño en incógnito.
