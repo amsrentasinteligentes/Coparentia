@@ -1,3 +1,23 @@
+### Checkpoint (2026-10-13) — Carrusel del pilar 4: cifras del DANE VERIFICADAS
+- 36,1 % (jefatura femenina) y 28,4 % (masculina), año 2024, total nacional: boletín técnico DANE «Pobreza monetaria en Colombia 2024»
+  (24/07/2025), página 9, sección 1.5 (y Tabla 2, pág. 10). Verificado leyendo el PDF oficial. Pendiente solo confirmar que el botón del Linktree apunte a `https://coparentia.co/?src=pilar4`.
+
+### Checkpoint (2026-10-13, decisión) — Video del lunes (pilar 2): se deja TAL CUAL
+- El usuario decidió no aplicar los 2 ajustes de abajo (altura de textos, volumen de la música): unas personas lo vieron el fin de semana
+  y tuvo buena aceptación. Se mide con datos reales: vistas, retención, guardados, compartidos, comentarios y clics del botón
+  «Cuando el dinero se vuelve guerra» (24 y 72 h). Si la retención o el alcance salen bajos, retomar esos dos ajustes.
+
+### Checkpoint (2026-10-13) — Mercadeo: video del lunes (pilar 2) exportado y revisado; faltan 2 ajustes antes de publicar
+- El usuario armó y exportó el video en CapCut (`...\Coparentia\Claude Piezas Visuales\Plan General Claude\Lunes 1\Lunes 1 Final.mp4`):
+  1080x1920, 30 fps, 20,8 s, con audio. Revisado con ffmpeg de CapCut (fotogramas + volumen).
+- Bien: planos 1-4 llenan 9:16, sin cuello/barbilla en el plano 3, textos legibles, tarjeta final limpia, cada cara en un solo plano.
+- Ajustes pedidos antes de publicar: (1) subir ~250-300 px los textos `imagen1-3` (están al ~80 % de la altura, la interfaz de
+  TikTok/Instagram los tapa) y subir el aviso de IA arriba o aceptar que viva solo en el texto del post y en la etiqueta de la
+  plataforma; (2) subir la música a +2/+3 dB (volumen medio -30 dB, picos -12,9 dB: muy bajo). Luego re-exportar y re-revisar.
+- Assets de apoyo en `docs/marketing/semana1/capcut-assets/` (textos y tarjeta final en PNG). Pendientes sin cambios: cifras DANE y
+  botón del Linktree `?src=pilar4` (carrusel), grabar el video del jueves (guion listo), crear la página de Facebook.
+- Esta sesión no modificó código; los cambios sin commitear en app/ son de la otra sesión (auditoría / Pixel / paywall).
+
 ### Checkpoint (2026-10-09, tarde) — Mercadeo: los 4 clips del video del lunes (pilar 2) generados en Flow
 - Planos 3 y 4 hechos en Veo 3.1 Lite, 10 créditos c/u, en MODO MANUAL con imagen vertical de partida (Nano Banana
   cuesta 0 créditos; el agente de Flow ignoró la imagen vertical y dejó franjas negras). Los dos clips llenan 9:16, sin cara.
@@ -4550,3 +4570,8 @@ Se hacen juntos al tocar la sección de planes (hallazgos 3 y 9), para revisar u
 7. **Reembolsos/Términos**: cambiaron de texto ("día 8") sin subir fecha/versión legal; avisar al equipo jurídico.
 8. **Verificar con compra real**: cobro el día 8, vendedor "amsrentasinteligentes" en el checkout, correo de bienvenida, y "Ya pagué con otro correo" con una cuenta real sin suscripción.
 9. **Isotipo gris metálico**: se queda (decisión de identidad del dueño); NO proponerlo como cambio en las revisiones.
+
+### Checkpoint (2026-10-13) — Hallazgo 3 PUBLICADO: titular claro + "¿Te suena?" en dos grupos
+- Titular elegido tras 2 rondas: "Padres separados: cada pago de la cuota alimentaria, con [comprobante y fecha]" (acento solo en 3 palabras) + subtítulo "Todo en un solo lugar, listo para mostrar, sin depender de la otra persona." La opción W del dueño ("Padres separados, unidos por sus hijos: cuota alimentaria clara y documentada") salió NO LISTA (copy 15/20: "unidos" choca con el diferenciador unilateral). Pestaña/descripción: "Coparentia — Cuota alimentaria para padres separados". "¿Te suena?" en 2 grupos de 3 (primero "Si recibes la cuota", decisión del dueño: dolor más frecuente): `Problema.tsx` acepta `grupos`; preguntas reescritas sin género ("por tu cuenta", "tus cuentas no estaban claras"). `docs/copy/landing.md` actualizado.
+- Veredicto landing: LISTA 36/40·16/20·copy 16/20 — margen cero en los tres ejes.
+- Para la próxima ronda (lista de pulidos): sin escena de dolor en el hero (idea del revisor: probar en A/B un titular que abra con la escena); medir clics/scroll por grupo antes de fijar el orden recibe→paga; "Padres separados" excluye a quien nunca convivió con la otra persona (vigilar métricas); prueba social real cuando haya clientes.

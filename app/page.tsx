@@ -53,8 +53,8 @@ export default function Home() {
         ]}
         // Promesa en dos tiempos (FICHA-AVATAR: dolor = caos de gastos + acusaciones; deseo = paz):
         // primero lo concreto que se resuelve, después lo que la persona quiere sentir.
-        h1Marked="Menos discusiones por dinero. [acento]Más calma[/acento] para tus hijos."
-        subtitleMarked="Tus comprobantes con fecha, en un solo lugar, [b]sin depender de la otra persona[/b]."
+        h1Marked="Padres separados: cada pago de la cuota alimentaria, con [acento]comprobante y fecha[/acento]"
+        subtitleMarked="Todo en un solo lugar, listo para mostrar, [b]sin depender de la otra persona[/b]."
         ctaLabel={CTA_LABEL}
         ctaHref={CTA_HREF}
         socialProof={
@@ -78,18 +78,27 @@ export default function Home() {
       {/* 2. PROBLEMA */}
       <Problema
         titulo="¿Te suena?"
-        preguntas={[
-          // 6 preguntas intercaladas (pedido del usuario, 2026-09-29): alternan el lado de quien
-          // RECIBE la cuota (dolores inferidos, sub-avatar secundario de FICHA-AVATAR.md) con el
-          // lado de quien PAGA (dolor ★ #1 de FICHA-AVATAR y los suyos, investigación original) —
-          // se quitó "¿Te reclaman pagos que ya hiciste...?" (pedido explícito, tachada por el
-          // usuario en su captura) para dejar espacio a las 3 nuevas sin superar el total de 6.
-          { icon: AlarmClock, textoMarked: '¿Te toca [b]perseguir la cuota[/b] cada mes para que llegue completa?' },
-          { icon: MessageCircleWarning, textoMarked: '¿Por más que pagas te siguen tratando de [b]"mala paga"[/b]?' },
-          { icon: Wallet, textoMarked: '¿Cubres tú [b]sola los gastos extra[/b] y nadie te lo reconoce?' },
-          { icon: ReceiptText, textoMarked: '¿Te piden dinero para gastos "urgentes" sin ningún soporte?' },
-          { icon: FileQuestion, textoMarked: '¿Te da miedo que digan que [b]no fuiste clara[/b] con las cuentas?' },
-          { icon: ShieldAlert, textoMarked: '¿Vives con miedo a una demanda que no sabrías cómo responder?' },
+        // Dos grupos de 3 (hallazgo 3 de la auditoría, decisión del dueño 2026-10-13): primero quien RECIBE
+        // la cuota —el dolor más frecuente de los futuros usuarios— y luego quien PAGA. Son las 6
+        // preguntas de siempre repartidas, sin preguntas nuevas; "sola" y "no fuiste clara" se
+        // reescribieron para no asumir el género de quien lee.
+        grupos={[
+          {
+            encabezado: 'Si recibes la cuota',
+            preguntas: [
+              { icon: AlarmClock, textoMarked: '¿Te toca [b]perseguir la cuota[/b] cada mes para que llegue completa?' },
+              { icon: Wallet, textoMarked: '¿Cubres [b]los gastos extra por tu cuenta[/b] y nadie te lo reconoce?' },
+              { icon: FileQuestion, textoMarked: '¿Te da miedo que digan que [b]tus cuentas no estaban claras[/b]?' },
+            ],
+          },
+          {
+            encabezado: 'Si pagas la cuota',
+            preguntas: [
+              { icon: MessageCircleWarning, textoMarked: '¿Por más que pagas te siguen tratando de [b]"mala paga"[/b]?' },
+              { icon: ReceiptText, textoMarked: '¿Te piden dinero para gastos "urgentes" sin ningún soporte?' },
+              { icon: ShieldAlert, textoMarked: '¿Vives con miedo a una demanda que no sabrías cómo responder?' },
+            ],
+          },
         ]}
       />
 

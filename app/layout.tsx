@@ -18,9 +18,9 @@ const ibmPlexSans = IBM_Plex_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Coparentia — Tu expediente, en confianza",
+  title: "Coparentia — Cuota alimentaria para padres separados",
   description:
-    "El expediente digital que convierte tus pagos y comprobantes en pruebas organizadas, sin depender de que nadie más la use.",
+    "El expediente digital para padres separados: cada pago de la cuota alimentaria con su comprobante y su fecha, organizado en un solo lugar y sin depender de la otra persona.",
   // iPhone/Safari NO lee app/manifest.ts (esa es la parte de Android/Chrome): sin estas 3 líneas,
   // "Agregar a inicio" en iOS deja un acceso directo que sigue abriendo Safari con su barra completa
   // — con ellas, abre a pantalla completa como cualquier app instalada (2026-09-24, PWA instalable).

@@ -14,16 +14,20 @@ sin pelear por WhatsApp.
 3. Queda en tu expediente — listo para exportar cuando lo necesites.
 
 ## 1. HERO
-- H1 (marcado): "Tu cuota, [acento]pagada y probada[/acento]"
-- Subtítulo (marcado): "El Sello de Confianza convierte tus comprobantes en un expediente [b]listo para mostrar[/b]"
+- H1 (marcado): "Padres separados: cada pago de la cuota alimentaria, con [acento]comprobante y fecha[/acento]" (hallazgo 3, 2026-10-13; el titular "Padres separados, unidos por sus hijos: cuota alimentaria clara y documentada" salió NO LISTA —copy 15/20, "unidos" choca con el diferenciador unilateral—; antes de ambos: "Menos discusiones por dinero. Más calma para tus hijos.")
+- Subtítulo (marcado): "Todo en un solo lugar, listo para mostrar, [b]sin depender de la otra persona[/b]."
 - CTA: "Crear mi expediente gratis" → /onboarding
 - Social proof: 7 días de prueba gratis — cancela cuando quieras
 - Visual: placeholder del dashboard (pantalla principal — "Tu expediente, en confianza")
 
-## 2. PROBLEMA
-- "¿Te reclaman pagos que ya hiciste y no encuentras el comprobante?"
-- "¿No tienes clara tu fecha de pago o cuándo aumenta tu cuota?"
-- "¿Te piden dinero para gastos 'urgentes' sin ningún soporte?"
+## 2. PROBLEMA — "¿Te suena?" en dos grupos de 3 (hallazgo 3, 2026-10-13)
+### Si recibes la cuota
+- "¿Te toca [b]perseguir la cuota[/b] cada mes para que llegue completa?"
+- "¿Cubres [b]los gastos extra por tu cuenta[/b] y nadie te lo reconoce?"
+- "¿Te da miedo que digan que [b]tus cuentas no estaban claras[/b]?"
+### Si pagas la cuota
+- "¿Por más que pagas te siguen tratando de [b]"mala paga"[/b]?"
+- "¿Te piden dinero para gastos "urgentes" sin ningún soporte?"
 - "¿Vives con miedo a una demanda que no sabrías cómo responder?"
 
 ## 3. AGITACIÓN
