@@ -37,7 +37,7 @@ import {
   formatoFechaLarga,
   formatoFechaCorta,
 } from '@/lib/datos';
-import { hoyEnColombia } from '@/lib/fecha';
+import { hoyEnColombia, fechaDePagoCorta, fechaDeCarga } from '@/lib/fecha';
 import { obtenerPerfil, obtenerHijos, edadTexto, type Perfil, type Hijo } from '@/lib/perfil';
 import { crearClienteSupabase } from '@/lib/supabase/client';
 import { periodoTexto } from '@/lib/constancias';
@@ -294,9 +294,10 @@ export async function exportarExpedientePdf(
   } else {
     doc.setTextColor(110);
     doc.setFontSize(9);
-    doc.text('Fecha', MARGEN, y);
-    doc.text('Concepto', MARGEN + 110, y);
-    doc.text('Monto', MARGEN + 330, y);
+    doc.text('Fecha del pago', MARGEN, y);
+    doc.text('Registrado el', MARGEN + 80, y);
+    doc.text('Concepto', MARGEN + 150, y);
+    doc.text('Monto', MARGEN + 340, y);
     doc.text('Prueba', MARGEN + 430, y);
     y += 14;
     doc.setFontSize(10);
@@ -307,11 +308,15 @@ export async function exportarExpedientePdf(
       const esFoto = p.comprobantePath && !p.comprobanteNombre.toLowerCase().endsWith('.pdf');
       if (esFoto) numeroAnexo += 1;
       doc.setTextColor(40);
-      doc.text(formatoFechaLarga(p.fecha), MARGEN, y);
+      doc.text(fechaDePagoCorta(p.fecha), MARGEN, y);
+      // "Registrado el": cuándo se SUBIÓ (la fija el servidor); puede ser posterior a la fecha del pago.
+      doc.setTextColor(110);
+      doc.text(p.registradoEl ? fechaDeCarga(p.registradoEl) : '—', MARGEN + 80, y);
+      doc.setTextColor(40);
       // El concepto (con el hijo, si lo tiene) se recorta para no invadir la columna del monto.
       const conceptoConHijo = p.hijoNombre ? `${p.concepto} — ${p.hijoNombre}` : p.concepto;
-      doc.text(doc.splitTextToSize(conceptoConHijo, 200)[0], MARGEN + 110, y);
-      doc.text(formatoCOP(p.monto), MARGEN + 330, y);
+      doc.text(doc.splitTextToSize(conceptoConHijo, 180)[0], MARGEN + 150, y);
+      doc.text(formatoCOP(p.monto), MARGEN + 340, y);
       doc.setTextColor(110);
       doc.text(
         esFoto ? `Anexo ${numeroAnexo}` : p.comprobantePath ? 'PDF aparte' : '—',
@@ -571,10 +576,14 @@ export async function exportarExpedientePdf(
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(10);
     doc.setTextColor(60);
-    doc.text(`${formatoFechaLarga(p.fecha)} · ${p.concepto}${p.hijoNombre ? ` · ${p.hijoNombre}` : ''} · ${formatoCOP(p.monto)}`, MARGEN, y);
+    doc.text(`Fecha del pago: ${formatoFechaLarga(p.fecha)} · ${p.concepto}${p.hijoNombre ? ` · ${p.hijoNombre}` : ''} · ${formatoCOP(p.monto)}`, MARGEN, y);
     y += 14;
     doc.setTextColor(140);
     doc.setFontSize(9);
+    if (p.registradoEl) {
+      doc.text(`Registrado el: ${fechaDeCarga(p.registradoEl, true)}`, MARGEN, y);
+      y += 14;
+    }
     doc.text(`Archivo original: ${p.comprobanteNombre}`, MARGEN, y);
     y += 18;
     doc.setFontSize(10);

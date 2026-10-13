@@ -9,6 +9,7 @@ import { useEffect, useRef, useState } from 'react';
 import { motion, useReducedMotion } from 'motion/react';
 import { Upload, Check, CalendarClock, ShieldCheck, ChevronRight, FileCheck2, Globe, Wallet, HandCoins, CalendarDays, FolderOpen, Scale, ReceiptText, Phone, Video } from 'lucide-react';
 import { VistaPreviaArchivo } from '@/components/app/VistaPreviaArchivo';
+import { CampoFechaPago } from '@/components/app/CampoFechaPago';
 import { BarraAtras, Halo } from '@/components/funnel/ui';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -29,7 +30,7 @@ import {
   formatoFechaLarga,
   validarArchivoAdjunto,
 } from '@/lib/datos';
-import { hoyEnColombia, mesEnColombia, diaDelMesEnColombia } from '@/lib/fecha';
+import { hoyEnColombia, mesEnColombia, diaDelMesEnColombia, errorFechaDePago } from '@/lib/fecha';
 import { type NotificacionApp, obtenerNotificacionesSinLeer, marcarNotificacionLeida } from '@/lib/notificaciones-app';
 import { Bell } from 'lucide-react';
 
@@ -110,6 +111,9 @@ function PrimerosPasos({ onListo }: { onListo: () => void }) {
   // donde sí queda guardado de verdad, para poder diferenciar el recordatorio de notificaciones.
   const [rolPago, setRolPago] = useState<'paga' | 'recibe' | ''>('');
   const [archivo, setArchivo] = useState<File | null>(null);
+  // La fecha en que se PAGÓ (hoy por defecto; la persona puede elegir un día anterior). Aparte, el
+  // servidor anota cuándo se subió el comprobante.
+  const [fechaPago, setFechaPago] = useState(hoyEnColombia);
   const [procesando, setProcesando] = useState(false);
   const [errorSubida, setErrorSubida] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -178,11 +182,16 @@ function PrimerosPasos({ onListo }: { onListo: () => void }) {
       setErrorSubida(errorValidacion);
       return;
     }
+    const errorFecha = errorFechaDePago(fechaPago);
+    if (errorFecha) {
+      setErrorSubida(errorFecha);
+      return;
+    }
     setErrorSubida(null);
     setProcesando(true);
     agregarPago(
       {
-        fecha: hoyEnColombia(),
+        fecha: fechaPago,
         monto: Number(monto) || 0,
         concepto: 'Primer comprobante registrado',
         tipo: 'cuota',
@@ -315,6 +324,8 @@ function PrimerosPasos({ onListo }: { onListo: () => void }) {
               if (f) elegirArchivo(f);
             }}
           />
+
+          {archivo && !procesando && <CampoFechaPago valor={fechaPago} onCambio={setFechaPago} className="mt-6 w-full text-left" />}
 
           {/* Vista previa: la persona VE la foto antes de que entre a su expediente. */}
           {archivo && !procesando && (

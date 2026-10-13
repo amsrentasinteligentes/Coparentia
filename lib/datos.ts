@@ -33,7 +33,8 @@ export interface Titulo {
 
 export interface Pago {
   id: string;
-  fecha: string; // ISO
+  fecha: string; // ISO — la FECHA DEL PAGO, la que elige la persona (decide a qué mes pertenece)
+  registradoEl?: string; // ISO con hora — cuándo se SUBIÓ (created_at, lo fija el servidor; nunca se envía)
   monto: number;
   concepto: string;
   tipo: TipoMovimiento;
@@ -113,10 +114,12 @@ function mapPago(row: {
   comprobante_path: string | null;
   hijo_id?: string | null;
   hijos?: HijoEmbebido;
+  created_at?: string | null;
 }): Pago {
   return {
     id: row.id,
     fecha: row.fecha,
+    registradoEl: row.created_at ?? undefined,
     monto: Number(row.monto),
     concepto: row.concepto,
     tipo: row.tipo,
@@ -346,7 +349,9 @@ export async function obtenerUrlArchivo(ruta: string): Promise<string | null> {
   return data.signedUrl;
 }
 
-export async function agregarPago(pago: Omit<Pago, 'id' | 'comprobantePath' | 'hijoNombre'>, archivo: File): Promise<Pago> {
+// `pago.fecha` es la fecha del pago que eligió la persona. La fecha de carga (`created_at`) NO se envía:
+// la fija la base con su reloj (supabase/pagos-fecha-del-pago.sql), así el navegador no puede alterarla.
+export async function agregarPago(pago: Omit<Pago, 'id' | 'comprobantePath' | 'hijoNombre' | 'registradoEl'>, archivo: File): Promise<Pago> {
   const { supabase, userId } = await usuarioActual();
   const rutaComprobante = await subirArchivoPrivado(userId, 'pagos', archivo);
   const { data, error } = await supabase

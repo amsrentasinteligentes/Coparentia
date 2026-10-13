@@ -15,6 +15,7 @@ import { Portal } from '@/components/app/Portal';
 import { SelloConfianza } from '@/components/app/SelloConfianza';
 import { VistaPreviaArchivo } from '@/components/app/VistaPreviaArchivo';
 import { SelectorHijo, useHijos, inicialHijo, type ValorHijo } from '@/components/app/SelectorHijo';
+import { CampoFechaPago } from '@/components/app/CampoFechaPago';
 import { type Hijo } from '@/lib/perfil';
 import {
   type Pago,
@@ -29,7 +30,7 @@ import {
   formatoFechaLarga,
   validarArchivoAdjunto,
 } from '@/lib/datos';
-import { hoyEnColombia, mesEnColombia, diaDelMesEnColombia, anioEnColombia, claveMes, nombreMes } from '@/lib/fecha';
+import { hoyEnColombia, mesEnColombia, diaDelMesEnColombia, anioEnColombia, claveMes, nombreMes, errorFechaDePago } from '@/lib/fecha';
 import { leerMontoDeRecibo } from '@/lib/ocr-recibo';
 import { comprimirParaLectura } from '@/lib/comprimir-imagen';
 
@@ -214,7 +215,7 @@ export default function Pagos() {
                     {titulo ? formatoCOP(cuotaDelMes?.monto ?? titulo.montoMensual) : '—'}
                   </p>
                   <p className="text-[11.5px] text-[var(--text-secondary)]">
-                    {cuotaDelMes ? `Registrada el ${formatoFechaLarga(cuotaDelMes.fecha)}` : titulo ? `Vence el día ${titulo.diaPago}` : 'Define tu cuota en Ajustes'}
+                    {cuotaDelMes ? `Pagada el ${formatoFechaLarga(cuotaDelMes.fecha)}` : titulo ? `Vence el día ${titulo.diaPago}` : 'Define tu cuota en Ajustes'}
                   </p>
                 </div>
               </div>
@@ -404,7 +405,7 @@ export default function Pagos() {
                           <p className="truncate text-[13.5px] font-bold text-[var(--text-primary)]">{p.concepto}</p>
                           <p className="truncate text-[11.5px] text-[var(--text-secondary)]">
                             {p.hijoNombre && <span className="font-semibold text-[var(--accent-ink,var(--accent))]">{p.hijoNombre} · </span>}
-                            Registrado el {formatoFechaLarga(p.fecha)}
+                            Pagado el {formatoFechaLarga(p.fecha)}
                           </p>
                         </div>
                         <p className="shrink-0 text-[13.5px] font-extrabold tabular-nums text-[var(--text-primary)]">{formatoCOP(p.monto)}</p>
@@ -502,6 +503,7 @@ function ModalRegistro({ hijos, onCerrar, onGuardado }: { hijos: Hijo[]; onCerra
   const hijoId: ValorHijo = hijoElegido !== undefined ? hijoElegido : tipo === 'gasto_extra' && hijos.length === 1 ? hijos[0].id : null;
   const [monto, setMonto] = useState('');
   const [concepto, setConcepto] = useState('');
+  const [fechaPago, setFechaPago] = useState(hoyEnColombia);
   const [archivo, setArchivo] = useState<File | null>(null);
   const [procesando, setProcesando] = useState(false);
   const [leyendoRecibo, setLeyendoRecibo] = useState(false);
@@ -562,6 +564,11 @@ function ModalRegistro({ hijos, onCerrar, onGuardado }: { hijos: Hijo[]; onCerra
       setFaltante('Falta el monto.');
       return;
     }
+    const errorFecha = errorFechaDePago(fechaPago);
+    if (errorFecha) {
+      setFaltante(errorFecha);
+      return;
+    }
     if (!archivo) {
       setFaltante('Falta el comprobante: adjunta la foto o el PDF.');
       return;
@@ -570,7 +577,7 @@ function ModalRegistro({ hijos, onCerrar, onGuardado }: { hijos: Hijo[]; onCerra
     setProcesando(true);
     agregarPago(
       {
-        fecha: hoyEnColombia(),
+        fecha: fechaPago,
         monto: Number(monto),
         concepto: concepto.trim(),
         tipo,
@@ -673,6 +680,8 @@ function ModalRegistro({ hijos, onCerrar, onGuardado }: { hijos: Hijo[]; onCerra
           }}
           className="mt-2 h-12 w-full rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--bg)] px-4 text-[15px] tabular-nums text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)]"
         />
+
+        <CampoFechaPago valor={fechaPago} onCambio={setFechaPago} className="mt-4" />
 
         <input
           ref={inputRef}

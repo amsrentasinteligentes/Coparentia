@@ -17,6 +17,7 @@
 import { Resend } from 'resend';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { pdfConstancia } from '@/lib/pdf-constancia';
+import { fechaEnColombia } from '@/lib/fecha';
 
 const REMITENTE_AVISOS = 'Coparentia · Constancias <avisos@coparentia.co>';
 const URL_APP = 'https://coparentia.co';
@@ -36,7 +37,8 @@ export interface ResumenConstancia {
   totalRegistrado: number;
   contactos: number;
   contactosContestados: number;
-  movimientos: { fecha: string; concepto: string; monto: number; tipo: string }[];
+  // `fecha` = fecha del pago (la que eligió la persona); `registrado` = cuándo se subió (la fija el servidor).
+  movimientos: { fecha: string; registrado: string; concepto: string; monto: number; tipo: string }[];
   hijos: string[];
 }
 
@@ -85,7 +87,7 @@ export async function armarResumen(
   const hasta = `${mes === 12 ? anio + 1 : anio}-${String(mes === 12 ? 1 : mes + 1).padStart(2, '0')}-01`;
 
   const [{ data: pagos }, { data: eventos }, { data: hijos }] = await Promise.all([
-    supabase.from('pagos').select('fecha, concepto, monto, tipo, hijo_id').eq('user_id', userId).is('eliminado_en', null).gte('fecha', desde).lt('fecha', hasta).order('fecha'),
+    supabase.from('pagos').select('fecha, created_at, concepto, monto, tipo, hijo_id').eq('user_id', userId).is('eliminado_en', null).gte('fecha', desde).lt('fecha', hasta).order('fecha'),
     supabase.from('eventos').select('tipo, resultado, hijo_id').eq('user_id', userId).gte('fecha', desde).lt('fecha', hasta),
     supabase.from('hijos').select('nombre').eq('user_id', userId),
   ]);
@@ -110,7 +112,7 @@ export async function armarResumen(
     totalRegistrado: lista.reduce((acc, p) => acc + Number(p.monto), 0),
     contactos: contactos.length,
     contactosContestados: contactos.filter((c) => c.resultado === 'contestada').length,
-    movimientos: lista.map((p) => ({ fecha: p.fecha, concepto: p.concepto, monto: Number(p.monto), tipo: p.tipo })),
+    movimientos: lista.map((p) => ({ fecha: p.fecha, registrado: p.created_at, concepto: p.concepto, monto: Number(p.monto), tipo: p.tipo })),
     hijos: hijo ? [hijo.nombre] : (hijos ?? []).map((h) => h.nombre),
   };
 }
@@ -127,7 +129,7 @@ function cuerpoHtml(resumen: ResumenConstancia, remitenteNombre: string, destina
     .map(
       (m) => `
         <tr>
-          <td style="padding:8px 0;color:#4b5c78;font-size:14px;white-space:nowrap;">${fechaCorta(m.fecha)}</td>
+          <td style="padding:8px 0;color:#4b5c78;font-size:14px;white-space:nowrap;">Pagado el ${fechaCorta(m.fecha)}<br><span style="font-size:12px;color:#7b8aa3;">Registrado el ${m.registrado ? fechaCorta(fechaEnColombia(new Date(m.registrado))) : '—'}</span></td>
           <td style="padding:8px 12px;color:#14233a;font-size:14px;">${escapar(m.concepto)}</td>
           <td style="padding:8px 0;color:#14233a;font-size:14px;text-align:right;white-space:nowrap;"><strong>${pesos(m.monto)}</strong></td>
         </tr>`

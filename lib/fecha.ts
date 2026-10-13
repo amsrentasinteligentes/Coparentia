@@ -71,6 +71,51 @@ export function inicioDelMesColombiaUTC(): string {
   return inicioDelDiaColombiaUTC(`${mesEnColombia()}-01`);
 }
 
+/** Valida la "fecha del pago" que elige la persona. Devuelve el mensaje de error o `null` si está bien.
+ *  La misma regla la aplica la base al guardar (supabase/pagos-fecha-del-pago.sql): aquí solo se
+ *  avisa antes, con palabras, en vez de dejar que falle al subir. */
+export function errorFechaDePago(fecha: string): string | null {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(fecha) || Number.isNaN(Date.parse(`${fecha}T12:00:00Z`))) {
+    return 'Falta la fecha del pago: elige el día en que pagaste.';
+  }
+  if (fecha > hoyEnColombia()) return 'La fecha del pago no puede ser futura: elige hoy o un día anterior.';
+  return null;
+}
+
+/** Arma "12 oct 2026" (y, con `conHora`, "12 oct 2026, 2:09 p. m.") POR PARTES, en hora de Colombia. El formato
+ *  de idioma de es-CO mete "de" entre las partes ("12 de oct de 2026"), que no cabe en las columnas de los
+ *  PDF; pidiendo cada parte por nombre el resultado es corto y es el mismo en cualquier navegador. */
+function fechaCortaConAnio(d: Date, conHora: boolean): string {
+  const partes = new Intl.DateTimeFormat('es-CO', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    ...(conHora ? { hour: 'numeric', minute: '2-digit', hour12: true } : {}),
+    timeZone: ZONA,
+  }).formatToParts(d);
+  // Los espacios "especiales" (U+00A0, U+202F) que a veces trae el idioma se pasan a espacio normal: la
+  // letra estándar de los PDF (Helvetica) no sabe dibujar U+202F y saldría un carácter roto.
+  const v = (tipo: Intl.DateTimeFormatPartTypes): string =>
+    (partes.find((p) => p.type === tipo)?.value ?? '').replace(/[  ]/g, ' ');
+  const fecha = `${v('day')} ${v('month').replace('.', '')} ${v('year')}`;
+  return conHora ? `${fecha}, ${v('hour')}:${v('minute')} ${v('dayPeriod')}` : fecha;
+}
+
+/** La fecha de un pago ("AAAA-MM-DD") en formato corto con año: "12 oct 2026". Es la fecha que ELIGIÓ la persona. */
+export function fechaDePagoCorta(fecha: string): string {
+  const d = new Date(`${fecha}T12:00:00-05:00`);
+  if (Number.isNaN(d.getTime())) return '—';
+  return fechaCortaConAnio(d, false);
+}
+
+/** El instante en que se SUBIÓ un registro (`created_at`), en hora de Colombia: "13 oct 2026" o, con
+ *  `conHora`, "13 oct 2026, 2:09 p. m.". Es la fecha de carga: la pone el servidor, no la persona. */
+export function fechaDeCarga(instanteISO: string, conHora = false): string {
+  const d = new Date(instanteISO);
+  if (Number.isNaN(d.getTime())) return '—';
+  return fechaCortaConAnio(d, conHora);
+}
+
 /** "2026-09" a partir de un Date — para comparar contra `fecha.slice(0, 7)` de un registro guardado.
  *  Compartido entre Calendario y Pagos: ambos navegan sus listas mes a mes (regla 13 del SO). */
 export function claveMes(d: Date): string {

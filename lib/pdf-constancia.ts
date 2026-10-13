@@ -10,6 +10,7 @@
 
 import { jsPDF } from 'jspdf';
 import type { ResumenConstancia } from '@/lib/constancias';
+import { fechaDeCarga, fechaDePagoCorta } from '@/lib/fecha';
 
 const ANCHO = 612;
 const ALTO = 792;
@@ -22,11 +23,6 @@ function pesos(valor: number): string {
 
 function fechaLarga(iso: string): string {
   return new Date(`${iso}T12:00:00`).toLocaleDateString('es-CO', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'America/Bogota' });
-}
-
-/** Fecha corta para las filas de la tabla ("18 sept"): la larga no cabe en su columna. */
-function fechaFila(iso: string): string {
-  return new Date(`${iso}T12:00:00`).toLocaleDateString('es-CO', { day: 'numeric', month: 'short', timeZone: 'America/Bogota' }).replace('.', '');
 }
 
 /** Devuelve el PDF en base64, listo para adjuntarlo al correo. */
@@ -118,19 +114,24 @@ export function pdfConstancia(
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(9);
     doc.setTextColor(110);
-    doc.text('Fecha', MARGEN, y);
-    doc.text('Concepto', MARGEN + 80, y);
-    doc.text('Tipo', MARGEN + 330, y);
+    doc.text('Fecha del pago', MARGEN, y);
+    doc.text('Registrado el', MARGEN + 76, y);
+    doc.text('Concepto', MARGEN + 146, y);
+    doc.text('Tipo', MARGEN + 340, y);
     doc.text('Monto', ANCHO - MARGEN, y, { align: 'right' });
     y += 14;
     doc.setFontSize(10);
     resumen.movimientos.forEach((m) => {
       salto(16);
       doc.setTextColor(40);
-      doc.text(fechaFila(m.fecha), MARGEN, y);
-      doc.text(doc.splitTextToSize(m.concepto, 230)[0], MARGEN + 80, y);
+      // Fecha del pago (la que eligió la persona), corta con año: la larga no cabe en su columna.
+      doc.text(fechaDePagoCorta(m.fecha), MARGEN, y);
       doc.setTextColor(110);
-      doc.text(m.tipo === 'cuota' ? 'Cuota' : 'Gasto extra', MARGEN + 330, y);
+      doc.text(m.registrado ? fechaDeCarga(m.registrado) : '—', MARGEN + 76, y);
+      doc.setTextColor(40);
+      doc.text(doc.splitTextToSize(m.concepto, 185)[0], MARGEN + 146, y);
+      doc.setTextColor(110);
+      doc.text(m.tipo === 'cuota' ? 'Cuota' : 'Gasto extra', MARGEN + 340, y);
       doc.setTextColor(20);
       doc.text(pesos(m.monto), ANCHO - MARGEN, y, { align: 'right' });
       y += 16;
