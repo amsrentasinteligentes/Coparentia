@@ -18,6 +18,8 @@ import Link from 'next/link';
 import { ContenedorApp, Tarjeta, IconoCirculo, TarjetaSkeleton, ErrorDeCarga, CabeceraApp, TituloSeccion, Pildora } from '@/components/app/ui';
 import { obtenerPagos, obtenerTitulo, formatoCOP, type Titulo } from '@/lib/datos';
 import { crearClienteSupabase } from '@/lib/supabase/client';
+import { obtenerEstadoPlan } from '@/lib/suscripcion';
+import { textoPlanActual } from '@/lib/estado-plan';
 import {
   type Perfil, type Hijo, type RolFamiliar,
   obtenerPerfil, guardarPerfil, guardarAvatar, quitarAvatar, urlFoto,
@@ -93,6 +95,7 @@ export default function PerfilPage() {
   const [hijos, setHijos] = useState<Hijo[]>([]);
   const [titulo, setTitulo] = useState<Titulo | null>(null);
   const [nComprobantes, setNComprobantes] = useState<number | null>(null);
+  const [planTexto, setPlanTexto] = useState<string | null>(null);
   const [cargando, setCargando] = useState(true);
   const [fallo, setFallo] = useState(false);
   const [intento, setIntento] = useState(0);
@@ -119,10 +122,11 @@ export default function PerfilPage() {
     let vigente = true;
     setCargando(true);
     setFallo(false);
-    Promise.all([obtenerPerfil(), obtenerHijos(), obtenerPagos(), obtenerTitulo()])
-      .then(([p, h, pagos, t]) => {
+    Promise.all([obtenerPerfil(), obtenerHijos(), obtenerPagos(), obtenerTitulo(), obtenerEstadoPlan()])
+      .then(([p, h, pagos, t, plan]) => {
         if (!vigente) return;
         setPerfil(p); setHijos(h); setNComprobantes(pagos.length); setTitulo(t);
+        setPlanTexto(plan ? textoPlanActual(plan) : null);
         setNombre(p.nombre); setRol(p.rolFamiliar); setOtro(p.otroProgenitorNombre); setOtroEmail(p.otroProgenitorEmail);
         setCargando(false);
       })
@@ -411,7 +415,7 @@ export default function PerfilPage() {
               </Tarjeta>
               <Tarjeta indice={4} className="flex flex-col gap-2 p-3">
                 <IconoCirculo icon={Crown} size={18} tono="pendiente" />
-                <div><p className="text-[11px] text-[var(--text-secondary)]">Plan actual</p><p className="text-[13px] font-extrabold leading-tight text-[var(--text-primary)]">Suscripción activa</p></div>
+                <div><p className="text-[11px] text-[var(--text-secondary)]">Plan actual</p><p className="text-[13px] font-extrabold leading-tight text-[var(--text-primary)]">{planTexto ?? 'Plan no disponible'}</p></div>
               </Tarjeta>
             </div>
 

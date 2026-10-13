@@ -10,6 +10,7 @@ import crypto from 'node:crypto';
 import { createClient } from '@supabase/supabase-js';
 import { verificarHotmart } from '@/lib/hotmart-verify';
 import { estadoParaEvento, tieneAccesoCompleto, type Status } from '@/lib/membership-fsm';
+import { evaluarProducto } from '@/lib/hotmart-catalogo';
 import { enviarCorreoBienvenida, enviarCorreoCancelacion, enviarCorreoPagoFallido } from '@/lib/email';
 import { TRIAL_DIAS } from '@/lib/precios';
 
@@ -35,6 +36,18 @@ async function registrar(eventId: string | null, tipo: string | null, resultado:
     await admin.from('hotmart_webhook_log').insert({ event_id: eventId, event_type: tipo, result: resultado });
   } catch {
     // Nunca dejar que un fallo al REGISTRAR tumbe la respuesta al aviso real.
+  }
+}
+
+/** Guarda la fecha del próximo cobro (la usa Perfil). Es informativa: si falla, el aviso igual se aplicó. */
+async function guardarProximoCobro(email: string | null | undefined, subscriberCode: string | undefined, milisegundos: number): Promise<void> {
+  if (!Number.isFinite(milisegundos) || milisegundos <= 0 || (!email && !subscriberCode)) return;
+  try {
+    const cambio = admin.from('suscripciones').update({ next_charge_at: new Date(milisegundos).toISOString() });
+    const { error } = await (email ? cambio.eq('email', email) : cambio.eq('hotmart_subscriber_code', subscriberCode ?? ''));
+    if (error) console.error('webhook hotmart: no se guardó next_charge_at', { code: error.code }); // sin datos personales
+  } catch {
+    // Un fallo aquí no debe tumbar la respuesta a Hotmart.
   }
 }
 
@@ -87,20 +100,27 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
   // 4b. CATÁLOGO — que el aviso sea de Hotmart de verdad no significa que sea de TU producto: si
   //     la cuenta llega a vender algo más (un bump, otro curso) bajo el mismo hottok, un aviso de
-  //     ESA venta daría acceso a Coparentia igual, porque nada comparaba qué se compró (hallazgo
-  //     de auditoría externa, 2026-09-25). Solo se activa si HOTMART_PRODUCT_ID está configurada
-  //     — a propósito NO falla cerrado por defecto: sin la variable, esta cuenta hoy solo vende
-  //     Coparentia por Hotmart, y bloquear todo por una variable que aún no existe cortaría cobros
-  //     reales. Configúrala en cuanto tengas el ID (Hotmart → Productos → el tuyo → código junto
-  //     al nombre) para cerrar el hueco del todo.
-  const productoEsperado = process.env.HOTMART_PRODUCT_ID;
+  //     ESA venta daría acceso a Coparentia igual (hallazgo de auditoría externa, 2026-09-25).
+  //     Desde 2026-10-13 HOTMART_PRODUCT_ID es OBLIGATORIA: sin ella el webhook rechaza todo aviso
+  //     y lo registra, igual que cuando falta HOTMART_HOTTOK (falla cerrada). Con ella, un aviso de
+  //     otro producto —o sin producto, cuando daría acceso— no da acceso (ver lib/hotmart-catalogo.ts).
+  const nuevoEstado = estadoParaEvento(evento, montoPagado);
   const productoRecibido = data.product?.id != null ? String(data.product.id) : undefined;
-  if (productoEsperado && productoRecibido && productoRecibido !== productoEsperado) {
+  const veredictoProducto = evaluarProducto(
+    process.env.HOTMART_PRODUCT_ID,
+    productoRecibido,
+    nuevoEstado === 'trialing' || nuevoEstado === 'active'
+  );
+  if (veredictoProducto === 'config_faltante') {
+    console.error('webhook hotmart: falta HOTMART_PRODUCT_ID — todo aviso se rechaza hasta configurarla');
+    await registrar(eventId, evento, 'unauthorized');
+    return NextResponse.json({ error: 'unauthorized' }, { status: 401 }); // 4xx/5xx → Hotmart reintenta: no se pierde el aviso
+  }
+  if (veredictoProducto === 'ajeno') {
     await registrar(eventId, evento, 'illegal');
     return NextResponse.json({ received: true, resultado: 'illegal' }); // 200: no es un error de Hotmart, es un producto ajeno
   }
 
-  const nuevoEstado = estadoParaEvento(evento, montoPagado);
   if (!nuevoEstado || (!email && !subscriberCode)) {
     // Evento que no cambia el acceso (SWITCH_PLAN, uno aún no mapeado) o sin ninguna forma de
     // identificar a quién aplica: se reconoce con 200 (Hotmart deja de reintentar), nunca se
@@ -160,6 +180,11 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
           ? 'no_match'
           : 'illegal';
   await registrar(eventId, evento, resultado);
+
+  // 7. PRÓXIMO COBRO — solo en un cobro real aplicado; es informativo para Perfil, nunca decide el acceso.
+  if (resultado === 'applied' && nuevoEstado === 'active' && fechaProximoCobro) {
+    await guardarProximoCobro(respuestaRpc?.email ?? email, subscriberCode, Number(fechaProximoCobro));
+  }
 
   // 8. CORREOS — solo cuando el aviso de verdad se APLICÓ (nunca en duplicados: Hotmart reenvía
   //    "aprobada" y "completa" para la MISMA compra, y sin este filtro se mandarían 2 bienvenidas).
