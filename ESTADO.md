@@ -4582,3 +4582,19 @@ Se hacen juntos al tocar la sección de planes (hallazgos 3 y 9), para revisar u
 - Probado: 21 casos ficticios con node (catálogo y textos) todos OK; tsc y build OK; textos caben en la tarjeta de Perfil (capturas). NO probado: el webhook real (necesita BD y Hotmart) ni Perfil con una cuenta real.
 - ORDEN OBLIGATORIO PARA PUBLICAR: (1) correr el SQL en Supabase; (2) guardar `HOTMART_PRODUCT_ID=8501878` en Vercel (Production); (3) recién entonces push → deploy. Si se publica el código antes de la variable, el webhook rechaza TODOS los avisos (incluidos los de clientes reales).
 - Pendiente (esperan la compra real): punto 2 (fecha de fin al cancelar y guardar mensual/anual), punto 3 (prueba vs primer cobro) y los criterios con Hotmart real.
+
+### Checkpoint (2026-10-13) — Cobros de Hotmart, puntos 1 y 4 PUBLICADOS (888eb1e); verificando con "Enviar test"
+- HOTMART_PRODUCT_ID=8501878 guardada en Vercel (Secret). El dueño pulsó "Enviar test" en Hotmart: el historial muestra los 7 eventos de prueba con "200 - Procesado" (producto de ejemplo "Produto test postback2").
+- Falta confirmar en `hotmart_webhook_log` el `result` de esos eventos (se espera `illegal` por producto de ejemplo, lo cual es correcto).
+- Siguiente: compra de prueba real (mensual con correo propio no administrador) para cerrar puntos 2 y 3.
+
+### Checkpoint (2026-10-13) — Compra de prueba mensual en curso (alejo.mu100@gmail.com)
+- Compra aprobada en Hotmart con periodo gratis de 7 días (HP2806991400). Llegó el correo de Coparentia ("Tu acceso ya está listo") y 2 de Hotmart.
+- Pendiente de Hotmart (config del dueño, no de la app): el correo de Hotmart dice al comprador "define una contraseña para entrar a la plataforma Hotmart" y llama "curso" a Coparentia → confunde; revisar tipo de entrega/área de miembros. También muestra arqmunoz10@hotmail.com como contacto del productor.
+- Falta: ver `result` en hotmart_webhook_log (esperado applied), Perfil "En prueba", correo de Coparentia (día 8), datos del evento en Historial de webhook; luego cancelar antes del día 8 para el punto 2.
+
+### Checkpoint (2026-10-13) — Compra de prueba mensual real: puntos 2 y 3 cerrados con avisos reales
+- Inicio de prueba real: PURCHASE_APPROVED, precio 0 COP, recurrence_number 1, subscription.status ACTIVE, plan "Plan 1 Mensual", date_next_charge = día 8 (20/10). Perfil: "En prueba — termina el 20 de octubre". Webhook: applied. Correo de Coparentia: primer cobro 20 de octubre.
+- Cancelación real (SUBSCRIPTION_CANCELLATION): trae `data.date_next_charge` SUELTO (no en subscription/purchase), `data.subscriber.code/email`, sin transacción. Corregido en route.ts (lee esas rutas; quitado el PLACEHOLDER de 30 días). Falta: reenviar el evento desde Hotmart tras publicar y ver Perfil "Cancelada — acceso hasta el 20 de octubre".
+- Pendientes de Hotmart/producto: correo de Hotmart habla de "curso" y de definir contraseña; el cliente debe iniciar sesión en Hotmart (código por correo) y llegar a "Mis compras → detalles → Configurar forma de pago → Cancelar suscripción" (texto gris pequeño): añadir una explicación en Perfil ("Suscripción y pagos"). Contacto del productor visible: arqmunoz10@hotmail.com (revisar). Reembolso: Hotmart muestra plazo hasta 27/10 (14 días) y el payload warranty_date 28/10; la página promete 15 días → revisar con el dueño. Perfil muestra "Octubre De 2026" (D mayúscula) → pulido.
+- Sin probar aún: cobro real día 8 y reembolso (hay que dejar cobrar o usar otra prueba).

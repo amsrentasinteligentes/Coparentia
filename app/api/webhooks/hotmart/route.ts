@@ -93,7 +93,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   const evento = String(cuerpo.event ?? '');
   const email: string | undefined = data.buyer?.email ?? data.subscriber?.email ?? data.subscription?.subscriber?.email;
   const nombre: string | undefined = data.buyer?.name;
-  const subscriberCode: string | undefined = data.subscription?.subscriber?.code;
+  const subscriberCode: string | undefined = data.subscription?.subscriber?.code ?? data.subscriber?.code;
   const montoPagado: number | null = data.purchase?.price?.value ?? null;
   const eventId: string =
     String(cuerpo.id ?? data.purchase?.transaction ?? `${evento}:${email ?? subscriberCode ?? 'sin-identificar'}:${tsCandidato ?? Date.now()}`);
@@ -130,13 +130,13 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   }
 
   // 5. Fechas derivadas. La fecha del PRÓXIMO cobro (para saber hasta cuándo dura el acceso tras
-  //    cancelar) se intenta leer del aviso; si Hotmart no la manda en este evento, se usa un
-  //    resguardo de 30 días.
-  //    ⚠️ PLACEHOLDER A CONFIRMAR: ajustar en cuanto se vea el aviso REAL de una cancelación de
-  //    prueba (ver la Prueba end-to-end antes de anunciar la venta).
+  //    cancelar) se lee del aviso. Confirmado con avisos REALES del 2026-10-13: en la compra viene en
+  //    data.subscription.date_next_charge / data.purchase.date_next_charge, y en la cancelación
+  //    (SUBSCRIPTION_CANCELLATION) viene suelta en data.date_next_charge. Si Hotmart no la manda,
+  //    se usa un resguardo de 30 días.
   const ahora = new Date();
   const trialEndsAt = nuevoEstado === 'trialing' ? new Date(ahora.getTime() + DIAS_PRUEBA * 86_400_000) : null;
-  const fechaProximoCobro: number | undefined = data.subscription?.date_next_charge ?? data.purchase?.date_next_charge;
+  const fechaProximoCobro: number | undefined = data.subscription?.date_next_charge ?? data.purchase?.date_next_charge ?? data.date_next_charge;
   const accessUntil =
     nuevoEstado === 'cancelled'
       ? fechaProximoCobro
