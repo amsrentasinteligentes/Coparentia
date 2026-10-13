@@ -266,7 +266,9 @@ export async function exportarExpedientePdf(
       ['Cuota mensual', formatoCOP(titulo.montoMensual)],
       ['Día de pago', `${titulo.diaPago} de cada mes`],
       ['Reajuste anual', titulo.indiceReajuste],
-      ['Vigente desde', formatoFechaLarga(titulo.fechaInicio)],
+      // Es el día en que se configuró la cuota en la app, no cuándo empezó la obligación (esa fecha la
+      // fija el acta o la sentencia): con recibos anteriores, "Vigente desde" afirmaba algo falso.
+      ['Registrado en la app desde', formatoFechaLarga(titulo.fechaInicio)],
       // El acta de conciliación o la sentencia es el documento que DA ORIGEN a todo lo demás:
       // quien recibe el expediente necesita saber de entrada si está o no (auditoría 2026-09-11).
       [

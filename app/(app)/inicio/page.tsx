@@ -512,7 +512,15 @@ function Dashboard() {
   // significaba nada. Ahora es cuántos meses lleva rigiendo el título, así que la cifra responde
   // algo real ("de los meses que llevas, cuántos tienes probados"). Tope de 12 para que el anillo
   // siga siendo legible en expedientes de años.
-  const metaMeses = titulo ? Math.min(mesesDesde(titulo.fechaInicio), 12) : 6;
+  // `fechaInicio` es el día en que se configuró la cuota en la app, NO cuándo empezó la obligación: quien
+  // sube recibos de meses anteriores tiene cuotas fechadas ANTES de ese día. Se cuenta desde la más antigua
+  // de las dos fechas, para no mostrar menos meses de los que de verdad tiene probados.
+  const primeraCuota = pagos.reduce<string | null>(
+    (min, p) => (p.tipo === 'cuota' && (min === null || p.fecha < min) ? p.fecha : min),
+    null
+  );
+  const inicioDeLaCuenta = titulo ? (primeraCuota !== null && primeraCuota < titulo.fechaInicio ? primeraCuota : titulo.fechaInicio) : null;
+  const metaMeses = inicioDeLaCuenta ? Math.min(mesesDesde(inicioDeLaCuenta), 12) : 6;
   const progreso = Math.round((Math.min(mesesConRegistro, metaMeses) / metaMeses) * 100);
 
   // LA PREGUNTA DIARIA: "¿voy al día ESTE mes?". Es para lo que se abre la app, y la pantalla no
