@@ -21,8 +21,9 @@ export default async function ArticuloPublico({ params }: { params: Promise<{ sl
   return (
     <main className="min-h-dvh bg-[var(--bg)] text-[var(--text-primary)] [font-family:var(--font-body)] px-6 py-16">
       <div className="mx-auto max-w-[70ch]">
-        <Link href="/#asistencia" className="text-sm text-[var(--text-secondary)] hover:text-[var(--accent)]">
-          ← Volver a Coparentia
+        {/* El directorio y los artículos viven ahora en /especialistas (antes, en /#asistencia). */}
+        <Link href="/especialistas" className="text-sm text-[var(--text-secondary)] hover:text-[var(--accent)]">
+          ← Volver a especialistas y artículos
         </Link>
         <h1 className="mt-6 text-3xl font-bold leading-tight [font-family:var(--font-display)]">{articulo.titulo}</h1>
 

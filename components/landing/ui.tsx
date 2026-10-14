@@ -38,13 +38,26 @@ export function CountUp({ text, durationMs = 900 }: { text: string; durationMs?:
   // al total—, que es lo que da la sensación de cifra viva sin mentir en ningún cuadro.
   const [display, setDisplay] = useState(match ? target.toFixed(decimals) : '');
 
+  // `tieneNumero` es un booleano ESTABLE. Antes el efecto dependía de `match` (el arreglo que devuelve
+  // text.match, nuevo en cada render): cada cuadro de la cuenta cambiaba `display`, eso volvía a renderizar,
+  // el efecto se reiniciaba desde el 70% y la cifra se quedaba para siempre en ~73% del valor (un precio de
+  // US$7.42 terminaba en US$5.42). Se encontró probando; el componente nunca se había usado.
+  const tieneNumero = match !== null;
   useEffect(() => {
-    if (!match || reduce) return;
+    if (!tieneNumero || reduce) return;
     if (!inView) return;
     mv.set(target * 0.7);
-    const controls = animate(mv, target, { duration: durationMs / 1000, ease: [0.16, 1, 0.3, 1] });
-    return () => controls.stop();
-  }, [inView, match, mv, reduce, target, durationMs]);
+    const controls = animate(mv, target, {
+      duration: durationMs / 1000,
+      ease: [0.16, 1, 0.3, 1],
+      // Pase lo que pase en el camino, la cifra termina EXACTAMENTE en el valor real.
+      onComplete: () => mv.set(target),
+    });
+    return () => {
+      controls.stop();
+      mv.set(target);
+    };
+  }, [inView, tieneNumero, mv, reduce, target, durationMs]);
 
   useEffect(() => {
     const unsub = rounded.on('change', (v) => setDisplay(v));

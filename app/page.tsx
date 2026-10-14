@@ -21,8 +21,8 @@ import { Oferta } from '@/components/landing/Oferta';
 import { Garantia } from '@/components/landing/Garantia';
 import { Faq } from '@/components/landing/Faq';
 import { CtaFinal } from '@/components/landing/CtaFinal';
-import { AnuncioAbogados } from '@/components/landing/AnuncioAbogados';
 import { FooterLegal } from '@/components/landing/FooterLegal';
+import { ENLACES_LEGALES, ENLACE_ESPECIALISTAS } from '@/components/landing/enlaces-legales';
 import { StickyCtaMobile } from '@/components/landing/ui';
 
 // Tipografía de la variante clara — se carga SOLO en esta ruta (next/font hace subset + self-host).
@@ -49,7 +49,9 @@ export default function Home() {
         navLinks={[
           { label: 'Cómo funciona', href: '#como-funciona' },
           { label: 'Planes', href: '#oferta' },
-          { label: 'Asistencia', href: '#asistencia' },
+          // El directorio salió de esta página (2026-10-14): lleva a su página propia. Mismo nombre que el pie
+          // ("Especialistas y artículos") y que la frase de "Así se ve por dentro": un destino, un nombre.
+          { label: 'Especialistas', href: '/especialistas' },
         ]}
         // Promesa en dos tiempos (FICHA-AVATAR: dolor = caos de gastos + acusaciones; deseo = paz):
         // primero lo concreto que se resuelve, después lo que la persona quiere sentir.
@@ -139,9 +141,12 @@ export default function Home() {
           { label: 'Tu cuota y tus comprobantes', src: '/frame-pagos.png', nombrePantalla: 'Pagos', iconoPlaceholder: Upload },
           { label: 'Visitas, citas y actividades', src: '/frame-calendario.png', nombrePantalla: 'Calendario', iconoPlaceholder: CalendarDays },
           { label: 'Tu expediente en PDF, en 1 toque', src: '/frame-expediente.png', nombrePantalla: 'Expediente', iconoPlaceholder: ListChecks },
-          { label: 'Profesionales, artículos y una consulta directa', src: '/frame-asistencia.png', nombrePantalla: 'Asistencia', iconoPlaceholder: Scale },
+          // Misma palabra que el menú, el pie y la frase de abajo (2026-10-14): "Especialistas". La "consulta
+          // directa" es real DENTRO de la app (la pantalla Asistencia tiene el formulario de consulta).
+          { label: 'Especialistas, artículos y una consulta directa', src: '/frame-asistencia.png', nombrePantalla: 'Especialistas', iconoPlaceholder: Scale },
           { label: 'Tu cuenta y tu suscripción', src: '/frame-perfil.png', nombrePantalla: 'Perfil', iconoPlaceholder: CreditCard },
         ]}
+        nota="Dentro de la app también tienes el calendario de eventos y el directorio de especialistas."
         ctaLabel={CTA_LABEL}
         ctaHref={CTA_HREF}
       />
@@ -238,9 +243,9 @@ export default function Home() {
         psMarked={`PS: Coparentia convierte tus comprobantes en un expediente fechado y listo para mostrar con el Sello de Confianza. Hoy entras con ${TRIAL_DIAS} días gratis —registras tu medio de pago, pero no se te cobra nada hasta el día ${DIA_PRIMER_COBRO}— y, si no armas tu primer expediente en 15 días, te devolvemos todo.`}
       />
 
-      {/* SECCIÓN EXTRA (fuera de la estructura canónica de 19, pedida por el usuario):
-          audiencia distinta — abogados de familia que quieren anunciarse en la app. */}
-      <AnuncioAbogados id="asistencia" contactoEmail="alianzas@coparentia.co" />
+      {/* El bloque "Directorio de especialistas" (con "Contactar", artículos y "Quiero anunciarme") vivía
+          aquí, justo después del cierre de venta. Se movió a /especialistas (2026-10-14): la página
+          principal termina en el cierre de venta, el PS y el pie. */}
 
       {/* 10. FOOTER LEGAL */}
       <FooterLegal
@@ -248,15 +253,7 @@ export default function Home() {
         logo={<img src="/logo-horizontal.webp" alt="Coparentia" className="h-7 w-auto object-contain" />}
         marcaSoloLogo
         soporteEmail="soporte@coparentia.co"
-        enlaces={[
-          { label: 'Privacidad', href: '/privacidad' },
-          { label: 'Términos y Condiciones', href: '/terminos' },
-          { label: 'Reembolsos', href: '/reembolsos' },
-          { label: 'Aviso de IA', href: '/aviso-ia' },
-          // Exigido por la normativa colombiana de protección al consumidor (2026-09-24, aportada
-          // por el equipo jurídico): enlace visible a la autoridad de protección al consumidor.
-          { label: 'SIC', href: 'https://www.sic.gov.co/' },
-        ]}
+        enlaces={[...ENLACES_LEGALES, ENLACE_ESPECIALISTAS]}
       />
 
       <StickyCtaMobile labelComercial={CTA_LABEL} href={CTA_HREF} />

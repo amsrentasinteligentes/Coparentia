@@ -9,7 +9,7 @@
 // El destino de los CTAs sigue al MODELO de 02C (checkout vs /onboarding).
 
 import { motion } from 'motion/react';
-import { CheckCustom, CtaButton, Hairline, Kicker, SectionShell, useReveal, VIEWPORT_ONCE } from './ui';
+import { CheckCustom, CountUp, CtaButton, Hairline, Kicker, SectionShell, useReveal, VIEWPORT_ONCE } from './ui';
 import { MarkedCopy, warnCopy, warnRango } from './MarkedCopy';
 import { DIA_PRIMER_COBRO, FRASE_MONTO_HOTMART } from '@/lib/precios';
 
@@ -60,7 +60,9 @@ function Precio({ plan }: { plan: PlanOferta }) {
     <div>
       <p className="flex items-baseline gap-1">
         <span className="text-[36px] font-bold leading-none tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
-          {plan.precioMes}
+          {/* Movimiento (2026-10-14): la cifra cuenta el último tramo al aparecer, pero EN REPOSO y en el HTML
+              inicial muestra siempre el precio real (ver CountUp en ui.tsx). Con "reducir movimiento" no se anima. */}
+          <CountUp text={plan.precioMes} />
         </span>
         <span className="text-[14px] text-[var(--text-secondary)] lg:text-[16px]">{plan.sufijo ?? '/mes'}</span>
       </p>

@@ -31,6 +31,8 @@ export interface AppPorDentroProps {
   tituloMarked: string;
   /** 3-5 frames. */
   frames: FrameCarrusel[];
+  /** Una frase opcional bajo el carrusel (texto plano, sin botones ni enlaces). */
+  nota?: string;
   /** CTA mid-page: mismas medidas y MISMO verbo del CTA héroe (19). */
   ctaLabel: string;
   ctaHref: string;
@@ -41,6 +43,7 @@ export function AppPorDentro({
   kicker = 'ASÍ SE VE POR DENTRO',
   tituloMarked,
   frames,
+  nota,
   ctaLabel,
   ctaHref,
   id,
@@ -206,6 +209,15 @@ export function AppPorDentro({
             ))}
           </div>
         </motion.div>
+
+        {nota && (
+          <motion.p
+            variants={item}
+            className="mx-auto mt-6 max-w-[46ch] text-center text-[14px] leading-relaxed text-[var(--text-secondary)] lg:text-[16px]"
+          >
+            {nota}
+          </motion.p>
+        )}
 
         {/* CTA mid-page (reglas de CTA de 19): tras la prueba visual, cuando la confianza es alta */}
         <motion.div variants={item} className="mt-10 flex justify-center">
