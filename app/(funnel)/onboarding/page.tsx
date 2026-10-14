@@ -46,6 +46,7 @@ import {
 import { PanelExpediente, type FilaExpediente } from '@/components/funnel/PanelExpediente';
 import { Blob } from '@/components/landing/ui';
 import { trackMeta } from '@/lib/meta-pixel';
+import { guardarRolPrevio, borrarRolPrevio } from '@/lib/rol-previo';
 
 /* Check de los reconocimientos sobre la FORMA ORGÁNICA de la variante clara (FICHA-ARTE: blobs
    en degradé azul — el dispositivo ownable que al funnel le faltaba, revisor claro r1). */
@@ -257,6 +258,7 @@ export default function Onboarding() {
       sessionStorage.removeItem(CLAVE_ONBOARDING);
       sessionStorage.removeItem(CLAVE_PASO);
     } catch {}
+    borrarRolPrevio();
     setR(VACIAS);
     setPaso(0);
     setRetomado(false);
@@ -283,6 +285,9 @@ export default function Onboarding() {
     try {
       sessionStorage.setItem(CLAVE_ONBOARDING, JSON.stringify(r));
     } catch {}
+    // Copia mínima del rol en el navegador: sessionStorage es por pestaña y se pierde al volver del pago
+    // en Hotmart; así "Primeros pasos" puede llegar con el rol ya elegido (lib/rol-previo.ts).
+    guardarRolPrevio(r.rol);
   }, [r]);
 
   // Se retoman las respuestas Y EL PASO de un intento anterior: guardar solo las respuestas dejaba

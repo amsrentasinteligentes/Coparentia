@@ -31,6 +31,7 @@ import {
   validarArchivoAdjunto,
 } from '@/lib/datos';
 import { hoyEnColombia, mesEnColombia, diaDelMesEnColombia, errorFechaDePago } from '@/lib/fecha';
+import { leerRolPrevio, borrarRolPrevio } from '@/lib/rol-previo';
 import { type NotificacionApp, obtenerNotificacionesSinLeer, marcarNotificacionLeida } from '@/lib/notificaciones-app';
 import { Bell } from 'lucide-react';
 
@@ -103,13 +104,22 @@ function PrimerosPasos({ onListo }: { onListo: () => void }) {
   // se retoma en el paso del comprobante — nunca se vuelve a pedir la cuota ni se salta al
   // dashboard con datos que no son del usuario.
   const [paso, setPaso] = useState<'titulo' | 'comprobante' | 'revelacion'>('titulo');
-  const [monto, setMonto] = useState('450000');
+  // Empieza VACÍO: antes salía "450000" ya escrito y parecía un dato real de la persona. El 450000 va
+  // solo como ejemplo en gris (placeholder).
+  const [monto, setMonto] = useState('');
   const [dia, setDia] = useState('5');
   const [reajuste, setReajuste] = useState('IPC (Índice de Precios al Consumidor)');
   // El onboarding YA preguntó esto antes de comprar, pero esa respuesta se pierde en el camino
   // (vive solo en sessionStorage, nunca llega a la base de datos) — se vuelve a preguntar aquí,
   // donde sí queda guardado de verdad, para poder diferenciar el recordatorio de notificaciones.
   const [rolPago, setRolPago] = useState<'paga' | 'recibe' | ''>('');
+  // El rol ya elegido en las preguntas previas llega preseleccionado (se lee en un efecto, no al
+  // iniciar el estado, porque el almacenamiento del navegador no existe en el primer render del
+  // servidor). Si no hay respuesta guardada, queda vacío y el paso se comporta como siempre.
+  useEffect(() => {
+    setRolPago((actual) => actual || leerRolPrevio());
+  }, []);
+  const [guardandoTitulo, setGuardandoTitulo] = useState(false);
   const [archivo, setArchivo] = useState<File | null>(null);
   // La fecha en que se PAGÓ (hoy por defecto; la persona puede elegir un día anterior). Aparte, el
   // servidor anota cuándo se subió el comprobante.
@@ -140,8 +150,26 @@ function PrimerosPasos({ onListo }: { onListo: () => void }) {
   const diaNumero = Number(dia);
   const tituloValido = montoNumero > 0 && diaNumero >= 1 && diaNumero <= 31 && rolPago !== '';
 
+  // Qué falta para poder guardar, dicho en palabras (mismo criterio y mismo aviso que el editor de
+  // Ajustes). Antes el botón quedaba apagado sin explicar nada.
+  const faltante: string | null = !(montoNumero > 0)
+    ? 'Escribe el monto de tu cuota para poder guardar.'
+    : !(diaNumero >= 1 && diaNumero <= 31)
+      ? 'Revisa el día de pago: debe estar entre 1 y 31.'
+      : rolPago === ''
+        ? 'Elige tu rol (pagas o recibes) para poder guardar.'
+        : null;
+
+  // El estado `guardandoTitulo` pinta "Guardando…" y apaga el botón, pero tarda un instante en verse: dos
+  // toques casi simultáneos alcanzaban a pasar y la cuota se mandaba a guardar dos veces (encontrado al
+  // probar). Esta marca se activa en el acto y es la que de verdad bloquea el segundo toque.
+  const guardandoRef = useRef(false);
+
   const confirmarTitulo = async (): Promise<void> => {
-    if (!tituloValido) return;
+    if (!tituloValido || guardandoRef.current) return;
+    guardandoRef.current = true;
+    setGuardandoTitulo(true);
+    setErrorSubida(null);
     const t: Titulo = {
       montoMensual: montoNumero,
       diaPago: diaNumero,
@@ -151,9 +179,13 @@ function PrimerosPasos({ onListo }: { onListo: () => void }) {
     };
     try {
       await guardarTitulo(t);
+      borrarRolPrevio(); // ya quedó en la cuenta: la copia del navegador no hace falta
       setPaso('comprobante');
     } catch {
       setErrorSubida('No pudimos guardar tu cuota. Revisa tu conexión e inténtalo de nuevo.');
+    } finally {
+      guardandoRef.current = false;
+      setGuardandoTitulo(false);
     }
   };
 
@@ -240,6 +272,7 @@ function PrimerosPasos({ onListo }: { onListo: () => void }) {
             type="number"
             inputMode="numeric"
             value={monto}
+            placeholder="450000"
             onChange={(e) => setMonto(e.target.value)}
             className="mt-2 h-14 w-full rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--surface)] px-4 text-[16px] tabular-nums text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)]"
           />
@@ -293,13 +326,25 @@ function PrimerosPasos({ onListo }: { onListo: () => void }) {
 
           <motion.button
             type="button"
-            disabled={!tituloValido}
+            disabled={!tituloValido || guardandoTitulo}
             onClick={confirmarTitulo}
             whileTap={{ scale: 0.97 }}
             className="mt-8 flex h-14 w-full items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-[16px] font-semibold text-[var(--on-accent,var(--bg))] transition-opacity disabled:opacity-40 [touch-action:manipulation]"
           >
-            Guardar y continuar
+            {guardandoTitulo ? 'Guardando…' : 'Guardar y continuar'}
           </motion.button>
+          {/* Si el botón no puede avanzar, dice qué falta (mismo aviso que el editor de Ajustes). */}
+          {faltante && (
+            <p aria-live="polite" className="mt-3 text-[12.5px] text-[var(--status-error)]">
+              {faltante}
+            </p>
+          )}
+          {/* El fallo al guardar la cuota se avisaba solo en el paso siguiente (donde nunca se veía). */}
+          {errorSubida && (
+            <p role="alert" className="mt-3 text-[12.5px] text-[var(--status-error)]">
+              {errorSubida}
+            </p>
+          )}
         </motion.div>
       )}
 
@@ -366,6 +411,19 @@ function PrimerosPasos({ onListo }: { onListo: () => void }) {
               <Upload size={18} aria-hidden="true" />
               Elegir archivo
             </motion.button>
+          )}
+
+          {/* SALIDA: quien no tiene un recibo a mano no debe quedarse sin ver su tablero. La cuota ya
+              quedó guardada, así que basta con abrir el tablero; ahí una tarjeta le recuerda subir el
+              primer comprobante y desaparece sola al subirlo. */}
+          {!procesando && (
+            <button
+              type="button"
+              onClick={onListo}
+              className="mt-3 flex min-h-12 items-center justify-center px-4 text-[14px] font-medium text-[var(--text-secondary)] underline-offset-2 hover:underline [touch-action:manipulation]"
+            >
+              Lo subo después
+            </button>
           )}
 
           {errorSubida && (
@@ -598,6 +656,31 @@ function Dashboard() {
           <TarjetaSkeleton filas={3} />
         ) : (
           <>
+            {/* PENDIENTE: PRIMER COMPROBANTE (2026-10-14) — quien eligió "Lo subo después" entra al tablero
+                con esto visible arriba. Se deriva de los datos (aún no hay ningún pago), sin ninguna
+                bandera guardada: desaparece sola en cuanto se sube el primero. */}
+            {pagos.length === 0 && (
+              <Tarjeta className="mb-3">
+                <div className="flex items-start gap-3">
+                  <IconoCirculo icon={Upload} size={18} />
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[14px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">Te falta subir tu primer comprobante</p>
+                    <p className="mt-0.5 text-[12px] text-[var(--text-secondary)]">
+                      Una foto o un PDF de tu último pago. Queda fechado con el Sello de Confianza.
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => router.push('/pagos?registrar=1')}
+                  className="mt-3 flex h-12 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] bg-[var(--accent)] text-[15px] font-semibold text-[var(--on-accent,var(--bg))] [touch-action:manipulation]"
+                >
+                  <Upload size={16} aria-hidden="true" />
+                  Subir mi primer comprobante
+                </button>
+              </Tarjeta>
+            )}
+
             {/* RECORDATORIO SIN LEER (2026-09-28) — copia dentro de la app de cada aviso push
                 real, para quien cerró la notificación del sistema sin verla. Arriba de todo a
                 propósito: es lo más reciente y lo que más urge que se vea. */}

@@ -180,16 +180,15 @@ function mapEvento(row: {
   };
 }
 
-// `tieneOnboardingCompleto` marca el FIN real de "primeros pasos" (cuota + primer comprobante
-// subido) — nunca solo la cuota guardada. Se deriva de datos reales (título creado Y al menos un
-// pago) en vez de una bandera aparte, así nunca puede quedar desincronizada de lo que hay guardado.
+// `tieneOnboardingCompleto` decide si Inicio muestra el tablero o "Primeros pasos". Basta con tener la
+// CUOTA guardada (el título): antes se exigía además un comprobante subido, y quien no tenía un recibo
+// a mano no veía nunca su tablero (2026-10-14). El primer comprobante sigue pidiéndose — con una tarjeta
+// "Te falta subir tu primer comprobante" en el tablero — pero ya no bloquea la entrada. Se deriva de
+// datos reales (el título existe) en vez de una bandera aparte, así nunca queda desincronizada.
 export async function tieneOnboardingCompleto(): Promise<boolean> {
   const { supabase, userId } = await usuarioActual();
-  const [{ data: titulo }, { count }] = await Promise.all([
-    supabase.from('titulos').select('id').eq('user_id', userId).maybeSingle(),
-    supabase.from('pagos').select('id', { count: 'exact', head: true }).eq('user_id', userId).is('eliminado_en', null),
-  ]);
-  return Boolean(titulo) && (count ?? 0) > 0;
+  const { data: titulo } = await supabase.from('titulos').select('id').eq('user_id', userId).maybeSingle();
+  return Boolean(titulo);
 }
 
 export async function obtenerTitulo(): Promise<Titulo | null> {
