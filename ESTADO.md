@@ -4694,3 +4694,4 @@ Se hacen juntos al tocar la sección de planes (hallazgos 3 y 9), para revisar u
 - No es bloqueo duro: 11 contraseñas seguidas no dieron 429; el freno real es el captcha por intento (script sin token: 20/20 `captcha_failed`). Mejora opcional: bloqueo por cuenta en servidor.
 - CSP: NO aplicada (riesgo: scripts en línea de Next, Pixel de Meta, Turnstile). Propuesta: primero `Content-Security-Policy-Report-Only`.
 - Aparte (no pedido): pantalla de consentimiento de Google muestra el dominio de Supabase en vez de "Coparentia".
+- (2026-10-14, noche) Prueba pendiente del dueño: dejar la app abierta con el teléfono bloqueado toda la noche y ver por la mañana si la sesión sigue viva (llave de 15 min). Si lo sacó: preguntar tiempo y dispositivo (app instalada vs Chrome) y revisar Auth Logs en Supabase. Red de Windows: que la devuelva a Pública. Siguiente punto de la auditoría: lo trae el dueño.
