@@ -4682,3 +4682,9 @@ Se hacen juntos al tocar la sección de planes (hallazgos 3 y 9), para revisar u
 - Punto 1: `public/dev` → `docs/referencias-diseno/` (las 3 páginas /dev/... dan 404 en local).
 - Punto 2: clic en "Contactar" lo registra el servidor (`app/api/contacto-profesional/route.ts`, tope 5/min y 30/día por huella de IP; nombre/categoría salen de la base). Probado con 6 envíos de prueba (5 contados, el 6.º no) y borrados (10 → 10). SQL pendiente de ejecutar DESPUÉS de publicar: `supabase/contacto-profesional-cerrar-anonimo.sql`.
 - Pendiente: punto 3 (Turnstile + Attack Protection + Rate Limits, también cubre enlace por correo), punto 4 (JWT 15 min y renovación de sesión), punto 5 (CSP: solo evaluar). `allowedDevOrigins` NO está en esta rama.
+
+### Checkpoint (2026-10-14) — Seguridad de acceso: punto 3 (verificación Turnstile) PUBLICADO y ACTIVO
+- Publicado en master (7f0bf41): `public/dev` fuera del sitio, clic Contactar por servidor, Turnstile en /entrar. Var `NEXT_PUBLIC_TURNSTILE_SITE_KEY` en Vercel (Production). Supabase: CAPTCHA protection activa (Turnstile), Rate Limit sign-ups/sign-ins 30→10 por 5 min.
+- Probado: enlace por correo, código de 8 dígitos y Google entran con la protección activa (celular real). Sin token, un script recibe `captcha_failed` en cada intento (20/20).
+- Honesto: 11 contraseñas equivocadas seguidas desde el navegador NO dieron 429 (el límite de Supabase se comporta como cubeta que se rellena; ≈120 intentos/hora por IP). El freno real es el captcha por intento.
+- Pendiente: SQL `supabase/contacto-profesional-cerrar-anonimo.sql` (tras comprobar un clic real en Contactar), punto 4 (JWT 15 min + renovación), punto 5 (CSP: solo evaluar).
