@@ -65,7 +65,7 @@ export function AnuncioAbogados({ contactoEmail, id = 'asistencia' }: AnuncioAbo
           <CtaButton href={`mailto:${contactoEmail}?subject=${encodeURIComponent('Quiero anunciarme en Coparentia')}`} variant="outline" fullMobile={false}>
             Quiero anunciarme en Coparentia
           </CtaButton>
-          <p className="text-[12px] text-[var(--text-tertiary)] lg:text-[13px]">Te respondemos en menos de 48 horas.</p>
+          <p className="text-[13px] text-[var(--text-tertiary)]">Te respondemos en menos de 48 horas.</p>
         </motion.div>
       </motion.div>
     </SectionShell>

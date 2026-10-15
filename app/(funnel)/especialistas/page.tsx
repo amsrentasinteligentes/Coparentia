@@ -40,7 +40,7 @@ export default function Especialistas() {
 
       <FooterLegal
         appName="Coparentia"
-        logo={<img src="/logo-horizontal.webp" alt="Coparentia" className="h-7 w-auto object-contain" />}
+        logo={<img src="/logo-horizontal.webp" alt="Coparentia" className="h-10 w-auto object-contain" />}
         marcaSoloLogo
         soporteEmail="soporte@coparentia.co"
         enlaces={ENLACES_LEGALES}

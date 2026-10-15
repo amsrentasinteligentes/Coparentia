@@ -8,7 +8,7 @@
 // la card recomendada (el uso canónico de la técnica) · checkmarks custom.
 // El destino de los CTAs sigue al MODELO de 02C (checkout vs /onboarding).
 
-import { motion } from 'motion/react';
+import { motion, useReducedMotion } from 'motion/react';
 import { CheckCustom, CountUp, CtaButton, Hairline, Kicker, SectionShell, useReveal, VIEWPORT_ONCE } from './ui';
 import { MarkedCopy, warnCopy, warnRango } from './MarkedCopy';
 import { DIA_PRIMER_COBRO, FRASE_MONTO_HOTMART } from '@/lib/precios';
@@ -69,6 +69,29 @@ function Precio({ plan }: { plan: PlanOferta }) {
       {plan.descomposicionDia && (
         <p className="mt-1 text-[13px] text-[var(--text-secondary)] lg:text-[15px]">{plan.descomposicionDia}</p>
       )}
+    </div>
+  );
+}
+
+// Barra de la prueba gratis: se llena al aparecer. El dato es real (los días de prueba del plan);
+// con "reducir movimiento" aparece ya llena.
+function BarraPrueba({ dias }: { dias: number }) {
+  const reduce = useReducedMotion();
+  return (
+    <div className="mt-4">
+      <div className="h-2 overflow-hidden rounded-full bg-[color-mix(in_oklab,var(--accent)_14%,transparent)]">
+        <motion.div
+          className="h-full origin-left rounded-full bg-[var(--accent)]"
+          initial={reduce ? false : { scaleX: 0 }}
+          whileInView={{ scaleX: 1 }}
+          viewport={VIEWPORT_ONCE}
+          transition={{ duration: reduce ? 0 : 1.2, delay: reduce ? 0 : 0.3, ease: [0.16, 1, 0.3, 1] }}
+        />
+      </div>
+      <div className="mt-1 flex justify-between text-[13px] font-medium text-[var(--text-secondary)]">
+        <span>Hoy: sin cobro</span>
+        <span>{dias} días de prueba</span>
+      </div>
     </div>
   );
 }
@@ -144,7 +167,7 @@ export function Oferta({
           {/* ── ANUAL (recomendado): hairline 2px + fondo acento sutil + sombra tintada ── */}
           <motion.div variants={item} className="relative">
             {anual.badge && (
-              <span className="absolute -top-[10px] left-1/2 z-10 -translate-x-1/2 rounded-full border border-[color-mix(in_oklab,var(--accent)_25%,transparent)] bg-[var(--accent)] px-3 py-1 text-[11px] font-bold uppercase tracking-[0.06em] text-[var(--on-accent)] lg:text-[12px]">
+              <span className="absolute -top-[10px] left-1/2 z-10 -translate-x-1/2 rounded-full border border-[color-mix(in_oklab,var(--accent)_25%,transparent)] bg-[var(--accent)] whitespace-nowrap px-3 py-1 text-[13px] font-bold uppercase tracking-[0.06em] text-[var(--on-accent)] lg:text-[13px]">
                 {anual.badge}
               </span>
             )}
@@ -160,7 +183,6 @@ export function Oferta({
                       contexto que no compite. Antes eran 4 renglones de dinero al mismo nivel y el
                       ojo apurado no sabía cuál era el número que importa (defecto del revisor). */}
                   <p className="mt-1 text-[14px] font-semibold text-[var(--text-primary)] lg:text-[16px]">{anual.totalAnual}</p>
-                  <p className="mt-0.5 text-[12px] text-[var(--text-tertiary)] lg:text-[13px]">Se cobra al terminar la prueba.</p>
                   {/* El aviso del monto en pesos va en SU propia línea, un nivel más legible (13px, tinta secundaria):
                       antes iba pegado a la línea de arriba, en 12px terciario y a dos renglones. */}
                   <p className="mt-1 text-[13px] leading-[1.45] text-[var(--text-secondary)] lg:text-[14px]">{FRASE_MONTO_HOTMART}</p>
@@ -172,10 +194,12 @@ export function Oferta({
                     {anual.ctaLabel}
                   </CtaButton>
                   {trialDias !== undefined && (
-                    <p className="mt-2 text-center text-[13px] text-[var(--text-secondary)] lg:text-[15px]">
-                      Incluye {trialDias} días de prueba, sin cobro
-                      <span className="mt-0.5 block text-[12px] text-[var(--text-tertiary)] lg:text-[13px]">Registras tu medio de pago hoy; el primer cobro entra el día {DIA_PRIMER_COBRO}.</span>
-                    </p>
+                    <>
+                      <BarraPrueba dias={trialDias} />
+                      <p className="mt-2 text-center text-[14px] text-[var(--text-secondary)] lg:text-[15px]">
+                        Registras tu medio de pago hoy; el primer cobro entra el día {DIA_PRIMER_COBRO}.
+                      </p>
+                    </>
                   )}
                 </div>
               </div>
@@ -199,9 +223,8 @@ export function Oferta({
                 {mensual.ctaLabel}
               </CtaButton>
               {trialDias !== undefined && (
-                <p className="mt-2 text-center text-[13px] text-[var(--text-secondary)] lg:text-[15px]">
-                  Incluye {trialDias} días de prueba, sin cobro
-                  <span className="mt-0.5 block text-[12px] text-[var(--text-tertiary)] lg:text-[13px]">Registras tu medio de pago hoy; el primer cobro entra el día {DIA_PRIMER_COBRO}.</span>
+                <p className="mt-2 text-center text-[14px] text-[var(--text-secondary)] lg:text-[15px]">
+                  {trialDias} días de prueba, sin cobro. El primer cobro entra el día {DIA_PRIMER_COBRO}.
                 </p>
               )}
             </div>

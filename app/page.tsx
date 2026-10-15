@@ -10,7 +10,7 @@
 // la app, el onboarding y el paywall siguen oscuros y no se tocan.
 
 import { Figtree, Nunito_Sans } from 'next/font/google';
-import { MessageCircleWarning, ReceiptText, ShieldAlert, AlarmClock, Wallet, FileQuestion, CalendarDays, Home as HomeIcon, ListChecks, CreditCard, Upload, Scale } from 'lucide-react';
+import { MessageCircleWarning, ReceiptText, ShieldAlert, AlarmClock, Wallet, FileQuestion, CalendarDays, Home as HomeIcon, ListChecks, Upload, Scale } from 'lucide-react';
 import { DIA_PRIMER_COBRO, PRECIOS, TRIAL_DIAS, usd } from '@/lib/precios';
 import { Hero } from '@/components/landing/Hero';
 import { Problema } from '@/components/landing/Problema';
@@ -51,7 +51,9 @@ export default function Home() {
           { label: 'Planes', href: '#oferta' },
           // El directorio salió de esta página (2026-10-14): lleva a su página propia. Mismo nombre que el pie
           // ("Especialistas y artículos") y que la frase de "Así se ve por dentro": un destino, un nombre.
-          { label: 'Especialistas', href: '/especialistas' },
+          // En computador grande dice "Directorio de especialistas" (igual que el título de esa página); en pantallas
+          // medianas y en celular, "Especialistas". Se muestra también en celular, junto a "Planes" y "Entrar".
+          { label: 'Especialistas', labelLargo: 'Directorio de especialistas', href: '/especialistas', visibleEnMovil: true },
         ]}
         // Promesa en dos tiempos (FICHA-AVATAR: dolor = caos de gastos + acusaciones; deseo = paz):
         // primero lo concreto que se resuelve, después lo que la persona quiere sentir.
@@ -62,7 +64,7 @@ export default function Home() {
         socialProof={
           <span className="block">
             {TRIAL_DIAS} días gratis · Garantía de 15 días
-            <span className="mt-0.5 block text-[12px] text-[var(--text-tertiary)] lg:text-[13px]">
+            <span className="mt-0.5 block text-[13px] text-[var(--text-tertiary)] lg:text-[14px]">
               Registras tu medio de pago hoy; el primer cobro entra el día {DIA_PRIMER_COBRO}.
             </span>
           </span>
@@ -74,7 +76,7 @@ export default function Home() {
         // "10 minutos" es el tiempo medido del onboarding + primer comprobante (guía "Tu primer
         // expediente en 10 minutos" del stack de valor) — no una cifra de marketing inventada.
         burbuja={{ titulo: 'Tu primer expediente', dato: 'Listo en 10 minutos' }}
-        pilares={['Gastos al día', 'Sello de Confianza en cada comprobante', 'Mente en calma']}
+        pilares={['Gastos al día', 'Sello de Confianza con fecha', 'Mente en calma']}
       />
 
       {/* 2. PROBLEMA */}
@@ -143,12 +145,9 @@ export default function Home() {
           { label: 'Tu expediente en PDF, en 1 toque', src: '/frame-expediente.png', nombrePantalla: 'Expediente', iconoPlaceholder: ListChecks },
           // Misma palabra que el menú, el pie y la frase de abajo (2026-10-14): "Especialistas". La "consulta
           // directa" es real DENTRO de la app (la pantalla Asistencia tiene el formulario de consulta).
-          { label: 'Especialistas, artículos y una consulta directa', src: '/frame-asistencia.png', nombrePantalla: 'Especialistas', iconoPlaceholder: Scale },
-          { label: 'Tu cuenta y tu suscripción', src: '/frame-perfil.png', nombrePantalla: 'Perfil', iconoPlaceholder: CreditCard },
+          { label: 'Especialistas, artículos y una consulta directa', src: '/frame-asistencia.png?v=3', nombrePantalla: 'Especialistas', iconoPlaceholder: Scale },
         ]}
         nota="Dentro de la app también tienes el calendario de eventos y el directorio de especialistas."
-        ctaLabel={CTA_LABEL}
-        ctaHref={CTA_HREF}
       />
 
       {/* 6. OFERTA */}
@@ -250,7 +249,7 @@ export default function Home() {
       {/* 10. FOOTER LEGAL */}
       <FooterLegal
         appName="Coparentia"
-        logo={<img src="/logo-horizontal.webp" alt="Coparentia" className="h-7 w-auto object-contain" />}
+        logo={<img src="/logo-horizontal.webp" alt="Coparentia" className="h-10 w-auto object-contain" />}
         marcaSoloLogo
         soporteEmail="soporte@coparentia.co"
         enlaces={[...ENLACES_LEGALES, ENLACE_ESPECIALISTAS]}

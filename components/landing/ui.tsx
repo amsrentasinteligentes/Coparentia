@@ -105,7 +105,7 @@ export function Accent({ children }: { children: ReactNode }) {
 /* ── <Kicker> — caps 12px/600 tracking +0.08em en acento (máx 1 por sección) ── */
 export function Kicker({ children }: { children: ReactNode }) {
   return (
-    <p className="mb-3 text-[12px] font-semibold uppercase tracking-[0.08em] text-[var(--accent-ink)] lg:text-[13px]">
+    <p className="mb-3 text-[13px] font-semibold uppercase tracking-[0.08em] text-[var(--accent-ink)] lg:text-[14px]">
       {children}
     </p>
   );
@@ -524,7 +524,7 @@ export function FotoLugar({
       }}
     >
       <Camera size={28} strokeWidth={1.6} aria-hidden="true" className="absolute left-1/2 top-[44%] -translate-x-1/2 -translate-y-1/2 text-white/70" />
-      <span className="relative mt-[12%] max-w-[70%] rounded-[var(--radius-button)] bg-black/30 px-2.5 py-1 text-center text-[11px] font-semibold leading-snug text-white/95 backdrop-blur-[2px] lg:text-[12px]">
+      <span className="relative mt-[12%] max-w-[70%] rounded-[var(--radius-button)] bg-black/30 px-2.5 py-1 text-center text-[13px] font-semibold leading-snug text-white/95 backdrop-blur-[2px] lg:text-[13px]">
         {descripcion}
       </span>
     </div>

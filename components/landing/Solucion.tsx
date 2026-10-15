@@ -247,10 +247,22 @@ export function Solucion({
 
             <ol className="order-1 flex flex-col gap-6 lg:order-1">
               {pasos.map((p, i) => (
-                <motion.li key={i} variants={item} className="flex items-start gap-4">
+                <motion.li key={i} variants={item} className="relative flex items-start gap-4">
+                  {/* La línea que une cada paso con el siguiente se DIBUJA al aparecer (movimiento con dato real:
+                      es la secuencia 1-2-3 del Sello, la misma del video). Sin "reducir movimiento" ya viene trazada. */}
+                  {i < pasos.length - 1 && (
+                    <motion.span
+                      aria-hidden="true"
+                      className="absolute -bottom-6 left-[21px] top-11 w-[2px] origin-top rounded-full bg-[color-mix(in_oklab,var(--accent)_32%,transparent)]"
+                      initial={reduce ? false : { scaleY: 0 }}
+                      whileInView={{ scaleY: 1 }}
+                      viewport={VIEWPORT_ONCE}
+                      transition={{ duration: reduce ? 0 : 0.7, delay: reduce ? 0 : 0.4 + i * 0.5, ease: [0.16, 1, 0.3, 1] }}
+                    />
+                  )}
                   <span
                     aria-hidden="true"
-                    className="flex size-11 shrink-0 flex-col items-center justify-center rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--accent)_22%,transparent)] bg-[var(--chip-bg)] text-[17px] font-bold tabular-nums text-[var(--accent-ink,var(--accent))] lg:text-[19px]"
+                    className="relative flex size-11 shrink-0 flex-col items-center justify-center rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--accent)_22%,transparent)] bg-[var(--chip-bg)] text-[17px] font-bold tabular-nums text-[var(--accent-ink,var(--accent))] lg:text-[19px]"
                   >
                     {String(i + 1).padStart(2, '0')}
                   </span>
@@ -262,7 +274,7 @@ export function Solucion({
                           type="button"
                           onClick={() => irA(p.marca as string)}
                           aria-label={`Ver este paso en el video, en el segundo ${p.marca}`}
-                          className="-my-3 inline-flex min-h-11 items-center rounded-[var(--radius-button)] px-2 text-[12px] font-bold tabular-nums text-[var(--accent-ink,var(--accent))] underline decoration-[color-mix(in_oklab,var(--accent)_45%,transparent)] underline-offset-2 transition-colors hover:bg-[var(--chip-bg)] lg:text-[13px]"
+                          className="-my-3 inline-flex min-h-11 items-center rounded-[var(--radius-button)] px-2 text-[13px] font-bold tabular-nums text-[var(--accent-ink,var(--accent))] underline decoration-[color-mix(in_oklab,var(--accent)_45%,transparent)] underline-offset-2 transition-colors hover:bg-[var(--chip-bg)] lg:text-[14px]"
                         >
                           {p.marca}
                         </button>

@@ -34,8 +34,9 @@ export interface AppPorDentroProps {
   /** Una frase opcional bajo el carrusel (texto plano, sin botones ni enlaces). */
   nota?: string;
   /** CTA mid-page: mismas medidas y MISMO verbo del CTA héroe (19). */
-  ctaLabel: string;
-  ctaHref: string;
+  /** Opcional: sin ellos no se pinta el botón (la página ya tiene otros y la barra fija). */
+  ctaLabel?: string;
+  ctaHref?: string;
   id?: string;
 }
 
@@ -220,9 +221,11 @@ export function AppPorDentro({
         )}
 
         {/* CTA mid-page (reglas de CTA de 19): tras la prueba visual, cuando la confianza es alta */}
-        <motion.div variants={item} className="mt-10 flex justify-center">
-          <CtaButton href={ctaHref}>{ctaLabel}</CtaButton>
-        </motion.div>
+        {ctaLabel && ctaHref && (
+          <motion.div variants={item} className="mt-10 flex justify-center">
+            <CtaButton href={ctaHref}>{ctaLabel}</CtaButton>
+          </motion.div>
+        )}
       </motion.div>
     </SectionShell>
   );
