@@ -107,7 +107,7 @@ export function CtaFinal({
         {psMarked !== undefined && (
           <motion.p
             variants={item}
-            className="mt-10 max-w-[520px] border-l-2 border-[var(--cta-final-text-3,var(--accent))] pl-4 text-left text-[15px] italic leading-[1.6] text-[var(--cta-final-text-2,var(--text-secondary))] lg:text-[17px]"
+            className="mt-10 max-w-[520px] border-l-2 border-[var(--cta-final-text-3,var(--accent))] pl-4 text-left text-[16px] font-medium leading-[1.6] text-[var(--cta-final-text-2,var(--text-secondary))] lg:text-[17px]"
           >
             <MarkedCopy text={psMarked} />
           </motion.p>

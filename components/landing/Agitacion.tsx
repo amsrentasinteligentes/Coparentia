@@ -82,7 +82,7 @@ export function Agitacion({ titulo, frases, contraste, id }: AgitacionProps) {
                 </div>
               )}
               <div>
-                <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-[var(--text-tertiary)] lg:text-[13px]">
+                <p className="text-[13px] font-semibold uppercase tracking-[0.08em] text-[var(--text-tertiary)]">
                   {contraste.labelHoy}
                 </p>
                 <p className="mt-2 text-[15px] leading-snug text-[var(--text-primary)] lg:text-[17px]">{contraste.hoy}</p>
@@ -99,7 +99,7 @@ export function Agitacion({ titulo, frases, contraste, id }: AgitacionProps) {
                 </div>
               )}
               <div>
-                <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-[var(--text-tertiary)] lg:text-[13px]">
+                <p className="text-[13px] font-semibold uppercase tracking-[0.08em] text-[var(--text-tertiary)]">
                   {contraste.labelFuturo}
                 </p>
                 <p className="mt-2 text-[15px] leading-snug text-[var(--text-secondary)] lg:text-[17px]">{contraste.futuro}</p>

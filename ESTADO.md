@@ -4636,3 +4636,43 @@ Se hacen juntos al tocar la sección de planes (hallazgos 3 y 9), para revisar u
 - Estado exacto en producción: commit de código 4eb0f53 ("Primeros pasos" destrabado), con todo lo anterior verificado (cobros de Hotmart, Perfil, fecha real del pago, "Registrado en la app desde").
 - Para volver: pedirle a Claude "devuelve al punto de control". Se hace con un commit nuevo que restaura los archivos a esa etiqueta (no se borra historial) y se publica. Vercel también permite promover el despliegue anterior (Deployments → el 4eb0f53 → Promote/Instant Rollback).
 - LÍMITE: volver NO deshace cambios de base de datos (SQL ya corridos en Supabase: trigger de fecha de pago, columna next_charge_at, etc.) ni datos reales; el código anterior es compatible con ellos.
+
+### Problemas conocidos (2026-10-14) — veredicto:landing NO LISTA tras mover el directorio a /especialistas (EN LOCAL, sin publicar)
+- Revisor-visual 2 pasadas: 35/40 · 15/20 · 16/20, NO LISTA por 1 punto en usabilidad y en craft (antes LISTA 36/16/16, margen cero). Del cambio hecho: corregidos el nombre unificado "Especialistas" (menú, pie, frase, etiqueta del 5.º marco del carrusel) y la frase sin promesa exclusiva. El revisor confirma que el final de la página quedó bien (un solo botón + PS + pie).
+- Defectos vivos que NO vienen de este cambio (decisión del dueño pendiente, fuera de alcance): (a) movimiento — `CountUp` existe en components/landing/ui.tsx pero no se usa (precios US$7.42/9.99 estáticos) y `MiniRing` se importa en Agitacion sin dibujarse (2 de las 7 animaciones base); (b) la sección "Que los acuerdos de crianza no se pierdan entre mensajes" tiene 3 párrafos largos y tono genérico; (c) letra muy pequeña en el pie legal y en las tarjetas de planes. Mapeo: el revisor estima que corregir (a) y el rótulo del carrusel sube usabilidad a 36 y craft a 16.
+- NO publicado: el dueño debe revisarlo primero en el computador (localhost:3000) y en el celular (http://192.168.78.127:3000, mismo Wi-Fi).
+- Capturas: docs/revisiones/landing-375.png (empalme) y landing-375-t1..t7.png; especialistas-375.png. La herramienta de capturas solo dibuja bien ~4400px por vez (por eso los tramos).
+- 3.ª pasada del revisor-visual (2026-10-14) tras unificar el nombre y usar CountUp en los precios: usabilidad 36/40 (PASA), craft 15/20 (falta 1), copy 16/20 (PASA) → sigue NO LISTA solo por craft. Ningún defecto es regresión: todos son anteriores al cambio (movimiento: ningún anillo/barra se dibuja; letra de 10-12 px en tarjetas de planes y pie legal; sección de agitación con párrafos largos). Pendiente si el dueño lo pide: dibujar un dato REAL al entrar en pantalla (p. ej. el progreso 1-2-3 del Sello), notas a 13 px y un solo separador neutro en el pie.
+- Se corrigió además un bug real de `CountUp` (components/landing/ui.tsx): se reiniciaba en cada cuadro y dejaba los precios en ~73% (US$5.42 en vez de US$7.42); ahora termina exacto y con "reducir movimiento" no anima. Verificado midiendo el texto cada 90 ms.
+- 4.ª pasada del revisor-visual (2026-10-14), tras alinear el menú del computador, "Directorio de especialistas" (lg) / "Especialistas" (md) y "Planes · Especialistas · Entrar" en celular: usabilidad 36/40 (PASA), craft 15/20 (falta 1), copy 16/20 (PASA) → NO LISTA solo por craft; los cambios del menú no introdujeron regresiones. Defectos vivos, todos ANTERIORES: (1) movimiento — MiniRing nunca se pinta (Agitacion recibe sin `contraste`) y CountUp casi no se nota; (2) letra de 10-12 px en tarjetas de planes, pie legal y burbuja del hero (11 apariciones); (3) agitación con 3 párrafos largos. Defecto menor NUEVO: menú móvil apretado (huecos de ~4 px entre áreas táctiles). Pendiente antes de publicar: revertir `allowedDevOrigins` en next.config.ts (solo para el celular, NO se sube), devolver la red de Windows a Pública, y decidir si se publica con craft 15 o se trabaja el craft aparte.
+
+### Checkpoint (2026-10-14) — Directorio a /especialistas + craft de la landing, EN LOCAL (rama `vista-previa-especialistas`), sin publicar
+- Fase: mover directorio/artículos/"Quiero anunciarme" a `/especialistas`. Pantalla en curso: landing, con el craft ya aplicado y verificado en local (0 textos <13 px, sin desborde a 375 ni 1280).
+- Decisiones: letra mínima 13 px; línea que se dibuja entre los 3 pasos del Sello (Solucion); menú móvil con `gap-2` ("Planes · Especialistas · Entrar"); insignia "AHORRAS" con `whitespace-nowrap`; bug de `CountUp` corregido (precio real en reposo).
+- Pendiente antes de publicar: 5.ª pasada del revisor (recapturar t1..t7), revisión del usuario en computador y celular, revertir `allowedDevOrigins` en `next.config.ts` (temporal), que el usuario devuelva la red de Windows a Pública, merge a master.
+
+### Problemas conocidos (2026-10-14) — veredicto:onboarding y veredicto:paywall (sin cambios hoy)
+- **veredicto:onboarding** — caducado solo por mtime global (hoy se tocó la app interna en otras tareas, no el onboarding). Sigue con su techo estructural documentado arriba; no se re-lanza el revisor hoy.
+- **veredicto:paywall** — NO LISTA, sin cambios hoy; techo estructural documentado arriba.
+- **veredicto:landing** — NO LISTA por 1 punto de craft; la 5.ª pasada del revisor queda pendiente de la decisión del usuario.
+
+### Problemas conocidos (2026-10-14, 5.ª pasada) — veredicto:landing NO LISTA (34/40 · 14/20 · 16/20), EN LOCAL
+- Capturas de la 5.ª pasada salieron defectuosas (recorte derecho, tramos vacíos); la página SÍ cabe en 375 px (scrollWidth 375). Hay que recapturar con otro método antes de la 6.ª.
+- Reales: `contraste` sin pasar a Agitacion (sin anillos animados) · párrafos "acuerdos de crianza" largos y genéricos · 12 px en Agitacion.tsx (bloque no renderizado) · botón repetido 5 veces + carrusel de 6 marcos. AnuncioAbogados 12→13 px ya corregido.
+
+### Problemas conocidos (2026-10-14, 6.ª pasada) — veredicto:landing NO LISTA (34/40 · 15/20 · 16/20), EN LOCAL
+- Capturas buenas: docs/revisiones/landing-375-v1..v3.png (viewport 375x2400; scrollWidth 375). Cambios: carrusel 5 marcos, sin botón tras el carrusel, 12→13 px.
+- Pendiente (propuesto, sin aplicar): notas de planes y pie legal a text-secondary 14 px; chips del hero a igual altura y sin apariencia de botón; anillos (MiniRing) sin dato honesto; bloque "acuerdos de crianza" es decisión del dueño.
+
+### Problemas conocidos (2026-10-14, 7.ª pasada) — veredicto:landing NO LISTA (35/40 · 15/20 · 16/20), EN LOCAL
+- Sube usabilidad 34→35. Faltan 1 punto de usabilidad y 1 de craft. Cambios aplicados: notas/pie a text-secondary 14 px, chips del hero con borde fino, chip central acortado.
+- El revisor no ve el CountUp del precio ni la línea de pasos en capturas estáticas (existen en código); pide un anillo/barra con dato honesto, menos repetición del aviso de prueba en Planes y pie en 2 columnas. Bloque "acuerdos de crianza" y 6 tarjetas = decisiones del dueño.
+
+### Problemas conocidos (2026-10-14, 8.ª pasada) — veredicto:landing NO LISTA (35/40 · 15/20 · 16/20), EN LOCAL
+- Sin cambio de puntaje tras: BarraPrueba animada (Anual), 1 línea de prueba por plan, pie en 2 columnas + logo h-10, PS sin cursiva. Faltan 1 punto de usabilidad y 1 de craft.
+- Sugerencias restantes del revisor (sin aplicar): CountUp en "10 minutos" del hero, barra más gruesa (8 px), quitar resumen "Hoy no pagas nada", chips del hero sin borde, bloque legal a 2 párrafos (decisión del dueño). Rendimientos decrecientes: conviene que el dueño revise en computador y celular antes de más pasadas.
+- (2026-10-14) `public/frame-asistencia.png`: título de la captura cambiado de "Asistencia" a "Especialistas" (solo la imagen del carrusel; la app interna NO se tocó, su barra inferior sigue diciendo "Asistencia"). Original respaldado fuera del repo (temp); en git se recupera con `git checkout -- public/frame-asistencia.png`.
+- (2026-10-14) frame-asistencia.png: encabezado alineado con las demás capturas del carrusel (se quitaron 35 filas sobrantes del encabezado y se repuso el relleno sobre la barra inferior); src con ?v=3 para saltar la caché.
+
+### Decisión del dueño (2026-10-14) — SIN más pasadas del revisor-visual por ahora
+- No lanzar más revisiones hasta terminar los cambios de la auditoría. Al final de esos cambios, el dueño pedirá la pasada del revisor: antes de la 2.ª auditoría las páginas (landing, onboarding, planes) deben pasar la calificación. Hasta entonces `veredicto:landing`, `veredicto:onboarding` y `veredicto:paywall` quedan como pendientes conocidos (landing: 35/40 · 15/20 · 16/20 en la 8.ª pasada).

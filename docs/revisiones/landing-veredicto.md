@@ -1,25 +1,19 @@
-# VEREDICTO revisor-visual — landing (2a ronda hallazgo 3: titular "cada pago ... con comprobante y fecha" + subtitulo sin repeticion)
-Fecha: 2026-10-13 13:00
-Screenshot: docs/revisiones/hallazgo3-v2-hero-375.jpg (+ docs/revisiones/hallazgo3-landing-grupos-375.jpg)
-Usabilidad: 36/40
-Craft: 16/20
+# VEREDICTO revisor-visual — landing (octava pasada, capturas v1-v3)
+Fecha: 2026-10-14 23:00
+Screenshot: docs/revisiones/landing-375-v1.png
+Usabilidad: 35/40
+Craft: 15/20
 Copy (si vende): 16/20
 Fidelidad (si hubo referencia): N-A
-Veredicto: LISTA
-Top defectos: 1) [Hero, H1/subtitulo] El hero sigue sin escena de dolor: la emocion (dolor #1 "mala paga", "cajero automatico") solo aparece en "Te suena?", un scroll mas abajo; eje emocion se queda en 3. Fix: opcional, una linea de apoyo sobre el CTA o probar en A/B un H1 que abra con la escena. 2) [Te suena?, orden de grupos] Quien RECIBE va primero, pero en la ficha sus dolores son INFERIDOS (sin VoC); Carlos (avatar con evidencia, dolor #1 star) queda en el segundo grupo. Decision del dueño registrada; fix: medir clics/scroll por grupo antes de consolidar el orden. 3) [Pie, heredado] Sin prueba social real (correcto declararlo, cero testimonios inventados) y tarjeta Anual con lineas pequeñas de jerarquia invertida; sin margen en gates: cualquier regresion en cualquier eje baja a NO LISTA. 4) [Hero, H1] "Padres separados" deja fuera a quien nunca convivio con la otra persona (padres no casados/no convivientes); es micro-riesgo de identificacion, no defecto de ficha (avatar = padre separado). 5) [Hero 1440] Captura recortada por la herramienta: no se puntua escritorio, solo se confirma titular y subtitulo.
+Veredicto: NO LISTA
+Top defectos: 1) [Craft/movimiento, toda la landing] Ya hay BarraPrueba (Oferta.tsx:78) y CountUp del precio (ui.tsx:27) con reduced-motion, pero siguen sin dibujarse los anillos (MiniRing sin datos), "Listo en 10 minutos" del hero es estático y no hay ningún momento de celebración/hito; la barra es una línea de 4 px en la tarjeta Anual que casi no se nota. Eje 4 queda en 3 y el craft en 15 (<16). Fix: contar "10" en el hero con CountUp y dar un remate al check del Sello en DemoSello (o engrosar la barra a 8 px con el dato "7 días" como número héroe). 2) [Oferta, v1 final y v2 arriba] Aún se repite la idea de prueba: resumen "Hoy no pagas nada", etiquetas "Hoy: sin cobro / 7 días de prueba" de la barra y la línea "7 días de prueba, sin cobro. El primer cobro entra el día 8" bajo cada plan; además el CTA Anual y el del Mensual dicen cosas distintas ("Crear mi expediente gratis" vs "Empezar mi plan mensual"), lo que compite. Fix: quitar la línea inferior del Mensual y el resumen superior, dejar solo la barra como aviso del Anual. 3) [Pie legal, v3 abajo] Los 6 enlaces siguen leyéndose como una fila corrida con viñetas que se parte en 3 líneas desparejas (no se ven las 2 columnas pedidas) y el logo sigue pequeño con "Coparentia" apenas legible; texto del pie 11-12 px aparente. Fix: grid de 2 columnas sin viñetas, logo h-10 real y revisar que la clase responsive se aplica a 375 px. 4) [Gate cognitivo, v1 "¿Te suena?"] 6 tarjetas de dolor + 3 párrafos legales largos + 4 CTAs + 5 FAQ: el bloque "acuerdos de crianza" (párrafos de 4-5 líneas) enfría la emoción tras el dolor y viola el límite de 3-4 líneas por bloque. Fix: recortar a 2 párrafos de 3 líneas o plegarlo en un acordeón. 5) [Hero y notas, v1/v2] Los chips de beneficios (Gastos al día, Sello de Confianza con fecha, Mente en calma) siguen pareciendo botones pill sin acción; notas bajo CTA y bajo planes en ~12 px de tono tenue. Fix: quitar el borde/sombra de los chips (solo check + texto) y subir las notas a 14 px.
 
-Detalle usabilidad: h1:3 h2:4 h3:4 h4:4 h5:4 h6:4 h7:3 h8:3 h9:3 h10:4
-Detalle craft: jerarquia:3 profundidad:3 identidad:3 movimiento:4 encaje:3
+Detalle usabilidad: h1:3 h2:4 h3:3 h4:3 h5:3 h6:4 h7:3 h8:3 h9:3 h10:3
+Detalle craft: jerarquia:3 profundidad:3 identidad:3 movimiento:3 encaje:3
 Detalle copy: idea:4 especificidad:3 emocion:3 oferta:3 accion:3
 
-Gate doble: usabilidad 36 (minimo exacto) y craft 16 (minimo exacto): pasan sin margen. Gate de copy RUBRICA 4: 16/20 con ningun eje <=2: pasa, tambien en el minimo.
-
-## Respuestas a lo pedido
-- Copy sube a 16/20: SI (de 15). Sube el eje idea (3 a 4): el H1 ahora nombra a quien (padres separados), el tema (cuota alimentaria) y un resultado con objeto concreto (cada pago con comprobante y fecha); el mecanismo bautizado aparece en el hero via el pilar "Sello de Confianza en cada comprobante", y se repite en solucion y oferta. Los demas ejes no se mueven: especificidad 3 (sin cifra ni prueba externa en el hero; "10 minutos" es la unica cifra), emocion 3 (ver defecto 1), oferta 3, accion 3 (CTA unico "Crear mi expediente gratis", repetido; no esta en 1a persona de beneficio estricta pero es consistente).
-- Trazabilidad: H1 "cada pago ... comprobante y fecha" = deseo #1 star (reporte con fechas y recibos) + VoC "quedar claro, con fechas y recibos"; palabras del lexico del avatar ("cuota", "comprobante"); subtitulo "sin depender de la otra persona" = objecion #1 y lenguaje obligatorio de la ficha ("sin depender de tu ex", ya neutralizado). "Listo para mostrar" no promete validez legal, coherente con objecion #3.
-- Los defectos 1-3 de mi veredicto previo quedan resueltos: sin "unidos" (ya no choca con lo unilateral), titular con resultado, acento en 3 palabras ("comprobante y fecha"; la "y" interna es aceptable, no es articulo de apertura). El subtitulo ya no repite el titular.
-- Visible en la captura 375: H1 4 lineas, CTA en el primer pliegue (~y 372 de 812 css), contraste del boton azul sobre fondo claro correcto, pie "7 dias gratis · Garantia de 15 dias" y aclaracion del cobro dia 8 legibles. Los grupos 3+3 con h3 y barra fija inferior se mantienen.
-- FICHA-ARTE: tipografia Figtree (display) + Nunito Sans (cuerpo), acento azul unico, fondo claro con tinte: coherente con la variante clara; no se detecta desvio visible. Isotipo gris metalico: decision del dueño, no se puntua.
-- Verificacion de codigo: app/page.tsx pasa h1Marked y subtitleMarked tal como se describe; CTA_HREF unico a /onboarding; precios desde lib/precios. Movimiento (eje 4) heredado de la ronda anterior, sin cambios.
-
-Advertencia de honestidad: LISTA con margen cero en los tres gates (36/40, 16/20, 16/20). Una auditoria externa mas estricta en emocion del hero, prueba social o jerarquia de la tarjeta Anual puede bajar cualquiera de ellos.
+## Gates
+Gate cognitivo: fallan ~2-3 ítems (grupos de 6 tarjetas, bloque legal largo, chips que parecen interactivos); no llega a sobrecarga crítica. Usabilidad 35/40 queda bajo 36 (h8 por repetición residual en Oferta y densidad del bloque de dolor). Craft 15/20 queda bajo 16 (movimiento: sin celebración ni anillos, barra poco visible). Copy 16/20 pasa sin margen, ningún eje <=2. Gate doble no cumplido: NO LISTA.
+Mejoras reconocidas vs 7.ª: aviso de prueba reducido de 3 a una línea por plan en las tarjetas, BarraPrueba con dato real y reduced-motion, CountUp en el precio, PS del cierre legible sin cursiva, sin desborde (scrollWidth 375).
+Sin verificar a fondo: heurísticas 3/7 (StickyCtaMobile no visible en estático; existe en ui.tsx con whileTap y reduced-motion, no auditada línea a línea). CTA héroe: whileTap 0.97 en CtaButton verificado en código.
+FICHA-ARTE (variante clara Figtree + Nunito Sans, azul #2F6FDC, radios 22px/999px, blobs orgánicos): sin desvío evidente; no coincide con los ejemplos vetados.

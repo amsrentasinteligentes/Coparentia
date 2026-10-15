@@ -38,13 +38,26 @@ export function CountUp({ text, durationMs = 900 }: { text: string; durationMs?:
   // al total—, que es lo que da la sensación de cifra viva sin mentir en ningún cuadro.
   const [display, setDisplay] = useState(match ? target.toFixed(decimals) : '');
 
+  // `tieneNumero` es un booleano ESTABLE. Antes el efecto dependía de `match` (el arreglo que devuelve
+  // text.match, nuevo en cada render): cada cuadro de la cuenta cambiaba `display`, eso volvía a renderizar,
+  // el efecto se reiniciaba desde el 70% y la cifra se quedaba para siempre en ~73% del valor (un precio de
+  // US$7.42 terminaba en US$5.42). Se encontró probando; el componente nunca se había usado.
+  const tieneNumero = match !== null;
   useEffect(() => {
-    if (!match || reduce) return;
+    if (!tieneNumero || reduce) return;
     if (!inView) return;
     mv.set(target * 0.7);
-    const controls = animate(mv, target, { duration: durationMs / 1000, ease: [0.16, 1, 0.3, 1] });
-    return () => controls.stop();
-  }, [inView, match, mv, reduce, target, durationMs]);
+    const controls = animate(mv, target, {
+      duration: durationMs / 1000,
+      ease: [0.16, 1, 0.3, 1],
+      // Pase lo que pase en el camino, la cifra termina EXACTAMENTE en el valor real.
+      onComplete: () => mv.set(target),
+    });
+    return () => {
+      controls.stop();
+      mv.set(target);
+    };
+  }, [inView, tieneNumero, mv, reduce, target, durationMs]);
 
   useEffect(() => {
     const unsub = rounded.on('change', (v) => setDisplay(v));
@@ -92,7 +105,7 @@ export function Accent({ children }: { children: ReactNode }) {
 /* ── <Kicker> — caps 12px/600 tracking +0.08em en acento (máx 1 por sección) ── */
 export function Kicker({ children }: { children: ReactNode }) {
   return (
-    <p className="mb-3 text-[12px] font-semibold uppercase tracking-[0.08em] text-[var(--accent-ink)] lg:text-[13px]">
+    <p className="mb-3 text-[13px] font-semibold uppercase tracking-[0.08em] text-[var(--accent-ink)] lg:text-[14px]">
       {children}
     </p>
   );
@@ -511,7 +524,7 @@ export function FotoLugar({
       }}
     >
       <Camera size={28} strokeWidth={1.6} aria-hidden="true" className="absolute left-1/2 top-[44%] -translate-x-1/2 -translate-y-1/2 text-white/70" />
-      <span className="relative mt-[12%] max-w-[70%] rounded-[var(--radius-button)] bg-black/30 px-2.5 py-1 text-center text-[11px] font-semibold leading-snug text-white/95 backdrop-blur-[2px] lg:text-[12px]">
+      <span className="relative mt-[12%] max-w-[70%] rounded-[var(--radius-button)] bg-black/30 px-2.5 py-1 text-center text-[13px] font-semibold leading-snug text-white/95 backdrop-blur-[2px] lg:text-[13px]">
         {descripcion}
       </span>
     </div>

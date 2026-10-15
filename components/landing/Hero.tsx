@@ -23,6 +23,10 @@ import { MarkedCopy, truncarMarcado, warnCopy } from './MarkedCopy';
 export interface EnlaceNav {
   label: string;
   href: string;
+  /** Texto más largo que se muestra solo en pantallas grandes (lg): en las medianas se usa `label`. */
+  labelLargo?: string;
+  /** Además de "Planes", este enlace también se muestra en celular. */
+  visibleEnMovil?: boolean;
 }
 
 export interface HeroProps {
@@ -108,16 +112,25 @@ export function Hero({
             {logo ?? <span aria-hidden="true" className="size-6 rounded-[8px] bg-[var(--accent)]" />}
             {!marcaSoloLogo && appName}
           </a>
-          <nav aria-label="Secciones" className="flex items-center gap-1 md:gap-2">
+          <nav aria-label="Secciones" className="flex items-center gap-2">
             {navLinks.slice(0, 4).map((l) => (
               <a
                 key={l.href}
                 href={l.href}
-                className={`px-3 py-3 text-[14px] font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] md:inline-block lg:text-[16px] ${
-                  l.href === enlacePlanes ? 'inline-flex h-11 items-center' : 'hidden'
+                // Todos los enlaces comparten la misma caja (44px, texto centrado) en computador: antes "Planes" usaba
+                // una caja distinta de las demás y su texto quedaba unos píxeles más abajo (2026-10-14).
+                className={`px-2 text-[14px] font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] md:inline-flex md:h-11 md:items-center md:px-3 lg:text-[16px] ${
+                  l.href === enlacePlanes || l.visibleEnMovil ? 'inline-flex h-11 items-center' : 'hidden'
                 }`}
               >
-                {l.label}
+                {l.labelLargo ? (
+                  <>
+                    <span className="lg:hidden">{l.label}</span>
+                    <span className="hidden lg:inline">{l.labelLargo}</span>
+                  </>
+                ) : (
+                  l.label
+                )}
               </a>
             ))}
             {loginHref && (
@@ -203,7 +216,7 @@ export function Hero({
                 // medía 2.8:1 (revisor, clara r3) — mismo fallo ya corregido en el bloque de cierre.
                 style={{ background: 'linear-gradient(150deg, var(--accent), var(--accent-deep, var(--accent)))' }}
               >
-                <p className="text-[12px] font-semibold lg:text-[13px]">{burbuja.titulo}</p>
+                <p className="text-[13px] font-semibold lg:text-[14px]">{burbuja.titulo}</p>
                 <p className="mt-1 text-[22px] font-extrabold leading-[1.1] [font-family:var(--font-display)] md:text-[26px]">
                   {burbuja.dato}
                 </p>
@@ -223,7 +236,7 @@ export function Hero({
               <motion.li
                 variants={item}
                 key={p}
-                className="flex items-center gap-3 rounded-[var(--radius-button)] bg-[var(--surface)] px-5 py-4 text-[15px] font-semibold text-[var(--text-primary)] shadow-[var(--shadow-1)] lg:py-5 lg:text-[17px]"
+                className="flex items-center gap-3 rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_22%,transparent)] bg-[var(--surface)] px-5 py-4 text-[15px] font-semibold text-[var(--text-primary)] lg:py-5 lg:text-[17px]"
               >
                 <CheckCustom />
                 {p}
