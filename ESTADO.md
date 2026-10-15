@@ -4677,3 +4677,8 @@ Se hacen juntos al tocar la sección de planes (hallazgos 3 y 9), para revisar u
 ### Decisión del dueño (2026-10-14) — SIN más pasadas del revisor-visual por ahora
 - No lanzar más revisiones hasta terminar los cambios de la auditoría. Al final de esos cambios, el dueño pedirá la pasada del revisor: antes de la 2.ª auditoría las páginas (landing, onboarding, planes) deben pasar la calificación. Hasta entonces `veredicto:landing`, `veredicto:onboarding` y `veredicto:paywall` quedan como pendientes conocidos (landing: 35/40 · 15/20 · 16/20 en la 8.ª pasada).
 - (2026-10-14) Dentro de la app, "Asistencia" → "Especialistas" (pedido del usuario): etiqueta de la barra inferior (components/app/ui.tsx), acceso rápido de Inicio, título de la pantalla y "volver" del artículo. La ruta /asistencia NO cambia. "Asistencia jurídica" en Perfil se dejó igual. Etiqueta medida: 61 px en celdas de 62,5 px (ajustado). EN LOCAL, sin publicar.
+
+### Checkpoint (2026-10-14) — Seguridad de acceso (auditoría): puntos 1 y 2 hechos EN LOCAL (rama `seguridad-acceso`), sin publicar
+- Punto 1: `public/dev` → `docs/referencias-diseno/` (las 3 páginas /dev/... dan 404 en local).
+- Punto 2: clic en "Contactar" lo registra el servidor (`app/api/contacto-profesional/route.ts`, tope 5/min y 30/día por huella de IP; nombre/categoría salen de la base). Probado con 6 envíos de prueba (5 contados, el 6.º no) y borrados (10 → 10). SQL pendiente de ejecutar DESPUÉS de publicar: `supabase/contacto-profesional-cerrar-anonimo.sql`.
+- Pendiente: punto 3 (Turnstile + Attack Protection + Rate Limits, también cubre enlace por correo), punto 4 (JWT 15 min y renovación de sesión), punto 5 (CSP: solo evaluar). `allowedDevOrigins` NO está en esta rama.
