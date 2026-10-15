@@ -33,18 +33,16 @@ import { CATEGORIAS_PROFESIONAL, CONTACTO_ALIANZAS, filaAProfesional, type Categ
 // Y en la landing pública), ver supabase/contacto-profesional.sql para el permiso del lado sin
 // sesión. Nunca bloquea el clic real: si falla el registro, el enlace se abre igual (regla de
 // lib/datos.ts: medir importa menos que la acción del usuario).
+// Desde 2026-10-14 lo registra el SERVIDOR (app/api/contacto-profesional/route.ts, con tope por
+// visitante) y ya no el navegador escribiendo directo en la base. `keepalive` hace que el aviso
+// salga aunque el clic abra WhatsApp en otra pestaña y esta se cierre/oculte.
 function registrarClicContactar(profesional: Profesional): void {
-  const supabase = crearClienteSupabase();
-  supabase.auth.getUser().then(({ data: { user } }) => {
-    supabase
-      .from('event_log')
-      .insert({
-        user_id: user?.id ?? null,
-        nombre: 'contacto_profesional_click',
-        propiedades: { profesional_id: profesional.id, nombre: profesional.nombre, categoria: profesional.categoria },
-      })
-      .then(() => {});
-  });
+  fetch('/api/contacto-profesional', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ profesional_id: profesional.id }),
+    keepalive: true,
+  }).catch(() => {});
 }
 
 // Formato de tarjeta (2026-09-28, referencia del usuario): foto + nombre + especialidad + ciudad +

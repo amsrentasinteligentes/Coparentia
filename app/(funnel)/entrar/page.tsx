@@ -6,13 +6,14 @@
 // envía el enlace real. El webhook de Hotmart (más adelante) hará lo mismo desde el
 // servidor cuando exista el cobro real; este camino ya es honesto sin él.
 
-import { Suspense, useEffect, useState } from 'react';
+import { Suspense, useEffect, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'motion/react';
 import { Lock, Mail, KeyRound, ShieldCheck } from 'lucide-react';
 import { CtaFunnel, FunnelHeader, MarcoFunnel } from '@/components/funnel/ui';
 import { crearClienteSupabase } from '@/lib/supabase/client';
+import { VerificacionPersona, type VerificacionPersonaHandle } from '@/components/funnel/VerificacionPersona';
 
 type Estado = 'idle' | 'enviando' | 'enviado' | 'error' | 'enlace_invalido';
 type EstadoCodigo = 'idle' | 'verificando' | 'error';
@@ -54,6 +55,8 @@ function EntrarInterno() {
   const [mostrarPassword, setMostrarPassword] = useState(false);
   const [password, setPassword] = useState('');
   const [estadoPassword, setEstadoPassword] = useState<EstadoPassword>('idle');
+  // Verificación "no soy un robot" compartida por el enlace y la contraseña (ver VerificacionPersona).
+  const verificacion = useRef<VerificacionPersonaHandle>(null);
 
   useEffect(() => {
     if (params.get('error') === 'enlace_invalido') setEstado('enlace_invalido');
@@ -82,10 +85,14 @@ function EntrarInterno() {
   // reenviar y no reenvía es el peor sitio posible para perder la confianza.
   const enviarEnlace = async (): Promise<boolean> => {
     const supabase = crearClienteSupabase();
+    // Verificación "no soy un robot" (Turnstile): Supabase la exige también para mandar el enlace
+    // cuando la protección está activa. Sin ella configurada, el token va vacío y todo sigue igual.
+    const captchaToken = await verificacion.current?.obtenerToken();
     const { error } = await supabase.auth.signInWithOtp({
       email,
-      options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
+      options: { emailRedirectTo: `${window.location.origin}/auth/callback`, captchaToken },
     });
+    verificacion.current?.reiniciar();
     return !error;
   };
 
@@ -123,7 +130,9 @@ function EntrarInterno() {
     if (!email.includes('@') || !password || estadoPassword === 'entrando') return;
     setEstadoPassword('entrando');
     const supabase = crearClienteSupabase();
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const captchaToken = await verificacion.current?.obtenerToken();
+    const { error } = await supabase.auth.signInWithPassword({ email, password, options: { captchaToken } });
+    verificacion.current?.reiniciar();
     if (error) {
       setEstadoPassword('error');
       return;
@@ -401,6 +410,7 @@ function EntrarInterno() {
             </button>
           </div>
         )}
+        <VerificacionPersona ref={verificacion} />
       </motion.div>
     </MarcoFunnel>
   );
