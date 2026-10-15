@@ -4688,3 +4688,9 @@ Se hacen juntos al tocar la sección de planes (hallazgos 3 y 9), para revisar u
 - Probado: enlace por correo, código de 8 dígitos y Google entran con la protección activa (celular real). Sin token, un script recibe `captcha_failed` en cada intento (20/20).
 - Honesto: 11 contraseñas equivocadas seguidas desde el navegador NO dieron 429 (el límite de Supabase se comporta como cubeta que se rellena; ≈120 intentos/hora por IP). El freno real es el captcha por intento.
 - Pendiente: SQL `supabase/contacto-profesional-cerrar-anonimo.sql` (tras comprobar un clic real en Contactar), punto 4 (JWT 15 min + renovación), punto 5 (CSP: solo evaluar).
+
+### Checkpoint (2026-10-14) — Seguridad de acceso: CERRADA (4 puntos + CSP evaluada)
+- Hecho y verificado en producción: `/dev/...` 404 · clic Contactar por servidor (contador sube +1, confirmado por el dueño) y SQL ejecutado (insert anónimo en `event_log` → 401 / RLS 42501; lectura anónima → vacía) · Turnstile + CAPTCHA activo en Supabase (enlace, código y Google entran en celular real) · Rate limit sign-ins 30→10/5 min · Access token 3600→900 s (cliente y `proxy.ts` renuevan la sesión; falta que el dueño confirme 20–25 min de uso seguido).
+- No es bloqueo duro: 11 contraseñas seguidas no dieron 429; el freno real es el captcha por intento (script sin token: 20/20 `captcha_failed`). Mejora opcional: bloqueo por cuenta en servidor.
+- CSP: NO aplicada (riesgo: scripts en línea de Next, Pixel de Meta, Turnstile). Propuesta: primero `Content-Security-Policy-Report-Only`.
+- Aparte (no pedido): pantalla de consentimiento de Google muestra el dominio de Supabase en vez de "Coparentia".
