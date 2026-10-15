@@ -22,7 +22,7 @@ const DESTINOS: { href: string; label: string; icon: LucideIcon }[] = [
   { href: '/pagos', label: 'Pagos', icon: Wallet },
   { href: '/calendario', label: 'Calendario', icon: CalendarDays },
   { href: '/expediente', label: 'Expediente', icon: FolderOpen },
-  { href: '/asistencia', label: 'Asistencia', icon: Scale },
+  { href: '/asistencia', label: 'Especialistas', icon: Scale },
   // 6ª pestaña por decisión explícita del usuario (2026-09-18): "una pestaña independiente al lado
   // de Asistencia". Se le advirtió que 6 supera el tope de 5 del SO; a 375px cada destino queda en
   // ~62px, con etiquetas de 10px que aún caben ("Calendario", "Expediente", "Asistencia").
@@ -142,7 +142,7 @@ export function BottomNav() {
             <Link
               key={href}
               href={href}
-              className="flex min-w-0 flex-1 flex-col items-center gap-1 pb-1 pt-2.5 text-[10px] font-semibold transition-transform duration-100 active:scale-95 [touch-action:manipulation] sm:text-[11px]"
+              className="flex min-w-0 flex-auto flex-col items-center gap-1 pb-1 pt-2.5 text-[10px] font-semibold transition-transform duration-100 active:scale-95 [touch-action:manipulation] sm:text-[11px]"
               aria-current={activo ? 'page' : undefined}
             >
               {/* Referencia del usuario (2026-09-18): el destino activo va en azul con el ícono

@@ -59,7 +59,7 @@ export default function Asistencia() {
     <>
       <CabeceraApp />
       <ContenedorApp sinTope>
-      <TituloSeccion titulo="Asistencia" subtitulo="Profesionales, artículos y una consulta directa cuando la necesites." icon={Scale} />
+      <TituloSeccion titulo="Especialistas" subtitulo="Profesionales, artículos y una consulta directa cuando la necesites." icon={Scale} />
 
       {/* Directorio de profesionales y artículos, arriba de todo — orden pedido por el usuario,
           2026-09-28 (antes del formulario, no después). */}

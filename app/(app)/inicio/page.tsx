@@ -39,7 +39,7 @@ const ACCESOS = [
   { href: '/pagos', label: 'Pagos', icon: Wallet },
   { href: '/calendario', label: 'Calendario', icon: CalendarDays },
   { href: '/expediente', label: 'Expediente', icon: FolderOpen },
-  { href: '/asistencia', label: 'Asistencia', icon: Scale },
+  { href: '/asistencia', label: 'Especialistas', icon: Scale },
 ];
 
 const ICONO_EVENTO = { visita: CalendarClock, medica: ShieldCheck, vacaciones: CalendarClock, extracurricular: CalendarClock, salida_pais: Globe, llamada: Phone, videollamada: Video } as const;

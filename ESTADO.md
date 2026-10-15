@@ -4676,3 +4676,4 @@ Se hacen juntos al tocar la sección de planes (hallazgos 3 y 9), para revisar u
 
 ### Decisión del dueño (2026-10-14) — SIN más pasadas del revisor-visual por ahora
 - No lanzar más revisiones hasta terminar los cambios de la auditoría. Al final de esos cambios, el dueño pedirá la pasada del revisor: antes de la 2.ª auditoría las páginas (landing, onboarding, planes) deben pasar la calificación. Hasta entonces `veredicto:landing`, `veredicto:onboarding` y `veredicto:paywall` quedan como pendientes conocidos (landing: 35/40 · 15/20 · 16/20 en la 8.ª pasada).
+- (2026-10-14) Dentro de la app, "Asistencia" → "Especialistas" (pedido del usuario): etiqueta de la barra inferior (components/app/ui.tsx), acceso rápido de Inicio, título de la pantalla y "volver" del artículo. La ruta /asistencia NO cambia. "Asistencia jurídica" en Perfil se dejó igual. Etiqueta medida: 61 px en celdas de 62,5 px (ajustado). EN LOCAL, sin publicar.

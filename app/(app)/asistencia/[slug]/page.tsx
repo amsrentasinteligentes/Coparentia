@@ -21,7 +21,7 @@ export default async function ArticuloAsistencia({ params }: { params: Promise<{
           className="inline-flex items-center gap-1 text-[13px] font-bold text-[var(--accent-ink,var(--accent))] [touch-action:manipulation]"
         >
           <ChevronLeft size={16} aria-hidden="true" />
-          Asistencia
+          Especialistas
         </Link>
 
         <h1 className="mt-3 text-[22px] font-bold leading-[1.2] text-[var(--text-primary)] [font-family:var(--font-display)]">{articulo.titulo}</h1>
