@@ -19,6 +19,7 @@ import { Solucion } from '@/components/landing/Solucion';
 import { AppPorDentro } from '@/components/landing/AppPorDentro';
 import { Oferta } from '@/components/landing/Oferta';
 import { Garantia } from '@/components/landing/Garantia';
+import { OpinionProfesionales } from '@/components/landing/OpinionProfesionales';
 import { Faq } from '@/components/landing/Faq';
 import { CtaFinal } from '@/components/landing/CtaFinal';
 import { FooterLegal } from '@/components/landing/FooterLegal';
@@ -201,6 +202,47 @@ export default function Home() {
         pisoLegal="Respaldada por la garantía Hotmart de 15 días"
       />
 
+      {/* 7B. OPINIÓN DE PROFESIONALES DE FAMILIA (2026-10-15) — prueba de terceros, justo antes de las preguntas.
+          Las citas están PALABRA POR PALABRA como las entregó el dueño, cada una con autorización escrita de quien
+          la dijo (solo se corrigió ortografía). Ivonne Reyes tiene vínculo con Coparentia: se dice a la vista. */}
+      <OpinionProfesionales
+        titulo="Lo que dicen profesionales de familia"
+        citas={[
+          {
+            texto:
+              'Como abogada conciliadora y litigante en derecho de familia, sé lo importante que es tener tus documentos organizados cuando más los necesitas. Con COPARENTIA puedes construir un expediente digital con acuerdos, pagos y comunicaciones que facilite una conciliación o la preparación de una demanda y su contestación. Organiza hoy la información que puede ayudarte a proteger tus derechos y los de tus hijos.',
+            nombre: 'Ivonne Reyes',
+            especialidad: 'Abogada Especialista Conciliadora y Litigante en Derecho de Familia',
+            ciudad: 'Bogotá',
+            vinculo: 'Profesional vinculada a Coparentia',
+          },
+          {
+            texto:
+              'En los procesos de familia, contar con evidencias claras y oportunamente disponibles puede marcar una diferencia importante. Desde mi experiencia como abogada, sé que reconstruir el historial de cumplimiento de las obligaciones económicas se vuelve complejo cuando la documentación se encuentra dispersa, y esto puede dificultar la preparación de una estrategia jurídica dentro de los plazos legales. COPARENTIA ofrece una alternativa práctica para conservar la trazabilidad de los compromisos familiares y disponer de un registro organizado que facilite la consulta y el seguimiento de cada situación.',
+            nombre: 'Liliana Peñuela',
+            especialidad: 'Abogada Litigante Especialista en Derecho de Familia',
+            ciudad: 'Bogotá',
+          },
+          {
+            texto:
+              'Como psicóloga que acompaña a adultos durante y después de un divorcio emocionalmente difícil, reconozco que reorganizar la vida y asumir una nueva dinámica familiar puede resultar abrumador. El acompañamiento psicológico ayuda a elaborar la pérdida, fortalecer los recursos personales y establecer límites saludables. En este camino, COPARENTIA puede apoyar la organización de acuerdos y responsabilidades relacionados con los hijos, aportando claridad para que cada persona pueda concentrarse también en su recuperación y bienestar emocional.',
+            nombre: 'Sandra Pineda',
+            especialidad: 'Magíster en Psicología Clínica',
+            ciudad: 'Bogotá',
+          },
+        ]}
+        // Página 1 del PDF que genera la app (lib/exportar-expediente.ts), con datos FICTICIOS: ninguna persona ni
+        // menor real. Se generó llamando a la función real con respuestas de red inventadas.
+        imagen={{
+          src: '/ejemplo-expediente-pagina.webp',
+          alt: 'Página de ejemplo del expediente en PDF: partes, resumen, título de la obligación e historial de pagos, con datos ficticios',
+          pie: 'Una página del expediente en PDF, foliada y con fecha. Página de ejemplo con datos ficticios.',
+          ancho: 1224,
+          alto: 1584,
+        }}
+        nota="Opiniones personales de cada profesional. No constituyen asesoría legal ni psicológica, no garantizan ningún resultado y no implican que trabajen para Coparentia."
+      />
+
       {/* 8. FAQ */}
       <Faq
         items={[
@@ -212,7 +254,7 @@ export default function Home() {
           {
             pregunta: '¿Esto tiene validez ante un juez?',
             respuestaMarked:
-              'Organiza tu evidencia en un formato claro y fechado para tu abogado o conciliador — no reemplaza la asesoría legal, [b]la potencia[/b].',
+              'Organiza tu evidencia en un formato claro y fechado para tu abogado o conciliador — no reemplaza la asesoría legal, [b]la potencia[/b]. Qué opinan profesionales de familia sobre su utilidad lo puedes ver en el bloque de arriba.',
           },
           {
             pregunta: '¿Por qué no me sirve un Excel gratis?',
