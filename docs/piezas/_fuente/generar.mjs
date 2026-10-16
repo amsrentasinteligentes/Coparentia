@@ -60,16 +60,22 @@ const telefono = (src, w, x, y, extra = '', encima = '') => {
 };
 
 // ───────────────────────────── 1. VISTA PREVIA AL COMPARTIR (1200×630) ─────────────────────────────
+// WhatsApp (Android) recorta la imagen a un CUADRADO CENTRAL de 630×630 (de x=285 a x=915): todo lo
+// importante (logo + titular + dirección) vive ahí. Los dos teléfonos de los lados son decoración: en
+// WhatsApp desaparecen y en las demás redes (imagen completa) acompañan.
 {
   const cuerpo = `
-    <div class="blob" style="width:640px;height:640px;right:-200px;top:70px"></div>
-    <div class="halo" style="width:760px;height:760px;right:-130px;top:10px"></div>
-    ${telefono('/frame-inicio.webp', 290, 812, 92, '', '<div style="position:absolute;left:60%;top:6.8%;width:40%;height:11.1%;background:#fff"></div>')}
-    <div class="abs" style="left:64px;top:52px">${logoImg(60, false)}</div>
-    <h1 class="d abs" style="left:64px;top:156px;width:690px;font-size:64px;line-height:1.05;font-weight:800;letter-spacing:-.01em">
-      Padres separados: cada pago de la cuota alimentaria, con <em>comprobante y fecha</em>
-    </h1>
-    <p class="abs" style="left:64px;top:520px;font-size:30px;font-weight:700;color:var(--ink2)">coparentia.co</p>`;
+    <div class="blob" style="width:520px;height:520px;left:-170px;top:250px"></div>
+    <div class="blob" style="width:520px;height:520px;right:-170px;top:250px;transform:scaleX(-1)"></div>
+    ${telefono('/frame-pagos.webp', 250, 20, 150, 'transform:rotate(-6deg)')}
+    ${telefono('/frame-inicio.webp', 250, 930, 150, 'transform:rotate(6deg)', '<div style="position:absolute;left:60%;top:6.8%;width:40%;height:11.1%;background:#fff"></div>')}
+    <div class="abs" style="left:285px;width:630px;top:0;height:630px;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:44px 40px 42px;text-align:center">
+      ${logoImg(54, false)}
+      <h1 class="d" style="font-size:54px;line-height:1.06;font-weight:800;letter-spacing:-.012em">
+        Padres separados: cada pago de la cuota alimentaria, con <em>comprobante y fecha</em>
+      </h1>
+      <p style="font-size:30px;font-weight:800;color:var(--accent)" class="d">coparentia.co</p>
+    </div>`;
   guardar('og.html', 1200, 630, pagina(1200, 630, cuerpo), 'docs/piezas/og-coparentia-1200x630.png');
 }
 
