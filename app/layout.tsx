@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     // Sin título ni descripción fijos aquí: cada página usa los suyos (artículos, legales, especialistas).
     images: [
       {
-        url: "/og-coparentia.jpg",
+        url: "/og-coparentia-v2.jpg",
         type: "image/jpeg",
         width: 1200,
         height: 630,
@@ -44,7 +44,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    images: ["/og-coparentia.jpg"],
+    images: ["/og-coparentia-v2.jpg"],
   },
   // iPhone/Safari NO lee app/manifest.ts (esa es la parte de Android/Chrome): sin estas 3 líneas,
   // "Agregar a inicio" en iOS deja un acceso directo que sigue abriendo Safari con su barra completa

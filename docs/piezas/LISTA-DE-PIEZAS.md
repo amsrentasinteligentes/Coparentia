@@ -2,7 +2,7 @@
 
 20 piezas en dos formatos: vertical (1080 × 1920 px, para historias y reels) y cuadrado (1080 × 1080 px, para publicaciones). Cada nombre existe en `vertical/` y en `cuadrado/`. Todo se hizo con material del proyecto (capturas de la app, logo, colores y letras de la marca). Todos los datos que se ven son de ejemplo. Ningún texto promete validez legal ni resultados judiciales.
 
-La imagen para compartir el enlace (1200 × 630 px) vive en `public/og-coparentia.jpg`, porque el sitio la necesita publicada.
+La imagen para compartir el enlace (1200 × 630 px) vive en `public/og-coparentia-v2.jpg`, porque el sitio la necesita publicada.
 
 ## Preguntas de "¿Te suena?" (6)
 
