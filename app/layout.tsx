@@ -17,10 +17,34 @@ const ibmPlexSans = IBM_Plex_Sans({
   weight: ["400", "500", "600", "700"],
 });
 
+const TITULO = "Coparentia — Cuota alimentaria para padres separados";
+const DESCRIPCION =
+  "El expediente digital para padres separados: cada pago de la cuota alimentaria con su comprobante y su fecha, organizado en un solo lugar y sin depender de la otra persona.";
+
 export const metadata: Metadata = {
-  title: "Coparentia — Cuota alimentaria para padres separados",
-  description:
-    "El expediente digital para padres separados: cada pago de la cuota alimentaria con su comprobante y su fecha, organizado en un solo lugar y sin depender de la otra persona.",
+  // Vista previa al compartir el enlace (WhatsApp, redes): título, descripción e imagen propios.
+  // `metadataBase` vuelve absolutas las direcciones de imagen, que es lo que esas apps exigen.
+  metadataBase: new URL("https://coparentia.co"),
+  title: TITULO,
+  description: DESCRIPCION,
+  openGraph: {
+    type: "website",
+    siteName: "Coparentia",
+    locale: "es_CO",
+    // Sin título ni descripción fijos aquí: cada página usa los suyos (artículos, legales, especialistas).
+    images: [
+      {
+        url: "/og-coparentia.png",
+        width: 1200,
+        height: 630,
+        alt: "Coparentia: cada pago de la cuota alimentaria, con comprobante y fecha",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    images: ["/og-coparentia.png"],
+  },
   // iPhone/Safari NO lee app/manifest.ts (esa es la parte de Android/Chrome): sin estas 3 líneas,
   // "Agregar a inicio" en iOS deja un acceso directo que sigue abriendo Safari con su barra completa
   // — con ellas, abre a pantalla completa como cualquier app instalada (2026-09-24, PWA instalable).
