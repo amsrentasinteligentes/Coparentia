@@ -214,7 +214,6 @@ export default function Home() {
             nombre: 'Ivonne Reyes',
             especialidad: 'Abogada Especialista Conciliadora y Litigante en Derecho de Familia',
             ciudad: 'Bogotá',
-            vinculo: 'Profesional vinculada a Coparentia',
           },
           {
             texto:
