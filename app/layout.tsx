@@ -29,11 +29,9 @@ export const metadata: Metadata = {
   description: DESCRIPCION,
   openGraph: {
     type: "website",
-    url: "https://coparentia.co",
     siteName: "Coparentia",
     locale: "es_CO",
-    title: TITULO,
-    description: DESCRIPCION,
+    // Sin título ni descripción fijos aquí: cada página usa los suyos (artículos, legales, especialistas).
     images: [
       {
         url: "/og-coparentia.png",
@@ -45,8 +43,6 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: TITULO,
-    description: DESCRIPCION,
     images: ["/og-coparentia.png"],
   },
   // iPhone/Safari NO lee app/manifest.ts (esa es la parte de Android/Chrome): sin estas 3 líneas,

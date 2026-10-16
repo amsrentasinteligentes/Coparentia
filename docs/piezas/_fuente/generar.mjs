@@ -64,7 +64,7 @@ const telefono = (src, w, x, y, extra = '', encima = '') => {
   const cuerpo = `
     <div class="blob" style="width:640px;height:640px;right:-200px;top:70px"></div>
     <div class="halo" style="width:760px;height:760px;right:-130px;top:10px"></div>
-    ${telefono('/frame-inicio.png', 290, 812, 92, '', '<div style="position:absolute;left:59%;top:5.8%;width:41%;height:11.4%;background:#fff"></div>')}
+    ${telefono('/frame-inicio.webp', 290, 812, 92, '', '<div style="position:absolute;left:60%;top:6.8%;width:40%;height:11.1%;background:#fff"></div>')}
     <div class="abs" style="left:64px;top:52px">${logoImg(60, false)}</div>
     <h1 class="d abs" style="left:64px;top:156px;width:690px;font-size:64px;line-height:1.05;font-weight:800;letter-spacing:-.01em">
       Padres separados: cada pago de la cuota alimentaria, con <em>comprobante y fecha</em>
@@ -119,10 +119,18 @@ for (const p of PREGUNTAS) {
 
 // ───────────────────────────── 3. LOS TRES PASOS DEL PRODUCTO ─────────────────────────────
 const PASOS = [
-  { slug: 'paso-1-foto-al-recibo', n: 1, titulo: 'Le tomas la foto al recibo', detalle: 'Desde tu teléfono, como cualquier foto.', img: '/frame-pagos.png' },
-  { slug: 'paso-2-el-sello-lo-confirma', n: 2, titulo: 'El Sello lo confirma', detalle: 'Lee el monto solo, lo fecha y lo asocia al gasto.', img: '/demo/demo-sello-poster.jpg' },
-  { slug: 'paso-3-queda-en-tu-expediente', n: 3, titulo: 'Queda en tu expediente', detalle: 'Listo para exportar cuando lo necesites.', img: '/frame-expediente.png' },
+  { slug: 'paso-1-foto-al-recibo', n: 1, titulo: 'Le tomas la foto al recibo', detalle: 'Desde tu teléfono, como cualquier foto.', img: '/frame-pagos.webp' },
+  { slug: 'paso-2-el-sello-lo-confirma', n: 2, titulo: 'El Sello lo confirma', detalle: 'Lee el monto solo, lo fecha y lo asocia al gasto.', img: '/frame-pagos.webp', sello: true },
+  { slug: 'paso-3-queda-en-tu-expediente', n: 3, titulo: 'Queda en tu expediente', detalle: 'Listo para exportar cuando lo necesites.', img: '/frame-expediente.webp' },
 ];
+const SELLO = `
+  <div style="position:absolute;inset:0;background:rgba(237,240,247,.9);backdrop-filter:blur(4px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3.2cqw;padding-bottom:14cqw;text-align:center">
+    <div style="width:27cqw;height:27cqw;border-radius:50%;background:rgba(47,111,220,.14);display:flex;align-items:center;justify-content:center">
+      <svg style="width:14cqw;height:14cqw" viewBox="0 0 24 24" fill="none" stroke="#2f6fdc" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6l7-3z"/><path d="M8.7 12.2l2.3 2.3 4.4-4.6"/></svg>
+    </div>
+    <div class="d" style="font-size:5.8cqw;font-weight:700;color:#14233a;line-height:1.1">Sello de Confianza aplicado</div>
+    <div style="font-size:3.9cqw;color:#4b5c78;line-height:1.25;padding:0 6cqw">Queda fechado el 24 de septiembre de 2026</div>
+  </div>`;
 const puntos = (n, tam) =>
   [1, 2, 3].map((i) => `<span style="display:inline-block;width:${tam}px;height:${tam}px;border-radius:50%;background:${i === n ? 'var(--accent)' : 'rgba(47,111,220,.22)'}"></span>`).join('');
 
@@ -143,7 +151,7 @@ for (const p of PASOS) {
         <h1 class="d" style="margin-top:36px;font-size:112px;line-height:1.04;font-weight:800;letter-spacing:-.015em">${p.titulo}</h1>
         <p style="margin-top:28px;font-size:44px;line-height:1.28;font-weight:600;color:var(--ink2);max-width:760px">${p.detalle}</p>
       </div>
-      ${telefono(p.img, anchoTel, (1080 - anchoTel) / 2, 1090)}`;
+      ${telefono(p.img, anchoTel, (1080 - anchoTel) / 2, 1090, p.sello ? 'container-type:inline-size;' : '', p.sello ? SELLO : '')}`;
     guardar(`${p.slug}-vertical.html`, 1080, 1920, pagina(1080, 1920, cuerpo), `docs/piezas/vertical/${p.slug}.png`);
   }
   // Cuadrado: texto a la izquierda, teléfono a la derecha.
@@ -161,7 +169,7 @@ for (const p of PASOS) {
         <h1 class="d" style="margin-top:28px;font-size:76px;line-height:1.05;font-weight:800;letter-spacing:-.015em">${p.titulo}</h1>
         <p style="margin-top:22px;font-size:32px;line-height:1.28;font-weight:600;color:var(--ink2)">${p.detalle}</p>
       </div>
-      ${telefono(p.img, anchoTel, 640, 300)}
+      ${telefono(p.img, anchoTel, 640, 300, p.sello ? 'container-type:inline-size;' : '', p.sello ? SELLO : '')}
       <p class="d abs" style="left:78px;bottom:64px;font-size:32px;font-weight:800;color:var(--accent)">coparentia.co</p>`;
     guardar(`${p.slug}-cuadrado.html`, 1080, 1080, pagina(1080, 1080, cuerpo), `docs/piezas/cuadrado/${p.slug}.png`);
   }

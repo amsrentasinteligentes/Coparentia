@@ -20,7 +20,7 @@ La imagen para compartir el enlace (1200 × 630 px) vive en `public/og-coparenti
 | Nombre del archivo | Texto sugerido para publicar |
 |---|---|
 | `paso-1-foto-al-recibo.png` | Paso 1: le tomas la foto al recibo, desde tu teléfono, como cualquier foto. coparentia.co |
-| `paso-2-el-sello-lo-confirma.png` | Paso 2: el Sello lee el monto solo, lo fecha y lo asocia al gasto. coparentia.co |
+| `paso-2-el-sello-lo-confirma.png` | Paso 2: el Sello lee el monto solo, lo fecha y lo asocia al gasto (el aviso "Sello aplicado" está dibujado nítido sobre la captura de Pagos). coparentia.co |
 | `paso-3-queda-en-tu-expediente.png` | Paso 3: queda en tu expediente, listo para exportar cuando lo necesites. coparentia.co |
 
 ## Comparación (1)

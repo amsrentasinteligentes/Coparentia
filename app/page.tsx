@@ -69,7 +69,7 @@ export default function Home() {
             </span>
           </span>
         }
-        visual={<img src="/frame-inicio.png" alt="Pantalla de inicio de Coparentia: tu expediente con el avance del mes, el total registrado y los últimos movimientos" className="w-full" />}
+        visual={<img src="/frame-inicio.webp" alt="Pantalla de inicio de Coparentia: tu expediente con el avance del mes, el total registrado y los últimos movimientos" className="w-full" />}
         // Fotos de Unsplash (licencia Unsplash: uso comercial libre) elegidas por el usuario el 2026-09-18
         // (opciones A y E de docs/referencias-diseno/fotos-propuesta.html), optimizadas a 1200px en public/fotos/.
         foto={<img src="/fotos/hero-mama-hijo-celular.jpg" alt="Mamá e hijo sonriendo mientras miran el celular en el sofá" className="h-full w-full object-cover object-[60%_35%]" width={1200} height={675} />}
@@ -136,16 +136,16 @@ export default function Home() {
       <AppPorDentro
         tituloMarked="Tu expediente, [acento]siempre a mano[/acento]"
         frames={[
-          { label: 'Tu expediente al día', src: '/frame-inicio.png', nombrePantalla: 'Inicio', iconoPlaceholder: HomeIcon },
+          { label: 'Tu expediente al día', src: '/frame-inicio.webp', nombrePantalla: 'Inicio', iconoPlaceholder: HomeIcon },
           // Solo pantallas del INTERIOR (la sección se llama 'así se ve por dentro'): el recorrido de
           // inicio y la pantalla de planes siguen en el tema oscuro por decisión del usuario y aquí
           // desentonaban (2026-09-18).
-          { label: 'Tu cuota y tus comprobantes', src: '/frame-pagos.png', nombrePantalla: 'Pagos', iconoPlaceholder: Upload },
-          { label: 'Visitas, citas y actividades', src: '/frame-calendario.png', nombrePantalla: 'Calendario', iconoPlaceholder: CalendarDays },
-          { label: 'Tu expediente en PDF, en 1 toque', src: '/frame-expediente.png', nombrePantalla: 'Expediente', iconoPlaceholder: ListChecks },
+          { label: 'Tu cuota y tus comprobantes', src: '/frame-pagos.webp', nombrePantalla: 'Pagos', iconoPlaceholder: Upload },
+          { label: 'Visitas, citas y actividades', src: '/frame-calendario.webp', nombrePantalla: 'Calendario', iconoPlaceholder: CalendarDays },
+          { label: 'Tu expediente en PDF, en 1 toque', src: '/frame-expediente.webp', nombrePantalla: 'Expediente', iconoPlaceholder: ListChecks },
           // Misma palabra que el menú, el pie y la frase de abajo (2026-10-14): "Especialistas". La "consulta
           // directa" es real DENTRO de la app (la pantalla Asistencia tiene el formulario de consulta).
-          { label: 'Especialistas, artículos y una consulta directa', src: '/frame-asistencia.png?v=3', nombrePantalla: 'Especialistas', iconoPlaceholder: Scale },
+          { label: 'Especialistas, artículos y una consulta directa', src: '/frame-especialistas.webp', nombrePantalla: 'Especialistas', iconoPlaceholder: Scale },
         ]}
         nota="Dentro de la app también tienes el calendario de eventos y el directorio de especialistas."
       />

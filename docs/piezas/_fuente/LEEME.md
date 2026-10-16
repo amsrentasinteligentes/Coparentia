@@ -7,3 +7,7 @@
 5. Borrar `public/_tmp-piezas/` al terminar.
 
 Los datos de las piezas son de ejemplo. No agregar nombres, fotos ni cifras de personas reales o de menores.
+
+## Capturas de la app (public/frame-*.webp)
+
+`node docs/piezas/_fuente/preparar-capturas.mjs` arma las 5 capturas (800×1616) a partir de las capturas del celular en `Capturas - nuevas/` (esa carpeta NO se sube a git: trae datos personales) y del contenido viejo con datos de ejemplo (commit `7f0bf41`). Inicio, Pagos y Calendario conservan los datos de ejemplo y reciben la barra de abajo nueva; Expediente y Especialistas salen de las capturas nuevas.
