@@ -11,3 +11,7 @@ Los datos de las piezas son de ejemplo. No agregar nombres, fotos ni cifras de p
 ## Capturas de la app (public/frame-*.webp)
 
 `node docs/piezas/_fuente/preparar-capturas.mjs` arma las 5 capturas (800×1616) a partir de las capturas del celular en `Capturas - nuevas/` (esa carpeta NO se sube a git: trae datos personales) y del contenido viejo con datos de ejemplo (commit `7f0bf41`). Inicio, Pagos y Calendario conservan los datos de ejemplo y reciben la barra de abajo nueva; Expediente y Especialistas salen de las capturas nuevas.
+
+## Imagen de vista previa (para compartir el enlace)
+
+`generar.mjs` deja la versión PNG en `docs/piezas/og-coparentia-1200x630.png`. La que se publica es `public/og-coparentia.jpg` (JPEG, ~100 KB: WhatsApp descarta imágenes de vista previa muy pesadas). Se obtiene con `sharp(...).jpeg({ quality: 84, mozjpeg: true })`. Cada vez que cambie el nombre del archivo, WhatsApp la vuelve a leer; si no, puede quedarse con la anterior en caché.

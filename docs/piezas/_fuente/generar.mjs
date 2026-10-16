@@ -70,7 +70,7 @@ const telefono = (src, w, x, y, extra = '', encima = '') => {
       Padres separados: cada pago de la cuota alimentaria, con <em>comprobante y fecha</em>
     </h1>
     <p class="abs" style="left:64px;top:520px;font-size:30px;font-weight:700;color:var(--ink2)">coparentia.co</p>`;
-  guardar('og.html', 1200, 630, pagina(1200, 630, cuerpo), 'public/og-coparentia.png');
+  guardar('og.html', 1200, 630, pagina(1200, 630, cuerpo), 'docs/piezas/og-coparentia-1200x630.png');
 }
 
 // ───────────────────────────── 2. UNA PIEZA POR PREGUNTA DE "¿TE SUENA?" ─────────────────────────────
