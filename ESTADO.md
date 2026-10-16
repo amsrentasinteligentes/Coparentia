@@ -4695,3 +4695,8 @@ Se hacen juntos al tocar la sección de planes (hallazgos 3 y 9), para revisar u
 - CSP: NO aplicada (riesgo: scripts en línea de Next, Pixel de Meta, Turnstile). Propuesta: primero `Content-Security-Policy-Report-Only`.
 - Aparte (no pedido): pantalla de consentimiento de Google muestra el dominio de Supabase en vez de "Coparentia".
 - (2026-10-14, noche) Prueba pendiente del dueño: dejar la app abierta con el teléfono bloqueado toda la noche y ver por la mañana si la sesión sigue viva (llave de 15 min). Si lo sacó: preguntar tiempo y dispositivo (app instalada vs Chrome) y revisar Auth Logs en Supabase. Red de Windows: que la devuelva a Pública. Siguiente punto de la auditoría: lo trae el dueño.
+
+### Checkpoint (2026-10-15) — Vista previa al compartir + robots/sitemap + 20 piezas (rama `piezas-og`, SIN publicar)
+- `app/layout.tsx`: metadataBase + openGraph + twitter con `/og-coparentia.png` (1200×630, titular de la landing + logo + captura). `app/robots.ts` y `app/sitemap.ts` (principal, especialistas, 4 legales, 3 artículos; fuera /admin, /api, /auth y pantallas internas).
+- `docs/piezas/`: 10 piezas × (vertical 1080×1920 + cuadrado 1080×1080) + `LISTA-DE-PIEZAS.md` con textos sugeridos; plantillas en `_fuente/generar.mjs`. Datos de ejemplo. En la OG se tapó con blanco la foto de la niña del encabezado de `frame-inicio.png` (foto de stock de la app) para no mostrar menores.
+- Pendiente: que el dueño apruebe las piezas y la rama; publicar; probar la vista previa en WhatsApp (se cachea: usar un enlace nuevo `?v=1` o el depurador de Facebook).
