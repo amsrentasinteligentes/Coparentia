@@ -7,12 +7,15 @@
 // se dice debajo de su nombre (`vinculo`) — una opinión con vínculo no se presenta como independiente.
 // Con UNA sola cita el bloque sigue viéndose bien (la columna de la imagen no depende de cuántas haya).
 
+import { useId, useState } from 'react';
 import { motion } from 'motion/react';
 import { MapPin, Quote } from 'lucide-react';
 import { Kicker, SectionShell, useReveal, VIEWPORT_ONCE } from './ui';
 
 export interface CitaProfesional {
   texto: string;
+  /** Frase completa copiada TAL CUAL de `texto`: es lo que se ve recogido; el texto entero se abre con "Leer cita completa". */
+  extracto?: string;
   nombre: string;
   especialidad: string;
   ciudad: string;
@@ -28,6 +31,35 @@ export interface OpinionProfesionalesProps {
   /** Aclaración legal pequeña bajo el bloque. */
   nota: string;
   id?: string;
+}
+
+// Cada cita se ve recogida (un extracto = una frase literal de la misma cita) y se despliega entera con un
+// toque: el texto completo sigue en la página palabra por palabra, como lo autorizó cada profesional.
+function TextoCita({ texto, extracto }: { texto: string; extracto?: string }) {
+  const [abierta, setAbierta] = useState(false);
+  const id = useId();
+  const larga = !!extracto && extracto !== texto;
+  return (
+    <>
+      <blockquote
+        id={id}
+        className="text-[15px] leading-[1.65] text-[var(--text-primary)] lg:text-[16px]"
+      >
+        “{larga && !abierta ? extracto : texto}”
+      </blockquote>
+      {larga && (
+        <button
+          type="button"
+          onClick={() => setAbierta((v) => !v)}
+          aria-expanded={abierta}
+          aria-controls={id}
+          className="-mt-2 flex min-h-11 items-center self-start text-[14px] font-semibold text-[var(--accent-ink,var(--accent))] underline underline-offset-2 [touch-action:manipulation]"
+        >
+          {abierta ? 'Leer menos' : 'Leer cita completa'}
+        </button>
+      )}
+    </>
+  );
 }
 
 export function OpinionProfesionales({ kicker = 'OPINIÓN DE PROFESIONALES', titulo, citas, imagen, nota, id }: OpinionProfesionalesProps) {
@@ -63,9 +95,7 @@ export function OpinionProfesionales({ kicker = 'OPINIÓN DE PROFESIONALES', tit
                   >
                     <Quote size={18} strokeWidth={1.9} color="var(--accent)" aria-hidden="true" />
                   </span>
-                  <blockquote className="text-[15px] leading-[1.65] text-[var(--text-primary)] lg:text-[16px]">
-                    “{c.texto}”
-                  </blockquote>
+                  <TextoCita texto={c.texto} extracto={c.extracto} />
                   <figcaption>
                     <p className="text-[16px] font-bold text-[var(--text-primary)] [font-family:var(--font-display)]">{c.nombre}</p>
                     <p className="mt-0.5 text-[14px] leading-snug text-[var(--text-secondary)]">{c.especialidad}</p>
