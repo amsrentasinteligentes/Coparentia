@@ -53,7 +53,7 @@ export function FooterLegal({ appName, logo, marcaSoloLogo = false, enlaces, sop
                     href={e.href}
                     target={e.href.startsWith('http') ? '_blank' : undefined}
                     rel={e.href.startsWith('http') ? 'noopener noreferrer' : undefined}
-                    className="inline-flex min-w-11 justify-center px-1 py-3 text-[14px] text-[var(--text-secondary)] underline-offset-4 hover:text-[var(--text-primary)] hover:underline lg:text-[15px]"
+                    className="px-1 py-3 text-[14px] text-[var(--text-secondary)] underline-offset-4 hover:text-[var(--text-primary)] hover:underline lg:text-[15px]"
                   >
                     {e.label}
                   </a>

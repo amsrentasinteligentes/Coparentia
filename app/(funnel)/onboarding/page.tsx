@@ -475,7 +475,7 @@ export default function Onboarding() {
           revisor ya aprobó varias rondas — un enlace nuevo por pantalla movería esa ancla. Aquí,
           antes de que la persona conteste nada, no hay CTA anclado que perturbar. */}
       {paso === 0 && (
-        <nav aria-label="Enlaces legales" className="mt-6 flex flex-wrap items-center justify-center gap-x-4 gap-y-0 pb-2 text-center lg:justify-start">
+        <nav aria-label="Enlaces legales" className="mt-auto flex flex-wrap items-center justify-center gap-x-4 gap-y-0 pb-2 text-center lg:justify-start">
           {[
             { label: 'Privacidad', href: '/privacidad' },
             { label: 'Términos y Condiciones', href: '/terminos' },
@@ -778,7 +778,7 @@ function PreguntaMeta({ valor, onFijar }: { valor: number; onFijar: (v: number) 
   }, [rounded]);
 
   return (
-    <div className="flex flex-1 flex-col justify-center lg:justify-start">
+    <div className="flex flex-1 flex-col justify-start">
       <h1 className="relative text-balance text-[28px] font-bold leading-[1.1] text-[var(--text-primary)] [font-family:var(--font-display)]">
         <Halo />
         ¿Cuántos <Marcador>meses</Marcador> de comprobantes quieres organizar primero?
@@ -812,7 +812,7 @@ function PreguntaMeta({ valor, onFijar }: { valor: number; onFijar: (v: number) 
           {feedback}
         </p>
       </div>
-      <div className="mt-10 lg:mt-auto lg:pt-8">
+      <div className="mt-auto pt-8">
         <CtaFunnel onClick={() => onFijar(n)}>Fijar mi meta</CtaFunnel>
       </div>
     </div>
@@ -893,8 +893,15 @@ function ReconocimientoFinal({ respuestas, onContinuar }: { respuestas: Respuest
         Tus respuestas te describen
       </h1>
       <p className="mt-4 max-w-[40ch] text-[16px] leading-[1.5] text-[var(--text-secondary)]">
-        Eres alguien que prefiere <span className="font-semibold text-[var(--text-primary)]">prevenir antes que discutir</span> —
-        la mayoría espera hasta la primera pelea para buscar una solución. Tu expediente ya tiene ventaja.
+        {respuestas.rol === 'recibe' ? 'Recibes la cuota' : respuestas.rol === 'paga' ? 'Pagas la cuota' : 'Llevas el registro de la cuota'}
+        {respuestas.preocupacion ? (
+          <>
+            {' '}y lo que más te preocupa es <span className="font-semibold text-[var(--text-primary)]">“{respuestas.preocupacion}”</span>.
+          </>
+        ) : (
+          '.'
+        )}{' '}
+        Tu expediente se arma para que cada pago, visita y acuerdo quede con fecha y a mano.
       </p>
       <div className="mt-6 flex max-w-[38ch] items-start gap-3 rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--accent)_25%,transparent)] bg-[color-mix(in_oklab,var(--accent)_8%,transparent)] p-4 text-left">
         <ShieldCheck size={20} className="mt-0.5 shrink-0 text-[var(--accent)]" aria-hidden="true" />
@@ -916,15 +923,24 @@ function ReconocimientoFinal({ respuestas, onContinuar }: { respuestas: Respuest
   );
 }
 
+// Cómo se dice cada momento dentro de "Configurando tus alertas para …" (antes se pegaba la opción tal cual:
+// "…para A mitad de tarde", con mayúscula y preposición rotas — revisor-visual, 2026-10-20).
+const FRASE_MOMENTO: Record<string, string> = {
+  'En la mañana': 'la mañana',
+  'A mitad de tarde': 'la mitad de la tarde',
+  'En la noche': 'la noche',
+  'Cuando llega un reclamo': 'cuando llegue un reclamo',
+};
+
 /* ── Loading "construyendo tu plan" (B) — el argumento de apertura del paywall. Nombra el
    Sello de Confianza explícitamente (antes solo aparecía en landing/paywall). ── */
 function LoadingPlan({ respuestas, onListo }: { respuestas: Respuestas; onListo: () => void }) {
   const reduce = useReducedMotion();
   const lineas = [
-    `Registrando tu situación: ${respuestas.situacion || 'tu caso'}`,
+    `Registrando tu situación: ${respuestas.situacion === 'Otra cosa' && respuestas.situacionOtra ? respuestas.situacionOtra : respuestas.situacion || 'tu caso'}`,
     'Activando el Sello de Confianza para tus comprobantes',
     `Ajustando a tu meta de ${respuestas.metaMeses} ${respuestas.metaMeses === 1 ? 'mes' : 'meses'} de comprobantes`,
-    `Configurando tus alertas para ${respuestas.momento || 'el momento que elegiste'}`,
+    `Configurando tus alertas para ${FRASE_MOMENTO[respuestas.momento] ?? 'el momento que elegiste'}`,
     'Preparando tu primer expediente',
   ];
   const [activa, setActiva] = useState(0);
@@ -989,7 +1005,7 @@ function LoadingPlan({ respuestas, onListo }: { respuestas: Respuestas; onListo:
           {pct}%
         </span>
       </div>
-      <h1 className="mt-6 text-[26px] font-bold text-[var(--text-primary)] [font-family:var(--font-display)]">
+      <h1 className="mt-6 text-center text-[26px] font-bold leading-[1.12] text-[var(--text-primary)] [font-family:var(--font-display)]">
         Construyendo tu expediente…
       </h1>
       <ul className="mt-8 flex w-full flex-col gap-4">
