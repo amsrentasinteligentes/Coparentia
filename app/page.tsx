@@ -68,6 +68,10 @@ export default function Home() {
             <span className="mt-0.5 block text-[13px] text-[var(--text-tertiary)] lg:text-[14px]">
               Registras tu medio de pago hoy; el primer cobro entra el día {DIA_PRIMER_COBRO}.
             </span>
+            {/* Decisión #8 (2026-10-20): por ahora la app es solo para Colombia. */}
+            <span className="mt-1 block text-[13px] font-semibold text-[var(--text-secondary)] lg:text-[14px]">
+              Disponible para Colombia
+            </span>
           </span>
         }
         visual={<img src="/frame-inicio.webp" alt="Pantalla de inicio de Coparentia: tu expediente con el avance del mes, el total registrado y los últimos movimientos" className="w-full" />}
@@ -269,6 +273,10 @@ export default function Home() {
             pregunta: '¿Mis datos financieros están seguros?',
             respuestaMarked:
               'Cifrado en tránsito y en reposo. Tus datos [b]nunca se comparten[/b] sin tu autorización.',
+          },
+          {
+            pregunta: '¿Funciona fuera de Colombia?',
+            respuestaMarked: 'Pronto disponible para otros países.',
           },
         ]}
       />

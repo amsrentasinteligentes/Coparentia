@@ -14,7 +14,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
-import { X, Check, ShieldCheck, Lock, FileCheck2, HeartHandshake, Loader2 } from 'lucide-react';
+import { X, Check, ShieldCheck, Lock, FileCheck2, HeartHandshake, Loader2, MapPin } from 'lucide-react';
 import { Blob } from '@/components/landing/ui';
 import { BarraAtras, CtaFunnel, FunnelHeader, Halo, MarcoFunnel, Marcador, usePasoVariants } from '@/components/funnel/ui';
 import { PanelExpediente, type FilaExpediente } from '@/components/funnel/PanelExpediente';
@@ -525,6 +525,11 @@ function ValorYPrueba({
           <span className="flex items-center gap-1.5">
             <Lock size={13} color="var(--accent)" aria-hidden="true" />
             Pago seguro con Hotmart
+          </span>
+          {/* Decisión #8 (2026-10-20): por ahora la app es solo para Colombia (cuota en pesos, normativa colombiana). */}
+          <span className="flex items-center gap-1.5">
+            <MapPin size={13} color="var(--accent)" aria-hidden="true" />
+            Disponible para Colombia
           </span>
         </div>
         <CtaFunnel onClick={onContinuar}>Ver mi plan y precio</CtaFunnel>
