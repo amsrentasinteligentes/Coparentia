@@ -111,9 +111,9 @@ export default function Home() {
 
       {/* 3. AGITACIÓN */}
       <Agitacion
-        titulo="Que los acuerdos de crianza [acento]no se pierdan entre mensajes[/acento]"
+        titulo="Te reclaman un pago o una visita. [acento]¿Dónde quedó lo acordado?[/acento]"
         frases={[
-          'Los pagos, las visitas y las decisiones sobre tus hijos necesitan claridad. Con COPARENTIA puedes llevar un registro de lo acordado, organizar los soportes y consultar la información cuando la necesites. Así evitas volver a discutir sobre lo que ya quedó registrado.',
+          'Con COPARENTIA cada pago, visita y acuerdo queda registrado, con fecha y en un solo lugar.',
           'Y si surge una reclamación, tendrás la información reunida para preparar una respuesta o sustentar una actuación judicial o extrajudicial.',
           'Empieza hoy a organizar tu crianza compartida con COPARENTIA.',
         ]}
