@@ -15,7 +15,9 @@ import type { ReactNode } from 'react';
 export function FunnelHeader({ appName = 'Coparentia' }: { appName?: string }) {
   return (
     <Link href="/" aria-label={appName} className="mb-2 inline-flex items-center py-3">
-      <img src="/logo-horizontal.webp" alt={appName} className="h-8 w-auto object-contain" />
+      <span className="inline-flex items-center rounded-[14px] bg-[linear-gradient(150deg,#2757a8,#17306a)] shadow-[0_6px_18px_-8px_rgb(23_48_106_/_0.55)] px-4 py-2">
+        <img src="/logo-horizontal.webp" alt={appName} className="h-10 w-auto object-contain" />
+      </span>
     </Link>
   );
 }

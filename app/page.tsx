@@ -44,7 +44,11 @@ export default function Home() {
       {/* 1. HERO */}
       <Hero
         appName="Coparentia"
-        logo={<img src="/logo-horizontal.webp" alt="Coparentia" className="h-10 w-auto object-contain lg:h-12" />}
+        logo={
+          <span className="inline-flex items-center rounded-[12px] bg-[linear-gradient(150deg,#2757a8,#17306a)] shadow-[0_6px_18px_-8px_rgb(23_48_106_/_0.55)] px-2.5 py-1.5 lg:rounded-[14px] lg:px-4 lg:py-2">
+            <img src="/logo-horizontal.webp" alt="Coparentia" className="h-8 w-auto object-contain lg:h-10" />
+          </span>
+        }
         marcaSoloLogo
         loginHref="/entrar"
         navLinks={[
