@@ -651,9 +651,9 @@ function Precio({
                   tenía fondo base y tarjeta elevada; FICHA-ARTE declara tres niveles. La referencia
                   en pesos —dato de apoyo, no el precio— va sobre una superficie HUNDIDA: se
                   distingue del precio principal sin agregar otro color ni otro tamaño de letra. */}
-              <p className={`mt-1.5 min-h-[2.6em] rounded-[8px] ${plan === 'anual' ? 'bg-[var(--surface)]' : 'bg-[var(--surface-2)]'} px-3 py-1 text-[13px] text-[var(--text-secondary)] shadow-[inset_0_1px_2px_rgb(20_40_80_/_0.08)] lg:min-h-0`}>
+              <p className={`mt-1.5 rounded-[8px] ${plan === 'anual' ? 'bg-[var(--surface)]' : 'bg-[var(--surface-2)]'} px-3 py-1 text-[13px] text-[var(--text-secondary)] shadow-[inset_0_1px_2px_rgb(20_40_80_/_0.08)] lg:min-h-0`}>
                 {PLAN_ANUAL.totalAnual}
-                <span className="block text-[var(--text-primary)] lg:ml-2 lg:inline">
+                <span className="hidden text-[var(--text-primary)] lg:ml-2 lg:inline">
                   Te sale a <span className="font-semibold">{PLAN_ANUAL.costoDia}</span> al día
                 </span>
               </p>
@@ -687,9 +687,9 @@ function Precio({
             </div>
             {/* Solo la tarjeta Anual mostraba su total, así que el "ahorras US$30.88" no se podía
                 comprobar contra nada: faltaba el término de comparación. */}
-            <p className={`mt-1.5 min-h-[2.6em] rounded-[8px] ${plan === 'mensual' ? 'bg-[var(--surface)]' : 'bg-[var(--surface-2)]'} px-3 py-1 text-[13px] text-[var(--text-secondary)] shadow-[inset_0_1px_2px_rgb(20_40_80_/_0.08)] lg:min-h-0`}>
+            <p className={`mt-1.5 rounded-[8px] ${plan === 'mensual' ? 'bg-[var(--surface)]' : 'bg-[var(--surface-2)]'} px-3 py-1 text-[13px] text-[var(--text-secondary)] shadow-[inset_0_1px_2px_rgb(20_40_80_/_0.08)] lg:min-h-0`}>
               {PLAN_MENSUAL.totalAnual}
-              <span className="block text-[var(--text-primary)] lg:ml-2 lg:inline">
+              <span className="hidden text-[var(--text-primary)] lg:ml-2 lg:inline">
                 Te sale a <span className="font-semibold">{PLAN_MENSUAL.costoDia}</span> al día
               </span>
             </p>
@@ -707,7 +707,7 @@ function Precio({
       {/* CORREO (hallazgo 2 de la auditoría): el mismo con el que pagará y entrará. Va ANTES del pie
           y del botón fijo para que no tape el campo. La autorización de datos es una casilla nunca
           premarcada (Ley 1581 de 2012), igual que en /entrar. */}
-      <div className="mt-4">
+      <div className="mt-3">
         <label htmlFor="paywall-correo" className="text-[15px] font-semibold text-[var(--text-primary)]">
           Tu correo para pagar y entrar
         </label>
@@ -746,7 +746,7 @@ function Precio({
           className="mt-2 h-12 w-full rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--surface)] px-4 text-[16px] text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)]"
         />
         )}
-        <label className="mt-3 flex items-start gap-2.5 [touch-action:manipulation]">
+        <label className="mt-2 flex items-start gap-2.5 [touch-action:manipulation]">
           <input
             id="paywall-autoriza"
             type="checkbox"
@@ -894,7 +894,6 @@ function Precio({
       <div className="mt-3 flex flex-col gap-2">
         {[
           { icon: HeartHandshake, pre: 'Funciona ', fuerte: 'aunque la otra persona no la use', post: '.' },
-          { icon: FileCheck2, pre: 'Menos que lo que ', fuerte: 'algunos abogados cobran', post: ' por un correo.' },
         ].map(({ icon: Icon, pre, fuerte, post }) => (
           <div key={fuerte} className="flex items-center gap-3">
             <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[color-mix(in_oklab,var(--accent)_12%,transparent)]">

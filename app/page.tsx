@@ -76,8 +76,7 @@ export default function Home() {
         // Fotos de Unsplash (licencia Unsplash: uso comercial libre) elegidas por el usuario el 2026-09-18
         // (opciones A y E de docs/referencias-diseno/fotos-propuesta.html), optimizadas a 1200px en public/fotos/.
         foto={<img src="/fotos/hero-mama-hijo-celular.jpg" alt="Mamá e hijo sonriendo mientras miran el celular en el sofá" className="h-full w-full object-cover object-[60%_35%]" width={1200} height={675} />}
-        // "10 minutos" es el tiempo medido del onboarding + primer comprobante (guía "Tu primer
-        // expediente en 10 minutos" del stack de valor) — no una cifra de marketing inventada.
+        // "10 minutos" es el tiempo medido del onboarding + primer comprobante — no una cifra de marketing inventada.
         burbuja={{ titulo: 'Tu primer expediente', dato: 'Listo en 10 minutos' }}
         pilares={['Gastos al día', 'Sello de Confianza con fecha', 'Mente en calma']}
       />

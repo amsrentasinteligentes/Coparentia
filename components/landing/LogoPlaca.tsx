@@ -10,17 +10,17 @@ export function LogoPlaca({
   className = '',
 }: {
   alt?: string;
-  /** Encabezado con menú (página principal): logo de 30 px. Sin menú (recorrido, planes, pie): 40 px. */
+  /** Encabezado con menú (página principal): logo de 30 px. Sin menú (recorrido, planes, pie): 36 px. */
   compacto?: boolean;
   className?: string;
 }) {
   return (
     <span
       className={`inline-flex shrink-0 items-center rounded-[22px] bg-[linear-gradient(150deg,color-mix(in_srgb,var(--accent-deep,#2757a8)_75%,black),color-mix(in_srgb,var(--accent-deep,#2757a8)_50%,black))] shadow-[0_6px_18px_-8px_color-mix(in_oklab,var(--accent-deep,#2757a8)_70%,transparent)] ${
-        compacto ? 'px-2.5 py-[5px]' : 'px-4 py-2'
+        compacto ? 'px-2.5 py-[5px]' : 'px-3.5 py-1.5'
       } ${className}`}
     >
-      <img src="/logo-horizontal.webp" alt={alt} className={`w-auto shrink-0 object-contain ${compacto ? 'h-[30px]' : 'h-10'}`} />
+      <img src="/logo-horizontal.webp" alt={alt} className={`w-auto shrink-0 object-contain ${compacto ? 'h-[30px]' : 'h-9'}`} />
     </span>
   );
 }

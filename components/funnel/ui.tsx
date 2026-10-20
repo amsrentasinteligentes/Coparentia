@@ -15,7 +15,7 @@ import { LogoPlaca } from '@/components/landing/LogoPlaca';
 /* ── <FunnelHeader> — logo + nombre arriba de TODA pantalla del funnel (50, regla de marca) ── */
 export function FunnelHeader({ appName = 'Coparentia' }: { appName?: string }) {
   return (
-    <Link href="/" aria-label={appName} className="mb-2 inline-flex items-center py-3">
+    <Link href="/" aria-label={appName} className="mb-1 inline-flex items-center py-2">
       <LogoPlaca alt={appName} />
     </Link>
   );
