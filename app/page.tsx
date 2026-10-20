@@ -157,16 +157,6 @@ export default function Home() {
       <Oferta
         tituloMarked="Empieza gratis. Sigue por [acento]menos de US$0.25/día[/acento]"
         trialDias={TRIAL_DIAS}
-        stack={{
-          lineas: [
-            { resultado: 'Coparentia Pro con el Sello de Confianza — 12 meses, pagando mes a mes', valor: usd(PRECIOS.mensualPorAnoUsd) },
-            { resultado: 'Plantilla de autorización de gastos extraordinarios', valor: 'Incluida' },
-            { resultado: 'Guía "Tu primer expediente en 10 minutos"', valor: 'Incluida' },
-          ],
-          totalTachado: usd(PRECIOS.mensualPorAnoUsd),
-          etiquetaTotal: 'Pagando mes a mes',
-          nota: `Plan Anual: ${usd(PRECIOS.anual.cobroUsd)} al año (${usd(PRECIOS.anual.mesUsd)}/mes) — ${usd(PRECIOS.ahorroAnualUsd)} menos que pagando mes a mes`,
-        }}
         anual={{
           nombre: 'Anual',
           badge: `AHORRAS ${usd(PRECIOS.ahorroAnualUsd)} AL AÑO`,
@@ -206,7 +196,8 @@ export default function Home() {
 
       {/* 7B. OPINIÓN DE PROFESIONALES DE FAMILIA (2026-10-15) — prueba de terceros, justo antes de las preguntas.
           Las citas están PALABRA POR PALABRA como las entregó el dueño, cada una con autorización escrita de quien
-          la dijo (solo se corrigió ortografía). Ivonne Reyes tiene vínculo con Coparentia: se dice a la vista. */}
+          la dijo (solo se corrigió ortografía). Ivonne Reyes es familiar del fundador: el dueño decidió (2026-10-20) NO declararlo en la página
+          y quitar de la nota la frase "no implican que trabajen para Coparentia", que no podía asegurarse para todas. */}
       <OpinionProfesionales
         titulo="Lo que dicen profesionales de familia"
         citas={[
@@ -244,7 +235,7 @@ export default function Home() {
           ancho: 1224,
           alto: 1584,
         }}
-        nota="Opiniones personales de cada profesional. No constituyen asesoría legal ni psicológica, no garantizan ningún resultado y no implican que trabajen para Coparentia."
+        nota="Opiniones personales de cada profesional. No constituyen asesoría legal ni psicológica."
       />
 
       {/* 8. FAQ */}
@@ -258,7 +249,7 @@ export default function Home() {
           {
             pregunta: '¿Esto tiene validez ante un juez?',
             respuestaMarked:
-              'Organiza tu evidencia en un formato claro y fechado para tu abogado o conciliador — no reemplaza la asesoría legal, [b]la potencia[/b]. Qué opinan profesionales de familia sobre su utilidad lo puedes ver en el bloque de arriba.',
+              'Un juez valora cada prueba según el caso. Coparentia [b]ordena y fecha tus comprobantes[/b] para que tu abogado decida cómo usarlos.',
           },
           {
             pregunta: '¿Por qué no me sirve un Excel gratis?',
@@ -289,7 +280,7 @@ export default function Home() {
         ctaLabel={CTA_LABEL}
         ctaHref={CTA_HREF}
         recap={`${TRIAL_DIAS} días gratis · Garantía de 15 días`}
-        psMarked={`PS: Coparentia convierte tus comprobantes en un expediente fechado y listo para mostrar con el Sello de Confianza. Hoy entras con ${TRIAL_DIAS} días gratis —registras tu medio de pago, pero no se te cobra nada hasta el día ${DIA_PRIMER_COBRO}— y, si no armas tu primer expediente en 15 días, te devolvemos todo.`}
+        psMarked={`PS: Entras con ${TRIAL_DIAS} días gratis (registras tu medio de pago, pero no se te cobra nada hasta el día ${DIA_PRIMER_COBRO}). Si en 15 días no armas tu primer expediente, te devolvemos todo.`}
       />
 
       {/* El bloque "Directorio de especialistas" (con "Contactar", artículos y "Quiero anunciarme") vivía

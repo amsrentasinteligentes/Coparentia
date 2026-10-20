@@ -1,14 +1,9 @@
-# VEREDICTO revisor-visual — onboarding (variante clara, ronda 3)
-Fecha: 2026-09-18 23:40
-Screenshot: docs/revisiones/onboarding-claro-375.png
-Usabilidad: 36/40
-Craft: 16/20
-Copy (si vende): N-A
+# VEREDICTO revisor-visual — onboarding
+Fecha: 2026-10-20 16:00
+Screenshot: docs/revisiones/onboarding-375-r14-1.png
+Usabilidad: 30/40
+Craft: 15/20
+Copy (si vende): 16/20
 Fidelidad (si hubo referencia): N-A
-Veredicto: LISTA
-Top defectos:
-1. [Cabecera, todas las capturas] El logo (components/funnel/ui.tsx:18, /logo-horizontal.webp) es gris metálico sobre #F3F7FC: se lee apagado, como placeholder, y es lo primero que ve la persona. FICHA-ARTE.md:94 ya lo anota como pendiente del usuario → fix: exportar logo-horizontal-claro.webp con isotipo y wordmark en --accent-deep (#2757A8) y usarlo bajo .tema-claro; medible: contraste del wordmark vs fondo ≥3:1 (hoy ~2.2:1 estimado por el gris).
-2. [Pregunta 1, 375px] Con cero respuestas la tarjeta "Tu expediente" (page.tsx:412 `my-auto pt-4`) flota con ~125px de aire arriba y ~130px abajo (onboarding-claro-p0-375.png, y≈425-545 y y≈680-812) → fix: cuando `contestadas.length === 0` anclar la tarjeta con `mt-6` bajo la caja de contexto y dejar el sobrante abajo; medible: hueco entre InfoContextual y la tarjeta ≤48px a 375×812.
-3. [Titulares entre pasos] Los reconocimientos usan h1 26px (page.tsx:685 y :842) y las preguntas 28px (page.tsx:157, :493, :732); además en celular conviven 5 tamaños (28/16/14/13/12: PanelExpediente.tsx:72 y page.tsx:106 en 13px) → fix: h1 28px en los 9 pasos y subir los 13px a 14px; medible: ≤4 tamaños distintos por pantalla.
-4. [Banda "Retomamos donde lo dejaste"] "Empezar de nuevo" (page.tsx:243-256) ya confirma con segundo toque, pero sigue sin deshacer: tras confirmar se pierden las 7 respuestas → fix: guardar snapshot de `r`/`paso` antes de limpiar y mostrar toast 5 s con "Deshacer" que lo restaure; medible: tras "Deshacer" el panel vuelve a mostrar las mismas filas contestadas.
-5. [Captura de la pregunta 1] onboarding-claro-p0-375.png muestra "rol" SUBRAYADO, contradiciendo tokens-claro.css:38 (`--accent-underline: transparent`) y la captura fresca de la pregunta 3 (sin subrayado): es una captura vieja → fix: recapturar el paso 0 con el build actual; medible: `getComputedStyle(marcador).textDecorationColor` = transparente en la captura nueva.
+Veredicto: NO LISTA
+Top defectos: 1) Preguntas 2-4: la tarjeta "Tu expediente" sigue cortada bajo el pliegue (páginas de 890, 850 y 916 px contra 812); la placa solo recuperó ~12 px porque el header conserva py-3 + mb-2 + mt-6; hay que compactar el bloque superior o subir la tarjeta. 2) Mancha azul: sigue siendo un borrón pálido (opacidad 0.2) que en la pregunta 4 se pisa con "ahora mismo" y en la 1-2 queda como una sombra suelta sin relación con el título; darle forma/posición fija o quitarla de detrás del texto. 3) Pregunta 1: ~30% inferior vacío salvo 5 enlaces legales y no promete duración ("unos 2 minutos" solo aparece con 0 respuestas en la tarjeta, que en celular no se muestra). 4) Cada toque avanza solo a los 180 ms sin confirmar y sin estado de error/sin conexión para el guardado; el logo es un enlace a la landing que saca de un toque del recorrido sin aviso. 5) El bloque "¿Por qué lo preguntamos?" (13 px, mismo patrón en las 4 preguntas) + tarjeta apilada compiten; y el wordmark cromado dentro de la píldora de 44 px queda pequeño y de bajo contraste.

@@ -1,20 +1,9 @@
-# VEREDICTO revisor-visual — paywall (paso 2 de 2: precio) — retoque hallazgo 4, ronda 2
-Fecha: 2026-10-10 15:00
-Screenshot: docs/revisiones/hallazgo4-r2-paywall-arriba-375.jpg (y docs/revisiones/hallazgo4-r2-paywall-final-375.jpg)
-Usabilidad: 36/40
-Craft: 15/20
-Copy (si vende): 16/20
+# VEREDICTO revisor-visual — paywall
+Fecha: 2026-10-20 12:00
+Screenshot: docs/revisiones/paywall-375-r14-p1.png
+Usabilidad: 29/40
+Craft: 14/20
+Copy (si vende): 15/20
 Fidelidad (si hubo referencia): N-A
 Veredicto: NO LISTA
-Top defectos: 1) Escala tipográfica aún de 6 tamaños en la zona de decisión (28/22/16/15/14/13): los textos de 14px (etiqueta "Tu correo", filas de beneficios) y 15px (Anual/Mensual) están a un punto de los de 13px y se leen como el mismo nivel; unificar 14 a 13 o 15 para quedar en 5 tamaños. 2) Bloque fijo de ~177px a 375x812 todavía parte la primera fila de beneficios por el degradado en el primer pliegue (se ve "Funciona aunque..." cortado): subir el degradado a h-6 o reducir una línea del bloque (p. ej. fundir "Si no te sirve, te devolvemos todo" dentro del enlace de garantía). 3) Radios con cuatro valores (22/14/8/999): ya están documentados, pero la pastilla interior de 14px dentro de la tarjeta de 22px con 16px de padding no es concéntrica; llevarla a 8px y reutilizar el de la casilla. 4) Sin cifra en pesos, el avatar colombiano debe convertir por su cuenta (h6 sigue en 3): la frase de Hotmart avisa pero no da orden de magnitud; evaluar un "unos $X COP" con fecha solo si coincide con el checkout. 5) Divisoria sobre el bloque de confianza casi invisible en la captura final y "Si no te sirve..." pegada a los enlaces sin aire: añadir 4px de separación o quitar la hairline.
-
-Notas del revisor:
-- Defectos de la ronda anterior verificados: (1) mancha de "queda fechado" ya no pasa el margen derecho (termina ~x=716 vs margen 718 a 2x): corregido. (2) ningún texto de 12px en la zona de decisión (código y captura): corregido, pero la escala sigue partida en 6 tamaños. (3) línea del vendedor fuera del bloque fijo: corregido, el bloque pasó de ~210 a ~177px; aun así tapa media fila de beneficios. (4) radios documentados en el comentario, no unificados.
-- Ninguna de las cuatro correcciones sube por sí sola un eje entero; el craft se queda en 15 porque jerarquía y encaje siguen en 3 (6 tamaños de letra y 4 radios distintos son visibles solo para quien mira con lupa, no es un 2, pero tampoco un 4). Falta 1 punto: consolidar escala de texto a 5 tamaños y radios concéntricos, y recapturar.
-- Usabilidad: h1:3 h2:4 h3:4 h4:3 h5:4 h6:3 h7:3 h8:3 h9:4 h10:4 = 36 (sin margen). h3/h7 verificados en código: X, atrás, "Ahora no", flechas en radiogroup, plan y correo recordados, doble-tap bloqueado, aviso de fallo con role="alert". h4: el paso 1 dice "Garantía del Primer Expediente · 15 días" y el paso 2 "Garantía de 15 días" (mismo componente, dos nombres). h5: casilla de autorización y correo validan al tocar el botón con mensaje y foco, bien. h8: último paso con formulario, casilla, enlace, pie y salidas sigue siendo denso.
-- Gate de carga cognitiva: 0 fallas formales (1 acción primaria, 2 planes, 3 campos); el texto bajo el botón roza el límite de 3-4 líneas.
-- CTA héroe vivo: cumple los 4 (blanco sobre #2F6FDC >3:1, whileTap 0.97, habilitado por defecto con validación al click, alto >=48px y ancho completo).
-- Copy (FICHA-AVATAR leída): idea 3, especificidad 3, emoción 3, oferta 3, acción 4 = 16/20, ningún eje <=2. Garantía nombrada con plazo junto al CTA: pasa. Message-match: no verificable sin dato del anuncio. Trazas: "Funciona aunque la otra persona no la use" a objeción 1; "menos que lo que algunos abogados cobran" a objeción 4; titular a dolor de las capturas. El dolor #1 sigue sin aparecer en esta pantalla.
-- Cifras: salen de lib/precios.ts (día 8, US$89 / US$9.99). Que Hotmart cobre de verdad el día 8 y el nombre del vendedor es afirmación del autor, no verificable aquí.
-- Craft: jerarquía 3, profundidad 3, identidad 3, movimiento 3, encaje 3 = 15. Movimiento verificado en código: stagger de entrada, conteo del precio, whileTap, transición de paso, reduced-motion; sin celebración (no aplica). Identidad: azul #2F6FDC, Figtree/Nunito, blob y isotipo metálico (decisión del dueño) coherentes con FICHA-ARTE; no coincide con los kits vetados.
-- GATE DOBLE: usabilidad 36/40 pasa; craft 15/20 no llega a 16. NO LISTA por un punto de craft. Cambio mínimo: (a) pasar los textos de 14px a 13 o 15 y (b) llevar la pastilla interior de 14px a 8px; recapturar y volver a puntuar.
+Top defectos: 1) Logo cromado ilegible sobre la píldora marino (wordmark tenue a 32px) -> usar versión blanca/azul del logo (depende del dueño). 2) Paso 2 sobrecargado en el scroll final (párrafo Hotmart + 2 beneficios + garantía + aviso + 4 enlaces) -> fusionar y bajar a 1-2 bloques. 3) Paso 2 vista inicial: el campo de correo queda cortado bajo la barra sticky y el titular ocupa 3 líneas -> acortar titular a 2 líneas para ver campo y casilla. 4) Paso 1: trío de confianza (garantía/Hotmart/Colombia) apretado a 13px sobre el CTA y "Disponible para Colombia" junto a precio en US$ confunde -> separar y explicar moneda. 5) Sin prueba (testimonio, demo del Sello) y la comparación "menos que algunos abogados cobran" sin cifra citable -> cifra con fuente o demo real (depende del dueño).
