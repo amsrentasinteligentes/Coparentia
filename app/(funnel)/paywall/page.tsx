@@ -427,7 +427,17 @@ function ValorYPrueba({
     <div className="flex flex-1 flex-col">
       <h1 className="relative text-balance text-[28px] font-bold leading-[1.12] text-[var(--text-primary)] [font-family:var(--font-display)]">
         <Halo />
-        Tu expediente está <span className="text-[var(--accent-ink,var(--accent))]">listo para empezar</span>
+        {/* Con respuestas guardadas el titular dice lo que es cierto: ya empezó a armarse (2026-10-20, elegido por el dueño);
+            sin respuestas (entrada directa) se conserva el anterior, que no afirma nada de ellas. */}
+        {n > 0 ? (
+          <>
+            Tu expediente <span className="text-[var(--accent-ink,var(--accent))]">ya empezó a armarse</span>
+          </>
+        ) : (
+          <>
+            Tu expediente está <span className="text-[var(--accent-ink,var(--accent))]">listo para empezar</span>
+          </>
+        )}
       </h1>
       <p className="mt-2 text-[13px] text-[var(--text-secondary)]">
         {/* El plural se rompía justo en la línea que PRUEBA la personalización ("Hecho con tus 1
