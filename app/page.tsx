@@ -45,7 +45,7 @@ export default function Home() {
       {/* 1. HERO */}
       <Hero
         appName="Coparentia"
-        logo={<LogoPlaca />}
+        logo={<LogoPlaca compacto />}
         marcaSoloLogo
         loginHref="/entrar"
         navLinks={[

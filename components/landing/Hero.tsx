@@ -108,18 +108,18 @@ export function Hero({
         {/* Header 64px: marca a la izquierda; en computador enlaces de sección + CTA chico;
             en celular SOLO "Entrar" terciario (19). */}
         <header className="flex h-16 items-center justify-between gap-4">
-          <a href="/" className="flex items-center gap-2 text-[16px] font-semibold text-[var(--text-primary)] lg:text-[18px]">
+          <a href="/" className="flex shrink-0 items-center gap-2 text-[16px] font-semibold text-[var(--text-primary)] lg:text-[18px]">
             {logo ?? <span aria-hidden="true" className="size-6 rounded-[8px] bg-[var(--accent)]" />}
             {!marcaSoloLogo && appName}
           </a>
-          <nav aria-label="Secciones" className="flex items-center gap-2">
+          <nav aria-label="Secciones" className="flex items-center gap-0 sm:gap-2">
             {navLinks.slice(0, 4).map((l) => (
               <a
                 key={l.href}
                 href={l.href}
                 // Todos los enlaces comparten la misma caja (44px, texto centrado) en computador: antes "Planes" usaba
                 // una caja distinta de las demás y su texto quedaba unos píxeles más abajo (2026-10-14).
-                className={`px-2 text-[14px] font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] md:inline-flex md:h-11 md:items-center md:px-3 lg:text-[16px] ${
+                className={`px-1.5 text-[14px] font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] md:inline-flex md:h-11 md:items-center md:px-3 lg:text-[16px] ${
                   l.href === enlacePlanes || l.visibleEnMovil ? 'inline-flex h-11 items-center' : 'hidden'
                 }`}
               >
@@ -134,7 +134,7 @@ export function Hero({
               </a>
             ))}
             {loginHref && (
-              <a href={loginHref} className="px-2 py-3 text-[14px] font-medium text-[var(--text-tertiary)] md:px-3 md:text-[var(--text-secondary)] lg:text-[16px]">
+              <a href={loginHref} className="px-1.5 py-3 text-[14px] font-medium text-[var(--text-tertiary)] md:px-3 md:text-[var(--text-secondary)] lg:text-[16px]">
                 {loginLabel}
               </a>
             )}
