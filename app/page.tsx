@@ -259,7 +259,7 @@ export default function Home() {
           {
             pregunta: '¿Es muy cara la suscripción?',
             respuestaMarked:
-              'Menos de US$0.25 al día con el plan anual — comparado con los US$100 que puede cobrar un abogado por cada correo de aclaración, [b]se paga solo[/b].',
+              'Menos de US$0.25 al día con el plan anual. Un abogado puede cobrar US$100 por una asesoría: [b]se paga solo[/b].',
           },
           {
             pregunta: '¿Mis datos financieros están seguros?',
