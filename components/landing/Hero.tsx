@@ -179,7 +179,7 @@ export function Hero({
 
           {/* LA ESCENA: forma orgánica + foto + captura + burbuja. Alto fijo por breakpoint para
               que no haya salto de layout (CLS 0) mientras cargan las imágenes. */}
-          <motion.div variants={item} className="relative mt-10 h-[340px] w-full max-w-[420px] sm:h-[400px] lg:mt-0 lg:h-[540px] lg:max-w-none lg:justify-self-end">
+          <motion.div variants={item} className="relative mt-10 h-[390px] w-full max-w-[420px] sm:h-[420px] lg:mt-0 lg:h-[540px] lg:max-w-none lg:justify-self-end">
             <Blob className="-right-10 -top-6 h-[92%] w-[88%]" opacidad={0.14} />
             {foto && (
               <div className="absolute right-0 top-0 h-[66%] w-[74%] overflow-hidden blob shadow-[var(--shadow-2)]">
@@ -193,7 +193,7 @@ export function Hero({
                 href={ctaHref}
                 onClick={() => rastrearClicCta(ctaHref, ctaLabel)}
                 aria-label={ctaLabel}
-                className="absolute bottom-0 left-0 block w-[38%] max-w-[180px] overflow-hidden rounded-[var(--radius-phone)] border-[5px] border-[color-mix(in_oklab,var(--text-primary)_92%,var(--accent))] bg-[var(--text-primary)] shadow-[var(--shadow-2)] transition-transform duration-150 active:scale-[0.99] lg:bottom-4 lg:left-[4%]"
+                className="absolute bottom-0 left-0 block w-[44%] max-w-[190px] overflow-hidden rounded-[var(--radius-phone)] border-[5px] border-[color-mix(in_oklab,var(--text-primary)_92%,var(--accent))] bg-[var(--text-primary)] shadow-[var(--shadow-2)] transition-transform duration-150 active:scale-[0.99] lg:bottom-4 lg:left-[4%] lg:w-[38%] lg:max-w-[180px]"
               >
                 {visual}
               </a>
@@ -211,7 +211,7 @@ export function Hero({
                 initial={reduce ? { opacity: 0 } : { opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={reduce ? { duration: 0.2 } : { delay: 0.35, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                className="absolute bottom-2 right-0 w-[48%] max-w-[220px] rounded-[var(--radius-card)] rounded-bl-[8px] px-5 py-4 text-left text-[var(--on-accent)] shadow-[0_18px_40px_-14px_color-mix(in_oklab,var(--accent-deep,var(--accent))_60%,transparent)] lg:bottom-6 lg:right-2"
+                className="absolute bottom-2 right-0 w-[52%] max-w-[220px] rounded-[var(--radius-card)] rounded-bl-[8px] px-4 py-4 text-left text-[var(--on-accent)] shadow-[0_18px_40px_-14px_color-mix(in_oklab,var(--accent-deep,var(--accent))_60%,transparent)] lg:bottom-6 lg:right-2"
                 // Desde --accent (4.7:1 con blanco), no desde la nota clara: con #5b93e8 el 12px al 85%
                 // medía 2.8:1 (revisor, clara r3) — mismo fallo ya corregido en el bloque de cierre.
                 style={{ background: 'linear-gradient(150deg, var(--accent), var(--accent-deep, var(--accent)))' }}

@@ -697,33 +697,6 @@ function Precio({
         </motion.button>
       </div>
 
-      <p className="mt-2 text-[13px] leading-[1.45] text-[var(--text-secondary)]">
-        {FRASE_MONTO_HOTMART} Verás a{' '}
-        <span className="font-medium text-[var(--text-primary)]">{NOMBRE_VENDEDOR_HOTMART}</span>{' '}como vendedor.
-      </p>
-
-      {/* Estas 3 filas repetían los MISMOS beneficios del paso anterior (y dos decían literalmente
-          lo mismo: "fecha y hora exactas" / "fecha exacta"). A un tap de distancia, leer dos veces
-          la misma lista hace que la pantalla se sienta vacía de argumentos. Ahora responden lo que
-          de verdad se pregunta EN EL MOMENTO DE PAGAR: cuánto cuesta en realidad, si sirve sin la
-          otra parte, y qué pasa si me arrepiento. Los tres son hechos comprobables del producto. */}
-      <div className="mt-3 flex flex-col gap-2">
-        {[
-          { icon: HeartHandshake, pre: 'Funciona ', fuerte: 'aunque la otra persona no la use', post: '.' },
-          { icon: FileCheck2, pre: 'Menos que lo que ', fuerte: 'algunos abogados cobran', post: ' por un correo.' },
-        ].map(({ icon: Icon, pre, fuerte, post }) => (
-          <div key={fuerte} className="flex items-center gap-3">
-            <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[color-mix(in_oklab,var(--accent)_12%,transparent)]">
-              <Icon size={15} color="var(--accent)" aria-hidden="true" />
-            </span>
-            <span className="text-[15px] text-[var(--text-secondary)]">
-              {pre}
-              <span className="font-semibold text-[var(--text-primary)]">{fuerte}</span>
-              {post}
-            </span>
-          </div>
-        ))}
-      </div>
 
       {/* PIE REORDENADO. Antes: 4 líneas apiladas con separaciones de 4px (mt-1) que se leían como
           un bloque legal denso, con 5 elementos tocables al borde de la sobrecarga (defectos 1 y 5
@@ -736,11 +709,8 @@ function Precio({
           premarcada (Ley 1581 de 2012), igual que en /entrar. */}
       <div className="mt-4">
         <label htmlFor="paywall-correo" className="text-[15px] font-semibold text-[var(--text-primary)]">
-          Tu correo
+          Tu correo para pagar y entrar
         </label>
-        <p id="paywall-correo-ayuda" className="mt-0.5 text-[13px] text-[var(--text-secondary)]">
-          Usa este mismo correo para pagar y para entrar a tu expediente: así tu compra queda a tu nombre.
-        </p>
         {correoFijo ? (
           <div className="mt-2 flex h-12 items-center justify-between gap-3 rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--surface)] px-4">
             <span className="min-w-0 truncate text-[16px] text-[var(--text-primary)]">{sesionEmail}</span>
@@ -772,7 +742,7 @@ function Precio({
             }
           }}
           aria-invalid={errorCorreo ? true : undefined}
-          aria-describedby={errorCorreo ? 'paywall-correo-ayuda paywall-correo-error' : 'paywall-correo-ayuda'}
+          aria-describedby={errorCorreo ? 'paywall-correo-error' : undefined}
           className="mt-2 h-12 w-full rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--surface)] px-4 text-[16px] text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)]"
         />
         )}
@@ -911,6 +881,35 @@ function Precio({
         )}
       </div>
 
+      <p className="mt-3 text-[13px] leading-[1.45] text-[var(--text-secondary)]">
+        <Lock size={13} className="mr-1 inline-block align-[-2px]" color="var(--accent)" aria-hidden="true" />Pago seguro con Hotmart. {FRASE_MONTO_HOTMART} Verás a{' '}
+        <span className="font-medium text-[var(--text-primary)]">{NOMBRE_VENDEDOR_HOTMART}</span>{' '}como vendedor.
+      </p>
+
+      {/* Estas 3 filas repetían los MISMOS beneficios del paso anterior (y dos decían literalmente
+          lo mismo: "fecha y hora exactas" / "fecha exacta"). A un tap de distancia, leer dos veces
+          la misma lista hace que la pantalla se sienta vacía de argumentos. Ahora responden lo que
+          de verdad se pregunta EN EL MOMENTO DE PAGAR: cuánto cuesta en realidad, si sirve sin la
+          otra parte, y qué pasa si me arrepiento. Los tres son hechos comprobables del producto. */}
+      <div className="mt-3 flex flex-col gap-2">
+        {[
+          { icon: HeartHandshake, pre: 'Funciona ', fuerte: 'aunque la otra persona no la use', post: '.' },
+          { icon: FileCheck2, pre: 'Menos que lo que ', fuerte: 'algunos abogados cobran', post: ' por un correo.' },
+        ].map(({ icon: Icon, pre, fuerte, post }) => (
+          <div key={fuerte} className="flex items-center gap-3">
+            <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[color-mix(in_oklab,var(--accent)_12%,transparent)]">
+              <Icon size={15} color="var(--accent)" aria-hidden="true" />
+            </span>
+            <span className="text-[15px] text-[var(--text-secondary)]">
+              {pre}
+              <span className="font-semibold text-[var(--text-primary)]">{fuerte}</span>
+              {post}
+            </span>
+          </div>
+        ))}
+      </div>
+
+
       <div className="mt-auto pt-4">
         {/* Hairline degradada también aquí: existía solo en el paso 1, así que el sistema de
             profundidad cambiaba entre dos pantallas seguidas (defecto del revisor). */}
@@ -955,7 +954,7 @@ function Precio({
           <div className="relative bg-[var(--bg)] pt-4 pb-[max(8px,env(safe-area-inset-bottom))] lg:bg-transparent lg:pb-0 lg:pt-0">
             {/* Sin punto medio entre las dos señales: a 375px la línea siempre parte en dos y el
                 "·" quedaba huérfano al final de la primera. Los íconos ya separan cada señal. */}
-            <div className="mb-4">
+            <div className="mb-2">
               <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1 text-[13px] font-medium text-[var(--text-primary)]">
                 <a
                   href="/reembolsos"
@@ -966,10 +965,6 @@ function Precio({
                   <ShieldCheck size={14} color="var(--accent)" aria-hidden="true" />
                   Garantía del Primer Expediente · 15 días
                 </a>
-                <span className="flex items-center gap-1.5 whitespace-nowrap">
-                  <Lock size={13} color="var(--accent)" aria-hidden="true" />
-                  Pago seguro Hotmart
-                </span>
               </div>
             </div>
             <CtaFunnel onClick={onCta} disabled={yendo}>
@@ -999,19 +994,15 @@ function Precio({
       {/* PIE: en celular dos filas (salidas arriba, legales abajo, 44px de alto táctil: ronda 5 del
           revisor); desde `lg` UNA sola fila, porque en dos filas a 1440×900 la última quedaba cortada
           contra el borde inferior (revisor, 4ª ronda del diseño original). */}
-      <div className="mt-6 flex flex-col items-center text-[13px] text-[var(--text-secondary)] lg:mt-2 lg:flex-row lg:justify-center lg:gap-x-6">
-      <div className="flex flex-wrap items-center justify-center gap-x-6">
+      <div className="mt-4 flex flex-wrap items-center justify-center gap-x-5 text-[13px] text-[var(--text-secondary)] lg:mt-2">
         <button type="button" onClick={onAhoraNo} className="min-h-11 py-2 text-[13px] text-[var(--text-secondary)] [touch-action:manipulation]">
           Ahora no
         </button>
         <a href="mailto:soporte@coparentia.co" className="flex min-h-11 items-center py-2 text-[13px] text-[var(--text-secondary)] underline-offset-2 hover:underline [touch-action:manipulation]">
           ¿Dudas? Escríbenos
         </a>
-      </div>
-      <div className="flex flex-wrap items-center justify-center gap-x-6">
         <a href="/terminos" className="flex min-h-11 items-center py-2 text-[13px] text-[var(--text-tertiary)] underline-offset-2 hover:underline">Términos</a>
         <a href="/privacidad" className="flex min-h-11 items-center py-2 text-[13px] text-[var(--text-tertiary)] underline-offset-2 hover:underline">Privacidad</a>
-      </div>
       </div>
     </div>
   );

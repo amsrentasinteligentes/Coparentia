@@ -158,8 +158,8 @@ function PantallaChips({
     <div className="relative isolate flex flex-1 flex-col">
       {/* Mancha de marca (el dispositivo ownable de FICHA-ARTE): hasta hoy las preguntas no llevaban
           ninguna y el revisor-visual las puntuó sin identidad (2026-10-20). Detrás del título, sin tocar el flujo. */}
-      <span aria-hidden="true" className="pointer-events-none absolute inset-x-0 -top-3 -z-10 h-32 overflow-hidden">
-        <Blob className="right-0 top-0 h-32 w-40" opacidad={0.16} />
+      <span aria-hidden="true" className="pointer-events-none absolute inset-x-0 -top-2 -z-10 h-28">
+        <Blob className="right-0 top-0 h-24 w-32" opacidad={0.2} />
       </span>
       <h1 className="relative text-balance text-[28px] font-bold leading-[1.1] text-[var(--text-primary)] [font-family:var(--font-display)]">
         <Halo />
@@ -458,8 +458,8 @@ export default function Onboarding() {
           construcción va aquí abajo, compacto: es justo el tercio de pantalla que el revisor-visual
           venía marcando como vacío en las pantallas de opciones. Se oculta en los pasos que ya
           llenan la pantalla solos (reconocimientos y carga final) para no competir con su CTA. */}
-      {PASOS_CON_RESUMEN_MOVIL.includes(paso) && (
-        <div className={`pt-4 lg:hidden ${filas.some((x) => x.valor) ? 'my-auto' : 'mt-2'}`}>
+      {PASOS_CON_RESUMEN_MOVIL.includes(paso) && filas.some((x) => x.valor) && (
+        <div className="my-auto pt-4 lg:hidden">
           <PanelExpediente filas={filas} compacto />
         </div>
       )}
@@ -469,29 +469,23 @@ export default function Onboarding() {
           revisor ya aprobó varias rondas — un enlace nuevo por pantalla movería esa ancla. Aquí,
           antes de que la persona conteste nada, no hay CTA anclado que perturbar. */}
       {paso === 0 && (
-        <nav aria-label="Enlaces legales" className="mt-6 flex flex-wrap items-center justify-center gap-x-1 gap-y-0 pb-2 text-center lg:justify-start">
+        <nav aria-label="Enlaces legales" className="mt-6 flex flex-wrap items-center justify-center gap-x-4 gap-y-0 pb-2 text-center lg:justify-start">
           {[
             { label: 'Privacidad', href: '/privacidad' },
             { label: 'Términos y Condiciones', href: '/terminos' },
             { label: 'Reembolsos', href: '/reembolsos' },
             { label: 'Aviso de IA', href: '/aviso-ia' },
             { label: 'SIC (Superintendencia)', href: 'https://www.sic.gov.co/', externo: true },
-          ].map((e, i, todos) => (
-            <span key={e.href} className="flex items-center">
-              <a
-                href={e.href}
-                target={e.externo ? '_blank' : undefined}
-                rel={e.externo ? 'noopener noreferrer' : undefined}
-                className="px-1 py-3 text-[13px] text-[var(--text-tertiary)] underline-offset-4 hover:text-[var(--text-secondary)] hover:underline"
-              >
-                {e.label}
-              </a>
-              {i < todos.length - 1 && (
-                <span aria-hidden="true" className="text-[var(--text-tertiary)]">
-                  ·
-                </span>
-              )}
-            </span>
+          ].map((e) => (
+            <a
+              key={e.href}
+              href={e.href}
+              target={e.externo ? '_blank' : undefined}
+              rel={e.externo ? 'noopener noreferrer' : undefined}
+              className="whitespace-nowrap py-3 text-[13px] text-[var(--text-tertiary)] underline underline-offset-4 hover:text-[var(--text-secondary)]"
+            >
+              {e.label}
+            </a>
           ))}
         </nav>
       )}
