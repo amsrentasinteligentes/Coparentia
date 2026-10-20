@@ -115,7 +115,7 @@ export function PanelExpediente({
               {/* La fila pendiente usa --text-tertiary PLENO (5.1:1 sobre --surface): con el
                   `color-mix` al 75% caía a 3.46:1 y no pasaba AA — el revisor lo midió. */}
               <div className="min-w-0 flex-1">
-                <p className="text-[12px] text-[var(--text-tertiary)]">
+                <p className="text-[13px] text-[var(--text-tertiary)]">
                   {fila.label}
                 </p>
                 {lista && (
@@ -135,18 +135,22 @@ export function PanelExpediente({
       </ul>
 
       {ocultas > 0 && (
-        <p className="mt-3 text-[12px] text-[var(--text-tertiary)]">
+        <p className="mt-3 text-[13px] text-[var(--text-tertiary)]">
           y {ocultas} {ocultas === 1 ? 'pregunta más' : 'preguntas más'}
         </p>
       )}
       </>
       )}
 
-      <p className="mt-4 flex items-start gap-2 border-t border-[color-mix(in_oklab,var(--text-tertiary)_12%,transparent)] pt-4 text-[12px] leading-[1.5] text-[var(--text-tertiary)]">
+      {/* El Sello se explica en la pregunta 1 (y siempre en el panel de computador); repetirlo en las
+          preguntas 2 a 4 de celular era el mismo párrafo cuatro veces (revisor-visual, 2026-10-20). */}
+      {(!compacto || contestadas.length === 0) && (
+        <p className="mt-4 flex items-start gap-2 border-t border-[color-mix(in_oklab,var(--text-tertiary)_12%,transparent)] pt-4 text-[13px] leading-[1.5] text-[var(--text-tertiary)]">
           <ShieldCheck size={14} className="mt-0.5 shrink-0 text-[var(--accent)]" aria-hidden="true" />
           Con tu primer comprobante se activa el Sello de Confianza: fecha, monto y soporte quedan
           asociados a este expediente.
         </p>
+      )}
     </div>
   );
 }

@@ -429,7 +429,7 @@ function ValorYPrueba({
         <Halo />
         Tu expediente está <span className="text-[var(--accent-ink,var(--accent))]">listo para empezar</span>
       </h1>
-      <p className="mt-2 text-[14px] text-[var(--text-secondary)]">
+      <p className="mt-2 text-[13px] text-[var(--text-secondary)]">
         {/* El plural se rompía justo en la línea que PRUEBA la personalización ("Hecho con tus 1
             respuestas") — ante un avatar que desconfía de las cuentas que no cuadran, ese detalle
             es el que delata que nadie leyó la frase (revisor-visual, 2026-09-17). */}
@@ -651,7 +651,7 @@ function Precio({
                   tenía fondo base y tarjeta elevada; FICHA-ARTE declara tres niveles. La referencia
                   en pesos —dato de apoyo, no el precio— va sobre una superficie HUNDIDA: se
                   distingue del precio principal sin agregar otro color ni otro tamaño de letra. */}
-              <p className={`mt-1.5 min-h-[2.6em] rounded-[14px] ${plan === 'anual' ? 'bg-[var(--surface)]' : 'bg-[var(--surface-2)]'} px-3 py-1 text-[13px] text-[var(--text-secondary)] shadow-[inset_0_1px_2px_rgb(20_40_80_/_0.08)] lg:min-h-0`}>
+              <p className={`mt-1.5 min-h-[2.6em] rounded-[8px] ${plan === 'anual' ? 'bg-[var(--surface)]' : 'bg-[var(--surface-2)]'} px-3 py-1 text-[13px] text-[var(--text-secondary)] shadow-[inset_0_1px_2px_rgb(20_40_80_/_0.08)] lg:min-h-0`}>
                 {PLAN_ANUAL.totalAnual}
                 <span className="block text-[var(--text-primary)] lg:ml-2 lg:inline">
                   Te sale a <span className="font-semibold">{PLAN_ANUAL.costoDia}</span> al día
@@ -687,7 +687,7 @@ function Precio({
             </div>
             {/* Solo la tarjeta Anual mostraba su total, así que el "ahorras US$30.88" no se podía
                 comprobar contra nada: faltaba el término de comparación. */}
-            <p className={`mt-1.5 min-h-[2.6em] rounded-[14px] ${plan === 'mensual' ? 'bg-[var(--surface)]' : 'bg-[var(--surface-2)]'} px-3 py-1 text-[13px] text-[var(--text-secondary)] shadow-[inset_0_1px_2px_rgb(20_40_80_/_0.08)] lg:min-h-0`}>
+            <p className={`mt-1.5 min-h-[2.6em] rounded-[8px] ${plan === 'mensual' ? 'bg-[var(--surface)]' : 'bg-[var(--surface-2)]'} px-3 py-1 text-[13px] text-[var(--text-secondary)] shadow-[inset_0_1px_2px_rgb(20_40_80_/_0.08)] lg:min-h-0`}>
               {PLAN_MENSUAL.totalAnual}
               <span className="block text-[var(--text-primary)] lg:ml-2 lg:inline">
                 Te sale a <span className="font-semibold">{PLAN_MENSUAL.costoDia}</span> al día
@@ -716,7 +716,7 @@ function Precio({
             <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[color-mix(in_oklab,var(--accent)_12%,transparent)]">
               <Icon size={15} color="var(--accent)" aria-hidden="true" />
             </span>
-            <span className="text-[14px] text-[var(--text-secondary)]">
+            <span className="text-[15px] text-[var(--text-secondary)]">
               {pre}
               <span className="font-semibold text-[var(--text-primary)]">{fuerte}</span>
               {post}
@@ -735,7 +735,7 @@ function Precio({
           y del botón fijo para que no tape el campo. La autorización de datos es una casilla nunca
           premarcada (Ley 1581 de 2012), igual que en /entrar. */}
       <div className="mt-4">
-        <label htmlFor="paywall-correo" className="text-[14px] font-semibold text-[var(--text-primary)]">
+        <label htmlFor="paywall-correo" className="text-[15px] font-semibold text-[var(--text-primary)]">
           Tu correo
         </label>
         <p id="paywall-correo-ayuda" className="mt-0.5 text-[13px] text-[var(--text-secondary)]">
@@ -764,6 +764,13 @@ function Precio({
           value={correo}
           onChange={(e) => onCorreo(e.target.value)}
           placeholder="tu@correo.com"
+          enterKeyHint="go"
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && !yendo) {
+              e.preventDefault();
+              onCta();
+            }
+          }}
           aria-invalid={errorCorreo ? true : undefined}
           aria-describedby={errorCorreo ? 'paywall-correo-ayuda paywall-correo-error' : 'paywall-correo-ayuda'}
           className="mt-2 h-12 w-full rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--surface)] px-4 text-[16px] text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)]"
@@ -949,7 +956,7 @@ function Precio({
             {/* Sin punto medio entre las dos señales: a 375px la línea siempre parte en dos y el
                 "·" quedaba huérfano al final de la primera. Los íconos ya separan cada señal. */}
             <div className="mb-4">
-              <div className="flex items-center justify-center gap-5 text-[13px] font-medium text-[var(--text-primary)]">
+              <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1 text-[13px] font-medium text-[var(--text-primary)]">
                 <a
                   href="/reembolsos"
                   target="_blank"
@@ -957,14 +964,13 @@ function Precio({
                   className="-my-1.5 flex min-h-11 items-center gap-1.5 whitespace-nowrap underline decoration-[color-mix(in_oklab,var(--text-tertiary)_60%,transparent)] underline-offset-2 [touch-action:manipulation]"
                 >
                   <ShieldCheck size={14} color="var(--accent)" aria-hidden="true" />
-                  Garantía de 15 días
+                  Garantía del Primer Expediente · 15 días
                 </a>
                 <span className="flex items-center gap-1.5 whitespace-nowrap">
                   <Lock size={13} color="var(--accent)" aria-hidden="true" />
                   Pago seguro Hotmart
                 </span>
               </div>
-              <p className="text-center text-[13px] text-[var(--text-secondary)]">Si no te sirve, te devolvemos todo.</p>
             </div>
             <CtaFunnel onClick={onCta} disabled={yendo}>
               {yendo ? (

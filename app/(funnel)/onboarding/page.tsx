@@ -155,14 +155,20 @@ function PantallaChips({
   children: ReactNode;
 }) {
   return (
-    <div className="flex flex-1 flex-col">
+    <div className="relative isolate flex flex-1 flex-col">
+      {/* Mancha de marca (el dispositivo ownable de FICHA-ARTE): hasta hoy las preguntas no llevaban
+          ninguna y el revisor-visual las puntuó sin identidad (2026-10-20). Detrás del título, sin tocar el flujo. */}
+      <span aria-hidden="true" className="pointer-events-none absolute inset-x-0 -top-3 -z-10 h-32 overflow-hidden">
+        <Blob className="right-0 top-0 h-32 w-40" opacidad={0.16} />
+      </span>
       <h1 className="relative text-balance text-[28px] font-bold leading-[1.1] text-[var(--text-primary)] [font-family:var(--font-display)]">
         <Halo />
         {tituloAntes}
         <Marcador>{palabraClave}</Marcador>
         {tituloDespues}
       </h1>
-      {subtitulo && <p className="mt-2 text-[14px] text-[var(--text-secondary)]">{subtitulo}</p>}
+      {/* El subtítulo (`subtitulo`) ya no se pinta: decía casi lo mismo que la caja "¿Por qué lo preguntamos?"
+          de abajo (revisor-visual, 2026-10-20). La caja es la que explica el motivo. */}
       <div className="mt-6 flex flex-col gap-3" onKeyDown={manejarFlechasChips}>
         {children}
       </div>
@@ -224,6 +230,13 @@ export default function Onboarding() {
   // "Empezar de nuevo" borra las 7 respuestas: el primer toque pide confirmar, el segundo ejecuta
   // (revisor claro r2). La confirmación se retira sola a los 4 s si la persona no insiste.
   const [confirmarReinicio, setConfirmarReinicio] = useState(false);
+  // Foto de lo que había antes de reiniciar, para poder deshacer durante 6 s (revisor-visual, 2026-10-20).
+  const [paraDeshacer, setParaDeshacer] = useState<{ r: Respuestas; paso: number } | null>(null);
+  useEffect(() => {
+    if (!paraDeshacer) return;
+    const t = setTimeout(() => setParaDeshacer(null), 6000);
+    return () => clearTimeout(t);
+  }, [paraDeshacer]);
   useEffect(() => {
     if (!confirmarReinicio) return;
     const t = setTimeout(() => setConfirmarReinicio(false), 4000);
@@ -254,6 +267,7 @@ export default function Onboarding() {
       return;
     }
     setConfirmarReinicio(false);
+    setParaDeshacer({ r, paso });
     try {
       sessionStorage.removeItem(CLAVE_ONBOARDING);
       sessionStorage.removeItem(CLAVE_PASO);
@@ -262,6 +276,14 @@ export default function Onboarding() {
     setR(VACIAS);
     setPaso(0);
     setRetomado(false);
+  };
+
+  const deshacerReinicio = (): void => {
+    if (!paraDeshacer) return;
+    setR(paraDeshacer.r);
+    setPaso(paraDeshacer.paso);
+    setRetomado(true);
+    setParaDeshacer(null);
   };
 
   // ORDEN DE LOS EFECTOS (2026-09-18): los dos guardados van ANTES del efecto que restaura, y
@@ -326,7 +348,7 @@ export default function Onboarding() {
               subrayado de acento que la pregunta de la derecha — dos titulares empatados en la
               misma vista y el dispositivo de marca gastado dos veces (revisor-visual). Ahora va un
               escalón abajo (21px, sin marcador): la pregunta sigue siendo EL objeto de la pantalla. */}
-          <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-[var(--accent-ink,var(--accent))] lg:mt-3">
+          <p className="text-[13px] font-semibold uppercase tracking-[0.08em] text-[var(--accent-ink,var(--accent))] lg:mt-3">
             Tu expediente se está armando
           </p>
           <h2 className="mt-3 text-balance text-[21px] font-semibold leading-[1.25] text-[var(--text-primary)] [font-family:var(--font-display)]">
@@ -351,6 +373,22 @@ export default function Onboarding() {
           palabra="Pregunta"
           onAtras={atrasLocal ?? (paso === 0 ? () => router.push('/') : atras)}
         />
+      )}
+
+      {paraDeshacer && (
+        <div
+          role="status"
+          className="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-[var(--radius-button)] bg-[color-mix(in_oklab,var(--accent)_10%,transparent)] px-3 py-2 text-[13px] text-[var(--text-secondary)]"
+        >
+          <span>Borraste tus respuestas.</span>
+          <button
+            type="button"
+            onClick={deshacerReinicio}
+            className="py-1 font-semibold text-[var(--accent-ink,var(--accent))] underline-offset-2 hover:underline [touch-action:manipulation]"
+          >
+            Deshacer
+          </button>
+        </div>
       )}
 
       {retomado && paso < PASO_LOADING && (
@@ -437,22 +475,22 @@ export default function Onboarding() {
             { label: 'Términos y Condiciones', href: '/terminos' },
             { label: 'Reembolsos', href: '/reembolsos' },
             { label: 'Aviso de IA', href: '/aviso-ia' },
-            { label: 'SIC', href: 'https://www.sic.gov.co/', externo: true },
-          ].map((e, i) => (
+            { label: 'SIC (Superintendencia)', href: 'https://www.sic.gov.co/', externo: true },
+          ].map((e, i, todos) => (
             <span key={e.href} className="flex items-center">
-              {i > 0 && (
-                <span aria-hidden="true" className="px-1 text-[var(--text-tertiary)]">
-                  ·
-                </span>
-              )}
               <a
                 href={e.href}
                 target={e.externo ? '_blank' : undefined}
                 rel={e.externo ? 'noopener noreferrer' : undefined}
-                className="px-1 py-3 text-[12px] text-[var(--text-tertiary)] underline-offset-4 hover:text-[var(--text-secondary)] hover:underline"
+                className="px-1 py-3 text-[13px] text-[var(--text-tertiary)] underline-offset-4 hover:text-[var(--text-secondary)] hover:underline"
               >
                 {e.label}
               </a>
+              {i < todos.length - 1 && (
+                <span aria-hidden="true" className="text-[var(--text-tertiary)]">
+                  ·
+                </span>
+              )}
             </span>
           ))}
         </nav>
@@ -794,7 +832,7 @@ function PreguntaMeta({ valor, onFijar }: { valor: number; onFijar: (v: number) 
           className="mt-8 h-6 w-full cursor-pointer appearance-none bg-transparent [touch-action:manipulation] [&::-moz-range-thumb]:size-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:bg-[var(--accent)] [&::-moz-range-thumb]:shadow-[0_0_0_6px_color-mix(in_oklab,var(--accent)_20%,transparent)] [&::-moz-range-track]:h-1 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] [&::-webkit-slider-runnable-track]:h-1 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] [&::-webkit-slider-thumb]:-mt-2.5 [&::-webkit-slider-thumb]:size-6 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[var(--accent)] [&::-webkit-slider-thumb]:shadow-[0_0_0_6px_color-mix(in_oklab,var(--accent)_20%,transparent)] focus-visible:outline-none focus-visible:[&::-webkit-slider-thumb]:shadow-[0_0_0_8px_color-mix(in_oklab,var(--accent)_35%,transparent)]"
           aria-label="Meses de comprobantes a organizar"
         />
-        <div className="mt-1 flex w-full justify-between text-[12px] tabular-nums text-[var(--text-tertiary)]">
+        <div className="mt-1 flex w-full justify-between text-[13px] tabular-nums text-[var(--text-tertiary)]">
           <span>1</span>
           <span>12</span>
         </div>

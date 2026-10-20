@@ -16,7 +16,7 @@
 import type { ReactNode } from 'react';
 import { motion, useReducedMotion } from 'motion/react';
 import { Camera } from 'lucide-react';
-import { Blob, CheckCustom, CtaButton, useReveal } from './ui';
+import { Blob, CheckCustom, CountUp, CtaButton, useReveal } from './ui';
 import { rastrearClicCta } from '@/lib/meta-pixel';
 import { MarkedCopy, truncarMarcado, warnCopy } from './MarkedCopy';
 
@@ -218,7 +218,7 @@ export function Hero({
               >
                 <p className="text-[13px] font-semibold lg:text-[14px]">{burbuja.titulo}</p>
                 <p className="mt-1 text-[22px] font-extrabold leading-[1.1] [font-family:var(--font-display)] md:text-[26px]">
-                  {burbuja.dato}
+                  <CountUp text={burbuja.dato} />
                 </p>
               </motion.div>
             )}
@@ -236,7 +236,7 @@ export function Hero({
               <motion.li
                 variants={item}
                 key={p}
-                className="flex items-center gap-3 rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_22%,transparent)] bg-[var(--surface)] px-5 py-4 text-[15px] font-semibold text-[var(--text-primary)] lg:py-5 lg:text-[17px]"
+                className="flex items-center gap-3 px-1 py-2 text-[15px] font-semibold text-[var(--text-primary)] lg:text-[17px]"
               >
                 <CheckCustom />
                 {p}

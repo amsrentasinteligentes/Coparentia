@@ -86,7 +86,7 @@ export function OpinionProfesionales({ kicker = 'OPINIÓN DE PROFESIONALES', tit
               target="_blank"
               rel="noopener noreferrer"
               aria-label={`${imagen.alt} (se abre ampliada en otra pestaña)`}
-              className="block overflow-hidden rounded-[10px] border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] bg-white shadow-[var(--shadow-2)] [touch-action:manipulation]"
+              className="block overflow-hidden rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] bg-white shadow-[var(--shadow-2)] [touch-action:manipulation]"
             >
               <img src={imagen.src} alt={imagen.alt} width={imagen.ancho} height={imagen.alto} loading="lazy" className="block h-auto w-full" />
             </a>

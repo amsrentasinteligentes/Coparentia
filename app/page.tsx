@@ -63,11 +63,8 @@ export default function Home() {
         ctaLabel={CTA_LABEL}
         ctaHref={CTA_HREF}
         socialProof={
-          <span className="block">
+          <span className="block text-balance">
             {TRIAL_DIAS} días gratis · Garantía de 15 días
-            <span className="mt-0.5 block text-[13px] text-[var(--text-tertiary)] lg:text-[14px]">
-              Registras tu medio de pago hoy; el primer cobro entra el día {DIA_PRIMER_COBRO}.
-            </span>
             {/* Decisión #8 (2026-10-20): por ahora la app es solo para Colombia. */}
             <span className="mt-1 block text-[13px] font-semibold text-[var(--text-secondary)] lg:text-[14px]">
               Disponible para Colombia
@@ -167,7 +164,7 @@ export default function Home() {
           ],
           totalTachado: usd(PRECIOS.mensualPorAnoUsd),
           etiquetaTotal: 'Pagando mes a mes',
-          nota: `Hoy no pagas nada. Después: ${usd(PRECIOS.anual.cobroUsd)} al año con el plan Anual (${usd(PRECIOS.anual.mesUsd)}/mes) — ${usd(PRECIOS.ahorroAnualUsd)} menos que pagando mes a mes`,
+          nota: `Plan Anual: ${usd(PRECIOS.anual.cobroUsd)} al año (${usd(PRECIOS.anual.mesUsd)}/mes) — ${usd(PRECIOS.ahorroAnualUsd)} menos que pagando mes a mes`,
         }}
         anual={{
           nombre: 'Anual',
