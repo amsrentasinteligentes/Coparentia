@@ -23,6 +23,7 @@ import { OpinionProfesionales } from '@/components/landing/OpinionProfesionales'
 import { Faq } from '@/components/landing/Faq';
 import { CtaFinal } from '@/components/landing/CtaFinal';
 import { FooterLegal } from '@/components/landing/FooterLegal';
+import { LogoPlaca } from '@/components/landing/LogoPlaca';
 import { ENLACES_LEGALES, ENLACE_ESPECIALISTAS } from '@/components/landing/enlaces-legales';
 import { StickyCtaMobile } from '@/components/landing/ui';
 
@@ -44,11 +45,7 @@ export default function Home() {
       {/* 1. HERO */}
       <Hero
         appName="Coparentia"
-        logo={
-          <span className="inline-flex items-center rounded-[12px] bg-[linear-gradient(150deg,#2757a8,#17306a)] shadow-[0_6px_18px_-8px_rgb(23_48_106_/_0.55)] px-2.5 py-1.5 lg:rounded-[14px] lg:px-4 lg:py-2">
-            <img src="/logo-horizontal.webp" alt="Coparentia" className="h-8 w-auto object-contain lg:h-10" />
-          </span>
-        }
+        logo={<LogoPlaca />}
         marcaSoloLogo
         loginHref="/entrar"
         navLinks={[
@@ -299,7 +296,7 @@ export default function Home() {
       {/* 10. FOOTER LEGAL */}
       <FooterLegal
         appName="Coparentia"
-        logo={<img src="/logo-horizontal.webp" alt="Coparentia" className="h-10 w-auto object-contain" />}
+        logo={<LogoPlaca />}
         marcaSoloLogo
         soporteEmail="soporte@coparentia.co"
         enlaces={[...ENLACES_LEGALES, ENLACE_ESPECIALISTAS]}
