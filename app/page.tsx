@@ -264,7 +264,7 @@ export default function Home() {
           {
             pregunta: '¿Mis datos financieros están seguros?',
             respuestaMarked:
-              'Cifrado en tránsito y en reposo. Tus datos [b]nunca se comparten[/b] sin tu autorización.',
+              'Tus datos viajan y se guardan con cifrado. [b]Nunca se comparten[/b] sin tu autorización.',
           },
           {
             pregunta: '¿Funciona fuera de Colombia?',

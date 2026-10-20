@@ -16,7 +16,7 @@ export function LogoPlaca({
 }) {
   return (
     <span
-      className={`inline-flex shrink-0 items-center rounded-[22px] bg-[linear-gradient(150deg,color-mix(in_oklab,var(--accent-deep,#2757a8)_55%,black),color-mix(in_oklab,var(--accent-deep,#2757a8)_28%,black))] shadow-[0_6px_18px_-8px_color-mix(in_oklab,var(--accent-deep,#2757a8)_70%,transparent)] ${
+      className={`inline-flex shrink-0 items-center rounded-[22px] bg-[linear-gradient(150deg,color-mix(in_srgb,var(--accent-deep,#2757a8)_75%,black),color-mix(in_srgb,var(--accent-deep,#2757a8)_50%,black))] shadow-[0_6px_18px_-8px_color-mix(in_oklab,var(--accent-deep,#2757a8)_70%,transparent)] ${
         compacto ? 'px-2.5 py-[5px]' : 'px-4 py-2'
       } ${className}`}
     >
