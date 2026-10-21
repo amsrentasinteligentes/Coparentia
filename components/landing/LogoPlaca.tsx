@@ -1,8 +1,7 @@
-// Logo horizontal sobre una placa azul marino (decisión del dueño, 2026-10-20): el isotipo cromado
-// se perdía sobre el fondo claro. El archivo del logo no se toca; la placa solo le da contraste.
-// Misma pieza en encabezados y pie para que la marca se vea igual en todas partes.
-// `shrink-0` + ancho automático: sin eso el menú del encabezado comprimía la imagen (65 px de ancho a
-// 375 px, 50 px a 360 px) y el logo se leía a ~20 px de alto aunque el alto fuera de 32 (medido 2026-10-20).
+// Logo horizontal plateado, solo, sin placa (decisión del dueño, 2026-10-20): con la placa azul el logo
+// perdió presencia y nitidez. Se sirven versiones re-muestreadas y afinadas (240 y 360 px de ancho) para que
+// el navegador no tenga que encoger el archivo de 800 px, que era lo que lo emborronaba.
+// `shrink-0` + ancho automático: sin eso el menú del encabezado comprimía la imagen.
 
 export function LogoPlaca({
   alt = 'Coparentia',
@@ -10,17 +9,19 @@ export function LogoPlaca({
   className = '',
 }: {
   alt?: string;
-  /** Encabezado con menú (página principal): logo de 30 px. Sin menú (recorrido, planes, pie): 36 px. */
+  /** Encabezado con menú (página principal): logo de 32 px. Sin menú (recorrido, planes, pie): 40 px. */
   compacto?: boolean;
   className?: string;
 }) {
   return (
-    <span
-      className={`inline-flex shrink-0 items-center rounded-[22px] bg-[linear-gradient(150deg,color-mix(in_srgb,var(--accent-deep,#2757a8)_75%,black),color-mix(in_srgb,var(--accent-deep,#2757a8)_50%,black))] shadow-[0_6px_18px_-8px_color-mix(in_oklab,var(--accent-deep,#2757a8)_70%,transparent)] ${
-        compacto ? 'px-2.5 py-[5px]' : 'px-3.5 py-1.5'
-      } ${className}`}
-    >
-      <img src="/logo-horizontal.webp" alt={alt} className={`w-auto shrink-0 object-contain ${compacto ? 'h-[30px]' : 'h-9'}`} />
-    </span>
+    <img
+      src="/logo-horizontal-360.webp"
+      srcSet="/logo-horizontal-240.webp 240w, /logo-horizontal-360.webp 360w"
+      sizes={compacto ? '105px' : '132px'}
+      width={compacto ? 105 : 132}
+      height={compacto ? 32 : 40}
+      alt={alt}
+      className={`inline-block w-auto shrink-0 object-contain ${compacto ? 'h-8' : 'h-10'} ${className}`}
+    />
   );
 }

@@ -4768,3 +4768,9 @@ Se hacen juntos al tocar la sección de planes (hallazgos 3 y 9), para revisar u
 - Pendiente para publicar: el dueño autoriza `git push` de la rama para obtener una versión de prueba de Vercel (no toca `coparentia.co`), la recorre en su celular y luego dice "publica" (merge `--no-ff` a master + push + verificar `coparentia.co`). Pendiente tras publicar: capturas nuevas de Especialistas (con "Apoyo social a tu familia") e Inicio para el carrusel.
 - Frase de la pregunta de validez validada por el dueño; no declarar el vínculo de Ivonne Reyes: decisión confirmada del dueño; nota legal corta; cifra de US$100 se mantiene ("por una asesoría").
 - **veredicto:landing** NO LISTA (30/40, craft 16, copy 16: solo falla usabilidad) · **veredicto:onboarding** NO LISTA (30/40 · 15/20 · 15/20) · **veredicto:paywall** NO LISTA (29/40 · 15/20 · 16/20): documentados y pospuestos por decisión del dueño de no perseguir el 36/40 sin rediseño de estructura; no son de seguridad ni de datos.
+
+### Checkpoint (2026-10-20) — Logo plateado solo, rama tanda-1
+- Fase: visión completa lista en rama `tanda-1` (subida a origin; preview Vercel Ready con 3 variables de relleno solo en Preview). NADA publicado: master/coparentia.co siguen en 5c2a09b.
+- Logo de la esquina: decisión del dueño = plateado solo, sin placa ni contorno, más grande (32 px arriba, 40 px en recorrido/planes/pie), imagen re-muestreada y afinada (`public/logo-horizontal-240.webp` y `-360.webp`). Verificado a 360/375/390 sin desborde.
+- Recorrido en preview llega a Hotmart OK. Maquetas en docs/revisiones/sello-propuestas (sin commitear).
+- Próximo paso: esperar "publica" del dueño (merge a master, verificar coparentia.co).
