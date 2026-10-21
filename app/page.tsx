@@ -130,8 +130,6 @@ export default function Home() {
           { titulo: 'Queda en tu expediente', marca: '0:21', detalle: 'Listo para exportar cuando lo necesites.' },
         ]}
         demo={{ video: '/demo/demo-sello', pie: 'Grabado de la app real, con datos de ejemplo. La espera del PDF va acelerada.' }}
-        ctaLabel={CTA_LABEL}
-        ctaHref={CTA_HREF}
       />
 
       {/* 5. LA APP POR DENTRO */}
@@ -168,7 +166,6 @@ export default function Home() {
             'Expediente en PDF, con cada página numerada',
             'Autorizaciones y desacuerdos, por escrito',
             'Alertas de vencimiento y soporte faltante',
-            'Garantía del Primer Expediente (15 días)',
           ],
         }}
         mensual={{
@@ -181,7 +178,6 @@ export default function Home() {
           features: [
             'Todas las funciones del plan Anual',
             'Sin compromiso de 12 meses',
-            'Garantía del Primer Expediente (15 días)',
           ],
         }}
       />
