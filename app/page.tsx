@@ -10,7 +10,7 @@
 // la app, el onboarding y el paywall siguen oscuros y no se tocan.
 
 import { Figtree, Nunito_Sans } from 'next/font/google';
-import { MessageCircleWarning, ReceiptText, ShieldAlert, AlarmClock, Wallet, FileQuestion, CalendarDays, Home as HomeIcon, ListChecks, Upload, Scale } from 'lucide-react';
+import { MessageCircleWarning, ShieldAlert, AlarmClock, Wallet, CalendarDays, Home as HomeIcon, ListChecks, Upload, Scale } from 'lucide-react';
 import { DIA_PRIMER_COBRO, PRECIOS, TRIAL_DIAS, usd } from '@/lib/precios';
 import { Hero } from '@/components/landing/Hero';
 import { Problema } from '@/components/landing/Problema';
@@ -96,14 +96,12 @@ export default function Home() {
             preguntas: [
               { icon: AlarmClock, textoMarked: '¿Te toca [b]perseguir la cuota[/b] cada mes para que llegue completa?' },
               { icon: Wallet, textoMarked: '¿Cubres [b]los gastos extra por tu cuenta[/b] y nadie te lo reconoce?' },
-              { icon: FileQuestion, textoMarked: '¿Te da miedo que digan que [b]tus cuentas no estaban claras[/b]?' },
             ],
           },
           {
             encabezado: 'Si pagas la cuota',
             preguntas: [
               { icon: MessageCircleWarning, textoMarked: '¿Por más que pagas te siguen tratando de [b]"mala paga"[/b]?' },
-              { icon: ReceiptText, textoMarked: '¿Te piden dinero para gastos "urgentes" sin ningún soporte?' },
               { icon: ShieldAlert, textoMarked: '¿Vives con miedo a una demanda que no sabrías cómo responder?' },
             ],
           },
@@ -116,7 +114,6 @@ export default function Home() {
         frases={[
           'Con COPARENTIA cada pago, visita y acuerdo queda registrado, con fecha y en un solo lugar.',
           'Y si surge una reclamación, tendrás la información reunida para preparar una respuesta o sustentar una actuación judicial o extrajudicial.',
-          'Empieza hoy a organizar tu crianza compartida con COPARENTIA.',
         ]}
       />
 
@@ -125,6 +122,7 @@ export default function Home() {
         id="como-funciona"
         tituloMarked="Tu prueba, [acento]lista antes de que te pidan[/acento]"
         mecanismo="el Sello de Confianza"
+        sello={<SelloMarca compacto />}
         bigIdeaMarked="No es que no pagues — es que no tienes cómo [b]probarlo[/b]. Míralo aquí: un comprobante entra y sale convertido en prueba fechada."
         pasos={[
           { titulo: 'Le tomas la foto al recibo', marca: '0:06', detalle: 'Desde tu teléfono, como cualquier foto.' },
@@ -281,6 +279,7 @@ export default function Home() {
         ctaLabel={CTA_LABEL}
         ctaHref={CTA_HREF}
         recap={`${TRIAL_DIAS} días gratis · Garantía de 15 días`}
+        sello={<SelloMarca compacto />}
         psMarked={`PS: Entras con ${TRIAL_DIAS} días gratis (registras tu medio de pago, pero no se te cobra nada hasta el día ${DIA_PRIMER_COBRO}). Si en 15 días no armas tu primer expediente, te devolvemos todo.`}
       />
 

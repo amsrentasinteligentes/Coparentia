@@ -240,7 +240,7 @@ export function Hero({
             variants={contenedor}
             initial="hidden"
             animate="visible"
-            className="mx-auto mt-10 grid max-w-[820px] grid-cols-1 gap-3 sm:grid-cols-3 lg:mx-0 lg:max-w-none"
+            className="mx-auto mt-10 grid max-w-[820px] grid-cols-1 justify-items-center gap-3 sm:grid-cols-3 lg:mx-0 lg:max-w-none"
           >
             {pilares.slice(0, 3).map((p) => (
               <motion.li
