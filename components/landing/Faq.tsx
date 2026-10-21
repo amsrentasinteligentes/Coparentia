@@ -7,7 +7,7 @@
 // objeciones de FICHA-AVATAR.md (19 §8) — no soporte. Respuestas cortas (warn
 // a las 40 palabras). Expand animado por altura, reduced-motion respetado.
 
-import { useId, useState } from 'react';
+import { useId, useState, type ReactNode } from 'react';
 import { motion, useReducedMotion } from 'motion/react';
 import { ChevronDown } from 'lucide-react';
 import { Kicker, SectionShell, useReveal, VIEWPORT_ONCE } from './ui';
@@ -18,6 +18,8 @@ export interface ItemFaq {
   pregunta: string;
   /** Copy MARCADO — corta y honesta, cierra reduciendo riesgo (máx 40 palabras). */
   respuestaMarked: string;
+  /** Respuesta a medida (p. ej. un formulario). Si viene, reemplaza a `respuestaMarked` en pantalla. */
+  respuesta?: ReactNode;
 }
 
 export interface FaqProps {
@@ -90,9 +92,13 @@ export function Faq({ kicker = 'PREGUNTAS', titulo = 'Lo que quizá te estás pr
                   transition={{ duration: reduce ? 0 : 0.28, ease: [0.16, 1, 0.3, 1] }}
                   className="overflow-hidden"
                 >
-                  <p className="pb-5 pr-9 text-[15px] leading-relaxed text-[var(--text-secondary)] lg:text-[17px]">
-                    <MarkedCopy text={it.respuestaMarked} />
-                  </p>
+                  {it.respuesta ? (
+                    <div className="pb-5">{it.respuesta}</div>
+                  ) : (
+                    <p className="pb-5 pr-9 text-[15px] leading-relaxed text-[var(--text-secondary)] lg:text-[17px]">
+                      <MarkedCopy text={it.respuestaMarked} />
+                    </p>
+                  )}
                 </motion.div>
               </li>
             );

@@ -198,6 +198,15 @@ export default function Privacidad() {
               terceros con fines publicitarios y puedes pedir que lo eliminemos escribiendo a
               soporte@coparentia.co.
             </p>
+            <p>
+              <strong>6.9. Lista de espera por país.</strong> Coparentia está disponible por ahora
+              solo en Colombia. Si escribes tu correo y eliges tu país en la pregunta &quot;¿Funciona
+              fuera de Colombia?&quot; de la página principal, los guardamos junto con la fecha y
+              únicamente para avisarte cuando Coparentia llegue a ese país. Solo se guardan después
+              de que marcas la autorización, no se comparten con terceros con fines publicitarios y
+              puedes pedir que los eliminemos, o dejar de recibir avisos, escribiendo a
+              soporte@coparentia.co.
+            </p>
           </Seccion>
 
           <Seccion numero="7" titulo="Finalidades del tratamiento">
