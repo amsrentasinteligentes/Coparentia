@@ -345,20 +345,17 @@ export function CtaButton({
 
 /* ── <StickyCtaMobile> — barra fija inferior SOLO mobile (55 T2).
    Aparece cuando el hero sale del viewport; se oculta frente a la oferta y al
-   CTA final; safe-area respetada. DOS estados (T2): antes de ver la oferta el
-   botón hace scroll a #oferta ("ver precios"); después de verla, cambia al CTA
-   comercial — nunca saltar una oferta que la persona todavía no vio. */
+   CTA final; safe-area respetada. 2026-10-20: un solo nombre y un solo destino (el botón de la página, que lleva al
+   recorrido gratis); el revisor marcó que cambiar de "Ver plan y precios" a otro nombre confundía. */
 export function StickyCtaMobile({
   labelComercial,
   href,
-  labelPre = 'Ver plan y precios',
   heroId = 'hero',
   ofertaId = 'oferta',
   ctaFinalId = 'cta-final',
 }: {
   labelComercial: string;
   href: string;
-  labelPre?: string;
   heroId?: string;
   ofertaId?: string;
   ctaFinalId?: string;
@@ -366,7 +363,6 @@ export function StickyCtaMobile({
   const reduce = useReducedMotion();
   const [heroVisible, setHeroVisible] = useState(true);
   const [ofertaVisible, setOfertaVisible] = useState(false);
-  const [ofertaVista, setOfertaVista] = useState(false);
   const [finalVisible, setFinalVisible] = useState(false);
   // Control manual de cierre (heurística 3: control y libertad) — un "x" que la descarta hasta
   // el PRÓXIMO hito de scroll (entra/sale de hero, oferta o cta-final), nunca la esconde para
@@ -403,7 +399,6 @@ export function StickyCtaMobile({
     const a = observar(heroId, setHeroVisible);
     const b = observar(ofertaId, (v) => {
       setOfertaVisible(v);
-      if (v) setOfertaVista(true);
     });
     const c = observar(ctaFinalId, setFinalVisible);
 
@@ -452,13 +447,11 @@ export function StickyCtaMobile({
         >
           <motion.a
             whileTap={{ scale: 0.97 }}
-            href={ofertaVista ? href : `#${ofertaId}`}
-            onClick={() => {
-              if (ofertaVista) rastrearClicCta(href, labelComercial);
-            }}
+            href={href}
+            onClick={() => rastrearClicCta(href, labelComercial)}
             className="flex h-12 flex-1 items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-[16px] font-semibold text-[var(--on-accent)] [touch-action:manipulation] lg:text-[18px]"
           >
-            {ofertaVista ? labelComercial : labelPre}
+            {labelComercial}
           </motion.a>
           <button
             type="button"

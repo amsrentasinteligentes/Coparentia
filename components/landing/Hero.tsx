@@ -16,7 +16,7 @@
 import type { ReactNode } from 'react';
 import { motion, useReducedMotion } from 'motion/react';
 import { Camera } from 'lucide-react';
-import { Blob, CheckCustom, CtaButton, useReveal } from './ui';
+import { Blob, CheckCustom, CountUp, CtaButton, useReveal } from './ui';
 import { rastrearClicCta } from '@/lib/meta-pixel';
 import { MarkedCopy, truncarMarcado, warnCopy } from './MarkedCopy';
 
@@ -55,6 +55,8 @@ export interface HeroProps {
   foto?: ReactNode;
   /** Burbuja con UN dato honesto sobre la escena ("Tu primer expediente · Listo en 10 minutos"). */
   burbuja?: { titulo: string; dato: string };
+  /** Sello de marca: firma sobre la escena (esquina superior izquierda, libre de foto, teléfono y burbuja). */
+  sello?: ReactNode;
   /** Fila de 3 píldoras bajo la escena — el mensaje literal de la dirección C
       ("Gastos al día · Comprobantes con fecha · Mente en calma"). */
   pilares?: string[];
@@ -78,6 +80,7 @@ export function Hero({
   visual,
   foto,
   burbuja,
+  sello,
   pilares = [],
   visualPlaceholderSugerencia = 'captura de la pantalla principal con datos reales',
   id = 'hero',
@@ -108,18 +111,18 @@ export function Hero({
         {/* Header 64px: marca a la izquierda; en computador enlaces de sección + CTA chico;
             en celular SOLO "Entrar" terciario (19). */}
         <header className="flex h-16 items-center justify-between gap-4">
-          <a href="/" className="flex items-center gap-2 text-[16px] font-semibold text-[var(--text-primary)] lg:text-[18px]">
+          <a href="/" className="flex shrink-0 items-center gap-2 text-[16px] font-semibold text-[var(--text-primary)] lg:text-[18px]">
             {logo ?? <span aria-hidden="true" className="size-6 rounded-[8px] bg-[var(--accent)]" />}
             {!marcaSoloLogo && appName}
           </a>
-          <nav aria-label="Secciones" className="flex items-center gap-2">
+          <nav aria-label="Secciones" className="flex items-center gap-0 sm:gap-2">
             {navLinks.slice(0, 4).map((l) => (
               <a
                 key={l.href}
                 href={l.href}
                 // Todos los enlaces comparten la misma caja (44px, texto centrado) en computador: antes "Planes" usaba
                 // una caja distinta de las demás y su texto quedaba unos píxeles más abajo (2026-10-14).
-                className={`px-2 text-[14px] font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] md:inline-flex md:h-11 md:items-center md:px-3 lg:text-[16px] ${
+                className={`px-1.5 text-[14px] font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] md:inline-flex md:h-11 md:items-center md:px-3 lg:text-[16px] ${
                   l.href === enlacePlanes || l.visibleEnMovil ? 'inline-flex h-11 items-center' : 'hidden'
                 }`}
               >
@@ -134,7 +137,7 @@ export function Hero({
               </a>
             ))}
             {loginHref && (
-              <a href={loginHref} className="px-2 py-3 text-[14px] font-medium text-[var(--text-tertiary)] md:px-3 md:text-[var(--text-secondary)] lg:text-[16px]">
+              <a href={loginHref} className="px-1.5 py-3 text-[14px] font-medium text-[var(--text-tertiary)] md:px-3 md:text-[var(--text-secondary)] lg:text-[16px]">
                 {loginLabel}
               </a>
             )}
@@ -179,11 +182,18 @@ export function Hero({
 
           {/* LA ESCENA: forma orgánica + foto + captura + burbuja. Alto fijo por breakpoint para
               que no haya salto de layout (CLS 0) mientras cargan las imágenes. */}
-          <motion.div variants={item} className="relative mt-10 h-[340px] w-full max-w-[420px] sm:h-[400px] lg:mt-0 lg:h-[540px] lg:max-w-none lg:justify-self-end">
+          <motion.div variants={item} className="relative mt-10 h-[390px] w-full max-w-[420px] sm:h-[420px] lg:mt-0 lg:h-[540px] lg:max-w-none lg:justify-self-end">
             <Blob className="-right-10 -top-6 h-[92%] w-[88%]" opacidad={0.14} />
             {foto && (
               <div className="absolute right-0 top-0 h-[66%] w-[74%] overflow-hidden blob shadow-[var(--shadow-2)]">
                 {foto}
+                {/* Mismo tono azul que la marca sobre la foto de archivo: que no parezca de otra paleta. */}
+                <span aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[var(--accent)] opacity-[0.28] mix-blend-color" />
+              </div>
+            )}
+            {sello && (
+              <div className="pointer-events-none absolute -left-1 top-0 z-20 w-[92px] -rotate-6 drop-shadow-[0_10px_16px_rgba(18,40,92,0.3)] lg:left-[2%] lg:top-3 lg:w-[124px]">
+                {sello}
               </div>
             )}
             {visual ? (
@@ -193,7 +203,7 @@ export function Hero({
                 href={ctaHref}
                 onClick={() => rastrearClicCta(ctaHref, ctaLabel)}
                 aria-label={ctaLabel}
-                className="absolute bottom-0 left-0 block w-[38%] max-w-[180px] overflow-hidden rounded-[var(--radius-phone)] border-[5px] border-[color-mix(in_oklab,var(--text-primary)_92%,var(--accent))] bg-[var(--text-primary)] shadow-[var(--shadow-2)] transition-transform duration-150 active:scale-[0.99] lg:bottom-4 lg:left-[4%]"
+                className="absolute bottom-0 left-0 block w-[44%] max-w-[190px] overflow-hidden rounded-[var(--radius-phone)] border-[5px] border-[color-mix(in_oklab,var(--text-primary)_92%,var(--accent))] bg-[var(--text-primary)] shadow-[var(--shadow-2)] transition-transform duration-150 active:scale-[0.99] lg:bottom-4 lg:left-[4%] lg:w-[38%] lg:max-w-[180px]"
               >
                 {visual}
               </a>
@@ -211,14 +221,14 @@ export function Hero({
                 initial={reduce ? { opacity: 0 } : { opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={reduce ? { duration: 0.2 } : { delay: 0.35, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                className="absolute bottom-2 right-0 w-[48%] max-w-[220px] rounded-[var(--radius-card)] rounded-bl-[8px] px-5 py-4 text-left text-[var(--on-accent)] shadow-[0_18px_40px_-14px_color-mix(in_oklab,var(--accent-deep,var(--accent))_60%,transparent)] lg:bottom-6 lg:right-2"
+                className="absolute bottom-2 right-0 w-[52%] max-w-[220px] rounded-[var(--radius-card)] rounded-bl-[8px] px-4 py-4 text-left text-[var(--on-accent)] shadow-[0_18px_40px_-14px_color-mix(in_oklab,var(--accent-deep,var(--accent))_60%,transparent)] lg:bottom-6 lg:right-2"
                 // Desde --accent (4.7:1 con blanco), no desde la nota clara: con #5b93e8 el 12px al 85%
                 // medía 2.8:1 (revisor, clara r3) — mismo fallo ya corregido en el bloque de cierre.
                 style={{ background: 'linear-gradient(150deg, var(--accent), var(--accent-deep, var(--accent)))' }}
               >
                 <p className="text-[13px] font-semibold lg:text-[14px]">{burbuja.titulo}</p>
                 <p className="mt-1 text-[22px] font-extrabold leading-[1.1] [font-family:var(--font-display)] md:text-[26px]">
-                  {burbuja.dato}
+                  <CountUp text={burbuja.dato} />
                 </p>
               </motion.div>
             )}
@@ -230,13 +240,13 @@ export function Hero({
             variants={contenedor}
             initial="hidden"
             animate="visible"
-            className="mx-auto mt-10 grid max-w-[820px] grid-cols-1 gap-3 sm:grid-cols-3 lg:mx-0 lg:max-w-none"
+            className="mx-auto mt-10 grid w-fit max-w-[820px] grid-cols-1 gap-3 sm:w-auto sm:grid-cols-3 lg:mx-0 lg:max-w-none"
           >
             {pilares.slice(0, 3).map((p) => (
               <motion.li
                 variants={item}
                 key={p}
-                className="flex items-center gap-3 rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_22%,transparent)] bg-[var(--surface)] px-5 py-4 text-[15px] font-semibold text-[var(--text-primary)] lg:py-5 lg:text-[17px]"
+                className="flex items-center gap-3 px-1 py-2 text-[15px] font-semibold text-[var(--text-primary)] lg:text-[17px]"
               >
                 <CheckCustom />
                 {p}

@@ -53,7 +53,7 @@ export function Agitacion({ titulo, frases, contraste, id }: AgitacionProps) {
           // cambia es que el TEXTO adentro ya no se centra, se alinea a la izquierda como el resto.
           <motion.h2
             variants={item}
-            className="text-[20px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)] sm:whitespace-nowrap sm:text-[22px] lg:text-[34px]"
+            className="text-balance text-[30px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)] md:text-[40px] lg:text-[46px]"
           >
             <MarkedCopy text={titulo} />
           </motion.h2>
@@ -63,7 +63,7 @@ export function Agitacion({ titulo, frases, contraste, id }: AgitacionProps) {
             <motion.p
               key={i}
               variants={item}
-              className="text-justify text-[17px] leading-[1.6] text-[var(--text-secondary)] lg:text-[19px]"
+              className="text-left text-[17px] leading-[1.6] text-[var(--text-secondary)] lg:text-[19px]"
             >
               <MarkedCopy text={f} />
             </motion.p>

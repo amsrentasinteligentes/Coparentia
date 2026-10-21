@@ -11,6 +11,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { AnuncioAbogados } from '@/components/landing/AnuncioAbogados';
 import { FooterLegal } from '@/components/landing/FooterLegal';
+import { LogoPlaca } from '@/components/landing/LogoPlaca';
 import { ENLACES_LEGALES } from '@/components/landing/enlaces-legales';
 
 export const metadata: Metadata = {
@@ -24,7 +25,7 @@ export default function Especialistas() {
     <>
       <header className="mx-auto flex w-full max-w-[1140px] items-center justify-between px-5 py-3">
         <Link href="/" aria-label="Coparentia — volver al inicio">
-          <img src="/logo-horizontal.webp" alt="Coparentia" className="h-9 w-auto object-contain" />
+          <LogoPlaca compacto />
         </Link>
         <Link
           href="/"
@@ -40,7 +41,7 @@ export default function Especialistas() {
 
       <FooterLegal
         appName="Coparentia"
-        logo={<img src="/logo-horizontal.webp" alt="Coparentia" className="h-10 w-auto object-contain" />}
+        logo={<LogoPlaca />}
         marcaSoloLogo
         soporteEmail="soporte@coparentia.co"
         enlaces={ENLACES_LEGALES}

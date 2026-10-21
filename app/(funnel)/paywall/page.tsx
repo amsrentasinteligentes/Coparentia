@@ -15,7 +15,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { X, Check, ShieldCheck, Lock, FileCheck2, HeartHandshake, Loader2, MapPin } from 'lucide-react';
-import { Blob } from '@/components/landing/ui';
+import { SelloMarca } from '@/components/landing/SelloMarca';
 import { BarraAtras, CtaFunnel, FunnelHeader, Halo, MarcoFunnel, Marcador, usePasoVariants } from '@/components/funnel/ui';
 import { PanelExpediente, type FilaExpediente } from '@/components/funnel/PanelExpediente';
 import { DIA_PRIMER_COBRO, FRASE_MONTO_HOTMART, NOMBRE_VENDEDOR_HOTMART, PRECIOS, TRIAL_DIAS, usd } from '@/lib/precios';
@@ -117,6 +117,24 @@ const CHECKOUT_HOTMART = {
 // app lo recuerda para mostrarlo ya escrito en /entrar. Auditoría externa 2026-10-09, hallazgo 2.
 const CLAVE_CORREO = 'coparentia_correo_compra';
 const FORMATO_CORREO = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+// Prevención de errores (heurística 5): el error más común al pagar es un correo mal escrito, y esa persona
+// no recibiría su acceso. Si el dominio es uno de los errores típicos, se le ofrece la corrección apenas escribe.
+const DOMINIOS_MAL_ESCRITOS: Record<string, string> = {
+  'gmial.com': 'gmail.com', 'gmai.com': 'gmail.com', 'gamil.com': 'gmail.com', 'gnail.com': 'gmail.com',
+  'gmail.co': 'gmail.com', 'gmail.con': 'gmail.com', 'gmail.cm': 'gmail.com',
+  'hotmial.com': 'hotmail.com', 'hotmai.com': 'hotmail.com', 'hotmal.com': 'hotmail.com', 'hotmail.con': 'hotmail.com',
+  'outlok.com': 'outlook.com', 'outloo.com': 'outlook.com', 'outlook.con': 'outlook.com',
+  'yahooo.com': 'yahoo.com', 'yaho.com': 'yahoo.com', 'yahoo.con': 'yahoo.com',
+  'icloud.con': 'icloud.com',
+};
+function sugerirCorreo(valor: string): string | null {
+  const v = valor.trim().toLowerCase();
+  const i = v.lastIndexOf('@');
+  if (i < 1) return null;
+  const arreglo = DOMINIOS_MAL_ESCRITOS[v.slice(i + 1)];
+  return arreglo ? v.slice(0, i) + '@' + arreglo : null;
+}
 
 export default function Paywall() {
   const router = useRouter();
@@ -409,10 +427,11 @@ function ValorYPrueba({
     transition: { duration: 0.34, ease: [0.22, 0.61, 0.36, 1] as const, delay: reduce ? 0 : i * 0.05 },
   });
 
-  const incluye = [
-    'El Sello de Confianza en cada comprobante',
-    'Expediente exportable en PDF foliado',
-    'Alertas en el momento que elegiste',
+  const incluye: { texto: string; detalle?: string; miniatura?: string }[] = [
+    { texto: 'El Sello de Confianza en cada comprobante', detalle: 'Con fecha y respaldo que nadie puede alterar.' },
+    { texto: 'Expediente exportable en PDF foliado', detalle: 'Cada página numerada y con fecha.' },
+    // La objeción nº 1 del avatar (FICHA-AVATAR) va aquí, a la vista, en vez de una promesa genérica de alertas.
+    { texto: 'Funciona aunque la otra persona no la use' },
   ];
   // El cobro se deriva del plan elegido: antes decía "$89/año" fijo, así que quien volvía atrás
   // con el plan Mensual leía un precio que no era el suyo.
@@ -425,11 +444,27 @@ function ValorYPrueba({
 
   return (
     <div className="flex flex-1 flex-col">
-      <h1 className="relative text-balance text-[28px] font-bold leading-[1.12] text-[var(--text-primary)] [font-family:var(--font-display)]">
+      <div className="relative">
+        {/* Firma de marca junto al titular (compacto: escudo limpio con visto bueno; a este tamaño el logo y la palabra no se leen). */}
+        <div className="pointer-events-none absolute top-0 right-0 w-[56px] drop-shadow-[0_6px_10px_rgba(18,40,92,0.25)]">
+          <SelloMarca compacto />
+        </div>
+      <h1 className="relative text-balance pr-[68px] text-[28px] font-bold leading-[1.12] text-[var(--text-primary)] [font-family:var(--font-display)]">
         <Halo />
-        Tu expediente está <span className="text-[var(--accent-ink,var(--accent))]">listo para empezar</span>
+        {/* Con respuestas guardadas el titular dice lo que es cierto: ya empezó a armarse (2026-10-20, elegido por el dueño);
+            sin respuestas (entrada directa) se conserva el anterior, que no afirma nada de ellas. */}
+        {n > 0 ? (
+          <>
+            Tu expediente <span className="text-[var(--accent-ink,var(--accent))]">ya empezó a armarse</span>
+          </>
+        ) : (
+          <>
+            Tu expediente está <span className="text-[var(--accent-ink,var(--accent))]">listo para empezar</span>
+          </>
+        )}
       </h1>
-      <p className="mt-2 text-[14px] text-[var(--text-secondary)]">
+      </div>
+      <p className="mt-2 text-[13px] text-[var(--text-secondary)]">
         {/* El plural se rompía justo en la línea que PRUEBA la personalización ("Hecho con tus 1
             respuestas") — ante un avatar que desconfía de las cuentas que no cuadran, ese detalle
             es el que delata que nadie leyó la frase (revisor-visual, 2026-09-17). */}
@@ -456,11 +491,18 @@ function ValorYPrueba({
           timeline en la misma pantalla, tres tarjetas completas competían por el protagonismo. */}
       <div className="mt-6 flex flex-col gap-3">
         {incluye.map((f, i) => (
-          <motion.div key={f} {...entrada(i)} className="flex items-center gap-3">
-            <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-[color-mix(in_oklab,var(--accent)_14%,transparent)]">
+          <motion.div key={f.texto} {...entrada(i)} className="flex items-start gap-3">
+            <span className="mt-px flex size-6 shrink-0 items-center justify-center rounded-full bg-[color-mix(in_oklab,var(--accent)_14%,transparent)]">
               <Check size={13} strokeWidth={2.8} color="var(--accent)" />
             </span>
-            <span className="text-[15px] text-[var(--text-primary)]">{f}</span>
+            <span>
+              <span className="block text-[15px] leading-[1.35] text-[var(--text-primary)]">{f.texto}</span>
+              {f.detalle && <span className="mt-0.5 block text-[13px] leading-[1.4] text-[var(--text-secondary)]">{f.detalle}</span>}
+            </span>
+            {f.miniatura && (
+              // Página de ejemplo del PDF real (datos ficticios): la prueba concreta de lo que se lleva, sin testimonios.
+              <img src={f.miniatura} alt="Página de ejemplo del expediente en PDF, con datos ficticios" width={44} height={57} loading="lazy" className="ml-auto h-[57px] w-[44px] shrink-0 rounded-[6px] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-white object-cover object-top shadow-[var(--shadow-1)]" />
+            )}
           </motion.div>
         ))}
       </div>
@@ -480,7 +522,7 @@ function ValorYPrueba({
           plano mientras el paso 2 es de tarjetas, así que el sistema de profundidad cambiaba entre
           dos pantallas seguidas (defecto del revisor). Además el calendario de cobros es lo que más
           se relee antes de decidir: merece su propio plano. */}
-      <div className="rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--text-tertiary)_16%,transparent)] bg-[var(--surface)] p-4 shadow-[var(--shadow-1)]">
+      <div className="relative rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--text-tertiary)_16%,transparent)] bg-[var(--surface)] p-4 shadow-[var(--shadow-1)]">
         <h2 className="text-[19px] font-bold leading-[1.2] text-[var(--text-primary)] [font-family:var(--font-display)]">
           {TRIAL_DIAS} días gratis, sin sorpresas
         </h2>
@@ -510,29 +552,33 @@ function ValorYPrueba({
           ))}
         </div>
         <p className="text-[13px] leading-[1.5] text-[var(--text-tertiary)]">
-          El aviso del día 5 llega por correo. Podrás sumar notificaciones desde Ajustes cuando entres.
+          El aviso del día 5 llega por correo.
         </p>
       </div>
 
-      <div className="mt-auto pt-6">
-        {/* Las mismas dos señales que acompañan al CTA del paso 2: antes aquí había ~100px de
-            fondo vacío entre la tarjeta del trial y el botón (revisor claro r1). */}
-        <div className="mb-3 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-center text-[13px] font-medium text-[var(--text-secondary)]">
+      {/* El botón del paso 1 también queda fijo al fondo en celular (igual que en el paso 2): con el sello y la
+          explicación la pantalla creció y el botón quedaba bajo el pliegue a 375×812. */}
+      {/* Señales secundarias en una línea normal (no fija): la barra fija del paso 1 llegó a medir ~150 px y tapaba la
+          tarjeta de la prueba (revisor, 2026-10-20). Decisión #8: "Disponible para Colombia" sigue visible en este paso. */}
+      <div className="mt-4 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-center text-[13px] font-medium text-[var(--text-secondary)]">
+        <span className="flex items-center gap-1.5">
+          <Lock size={13} color="var(--accent)" aria-hidden="true" />
+          Pago seguro con Hotmart
+        </span>
+        <span className="flex items-center gap-1.5">
+          <MapPin size={13} color="var(--accent)" aria-hidden="true" />
+          Disponible para Colombia
+        </span>
+      </div>
+
+      <div className="sticky bottom-0 z-10 -mx-4 mt-auto bg-[var(--bg)] px-4 pb-[max(8px,env(safe-area-inset-bottom))] pt-3 lg:static lg:mx-0 lg:bg-transparent lg:px-0 lg:pb-0 lg:pt-4">
+        <div className="mb-2 flex items-center justify-center text-center text-[13px] font-medium text-[var(--text-secondary)]">
           <span className="flex items-center gap-1.5">
-            <ShieldCheck size={14} color="var(--accent)" aria-hidden="true" />
+            <span className="w-[18px] shrink-0"><SelloMarca compacto animar={false} /></span>
             Garantía del Primer Expediente · 15 días
           </span>
-          <span className="flex items-center gap-1.5">
-            <Lock size={13} color="var(--accent)" aria-hidden="true" />
-            Pago seguro con Hotmart
-          </span>
-          {/* Decisión #8 (2026-10-20): por ahora la app es solo para Colombia (cuota en pesos, normativa colombiana). */}
-          <span className="flex items-center gap-1.5">
-            <MapPin size={13} color="var(--accent)" aria-hidden="true" />
-            Disponible para Colombia
-          </span>
         </div>
-        <CtaFunnel onClick={onContinuar}>Ver mi plan y precio</CtaFunnel>
+        <CtaFunnel onClick={onContinuar}>Ver mi plan y mi prueba gratis</CtaFunnel>
       </div>
     </div>
   );
@@ -582,7 +628,7 @@ function Precio({
     <div className="relative flex flex-1 flex-col">
       {/* FORMA ORGÁNICA de la variante clara (FICHA-ARTE: blobs en degradé azul) detrás del
           titular — el dispositivo ownable que al paywall le faltaba (revisor claro r1). */}
-      <h1 className="relative text-balance text-[28px] font-bold leading-[1.12] text-[var(--text-primary)] [font-family:var(--font-display)]">
+      <h1 className="relative text-balance text-[24px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)]">
         <Halo />
         {/* El <Marcador> envolvía "captura de WhatsApp": a 375px esa frase cruza tres renglones y
             el subrayado se partía en tres trazos sueltos que parecían marcar palabras al azar.
@@ -591,8 +637,7 @@ function Precio({
         <span className="relative text-[var(--accent-ink,var(--accent))]">
           {/* La mancha ahora nace DETRÁS de las palabras que venden (ronda 10 del revisor): antes caía
               a la derecha del titular, detrás de "se pierde — tu", y se leía como un manchón suelto. */}
-          <Blob className="-left-1 right-0 -inset-y-1 -z-10" opacidad={0.14} />
-          queda fechado
+          <Marcador>queda fechado</Marcador>
         </span>
       </h1>
 
@@ -643,7 +688,7 @@ function Precio({
             <div className="flex-1">
               <div className="flex items-baseline justify-between">
                 <span className="text-[15px] font-semibold text-[var(--text-primary)]">Anual</span>
-                <span className="text-[22px] font-bold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
+                <span className="text-[26px] font-bold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
                   <PrecioContado valor={PLAN_ANUAL.precioMes} /><span className="text-[13px] font-normal text-[var(--text-secondary)]">/mes</span>
                 </span>
               </div>
@@ -651,9 +696,9 @@ function Precio({
                   tenía fondo base y tarjeta elevada; FICHA-ARTE declara tres niveles. La referencia
                   en pesos —dato de apoyo, no el precio— va sobre una superficie HUNDIDA: se
                   distingue del precio principal sin agregar otro color ni otro tamaño de letra. */}
-              <p className={`mt-1.5 min-h-[2.6em] rounded-[14px] ${plan === 'anual' ? 'bg-[var(--surface)]' : 'bg-[var(--surface-2)]'} px-3 py-1 text-[13px] text-[var(--text-secondary)] shadow-[inset_0_1px_2px_rgb(20_40_80_/_0.08)] lg:min-h-0`}>
+              <p className={`mt-1.5 rounded-[8px] ${plan === 'anual' ? 'bg-[var(--surface)]' : 'bg-[var(--surface-2)]'} px-3 py-1 text-[13px] text-[var(--text-secondary)] shadow-[inset_0_1px_2px_rgb(20_40_80_/_0.08)] lg:min-h-0`}>
                 {PLAN_ANUAL.totalAnual}
-                <span className="block text-[var(--text-primary)] lg:ml-2 lg:inline">
+                <span className="hidden text-[var(--text-primary)] lg:ml-2 lg:inline">
                   Te sale a <span className="font-semibold">{PLAN_ANUAL.costoDia}</span> al día
                 </span>
               </p>
@@ -681,15 +726,15 @@ function Precio({
           <div className="flex-1">
             <div className="flex items-baseline justify-between">
               <span className="text-[15px] font-semibold text-[var(--text-primary)]">Mensual</span>
-              <span className="text-[22px] font-bold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
+              <span className="text-[26px] font-bold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
                 <PrecioContado valor={PLAN_MENSUAL.precioMes} /><span className="text-[13px] font-normal text-[var(--text-secondary)]">/mes</span>
               </span>
             </div>
             {/* Solo la tarjeta Anual mostraba su total, así que el "ahorras US$30.88" no se podía
                 comprobar contra nada: faltaba el término de comparación. */}
-            <p className={`mt-1.5 min-h-[2.6em] rounded-[14px] ${plan === 'mensual' ? 'bg-[var(--surface)]' : 'bg-[var(--surface-2)]'} px-3 py-1 text-[13px] text-[var(--text-secondary)] shadow-[inset_0_1px_2px_rgb(20_40_80_/_0.08)] lg:min-h-0`}>
+            <p className={`mt-1.5 rounded-[8px] ${plan === 'mensual' ? 'bg-[var(--surface)]' : 'bg-[var(--surface-2)]'} px-3 py-1 text-[13px] text-[var(--text-secondary)] shadow-[inset_0_1px_2px_rgb(20_40_80_/_0.08)] lg:min-h-0`}>
               {PLAN_MENSUAL.totalAnual}
-              <span className="block text-[var(--text-primary)] lg:ml-2 lg:inline">
+              <span className="hidden text-[var(--text-primary)] lg:ml-2 lg:inline">
                 Te sale a <span className="font-semibold">{PLAN_MENSUAL.costoDia}</span> al día
               </span>
             </p>
@@ -697,33 +742,6 @@ function Precio({
         </motion.button>
       </div>
 
-      <p className="mt-2 text-[13px] leading-[1.45] text-[var(--text-secondary)]">
-        {FRASE_MONTO_HOTMART} Verás a{' '}
-        <span className="font-medium text-[var(--text-primary)]">{NOMBRE_VENDEDOR_HOTMART}</span>{' '}como vendedor.
-      </p>
-
-      {/* Estas 3 filas repetían los MISMOS beneficios del paso anterior (y dos decían literalmente
-          lo mismo: "fecha y hora exactas" / "fecha exacta"). A un tap de distancia, leer dos veces
-          la misma lista hace que la pantalla se sienta vacía de argumentos. Ahora responden lo que
-          de verdad se pregunta EN EL MOMENTO DE PAGAR: cuánto cuesta en realidad, si sirve sin la
-          otra parte, y qué pasa si me arrepiento. Los tres son hechos comprobables del producto. */}
-      <div className="mt-3 flex flex-col gap-2">
-        {[
-          { icon: HeartHandshake, pre: 'Funciona ', fuerte: 'aunque la otra persona no la use', post: '.' },
-          { icon: FileCheck2, pre: 'Menos que lo que ', fuerte: 'algunos abogados cobran', post: ' por un correo.' },
-        ].map(({ icon: Icon, pre, fuerte, post }) => (
-          <div key={fuerte} className="flex items-center gap-3">
-            <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[color-mix(in_oklab,var(--accent)_12%,transparent)]">
-              <Icon size={15} color="var(--accent)" aria-hidden="true" />
-            </span>
-            <span className="text-[14px] text-[var(--text-secondary)]">
-              {pre}
-              <span className="font-semibold text-[var(--text-primary)]">{fuerte}</span>
-              {post}
-            </span>
-          </div>
-        ))}
-      </div>
 
       {/* PIE REORDENADO. Antes: 4 líneas apiladas con separaciones de 4px (mt-1) que se leían como
           un bloque legal denso, con 5 elementos tocables al borde de la sobrecarga (defectos 1 y 5
@@ -734,13 +752,10 @@ function Precio({
       {/* CORREO (hallazgo 2 de la auditoría): el mismo con el que pagará y entrará. Va ANTES del pie
           y del botón fijo para que no tape el campo. La autorización de datos es una casilla nunca
           premarcada (Ley 1581 de 2012), igual que en /entrar. */}
-      <div className="mt-4">
-        <label htmlFor="paywall-correo" className="text-[14px] font-semibold text-[var(--text-primary)]">
-          Tu correo
+      <div className="mt-3">
+        <label htmlFor="paywall-correo" className="text-[15px] font-semibold text-[var(--text-primary)]">
+          Tu correo para pagar y entrar
         </label>
-        <p id="paywall-correo-ayuda" className="mt-0.5 text-[13px] text-[var(--text-secondary)]">
-          Usa este mismo correo para pagar y para entrar a tu expediente: así tu compra queda a tu nombre.
-        </p>
         {correoFijo ? (
           <div className="mt-2 flex h-12 items-center justify-between gap-3 rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--surface)] px-4">
             <span className="min-w-0 truncate text-[16px] text-[var(--text-primary)]">{sesionEmail}</span>
@@ -764,12 +779,28 @@ function Precio({
           value={correo}
           onChange={(e) => onCorreo(e.target.value)}
           placeholder="tu@correo.com"
+          enterKeyHint="go"
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && !yendo) {
+              e.preventDefault();
+              onCta();
+            }
+          }}
           aria-invalid={errorCorreo ? true : undefined}
-          aria-describedby={errorCorreo ? 'paywall-correo-ayuda paywall-correo-error' : 'paywall-correo-ayuda'}
+          aria-describedby={errorCorreo ? 'paywall-correo-error' : undefined}
           className="mt-2 h-12 w-full rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--surface)] px-4 text-[16px] text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)]"
         />
         )}
-        <label className="mt-3 flex items-start gap-2.5 [touch-action:manipulation]">
+        {!correoFijo && sugerirCorreo(correo) && (
+          <button
+            type="button"
+            onClick={() => onCorreo(sugerirCorreo(correo) as string)}
+            className="mt-1.5 block w-full text-left text-[13px] leading-[1.4] text-[var(--text-secondary)] [touch-action:manipulation]"
+          >
+            ¿Quisiste decir <span className="font-semibold text-[var(--accent-ink,var(--accent))] underline underline-offset-2">{sugerirCorreo(correo)}</span>? Tócalo para corregirlo.
+          </button>
+        )}
+        <label className="mt-2 flex items-start gap-2.5 [touch-action:manipulation]">
           <input
             id="paywall-autoriza"
             type="checkbox"
@@ -904,6 +935,11 @@ function Precio({
         )}
       </div>
 
+      <p className="mt-3 text-[13px] leading-[1.45] text-[var(--text-secondary)]">
+        <Lock size={13} className="mr-1 inline-block align-[-2px]" color="var(--accent)" aria-hidden="true" />Pago seguro con Hotmart. {FRASE_MONTO_HOTMART} Verás a{' '}
+        <span className="font-medium text-[var(--text-primary)]">{NOMBRE_VENDEDOR_HOTMART}</span>{' '}como vendedor.
+      </p>
+
       <div className="mt-auto pt-4">
         {/* Hairline degradada también aquí: existía solo en el paso 1, así que el sistema de
             profundidad cambiaba entre dos pantallas seguidas (defecto del revisor). */}
@@ -948,23 +984,18 @@ function Precio({
           <div className="relative bg-[var(--bg)] pt-4 pb-[max(8px,env(safe-area-inset-bottom))] lg:bg-transparent lg:pb-0 lg:pt-0">
             {/* Sin punto medio entre las dos señales: a 375px la línea siempre parte en dos y el
                 "·" quedaba huérfano al final de la primera. Los íconos ya separan cada señal. */}
-            <div className="mb-4">
-              <div className="flex items-center justify-center gap-5 text-[13px] font-medium text-[var(--text-primary)]">
+            <div className="mb-2">
+              <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1 text-[13px] font-medium text-[var(--text-primary)]">
                 <a
                   href="/reembolsos"
                   target="_blank"
                   rel="noreferrer"
                   className="-my-1.5 flex min-h-11 items-center gap-1.5 whitespace-nowrap underline decoration-[color-mix(in_oklab,var(--text-tertiary)_60%,transparent)] underline-offset-2 [touch-action:manipulation]"
                 >
-                  <ShieldCheck size={14} color="var(--accent)" aria-hidden="true" />
-                  Garantía de 15 días
+                  <span className="w-[18px] shrink-0"><SelloMarca compacto animar={false} /></span>
+                  Garantía del Primer Expediente · 15 días
                 </a>
-                <span className="flex items-center gap-1.5 whitespace-nowrap">
-                  <Lock size={13} color="var(--accent)" aria-hidden="true" />
-                  Pago seguro Hotmart
-                </span>
               </div>
-              <p className="text-center text-[13px] text-[var(--text-secondary)]">Si no te sirve, te devolvemos todo.</p>
             </div>
             <CtaFunnel onClick={onCta} disabled={yendo}>
               {yendo ? (
@@ -984,7 +1015,7 @@ function Precio({
               </p>
             )}
             <p className="mt-2 text-center text-[13px] leading-[1.45] text-[var(--text-secondary)]">
-              Hoy no pagas nada · Primer cobro el día {DIA_PRIMER_COBRO}:{' '}
+              Plan {plan === 'anual' ? 'anual' : 'mensual'} · Hoy no pagas nada · Primer cobro el día {DIA_PRIMER_COBRO}:{' '}
               <span className="font-semibold text-[var(--text-primary)]">{plan === 'anual' ? PLAN_ANUAL.cobro : PLAN_MENSUAL.cobro}</span> · Cancelas cuando quieras
             </p>
           </div>
@@ -993,19 +1024,15 @@ function Precio({
       {/* PIE: en celular dos filas (salidas arriba, legales abajo, 44px de alto táctil: ronda 5 del
           revisor); desde `lg` UNA sola fila, porque en dos filas a 1440×900 la última quedaba cortada
           contra el borde inferior (revisor, 4ª ronda del diseño original). */}
-      <div className="mt-6 flex flex-col items-center text-[13px] text-[var(--text-secondary)] lg:mt-2 lg:flex-row lg:justify-center lg:gap-x-6">
-      <div className="flex flex-wrap items-center justify-center gap-x-6">
+      <div className="mt-4 flex flex-wrap items-center justify-center gap-x-5 text-[13px] text-[var(--text-secondary)] lg:mt-2">
         <button type="button" onClick={onAhoraNo} className="min-h-11 py-2 text-[13px] text-[var(--text-secondary)] [touch-action:manipulation]">
           Ahora no
         </button>
         <a href="mailto:soporte@coparentia.co" className="flex min-h-11 items-center py-2 text-[13px] text-[var(--text-secondary)] underline-offset-2 hover:underline [touch-action:manipulation]">
           ¿Dudas? Escríbenos
         </a>
-      </div>
-      <div className="flex flex-wrap items-center justify-center gap-x-6">
         <a href="/terminos" className="flex min-h-11 items-center py-2 text-[13px] text-[var(--text-tertiary)] underline-offset-2 hover:underline">Términos</a>
         <a href="/privacidad" className="flex min-h-11 items-center py-2 text-[13px] text-[var(--text-tertiary)] underline-offset-2 hover:underline">Privacidad</a>
-      </div>
       </div>
     </div>
   );

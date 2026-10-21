@@ -10,13 +10,22 @@ import { useRouter } from 'next/navigation';
 import { motion, useReducedMotion, type Variants } from 'motion/react';
 import { ChevronLeft, Check } from 'lucide-react';
 import type { ReactNode } from 'react';
+import { LogoPlaca } from '@/components/landing/LogoPlaca';
 
 /* ── <FunnelHeader> — logo + nombre arriba de TODA pantalla del funnel (50, regla de marca) ── */
-export function FunnelHeader({ appName = 'Coparentia' }: { appName?: string }) {
-  return (
-    <Link href="/" aria-label={appName} className="mb-2 inline-flex items-center py-3">
-      <img src="/logo-horizontal.webp" alt={appName} className="h-8 w-auto object-contain" />
+export function FunnelHeader({ appName = 'Coparentia', sello }: { appName?: string; sello?: ReactNode }) {
+  const enlace = (
+    <Link href="/" aria-label={appName} className="mb-1 inline-flex items-center py-2">
+      <LogoPlaca alt={appName} />
     </Link>
+  );
+  if (!sello) return enlace;
+  // Sello pequeño a la derecha: la marca se ve desde la primera pregunta, no solo al final.
+  return (
+    <div className="flex items-center justify-between">
+      {enlace}
+      <span className="w-10 shrink-0">{sello}</span>
+    </div>
   );
 }
 

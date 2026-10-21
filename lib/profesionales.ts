@@ -84,7 +84,7 @@ export const CATEGORIAS_PROFESIONAL: {
     etiqueta: 'Trabajadores sociales',
     color: 'var(--cat-vacaciones)',
     colorBg: 'var(--cat-vacaciones-bg)',
-    corta: 'Acompañamiento social a tu familia',
+    corta: 'Apoyo social a tu familia',
     icon: HeartHandshake,
     motivoVacio: 'Pronto verás aquí trabajadores sociales que pueden acompañar el proceso de tu familia.',
   },

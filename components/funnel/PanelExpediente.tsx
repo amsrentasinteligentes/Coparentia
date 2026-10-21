@@ -41,20 +41,26 @@ export function PanelExpediente({
   // vacío de lo que está (defecto del revisor-visual). El resto se resume en una línea.
   // Piso de 4 y techo de 5: con una o dos filas la tarjeta se veía escuálida al arrancar, y con más
   // de cinco vuelve a ser una lista larga de grises.
-  const MIN_VISIBLES = 4;
-  const MAX_VISIBLES = 5;
+  // En celular (compacto) la tarjeta es más baja: 2 a 3 filas, para que entre sin cortarse bajo el pliegue.
+  const MIN_VISIBLES = compacto ? 2 : 4;
+  const MAX_VISIBLES = compacto ? 2 : 5;
   const contestadas = filas.filter((f) => f.valor);
   const pendientes = filas.filter((f) => !f.valor);
   const cuantasPendientes = Math.max(
     contestadas.length >= filas.length ? 0 : 1,
     MIN_VISIBLES - contestadas.length
   );
-  const visibles = [...contestadas, ...pendientes.slice(0, cuantasPendientes)].slice(0, MAX_VISIBLES);
+  // En celular, si hay más contestadas que cupo, se muestran las ÚLTIMAS (lo que acaba de responder).
+  const visibles = [...(compacto ? contestadas.slice(-MAX_VISIBLES) : contestadas), ...pendientes.slice(0, cuantasPendientes)].slice(0, MAX_VISIBLES);
   const ocultas = filas.length - visibles.length;
+  // En celular, parte de lo oculto son respuestas YA dadas (se muestran las últimas): no se cuentan como
+  // "preguntas más", que serían las que faltan (corregido 2026-10-20: decía "y 4 preguntas más" en la 6 de 6).
+  const ocultasContestadas = contestadas.filter((f) => !visibles.includes(f)).length;
+  const faltan = ocultas - ocultasContestadas;
 
   return (
     <div
-      className="rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--text-tertiary)_16%,transparent)] bg-[var(--surface)] p-4 shadow-[var(--shadow-1)]"
+      className={`rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--text-tertiary)_16%,transparent)] bg-[var(--surface)] shadow-[var(--shadow-1)] ${compacto ? 'p-3.5' : 'p-4'}`}
       // Hairline degradado en las DOS variantes (antes solo en computador): en celular la tarjeta
       // quedaba con borde plano y era el único bloque de la pantalla sin el kit de profundidad.
       style={{
@@ -83,7 +89,7 @@ export function PanelExpediente({
 
       {/* `aria-live`: quien usa lector de pantalla oye que su respuesta quedó registrada en el
           expediente, que es justo el mensaje de esta tarjeta — sin él, el cambio pasaba mudo. */}
-      <ul aria-live="polite" className={`mt-4 flex flex-col ${compacto ? 'gap-1.5' : 'gap-3'}`}>
+      <ul aria-live="polite" className={`flex flex-col ${compacto ? 'mt-3 gap-1.5' : 'mt-4 gap-3'}`}>
         {visibles.map((fila) => {
           const lista = Boolean(fila.valor);
           return (
@@ -115,7 +121,7 @@ export function PanelExpediente({
               {/* La fila pendiente usa --text-tertiary PLENO (5.1:1 sobre --surface): con el
                   `color-mix` al 75% caía a 3.46:1 y no pasaba AA — el revisor lo midió. */}
               <div className="min-w-0 flex-1">
-                <p className="text-[12px] text-[var(--text-tertiary)]">
+                <p className="text-[13px] text-[var(--text-tertiary)]">
                   {fila.label}
                 </p>
                 {lista && (
@@ -135,18 +141,24 @@ export function PanelExpediente({
       </ul>
 
       {ocultas > 0 && (
-        <p className="mt-3 text-[12px] text-[var(--text-tertiary)]">
-          y {ocultas} {ocultas === 1 ? 'pregunta más' : 'preguntas más'}
+        <p className="mt-3 text-[13px] text-[var(--text-tertiary)]">
+          {ocultasContestadas > 0
+            ? `${ocultasContestadas} ${ocultasContestadas === 1 ? 'respuesta anterior guardada' : 'respuestas anteriores guardadas'}${faltan > 0 ? ` · faltan ${faltan}` : ''}`
+            : `y ${faltan} ${faltan === 1 ? 'pregunta más' : 'preguntas más'}`}
         </p>
       )}
       </>
       )}
 
-      <p className="mt-4 flex items-start gap-2 border-t border-[color-mix(in_oklab,var(--text-tertiary)_12%,transparent)] pt-4 text-[12px] leading-[1.5] text-[var(--text-tertiary)]">
+      {/* El Sello se explica en la pregunta 1 (y siempre en el panel de computador); repetirlo en las
+          preguntas 2 a 4 de celular era el mismo párrafo cuatro veces (revisor-visual, 2026-10-20). */}
+      {(!compacto || contestadas.length === 0) && (
+        <p className="mt-4 flex items-start gap-2 border-t border-[color-mix(in_oklab,var(--text-tertiary)_12%,transparent)] pt-4 text-[13px] leading-[1.5] text-[var(--text-tertiary)]">
           <ShieldCheck size={14} className="mt-0.5 shrink-0 text-[var(--accent)]" aria-hidden="true" />
           Con tu primer comprobante se activa el Sello de Confianza: fecha, monto y soporte quedan
           asociados a este expediente.
         </p>
+      )}
     </div>
   );
 }

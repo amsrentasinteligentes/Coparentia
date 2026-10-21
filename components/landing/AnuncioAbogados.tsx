@@ -41,9 +41,9 @@ export function AnuncioAbogados({ contactoEmail, id = 'asistencia' }: AnuncioAbo
         className="mx-auto max-w-[720px] rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--text-tertiary)_22%,transparent)] bg-[var(--bg)] p-6 md:p-10"
       >
         <motion.div variants={item} className="text-center">
-          <h2 className="text-balance text-[22px] font-bold uppercase tracking-[0.02em] text-[var(--text-primary)] [font-family:var(--font-display)] md:text-[28px]">
+          <h1 className="text-balance text-[22px] font-bold uppercase tracking-[0.02em] text-[var(--text-primary)] [font-family:var(--font-display)] md:text-[28px]">
             Directorio de especialistas
-          </h2>
+          </h1>
           <p className="mx-auto mt-3 max-w-[52ch] text-[15px] leading-relaxed text-[var(--text-secondary)] lg:text-[17px]">
             En Coparentia podrás consultar perfiles de especialistas para resolver tus dudas y
             recibir orientación sobre la crianza coparental. Encontrarás abogados de familia que

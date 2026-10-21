@@ -38,6 +38,10 @@ export interface SolucionProps {
   tituloMarked: string;
   /** Nombre PROPIO del mecanismo bautizado (19) — se pinta en el chip con <Accent>. */
   mecanismo: string;
+  /** Sello de marca junto al nombre del mecanismo (ata el dispositivo propio al mecanismo). */
+  sello?: ReactNode;
+  /** Bloque opcional bajo el video (p. ej. la página de ejemplo del PDF). */
+  pie?: ReactNode;
   /** Big Idea en 1-2 líneas, copy MARCADO. */
   bigIdeaMarked: string;
   /** Los 3 pasos del mecanismo — la tupla obliga a que sean exactamente 3. */
@@ -57,6 +61,8 @@ export function Solucion({
   kicker = 'CÓMO FUNCIONA',
   tituloMarked,
   mecanismo,
+  sello,
+  pie,
   bigIdeaMarked,
   pasos,
   demo,
@@ -163,7 +169,8 @@ export function Solucion({
         </motion.div>
 
         {/* El chip del mecanismo bautizado — hairline + <Accent> (55 §4) */}
-        <motion.div variants={item} className="mt-4">
+        <motion.div variants={item} className="mt-4 flex items-center gap-3">
+          {sello && <span className="w-12 shrink-0 lg:w-14">{sello}</span>}
           <Hairline surface="bg" radio="button" className="w-fit">
             <span className="block px-4 py-2 text-[15px] font-semibold [--accent:var(--accent-ink)] lg:text-[17px]">
               <Accent>{mecanismo}</Accent>
@@ -181,7 +188,7 @@ export function Solucion({
         {demo ? (
           <div className="mt-10 flex flex-col lg:grid lg:grid-cols-[0.95fr_1.05fr] lg:items-center lg:gap-16">
             <motion.div variants={item} className="order-2 mt-10 flex flex-col items-center lg:order-2 lg:mt-0">
-              <Hairline emphasis surface="surface" className="relative w-full max-w-[220px] p-2 shadow-[var(--shadow-2)] lg:max-w-[320px]">
+              <Hairline emphasis surface="surface" className="relative w-full max-w-[280px] p-2 shadow-[var(--shadow-2)] lg:max-w-[320px]">
                 <video
                   ref={ref}
                   className="block w-full rounded-[calc(var(--radius-card)-6px)]"
@@ -320,6 +327,8 @@ export function Solucion({
             {demo.pie}
           </motion.p>
         )}
+
+        {pie}
 
         {ctaLabel && ctaHref && (
           <motion.div variants={item} className="mt-8 flex justify-center">

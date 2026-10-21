@@ -11,6 +11,7 @@
 // segundo texto más leído de la página (19 §9). Nada se interpone entre el PS
 // y el footer.
 
+import type { ReactNode } from 'react';
 import { motion } from 'motion/react';
 import { Blob, CtaButton, useReveal, VIEWPORT_ONCE } from './ui';
 import { MarkedCopy, warnCopy } from './MarkedCopy';
@@ -25,6 +26,8 @@ export interface CtaFinalProps {
   ctaHref: string;
   /** Recap riesgo/urgencia bajo el CTA — cupo SOLO si es real (19). */
   recap?: string;
+  /** Sello de marca sobre el titular: cierra la página con el mismo dispositivo del inicio. */
+  sello?: ReactNode;
   /** El PS de la oferta Hormozi — máx 4 líneas (~55 palabras, warn). */
   psMarked?: string;
   /** default 'cta-final' — lo observa StickyCtaMobile para ocultarse. */
@@ -37,6 +40,7 @@ export function CtaFinal({
   ctaLabel,
   ctaHref,
   recap,
+  sello,
   psMarked,
   id = 'cta-final',
 }: CtaFinalProps) {
@@ -74,6 +78,11 @@ export function CtaFinal({
         viewport={VIEWPORT_ONCE}
         className="relative mx-auto flex max-w-[680px] flex-col items-center px-5 text-center"
       >
+        {sello && (
+          <motion.div variants={item} className="mb-5 w-[80px]">
+            {sello}
+          </motion.div>
+        )}
         <motion.h2
           variants={item}
           className="text-balance text-[30px] font-bold leading-[1.15] text-[var(--cta-final-text,var(--text-primary))] [font-family:var(--font-display)] md:text-[44px]"

@@ -77,7 +77,7 @@ export function Problema({ titulo, preguntas, grupos, id }: ProblemaProps) {
                 <motion.li
                   key={i}
                   variants={item}
-                  className="flex items-start gap-4 rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--text-tertiary)_22%,transparent)] bg-[var(--bg)] p-4 shadow-[var(--shadow-1)]"
+                  className="flex items-start gap-4 rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--text-tertiary)_22%,transparent)] bg-[var(--bg)] p-4"
                 >
                   <IconChip icon={p.icon} tone="muted" />
                   <p className="pt-2 text-[17px] font-medium leading-snug text-[var(--text-primary)] lg:text-[19px]">

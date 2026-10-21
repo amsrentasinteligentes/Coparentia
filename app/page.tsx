@@ -16,6 +16,7 @@ import { Hero } from '@/components/landing/Hero';
 import { Problema } from '@/components/landing/Problema';
 import { Agitacion } from '@/components/landing/Agitacion';
 import { Solucion } from '@/components/landing/Solucion';
+import { EjemploPdf } from '@/components/landing/EjemploPdf';
 import { AppPorDentro } from '@/components/landing/AppPorDentro';
 import { Oferta } from '@/components/landing/Oferta';
 import { Garantia } from '@/components/landing/Garantia';
@@ -23,6 +24,8 @@ import { OpinionProfesionales } from '@/components/landing/OpinionProfesionales'
 import { Faq } from '@/components/landing/Faq';
 import { CtaFinal } from '@/components/landing/CtaFinal';
 import { FooterLegal } from '@/components/landing/FooterLegal';
+import { LogoPlaca } from '@/components/landing/LogoPlaca';
+import { SelloMarca } from '@/components/landing/SelloMarca';
 import { ENLACES_LEGALES, ENLACE_ESPECIALISTAS } from '@/components/landing/enlaces-legales';
 import { StickyCtaMobile } from '@/components/landing/ui';
 
@@ -44,7 +47,7 @@ export default function Home() {
       {/* 1. HERO */}
       <Hero
         appName="Coparentia"
-        logo={<img src="/logo-horizontal.webp" alt="Coparentia" className="h-10 w-auto object-contain lg:h-12" />}
+        logo={<LogoPlaca compacto />}
         marcaSoloLogo
         loginHref="/entrar"
         navLinks={[
@@ -59,15 +62,12 @@ export default function Home() {
         // Promesa en dos tiempos (FICHA-AVATAR: dolor = caos de gastos + acusaciones; deseo = paz):
         // primero lo concreto que se resuelve, después lo que la persona quiere sentir.
         h1Marked="Padres separados: cada pago de la cuota alimentaria, con [acento]comprobante y fecha[/acento]"
-        subtitleMarked="Todo en un solo lugar, listo para mostrar, [b]sin depender de la otra persona[/b]."
+        subtitleMarked="Todo con [b]Sello de Confianza[/b], listo para mostrar, sin depender de la otra persona."
         ctaLabel={CTA_LABEL}
         ctaHref={CTA_HREF}
         socialProof={
-          <span className="block">
+          <span className="block text-balance">
             {TRIAL_DIAS} días gratis · Garantía de 15 días
-            <span className="mt-0.5 block text-[13px] text-[var(--text-tertiary)] lg:text-[14px]">
-              Registras tu medio de pago hoy; el primer cobro entra el día {DIA_PRIMER_COBRO}.
-            </span>
             {/* Decisión #8 (2026-10-20): por ahora la app es solo para Colombia. */}
             <span className="mt-1 block text-[13px] font-semibold text-[var(--text-secondary)] lg:text-[14px]">
               Disponible para Colombia
@@ -78,9 +78,9 @@ export default function Home() {
         // Fotos de Unsplash (licencia Unsplash: uso comercial libre) elegidas por el usuario el 2026-09-18
         // (opciones A y E de docs/referencias-diseno/fotos-propuesta.html), optimizadas a 1200px en public/fotos/.
         foto={<img src="/fotos/hero-mama-hijo-celular.jpg" alt="Mamá e hijo sonriendo mientras miran el celular en el sofá" className="h-full w-full object-cover object-[60%_35%]" width={1200} height={675} />}
-        // "10 minutos" es el tiempo medido del onboarding + primer comprobante (guía "Tu primer
-        // expediente en 10 minutos" del stack de valor) — no una cifra de marketing inventada.
+        // "10 minutos" es el tiempo medido del onboarding + primer comprobante — no una cifra de marketing inventada.
         burbuja={{ titulo: 'Tu primer expediente', dato: 'Listo en 10 minutos' }}
+        sello={<SelloMarca />}
         pilares={['Gastos al día', 'Sello de Confianza con fecha', 'Mente en calma']}
       />
 
@@ -113,11 +113,10 @@ export default function Home() {
 
       {/* 3. AGITACIÓN */}
       <Agitacion
-        titulo="Que los acuerdos de crianza [acento]no se pierdan entre mensajes[/acento]"
+        titulo="Te reclaman un pago o una visita. [acento]¿Dónde quedó lo acordado?[/acento]"
         frases={[
-          'Los pagos, las visitas y las decisiones sobre tus hijos necesitan claridad. Con COPARENTIA puedes llevar un registro de lo acordado, organizar los soportes y consultar la información cuando la necesites. Así evitas volver a discutir sobre lo que ya quedó registrado.',
-          'Y si surge una reclamación, tendrás la información reunida para preparar una respuesta o sustentar una actuación judicial o extrajudicial.',
-          'Empieza hoy a organizar tu crianza compartida con COPARENTIA.',
+          'Con COPARENTIA cada pago, visita y acuerdo queda registrado, con fecha y en un solo lugar.',
+          'Y si surge una reclamación, tendrás la información reunida para preparar una respuesta o sustentar una actuación.',
         ]}
       />
 
@@ -126,6 +125,7 @@ export default function Home() {
         id="como-funciona"
         tituloMarked="Tu prueba, [acento]lista antes de que te pidan[/acento]"
         mecanismo="el Sello de Confianza"
+        sello={<SelloMarca compacto />}
         bigIdeaMarked="No es que no pagues — es que no tienes cómo [b]probarlo[/b]. Míralo aquí: un comprobante entra y sale convertido en prueba fechada."
         pasos={[
           { titulo: 'Le tomas la foto al recibo', marca: '0:06', detalle: 'Desde tu teléfono, como cualquier foto.' },
@@ -133,8 +133,15 @@ export default function Home() {
           { titulo: 'Queda en tu expediente', marca: '0:21', detalle: 'Listo para exportar cuando lo necesites.' },
         ]}
         demo={{ video: '/demo/demo-sello', pie: 'Grabado de la app real, con datos de ejemplo. La espera del PDF va acelerada.' }}
-        ctaLabel={CTA_LABEL}
-        ctaHref={CTA_HREF}
+        pie={
+          <EjemploPdf
+            src="/ejemplo-expediente-pagina.webp"
+            alt="Página de ejemplo del expediente en PDF: partes, resumen, título de la obligación e historial de pagos, con datos ficticios"
+            pie="Una página del expediente en PDF, foliada y con fecha. Página de ejemplo con datos ficticios."
+            ancho={1224}
+            alto={1584}
+          />
+        }
       />
 
       {/* 5. LA APP POR DENTRO */}
@@ -159,16 +166,6 @@ export default function Home() {
       <Oferta
         tituloMarked="Empieza gratis. Sigue por [acento]menos de US$0.25/día[/acento]"
         trialDias={TRIAL_DIAS}
-        stack={{
-          lineas: [
-            { resultado: 'Coparentia Pro con el Sello de Confianza — 12 meses, pagando mes a mes', valor: usd(PRECIOS.mensualPorAnoUsd) },
-            { resultado: 'Plantilla de autorización de gastos extraordinarios', valor: 'Incluida' },
-            { resultado: 'Guía "Tu primer expediente en 10 minutos"', valor: 'Incluida' },
-          ],
-          totalTachado: usd(PRECIOS.mensualPorAnoUsd),
-          etiquetaTotal: 'Pagando mes a mes',
-          nota: `Hoy no pagas nada. Después: ${usd(PRECIOS.anual.cobroUsd)} al año con el plan Anual (${usd(PRECIOS.anual.mesUsd)}/mes) — ${usd(PRECIOS.ahorroAnualUsd)} menos que pagando mes a mes`,
-        }}
         anual={{
           nombre: 'Anual',
           badge: `AHORRAS ${usd(PRECIOS.ahorroAnualUsd)} AL AÑO`,
@@ -181,7 +178,6 @@ export default function Home() {
             'Expediente en PDF, con cada página numerada',
             'Autorizaciones y desacuerdos, por escrito',
             'Alertas de vencimiento y soporte faltante',
-            'Garantía del Primer Expediente (15 días)',
           ],
         }}
         mensual={{
@@ -194,7 +190,6 @@ export default function Home() {
           features: [
             'Todas las funciones del plan Anual',
             'Sin compromiso de 12 meses',
-            'Garantía del Primer Expediente (15 días)',
           ],
         }}
       />
@@ -208,13 +203,15 @@ export default function Home() {
 
       {/* 7B. OPINIÓN DE PROFESIONALES DE FAMILIA (2026-10-15) — prueba de terceros, justo antes de las preguntas.
           Las citas están PALABRA POR PALABRA como las entregó el dueño, cada una con autorización escrita de quien
-          la dijo (solo se corrigió ortografía). Ivonne Reyes tiene vínculo con Coparentia: se dice a la vista. */}
+          la dijo (solo se corrigió ortografía). Ivonne Reyes es familiar del fundador: el dueño decidió (2026-10-20) NO declararlo en la página
+          y quitar de la nota la frase "no implican que trabajen para Coparentia", que no podía asegurarse para todas. */}
       <OpinionProfesionales
         titulo="Lo que dicen profesionales de familia"
         citas={[
           {
             texto:
               'Como abogada conciliadora y litigante en derecho de familia, sé lo importante que es tener tus documentos organizados cuando más los necesitas. Con COPARENTIA puedes construir un expediente digital con acuerdos, pagos y comunicaciones que facilite una conciliación o la preparación de una demanda y su contestación. Organiza hoy la información que puede ayudarte a proteger tus derechos y los de tus hijos.',
+            extracto: 'Como abogada conciliadora y litigante en derecho de familia, sé lo importante que es tener tus documentos organizados cuando más los necesitas.',
             nombre: 'Ivonne Reyes',
             especialidad: 'Abogada Especialista Conciliadora y Litigante en Derecho de Familia',
             ciudad: 'Bogotá',
@@ -222,6 +219,7 @@ export default function Home() {
           {
             texto:
               'En los procesos de familia, contar con evidencias claras y oportunamente disponibles puede marcar una diferencia importante. Desde mi experiencia como abogada, sé que reconstruir el historial de cumplimiento de las obligaciones económicas se vuelve complejo cuando la documentación se encuentra dispersa, y esto puede dificultar la preparación de una estrategia jurídica dentro de los plazos legales. COPARENTIA ofrece una alternativa práctica para conservar la trazabilidad de los compromisos familiares y disponer de un registro organizado que facilite la consulta y el seguimiento de cada situación.',
+            extracto: 'En los procesos de familia, contar con evidencias claras y oportunamente disponibles puede marcar una diferencia importante.',
             nombre: 'Liliana Peñuela',
             especialidad: 'Abogada Litigante Especialista en Derecho de Familia',
             ciudad: 'Bogotá',
@@ -229,6 +227,7 @@ export default function Home() {
           {
             texto:
               'Como psicóloga que acompaña a adultos durante y después de un divorcio emocionalmente difícil, reconozco que reorganizar la vida y asumir una nueva dinámica familiar puede resultar abrumador. El acompañamiento psicológico ayuda a elaborar la pérdida, fortalecer los recursos personales y establecer límites saludables. En este camino, COPARENTIA puede apoyar la organización de acuerdos y responsabilidades relacionados con los hijos, aportando claridad para que cada persona pueda concentrarse también en su recuperación y bienestar emocional.',
+            extracto: 'Como psicóloga que acompaña a adultos durante y después de un divorcio emocionalmente difícil, reconozco que reorganizar la vida y asumir una nueva dinámica familiar puede resultar abrumador.',
             nombre: 'Sandra Pineda',
             especialidad: 'Magíster en Psicología Clínica',
             ciudad: 'Bogotá',
@@ -243,7 +242,7 @@ export default function Home() {
           ancho: 1224,
           alto: 1584,
         }}
-        nota="Opiniones personales de cada profesional. No constituyen asesoría legal ni psicológica, no garantizan ningún resultado y no implican que trabajen para Coparentia."
+        nota="Opiniones personales de cada profesional. No constituyen asesoría legal ni psicológica."
       />
 
       {/* 8. FAQ */}
@@ -257,7 +256,7 @@ export default function Home() {
           {
             pregunta: '¿Esto tiene validez ante un juez?',
             respuestaMarked:
-              'Organiza tu evidencia en un formato claro y fechado para tu abogado o conciliador — no reemplaza la asesoría legal, [b]la potencia[/b]. Qué opinan profesionales de familia sobre su utilidad lo puedes ver en el bloque de arriba.',
+              'Un juez valora cada prueba según el caso. Coparentia [b]ordena y fecha tus comprobantes[/b] para que tu abogado decida cómo usarlos.',
           },
           {
             pregunta: '¿Por qué no me sirve un Excel gratis?',
@@ -267,12 +266,12 @@ export default function Home() {
           {
             pregunta: '¿Es muy cara la suscripción?',
             respuestaMarked:
-              'Menos de US$0.25 al día con el plan anual — comparado con los US$100 que puede cobrar un abogado por cada correo de aclaración, [b]se paga solo[/b].',
+              'Menos de US$0.25 al día con el plan anual. Un abogado puede cobrar US$100 por una asesoría: [b]se paga solo[/b].',
           },
           {
             pregunta: '¿Mis datos financieros están seguros?',
             respuestaMarked:
-              'Cifrado en tránsito y en reposo. Tus datos [b]nunca se comparten[/b] sin tu autorización.',
+              'Tus datos viajan y se guardan con cifrado. [b]Nunca se comparten[/b] sin tu autorización.',
           },
           {
             pregunta: '¿Funciona fuera de Colombia?',
@@ -288,7 +287,8 @@ export default function Home() {
         ctaLabel={CTA_LABEL}
         ctaHref={CTA_HREF}
         recap={`${TRIAL_DIAS} días gratis · Garantía de 15 días`}
-        psMarked={`PS: Coparentia convierte tus comprobantes en un expediente fechado y listo para mostrar con el Sello de Confianza. Hoy entras con ${TRIAL_DIAS} días gratis —registras tu medio de pago, pero no se te cobra nada hasta el día ${DIA_PRIMER_COBRO}— y, si no armas tu primer expediente en 15 días, te devolvemos todo.`}
+        sello={<SelloMarca compacto />}
+        psMarked={`PS: Entras con ${TRIAL_DIAS} días gratis (registras tu medio de pago, pero no se te cobra nada hasta el día ${DIA_PRIMER_COBRO}). Si en 15 días no armas tu primer expediente, te devolvemos todo.`}
       />
 
       {/* El bloque "Directorio de especialistas" (con "Contactar", artículos y "Quiero anunciarme") vivía
@@ -298,7 +298,7 @@ export default function Home() {
       {/* 10. FOOTER LEGAL */}
       <FooterLegal
         appName="Coparentia"
-        logo={<img src="/logo-horizontal.webp" alt="Coparentia" className="h-10 w-auto object-contain" />}
+        logo={<LogoPlaca />}
         marcaSoloLogo
         soporteEmail="soporte@coparentia.co"
         enlaces={[...ENLACES_LEGALES, ENLACE_ESPECIALISTAS]}

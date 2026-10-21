@@ -17,8 +17,6 @@ import {
   Check,
   Wallet,
   HandCoins,
-  FileCheck2,
-  MessageSquare,
   Scale,
   CalendarClock,
   Pencil,
@@ -32,6 +30,7 @@ import {
   Users,
   HelpCircle,
   Zap,
+  FileText,
 } from 'lucide-react';
 import {
   BarraAtras,
@@ -45,6 +44,7 @@ import {
 } from '@/components/funnel/ui';
 import { PanelExpediente, type FilaExpediente } from '@/components/funnel/PanelExpediente';
 import { Blob } from '@/components/landing/ui';
+import { SelloMarca } from '@/components/landing/SelloMarca';
 import { trackMeta } from '@/lib/meta-pixel';
 import { guardarRolPrevio, borrarRolPrevio } from '@/lib/rol-previo';
 
@@ -75,7 +75,6 @@ type Respuestas = {
   rol: Rol;
   situacion: string;
   situacionOtra: string;
-  fijacion: string;
   preocupacion: string;
   metaMeses: number;
   momento: string;
@@ -101,10 +100,8 @@ function manejarFlechasChips(e: KeyboardEvent<HTMLDivElement>): void {
 
 function InfoContextual({ children, anclar = true }: { children: ReactNode; anclar?: boolean }) {
   return (
-    <div
-      className={`flex items-start gap-3 rounded-[var(--radius-card)] bg-[var(--surface-2)] p-4 ${anclar ? 'mt-auto' : 'mt-6'}`}
-    >
-      <Info size={18} className="mt-0.5 shrink-0 text-[var(--text-tertiary)]" aria-hidden="true" />
+    <div className={`flex items-start gap-2.5 px-1 ${anclar ? 'mt-auto' : 'mt-4'}`}>
+      <Info size={16} className="mt-0.5 shrink-0 text-[var(--text-tertiary)]" aria-hidden="true" />
       <p className="text-[13px] leading-[1.5] text-[var(--text-secondary)]">{children}</p>
     </div>
   );
@@ -119,7 +116,7 @@ function InfoContextual({ children, anclar = true }: { children: ReactNode; ancl
 // persona SALTABA una pregunta entera sin enterarse, dejando un hueco en su expediente. La primera
 // elección cierra la puerta; el timeout se limpia al desmontar para no avanzar una pantalla que ya
 // no existe.
-function useSeleccionRetrasada<T>(onElegir: (v: T) => void, ms = 180): { local: T | null; elegir: (v: T) => void } {
+function useSeleccionRetrasada<T>(onElegir: (v: T) => void, ms = 300): { local: T | null; elegir: (v: T) => void } {
   const [local, setLocal] = useState<T | null>(null);
   const disparado = useRef(false);
   const temporizador = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -145,6 +142,7 @@ function PantallaChips({
   tituloDespues = '',
   subtitulo,
   porQue,
+  pie,
   children,
 }: {
   tituloAntes: string;
@@ -152,21 +150,45 @@ function PantallaChips({
   tituloDespues?: string;
   subtitulo?: string;
   porQue: ReactNode;
+  /** Bloque opcional bajo la explicación (solo la pregunta 1: qué se va a armar). */
+  pie?: ReactNode;
   children: ReactNode;
 }) {
   return (
-    <div className="flex flex-1 flex-col">
+    <div className="relative isolate flex flex-1 flex-col">
+      {/* Mancha de marca (el dispositivo ownable de FICHA-ARTE): hasta hoy las preguntas no llevaban
+          ninguna y el revisor-visual las puntuó sin identidad (2026-10-20). Detrás del título, sin tocar el flujo. */}
+      <span aria-hidden="true" className="pointer-events-none absolute inset-x-0 -top-2 -z-10 h-28">
+        <Blob className="right-0 top-0 h-20 w-28" opacidad={0.16} />
+      </span>
       <h1 className="relative text-balance text-[28px] font-bold leading-[1.1] text-[var(--text-primary)] [font-family:var(--font-display)]">
         <Halo />
         {tituloAntes}
         <Marcador>{palabraClave}</Marcador>
         {tituloDespues}
       </h1>
-      {subtitulo && <p className="mt-2 text-[14px] text-[var(--text-secondary)]">{subtitulo}</p>}
-      <div className="mt-6 flex flex-col gap-3" onKeyDown={manejarFlechasChips}>
+      {/* El subtítulo (`subtitulo`) ya no se pinta: decía casi lo mismo que la caja "¿Por qué lo preguntamos?"
+          de abajo (revisor-visual, 2026-10-20). La caja es la que explica el motivo. */}
+      <div className="mt-5 flex flex-col gap-2.5" onKeyDown={manejarFlechasChips}>
         {children}
       </div>
       <InfoContextual anclar={false}>{porQue}</InfoContextual>
+      {pie}
+    </div>
+  );
+}
+
+/* Pregunta 1: en vez de ~230 px de aire, lo que se va a llevar, con una página real del PDF (datos ficticios). */
+function LoQueArmas() {
+  return (
+    <div className="mt-5 flex items-center gap-4 rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--text-tertiary)_22%,transparent)] bg-[var(--surface)] p-4 shadow-[var(--shadow-1)]">
+      <span aria-hidden="true" className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[color-mix(in_oklab,var(--accent)_12%,transparent)]">
+        <FileText size={22} strokeWidth={1.9} color="var(--accent)" />
+      </span>
+      <p className="text-[14px] leading-[1.5] text-[var(--text-secondary)]">
+        <span className="block text-[15px] font-semibold text-[var(--text-primary)]">Esto es lo que vas a armar</span>
+        Un expediente en PDF, con cada página numerada y con fecha.
+      </p>
     </div>
   );
 }
@@ -175,7 +197,6 @@ const VACIAS: Respuestas = {
   rol: '',
   situacion: '',
   situacionOtra: '',
-  fijacion: '',
   preocupacion: '',
   metaMeses: 3,
   momento: '',
@@ -188,7 +209,7 @@ const CLAVE_PASO = 'coparentia_onboarding_paso';
 // En celular el resumen va SOLO en las pantallas de puras opciones — son las que dejaban el tercio
 // inferior vacío. Los pasos con su propio botón al fondo (reconocimientos, la meta con slider, la
 // carga final) ya llenan la pantalla y su CTA no debe competir con nada debajo.
-const PASOS_CON_RESUMEN_MOVIL = [0, 1, 2, 3, 6, 7];
+const PASOS_CON_RESUMEN_MOVIL = [0, 1, 3, 6, 7];
 
 /* Las respuestas, traducidas a las filas del expediente que se va armando (panel lateral en
    computador, tarjeta compacta en celular). El orden es el de las preguntas: así la persona ve
@@ -199,7 +220,6 @@ function filasExpediente(r: Respuestas): FilaExpediente[] {
     { label: 'Tu situación', valor: r.situacion === 'Otra cosa' && r.situacionOtra ? r.situacionOtra : r.situacion || undefined },
     // Etiqueta completa: "Cómo está fijada" sola, fuera del contexto de su pregunta, no se
     // entendía dentro de la tarjeta (defecto del revisor-visual).
-    { label: 'Cómo está fijada tu cuota', valor: r.fijacion || undefined },
     { label: 'Lo que más te preocupa', valor: r.preocupacion || undefined },
     { label: 'Meses a documentar', valor: r.metaMeses && r.momento ? `${r.metaMeses} ${r.metaMeses === 1 ? 'mes' : 'meses'}` : undefined },
     { label: 'Cuándo registras', valor: r.momento || undefined },
@@ -209,7 +229,10 @@ function filasExpediente(r: Respuestas): FilaExpediente[] {
 
 // Los pasos que son PREGUNTA (los otros son reconocimientos y la carga): el contador dice
 // "Pregunta n de 7" porque eso es lo que la persona cuenta — "Paso 1 de 10" prometía 10 preguntas.
-const PASOS_PREGUNTA = [0, 1, 2, 3, 5, 6, 7];
+// El paso 2 ("¿Cómo está fijada tu cuota?") se quitó (2026-10-20): su respuesta no se usaba en ningún lado y su
+// texto prometía un cambio de formato del PDF que no existe. Los números de paso se conservan; el 2 se salta.
+const PASO_SALTADO = 2;
+const PASOS_PREGUNTA = [0, 1, 3, 5, 6, 7];
 const PASO_LOADING = 9;
 
 export default function Onboarding() {
@@ -224,6 +247,14 @@ export default function Onboarding() {
   // "Empezar de nuevo" borra las 7 respuestas: el primer toque pide confirmar, el segundo ejecuta
   // (revisor claro r2). La confirmación se retira sola a los 4 s si la persona no insiste.
   const [confirmarReinicio, setConfirmarReinicio] = useState(false);
+  // Foto de lo que había antes de reiniciar, para poder deshacer durante 6 s (revisor-visual, 2026-10-20).
+  const [noGuardado, setNoGuardado] = useState(false);
+  const [paraDeshacer, setParaDeshacer] = useState<{ r: Respuestas; paso: number } | null>(null);
+  useEffect(() => {
+    if (!paraDeshacer) return;
+    const t = setTimeout(() => setParaDeshacer(null), 6000);
+    return () => clearTimeout(t);
+  }, [paraDeshacer]);
   useEffect(() => {
     if (!confirmarReinicio) return;
     const t = setTimeout(() => setConfirmarReinicio(false), 4000);
@@ -241,12 +272,12 @@ export default function Onboarding() {
     // Solo avanza desde el paso que disparó el toque: durante los 200ms de la salida animada el
     // paso anterior sigue montado y un segundo toque volvía a sumar (saltaba una pregunta).
     const origen = paso;
-    setPaso((p) => (p === origen ? p + 1 : p));
+    setPaso((p) => (p === origen ? (p + 1 === PASO_SALTADO ? p + 2 : p + 1) : p));
     // La banda "Retomamos donde lo dejaste" es un aviso de llegada: en cuanto la persona avanza
     // ya sabe que retomó, y dejarla fija cinco preguntas más la convierte en ruido.
     setRetomado(false);
   };
-  const atras = (): void => setPaso((p) => Math.max(0, p - 1));
+  const atras = (): void => setPaso((p) => (p - 1 === PASO_SALTADO ? p - 2 : Math.max(0, p - 1)));
 
   const empezarDeNuevo = (): void => {
     if (!confirmarReinicio) {
@@ -254,6 +285,7 @@ export default function Onboarding() {
       return;
     }
     setConfirmarReinicio(false);
+    setParaDeshacer({ r, paso });
     try {
       sessionStorage.removeItem(CLAVE_ONBOARDING);
       sessionStorage.removeItem(CLAVE_PASO);
@@ -262,6 +294,14 @@ export default function Onboarding() {
     setR(VACIAS);
     setPaso(0);
     setRetomado(false);
+  };
+
+  const deshacerReinicio = (): void => {
+    if (!paraDeshacer) return;
+    setR(paraDeshacer.r);
+    setPaso(paraDeshacer.paso);
+    setRetomado(true);
+    setParaDeshacer(null);
   };
 
   // ORDEN DE LOS EFECTOS (2026-09-18): los dos guardados van ANTES del efecto que restaura, y
@@ -284,7 +324,10 @@ export default function Onboarding() {
     if (r === VACIAS) return;
     try {
       sessionStorage.setItem(CLAVE_ONBOARDING, JSON.stringify(r));
-    } catch {}
+    } catch {
+      // Fuera del cuerpo síncrono del efecto (regla react-hooks/set-state-in-effect): el aviso sale un instante después.
+      setTimeout(() => setNoGuardado(true), 0);
+    }
     // Copia mínima del rol en el navegador: sessionStorage es por pestaña y se pierde al volver del pago
     // en Hotmart; así "Primeros pasos" puede llegar con el rol ya elegido (lib/rol-previo.ts).
     guardarRolPrevio(r.rol);
@@ -306,7 +349,7 @@ export default function Onboarding() {
       }
       const pasoGuardado = Number(sessionStorage.getItem(CLAVE_PASO));
       if (Number.isInteger(pasoGuardado) && pasoGuardado > 0) {
-        setPaso(Math.min(pasoGuardado, PASO_LOADING - 1));
+        setPaso(Math.min(pasoGuardado === PASO_SALTADO ? PASO_SALTADO + 1 : pasoGuardado, PASO_LOADING - 1));
         // Reaparecer en el paso 5 de 10 con el expediente medio lleno, sin una palabra que lo
         // explique, se siente como si la app hubiera decidido sola por uno (revisor-visual).
         setRetomado(true);
@@ -326,7 +369,7 @@ export default function Onboarding() {
               subrayado de acento que la pregunta de la derecha — dos titulares empatados en la
               misma vista y el dispositivo de marca gastado dos veces (revisor-visual). Ahora va un
               escalón abajo (21px, sin marcador): la pregunta sigue siendo EL objeto de la pantalla. */}
-          <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-[var(--accent-ink,var(--accent))] lg:mt-3">
+          <p className="text-[13px] font-semibold uppercase tracking-[0.08em] text-[var(--accent-ink,var(--accent))] lg:mt-3">
             Tu expediente se está armando
           </p>
           <h2 className="mt-3 text-balance text-[21px] font-semibold leading-[1.25] text-[var(--text-primary)] [font-family:var(--font-display)]">
@@ -342,15 +385,36 @@ export default function Onboarding() {
         </>
       }
     >
-      <FunnelHeader />
+      <FunnelHeader sello={<SelloMarca compacto animar={false} />} />
       {paso < PASO_LOADING && (
         <BarraAtras
           porcentaje={(PASOS_PREGUNTA.filter((p) => p <= paso).length / PASOS_PREGUNTA.length) * 100}
-          pasoActual={PASOS_PREGUNTA.filter((p) => p <= paso).length}
-          pasoTotal={PASOS_PREGUNTA.length}
+          pasoActual={paso === 4 || paso === 8 ? undefined : PASOS_PREGUNTA.filter((p) => p <= paso).length}
+          pasoTotal={paso === 4 || paso === 8 ? undefined : PASOS_PREGUNTA.length}
           palabra="Pregunta"
           onAtras={atrasLocal ?? (paso === 0 ? () => router.push('/') : atras)}
         />
+      )}
+
+      {noGuardado && (
+        <p role="status" className="mt-3 rounded-[var(--radius-button)] bg-[color-mix(in_oklab,var(--status-error)_10%,transparent)] px-3 py-2 text-[13px] leading-[1.45] text-[var(--text-secondary)]">
+          No pudimos guardar tus respuestas en este navegador. Si cierras la pestaña, tendrás que empezar de nuevo.
+        </p>
+      )}
+      {paraDeshacer && (
+        <div
+          role="status"
+          className="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-[var(--radius-button)] bg-[color-mix(in_oklab,var(--accent)_10%,transparent)] px-3 py-2 text-[13px] text-[var(--text-secondary)]"
+        >
+          <span>Borraste tus respuestas.</span>
+          <button
+            type="button"
+            onClick={deshacerReinicio}
+            className="py-1 font-semibold text-[var(--accent-ink,var(--accent))] underline-offset-2 hover:underline [touch-action:manipulation]"
+          >
+            Deshacer
+          </button>
+        </div>
       )}
 
       {retomado && paso < PASO_LOADING && (
@@ -395,7 +459,6 @@ export default function Onboarding() {
                 onAtrasLocal={setAtrasLocal}
               />
             )}
-            {paso === 2 && <PreguntaFijacion valor={r.fijacion} onElegir={(v) => avanzar({ fijacion: v })} />}
             {paso === 3 && (
               <PreguntaPreocupacion rol={r.rol} valor={r.preocupacion} onElegir={(v) => avanzar({ preocupacion: v })} />
             )}
@@ -411,7 +474,7 @@ export default function Onboarding() {
             {paso === 6 && <PreguntaMomento valor={r.momento} onElegir={(v) => avanzar({ momento: v })} />}
             {paso === 7 && <PreguntaAtribucion valor={r.atribucion} onElegir={(v) => avanzar({ atribucion: v })} />}
             {paso === 8 && <ReconocimientoFinal respuestas={r} onContinuar={() => avanzar()} />}
-            {paso === PASO_LOADING && <LoadingPlan respuestas={r} onListo={() => router.push('/paywall')} />}
+            {paso === PASO_LOADING && <LoadingPlan respuestas={r} onListo={() => router.push('/paywall')} onVolver={() => setPaso(8)} />}
           </motion.div>
         </AnimatePresence>
       </div>
@@ -420,8 +483,8 @@ export default function Onboarding() {
           construcción va aquí abajo, compacto: es justo el tercio de pantalla que el revisor-visual
           venía marcando como vacío en las pantallas de opciones. Se oculta en los pasos que ya
           llenan la pantalla solos (reconocimientos y carga final) para no competir con su CTA. */}
-      {PASOS_CON_RESUMEN_MOVIL.includes(paso) && (
-        <div className={`pt-4 lg:hidden ${filas.some((x) => x.valor) ? 'my-auto' : 'mt-2'}`}>
+      {PASOS_CON_RESUMEN_MOVIL.includes(paso) && filas.some((x) => x.valor) && (
+        <div className="my-auto pt-3 lg:hidden">
           <PanelExpediente filas={filas} compacto />
         </div>
       )}
@@ -431,29 +494,23 @@ export default function Onboarding() {
           revisor ya aprobó varias rondas — un enlace nuevo por pantalla movería esa ancla. Aquí,
           antes de que la persona conteste nada, no hay CTA anclado que perturbar. */}
       {paso === 0 && (
-        <nav aria-label="Enlaces legales" className="mt-6 flex flex-wrap items-center justify-center gap-x-1 gap-y-0 pb-2 text-center lg:justify-start">
+        <nav aria-label="Enlaces legales" className="mt-auto flex flex-wrap items-center justify-center gap-x-4 gap-y-0 pb-2 text-center lg:justify-start">
           {[
             { label: 'Privacidad', href: '/privacidad' },
             { label: 'Términos y Condiciones', href: '/terminos' },
             { label: 'Reembolsos', href: '/reembolsos' },
             { label: 'Aviso de IA', href: '/aviso-ia' },
-            { label: 'SIC', href: 'https://www.sic.gov.co/', externo: true },
-          ].map((e, i) => (
-            <span key={e.href} className="flex items-center">
-              {i > 0 && (
-                <span aria-hidden="true" className="px-1 text-[var(--text-tertiary)]">
-                  ·
-                </span>
-              )}
-              <a
-                href={e.href}
-                target={e.externo ? '_blank' : undefined}
-                rel={e.externo ? 'noopener noreferrer' : undefined}
-                className="px-1 py-3 text-[12px] text-[var(--text-tertiary)] underline-offset-4 hover:text-[var(--text-secondary)] hover:underline"
-              >
-                {e.label}
-              </a>
-            </span>
+            { label: 'SIC (Superintendencia)', href: 'https://www.sic.gov.co/', externo: true },
+          ].map((e) => (
+            <a
+              key={e.href}
+              href={e.href}
+              target={e.externo ? '_blank' : undefined}
+              rel={e.externo ? 'noopener noreferrer' : undefined}
+              className="whitespace-nowrap py-3 text-[13px] text-[var(--text-tertiary)] underline underline-offset-4 hover:text-[var(--text-secondary)]"
+            >
+              {e.label}
+            </a>
           ))}
         </nav>
       )}
@@ -471,6 +528,7 @@ function PreguntaRol({ valor, onElegir }: { valor: Rol; onElegir: (v: Rol) => vo
   ];
   return (
     <PantallaChips
+      pie={<LoQueArmas />}
       tituloAntes="¿Cuál es tu "
       palabraClave="rol"
       tituloDespues=" hoy?"
@@ -478,7 +536,7 @@ function PreguntaRol({ valor, onElegir }: { valor: Rol; onElegir: (v: Rol) => vo
       // UNA caja corta, como todas las demás pantallas de opciones (el revisor marcó como defecto
       // tanto las dos cajas apiladas como una caja de ~6 líneas). La reafirmación de "expediente
       // blindado aunque nadie más use la app" ya vive en los dos reconocimientos siguientes.
-      porQue="¿Por qué lo preguntamos? Quien paga y quien recibe la cuota enfrentan riesgos distintos — así usamos las palabras y los ejemplos correctos en tu expediente."
+      porQue={`Quien paga y quien recibe la cuota enfrentan riesgos distintos — así usamos las palabras y los ejemplos correctos en tu expediente. Son ${PASOS_PREGUNTA.length} preguntas, unos 2 minutos.`}
     >
       {opciones.map(({ icon: Icon, label, value }, i) => (
         <Chip
@@ -568,14 +626,14 @@ function PreguntaSituacion({
             esperado (login, no una pregunta de quiz). */}
         <p className="mt-2 text-[13px] text-[var(--text-tertiary)]">Escribe al menos unas palabras para continuar.</p>
         <InfoContextual anclar={false}>
-          ¿Por qué lo preguntamos? Tu situación decide qué evidencia prioriza tu expediente — nunca
+          Tu situación decide qué evidencia prioriza tu expediente — nunca
           cambia tus derechos, solo el orden. Tus respuestas son privadas.
         </InfoContextual>
         <div className="mt-auto pt-8">
           {/* Nunca `disabled` por defecto (ancla del SO): una píldora gris muerta esperando el
               input desanima. Se ve activo; si está vacío al tocarlo, avisa qué falta. */}
           <CtaFunnel type="submit">
-            Continuar
+            Seguir con mi expediente
           </CtaFunnel>
           {faltaTexto && !texto.trim() && (
             <p role="alert" className="mt-2 text-center text-[13px] text-[var(--status-error)]">
@@ -593,7 +651,7 @@ function PreguntaSituacion({
       palabraClave="situación"
       tituloDespues=" hoy?"
       subtitulo="Esto nos ayuda a armar tu expediente"
-      porQue="¿Por qué lo preguntamos? Tu situación decide qué evidencia va primero — nunca cambia tus derechos, solo el orden. Tus respuestas son privadas."
+      porQue="Tu situación decide qué evidencia va primero — nunca cambia tus derechos, solo el orden. Tus respuestas son privadas."
     >
       {opciones.map(({ icon: Icon, label }, i) => (
         <Chip
@@ -614,38 +672,6 @@ function PreguntaSituacion({
       >
         Otra cosa (escribe la tuya)
       </Chip>
-    </PantallaChips>
-  );
-}
-
-/* ── Paso 2: cómo está fijada la cuota (nuevo — personaliza el formato del expediente:
-   informal, con acta/sentencia, o en proceso). El diagnóstico es parte del producto. ── */
-function PreguntaFijacion({ valor, onElegir }: { valor: string; onElegir: (v: string) => void }) {
-  const opciones = [
-    { icon: FileCheck2, label: 'Acta de conciliación o sentencia judicial' },
-    { icon: MessageSquare, label: 'Acuerdo informal, de palabra' },
-    { icon: Scale, label: 'Estoy en proceso legal ahora mismo' },
-  ];
-  const { local, elegir } = useSeleccionRetrasada<string>(onElegir);
-  return (
-    <PantallaChips
-      tituloAntes="¿Cómo está "
-      palabraClave="fijada"
-      tituloDespues=" tu cuota?"
-      subtitulo="Así damos el formato correcto a tu expediente"
-      porQue="¿Por qué lo preguntamos? El formato del PDF cambia según cómo esté fijada tu cuota. No reemplazamos a tu abogado."
-    >
-      {opciones.map(({ icon: Icon, label }, i) => (
-        <Chip
-          key={label}
-          index={i}
-          seleccionado={(local ?? valor) === label}
-          onClick={() => elegir(label)}
-          icon={<Icon size={20} className="shrink-0 text-[var(--text-secondary)]" aria-hidden="true" />}
-        >
-          {label}
-        </Chip>
-      ))}
     </PantallaChips>
   );
 }
@@ -673,7 +699,7 @@ function PreguntaPreocupacion({ rol, valor, onElegir }: { rol: Rol; valor: strin
       palabraClave="preocupa"
       tituloDespues=" más ahora mismo?"
       subtitulo="No hay respuesta incorrecta"
-      porQue="¿Por qué lo preguntamos? Priorizamos qué te mostramos primero en tu expediente según lo que más te preocupa."
+      porQue="Priorizamos qué te mostramos primero en tu expediente según lo que más te preocupa."
     >
       {opciones.map(({ icon: Icon, label }, i) => (
         <Chip
@@ -724,7 +750,8 @@ function ReconocimientoPreocupacion({
   };
   const mostrarRefuerzoUnilateral = situacion === 'Tengo disputas frecuentes por la cuota';
   return (
-    <div className="flex flex-1 flex-col items-center justify-center text-center lg:justify-start">
+    <div className="flex flex-1 flex-col text-center">
+      <div className="flex flex-1 flex-col items-center justify-center lg:flex-none lg:justify-start">
       <CheckCelebracion />
       <h1 className="mt-6 text-balance text-[28px] font-bold leading-[1.12] text-[var(--text-primary)] [font-family:var(--font-display)]">
         Tiene sentido que te preocupes
@@ -743,8 +770,9 @@ function ReconocimientoPreocupacion({
           </p>
         </div>
       )}
-      <div className="mt-10 w-full lg:mt-auto lg:pt-8">
-        <CtaFunnel onClick={onContinuar}>Continuar</CtaFunnel>
+      </div>
+      <div className="mt-8 w-full lg:mt-auto lg:pt-8">
+        <CtaFunnel onClick={onContinuar}>Seguir con mi expediente</CtaFunnel>
       </div>
     </div>
   );
@@ -772,12 +800,12 @@ function PreguntaMeta({ valor, onFijar }: { valor: number; onFijar: (v: number) 
   }, [rounded]);
 
   return (
-    <div className="flex flex-1 flex-col justify-center lg:justify-start">
+    <div className="flex flex-1 flex-col justify-start">
       <h1 className="relative text-balance text-[28px] font-bold leading-[1.1] text-[var(--text-primary)] [font-family:var(--font-display)]">
         <Halo />
         ¿Cuántos <Marcador>meses</Marcador> de comprobantes quieres organizar primero?
       </h1>
-      <div className="mt-10 flex flex-col items-center">
+      <div className="mt-6 flex flex-1 flex-col items-center justify-center lg:mt-10 lg:flex-none lg:justify-start">
         <p className="text-[48px] font-bold leading-none tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
           {display}
         </p>
@@ -794,7 +822,7 @@ function PreguntaMeta({ valor, onFijar }: { valor: number; onFijar: (v: number) 
           className="mt-8 h-6 w-full cursor-pointer appearance-none bg-transparent [touch-action:manipulation] [&::-moz-range-thumb]:size-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:bg-[var(--accent)] [&::-moz-range-thumb]:shadow-[0_0_0_6px_color-mix(in_oklab,var(--accent)_20%,transparent)] [&::-moz-range-track]:h-1 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] [&::-webkit-slider-runnable-track]:h-1 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] [&::-webkit-slider-thumb]:-mt-2.5 [&::-webkit-slider-thumb]:size-6 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[var(--accent)] [&::-webkit-slider-thumb]:shadow-[0_0_0_6px_color-mix(in_oklab,var(--accent)_20%,transparent)] focus-visible:outline-none focus-visible:[&::-webkit-slider-thumb]:shadow-[0_0_0_8px_color-mix(in_oklab,var(--accent)_35%,transparent)]"
           aria-label="Meses de comprobantes a organizar"
         />
-        <div className="mt-1 flex w-full justify-between text-[12px] tabular-nums text-[var(--text-tertiary)]">
+        <div className="mt-1 flex w-full justify-between text-[13px] tabular-nums text-[var(--text-tertiary)]">
           <span>1</span>
           <span>12</span>
         </div>
@@ -806,7 +834,7 @@ function PreguntaMeta({ valor, onFijar }: { valor: number; onFijar: (v: number) 
           {feedback}
         </p>
       </div>
-      <div className="mt-10 lg:mt-auto lg:pt-8">
+      <div className="mt-auto pt-8">
         <CtaFunnel onClick={() => onFijar(n)}>Fijar mi meta</CtaFunnel>
       </div>
     </div>
@@ -828,7 +856,7 @@ function PreguntaMomento({ valor, onElegir }: { valor: string; onElegir: (v: str
       palabraClave="revisas"
       tituloDespues=" tus gastos familiares?"
       subtitulo="Así te avisamos en el momento correcto"
-      porQue="¿Por qué lo preguntamos? Así te avisamos justo antes de que necesites revisar tus comprobantes — puedes cambiar el horario de tus alertas cuando quieras."
+      porQue="Así te avisamos justo antes de que necesites revisar tus comprobantes — puedes cambiar el horario de tus alertas cuando quieras."
     >
       {opciones.map(({ icon: Icon, label }, i) => (
         <Chip
@@ -859,7 +887,7 @@ function PreguntaAtribucion({ valor, onElegir }: { valor: string; onElegir: (v: 
       tituloAntes="¿Cómo "
       palabraClave="conociste"
       tituloDespues=" Coparentia?"
-      porQue="¿Por qué lo preguntamos? Nos ayuda a saber dónde encontrarte, para seguir ayudando a más familias como la tuya. Último paso antes de ver tu plan."
+      porQue="Nos ayuda a saber dónde encontrarte, para seguir ayudando a más familias como la tuya. Último paso antes de ver tu plan."
     >
       {opciones.map(({ icon: Icon, label }, i) => (
         <Chip
@@ -881,14 +909,24 @@ function PreguntaAtribucion({ valor, onElegir }: { valor: string; onElegir: (v: 
    acaba de configurar") — antes solo vivía en landing/paywall, nunca en el onboarding. ── */
 function ReconocimientoFinal({ respuestas, onContinuar }: { respuestas: Respuestas; onContinuar: () => void }) {
   return (
-    <div className="flex flex-1 flex-col items-center justify-center text-center lg:justify-start">
-      <CheckCelebracion />
+    <div className="flex flex-1 flex-col text-center">
+      <div className="flex flex-1 flex-col items-center justify-center lg:flex-none lg:justify-start">
+      <div className="w-[124px] drop-shadow-[0_12px_18px_rgba(18,40,92,0.26)]">
+        <SelloMarca />
+      </div>
       <h1 className="mt-6 text-balance text-[28px] font-bold leading-[1.12] text-[var(--text-primary)] [font-family:var(--font-display)]">
         Tus respuestas te describen
       </h1>
       <p className="mt-4 max-w-[40ch] text-[16px] leading-[1.5] text-[var(--text-secondary)]">
-        Eres alguien que prefiere <span className="font-semibold text-[var(--text-primary)]">prevenir antes que discutir</span> —
-        la mayoría espera hasta la primera pelea para buscar una solución. Tu expediente ya tiene ventaja.
+        {respuestas.rol === 'recibe' ? 'Recibes la cuota' : respuestas.rol === 'paga' ? 'Pagas la cuota' : 'Llevas el registro de la cuota'}
+        {respuestas.preocupacion ? (
+          <>
+            {' '}y lo que más te preocupa es <span className="font-semibold text-[var(--text-primary)]">“{respuestas.preocupacion}”</span>.
+          </>
+        ) : (
+          '.'
+        )}{' '}
+        Tu expediente se arma para que cada pago, visita y acuerdo quede con fecha y a mano.
       </p>
       <div className="mt-6 flex max-w-[38ch] items-start gap-3 rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--accent)_25%,transparent)] bg-[color-mix(in_oklab,var(--accent)_8%,transparent)] p-4 text-left">
         <ShieldCheck size={20} className="mt-0.5 shrink-0 text-[var(--accent)]" aria-hidden="true" />
@@ -896,29 +934,40 @@ function ReconocimientoFinal({ respuestas, onContinuar }: { respuestas: Respuest
           Cada comprobante que subas llevará el <Marcador>Sello de Confianza</Marcador>: fecha y respaldo que nadie puede alterar en silencio.
         </p>
       </div>
-      <div className="mt-10 w-full lg:mt-auto lg:pt-8">
+      </div>
+      <div className="mt-8 w-full lg:mt-auto lg:pt-8">
         <CtaFunnel
           onClick={() => {
             trackMeta('VerPlan', { desde: 'onboarding' }, { personalizado: true });
             onContinuar();
           }}
         >
-          Ver mi plan
+          Ver mi expediente y mi plan
         </CtaFunnel>
+        <p className="mt-2 text-center text-[13px] text-[var(--text-secondary)]">Garantía del Primer Expediente: si en 15 días no armas tu primer expediente, te devolvemos todo.</p>
       </div>
     </div>
   );
 }
 
+// Cómo se dice cada momento dentro de "Configurando tus alertas para …" (antes se pegaba la opción tal cual:
+// "…para A mitad de tarde", con mayúscula y preposición rotas — revisor-visual, 2026-10-20).
+const FRASE_MOMENTO: Record<string, string> = {
+  'En la mañana': 'la mañana',
+  'A mitad de tarde': 'la mitad de la tarde',
+  'En la noche': 'la noche',
+  'Cuando llega un reclamo': 'cuando llegue un reclamo',
+};
+
 /* ── Loading "construyendo tu plan" (B) — el argumento de apertura del paywall. Nombra el
    Sello de Confianza explícitamente (antes solo aparecía en landing/paywall). ── */
-function LoadingPlan({ respuestas, onListo }: { respuestas: Respuestas; onListo: () => void }) {
+function LoadingPlan({ respuestas, onListo, onVolver }: { respuestas: Respuestas; onListo: () => void; onVolver: () => void }) {
   const reduce = useReducedMotion();
   const lineas = [
-    `Registrando tu situación: ${respuestas.situacion || 'tu caso'}`,
+    `Registrando tu situación: ${respuestas.situacion === 'Otra cosa' && respuestas.situacionOtra ? respuestas.situacionOtra : respuestas.situacion || 'tu caso'}`,
     'Activando el Sello de Confianza para tus comprobantes',
     `Ajustando a tu meta de ${respuestas.metaMeses} ${respuestas.metaMeses === 1 ? 'mes' : 'meses'} de comprobantes`,
-    `Configurando tus alertas para ${respuestas.momento || 'el momento que elegiste'}`,
+    `Configurando tus alertas para ${FRASE_MOMENTO[respuestas.momento] ?? 'el momento que elegiste'}`,
     'Preparando tu primer expediente',
   ];
   const [activa, setActiva] = useState(0);
@@ -960,7 +1009,7 @@ function LoadingPlan({ respuestas, onListo }: { respuestas: Respuestas; onListo:
   const pct = Math.round(((completadas.length) / lineas.length) * 100);
 
   return (
-    <div className="flex flex-1 flex-col items-center pt-6" aria-live="polite" aria-busy={pct < 100}>
+    <div className="flex flex-1 flex-col items-center pt-6" aria-busy={pct < 100}>
       <div className="relative flex size-28 items-center justify-center">
         <svg width={112} height={112} viewBox="0 0 112 112" aria-hidden="true">
           <circle cx="56" cy="56" r="48" fill="none" stroke="color-mix(in oklab, var(--text-tertiary) 18%, transparent)" strokeWidth="9" />
@@ -979,11 +1028,11 @@ function LoadingPlan({ respuestas, onListo }: { respuestas: Respuestas; onListo:
             transform="rotate(-90 56 56)"
           />
         </svg>
-        <span className="absolute text-[22px] font-bold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
+        <span role="status" aria-live="polite" className="absolute text-[22px] font-bold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
           {pct}%
         </span>
       </div>
-      <h1 className="mt-6 text-[26px] font-bold text-[var(--text-primary)] [font-family:var(--font-display)]">
+      <h1 className="mt-6 text-center text-[26px] font-bold leading-[1.12] text-[var(--text-primary)] [font-family:var(--font-display)]">
         Construyendo tu expediente…
       </h1>
       <ul className="mt-8 flex w-full flex-col gap-4">
@@ -1008,6 +1057,13 @@ function LoadingPlan({ respuestas, onListo }: { respuestas: Respuestas; onListo:
           );
         })}
       </ul>
+      <button
+        type="button"
+        onClick={onVolver}
+        className="mt-auto min-h-11 pt-6 text-[14px] font-medium text-[var(--text-secondary)] underline underline-offset-2 [touch-action:manipulation]"
+      >
+        Volver a mis respuestas
+      </button>
     </div>
   );
 }
