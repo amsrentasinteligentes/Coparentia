@@ -16,6 +16,7 @@ import { Hero } from '@/components/landing/Hero';
 import { Problema } from '@/components/landing/Problema';
 import { Agitacion } from '@/components/landing/Agitacion';
 import { Solucion } from '@/components/landing/Solucion';
+import { EjemploPdf } from '@/components/landing/EjemploPdf';
 import { AppPorDentro } from '@/components/landing/AppPorDentro';
 import { Oferta } from '@/components/landing/Oferta';
 import { Garantia } from '@/components/landing/Garantia';
@@ -61,7 +62,7 @@ export default function Home() {
         // Promesa en dos tiempos (FICHA-AVATAR: dolor = caos de gastos + acusaciones; deseo = paz):
         // primero lo concreto que se resuelve, después lo que la persona quiere sentir.
         h1Marked="Padres separados: cada pago de la cuota alimentaria, con [acento]comprobante y fecha[/acento]"
-        subtitleMarked="Todo en un solo lugar, listo para mostrar, [b]sin depender de la otra persona[/b]."
+        subtitleMarked="Todo con [b]Sello de Confianza[/b], listo para mostrar, sin depender de la otra persona."
         ctaLabel={CTA_LABEL}
         ctaHref={CTA_HREF}
         socialProof={
@@ -115,7 +116,7 @@ export default function Home() {
         titulo="Te reclaman un pago o una visita. [acento]¿Dónde quedó lo acordado?[/acento]"
         frases={[
           'Con COPARENTIA cada pago, visita y acuerdo queda registrado, con fecha y en un solo lugar.',
-          'Y si surge una reclamación, tendrás la información reunida para preparar una respuesta o sustentar una actuación judicial o extrajudicial.',
+          'Y si surge una reclamación, tendrás la información reunida para preparar una respuesta o sustentar una actuación.',
         ]}
       />
 
@@ -132,6 +133,15 @@ export default function Home() {
           { titulo: 'Queda en tu expediente', marca: '0:21', detalle: 'Listo para exportar cuando lo necesites.' },
         ]}
         demo={{ video: '/demo/demo-sello', pie: 'Grabado de la app real, con datos de ejemplo. La espera del PDF va acelerada.' }}
+        pie={
+          <EjemploPdf
+            src="/ejemplo-expediente-pagina.webp"
+            alt="Página de ejemplo del expediente en PDF: partes, resumen, título de la obligación e historial de pagos, con datos ficticios"
+            pie="Una página del expediente en PDF, foliada y con fecha. Página de ejemplo con datos ficticios."
+            ancho={1224}
+            alto={1584}
+          />
+        }
       />
 
       {/* 5. LA APP POR DENTRO */}

@@ -9,7 +9,7 @@
 
 import { useId, useState } from 'react';
 import { motion } from 'motion/react';
-import { ChevronDown, MapPin, Quote } from 'lucide-react';
+import { MapPin, Quote } from 'lucide-react';
 import { Kicker, SectionShell, useReveal, VIEWPORT_ONCE } from './ui';
 
 export interface CitaProfesional {
@@ -64,9 +64,6 @@ function TextoCita({ texto, extracto }: { texto: string; extracto?: string }) {
 
 export function OpinionProfesionales({ kicker = 'OPINIÓN DE PROFESIONALES', titulo, citas, imagen, nota, id }: OpinionProfesionalesProps) {
   const { contenedor, item } = useReveal();
-  // 2026-10-20 (ruta 1): la página de ejemplo del PDF ya no ocupa media pantalla en celular; se abre con un toque.
-  const [verEjemplo, setVerEjemplo] = useState(false);
-  const ejemploId = useId();
 
   return (
     <SectionShell id={id} elevacion="base" ariaLabel="Opinión de profesionales de familia">
@@ -113,18 +110,8 @@ export function OpinionProfesionales({ kicker = 'OPINIÓN DE PROFESIONALES', tit
             ))}
           </motion.ul>
 
-          <motion.figure variants={item} className="mx-auto w-full max-w-[420px] lg:sticky lg:top-24">
-            <button
-              type="button"
-              onClick={() => setVerEjemplo((v) => !v)}
-              aria-expanded={verEjemplo}
-              aria-controls={ejemploId}
-              className="flex min-h-12 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--surface)] px-4 text-[15px] font-semibold text-[var(--accent-ink,var(--accent))] [touch-action:manipulation] lg:hidden"
-            >
-              {verEjemplo ? 'Ocultar la página de ejemplo' : 'Ver una página de ejemplo del expediente'}
-              <ChevronDown size={18} aria-hidden="true" className={`transition-transform duration-200 ${verEjemplo ? 'rotate-180' : ''}`} />
-            </button>
-            <div id={ejemploId} className={`${verEjemplo ? 'mt-4 block' : 'hidden'} lg:mt-0 lg:block`}>
+          <motion.figure variants={item} className="mx-auto hidden w-full max-w-[420px] lg:sticky lg:top-24 lg:block">
+            {/* En celular la página de ejemplo vive en "Cómo funciona" (EjemploPdf), donde prueba lo que produce el Sello. */}
             <a
               href={imagen.src}
               target="_blank"
@@ -137,7 +124,6 @@ export function OpinionProfesionales({ kicker = 'OPINIÓN DE PROFESIONALES', tit
             <figcaption className="mt-3 text-center text-[13px] leading-snug text-[var(--text-secondary)]">
               {imagen.pie} <span className="text-[var(--text-tertiary)]">Tócala para ampliarla.</span>
             </figcaption>
-            </div>
           </motion.figure>
         </div>
 

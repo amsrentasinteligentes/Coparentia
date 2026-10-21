@@ -40,6 +40,8 @@ export interface SolucionProps {
   mecanismo: string;
   /** Sello de marca junto al nombre del mecanismo (ata el dispositivo propio al mecanismo). */
   sello?: ReactNode;
+  /** Bloque opcional bajo el video (p. ej. la página de ejemplo del PDF). */
+  pie?: ReactNode;
   /** Big Idea en 1-2 líneas, copy MARCADO. */
   bigIdeaMarked: string;
   /** Los 3 pasos del mecanismo — la tupla obliga a que sean exactamente 3. */
@@ -60,6 +62,7 @@ export function Solucion({
   tituloMarked,
   mecanismo,
   sello,
+  pie,
   bigIdeaMarked,
   pasos,
   demo,
@@ -324,6 +327,8 @@ export function Solucion({
             {demo.pie}
           </motion.p>
         )}
+
+        {pie}
 
         {ctaLabel && ctaHref && (
           <motion.div variants={item} className="mt-8 flex justify-center">
