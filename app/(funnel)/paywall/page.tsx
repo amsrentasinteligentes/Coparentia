@@ -15,7 +15,6 @@ import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { X, Check, ShieldCheck, Lock, FileCheck2, HeartHandshake, Loader2, MapPin } from 'lucide-react';
-import { Blob } from '@/components/landing/ui';
 import { SelloMarca } from '@/components/landing/SelloMarca';
 import { BarraAtras, CtaFunnel, FunnelHeader, Halo, MarcoFunnel, Marcador, usePasoVariants } from '@/components/funnel/ui';
 import { PanelExpediente, type FilaExpediente } from '@/components/funnel/PanelExpediente';
@@ -428,9 +427,9 @@ function ValorYPrueba({
     transition: { duration: 0.34, ease: [0.22, 0.61, 0.36, 1] as const, delay: reduce ? 0 : i * 0.05 },
   });
 
-  const incluye: { texto: string; detalle?: string }[] = [
+  const incluye: { texto: string; detalle?: string; miniatura?: string }[] = [
     { texto: 'El Sello de Confianza en cada comprobante', detalle: 'Con fecha y respaldo que nadie puede alterar.' },
-    { texto: 'Expediente exportable en PDF foliado' },
+    { texto: 'Expediente exportable en PDF foliado', detalle: 'Cada página numerada y con fecha.', miniatura: '/ejemplo-expediente-pagina.webp' },
     // La objeción nº 1 del avatar (FICHA-AVATAR) va aquí, a la vista, en vez de una promesa genérica de alertas.
     { texto: 'Funciona aunque la otra persona no la use' },
   ];
@@ -500,6 +499,10 @@ function ValorYPrueba({
               <span className="block text-[15px] leading-[1.35] text-[var(--text-primary)]">{f.texto}</span>
               {f.detalle && <span className="mt-0.5 block text-[13px] leading-[1.4] text-[var(--text-secondary)]">{f.detalle}</span>}
             </span>
+            {f.miniatura && (
+              // Página de ejemplo del PDF real (datos ficticios): la prueba concreta de lo que se lleva, sin testimonios.
+              <img src={f.miniatura} alt="Página de ejemplo del expediente en PDF, con datos ficticios" width={44} height={57} loading="lazy" className="ml-auto h-[57px] w-[44px] shrink-0 rounded-[6px] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-white object-cover object-top shadow-[var(--shadow-1)]" />
+            )}
           </motion.div>
         ))}
       </div>
@@ -549,7 +552,7 @@ function ValorYPrueba({
           ))}
         </div>
         <p className="text-[13px] leading-[1.5] text-[var(--text-tertiary)]">
-          El aviso del día 5 llega por correo. Podrás sumar notificaciones desde Ajustes cuando entres.
+          El aviso del día 5 llega por correo.
         </p>
       </div>
 
@@ -571,11 +574,11 @@ function ValorYPrueba({
       <div className="sticky bottom-0 z-10 -mx-4 mt-auto bg-[var(--bg)] px-4 pb-[max(8px,env(safe-area-inset-bottom))] pt-3 lg:static lg:mx-0 lg:bg-transparent lg:px-0 lg:pb-0 lg:pt-4">
         <div className="mb-2 flex items-center justify-center text-center text-[13px] font-medium text-[var(--text-secondary)]">
           <span className="flex items-center gap-1.5">
-            <ShieldCheck size={14} color="var(--accent)" aria-hidden="true" />
+            <span className="w-[18px] shrink-0"><SelloMarca compacto animar={false} /></span>
             Garantía del Primer Expediente · 15 días
           </span>
         </div>
-        <CtaFunnel onClick={onContinuar}>Ver mi plan y empezar gratis</CtaFunnel>
+        <CtaFunnel onClick={onContinuar}>Ver mi plan y mi prueba gratis</CtaFunnel>
       </div>
     </div>
   );
@@ -625,7 +628,7 @@ function Precio({
     <div className="relative flex flex-1 flex-col">
       {/* FORMA ORGÁNICA de la variante clara (FICHA-ARTE: blobs en degradé azul) detrás del
           titular — el dispositivo ownable que al paywall le faltaba (revisor claro r1). */}
-      <h1 className="relative text-balance text-[28px] font-bold leading-[1.12] text-[var(--text-primary)] [font-family:var(--font-display)]">
+      <h1 className="relative text-balance text-[24px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)]">
         <Halo />
         {/* El <Marcador> envolvía "captura de WhatsApp": a 375px esa frase cruza tres renglones y
             el subrayado se partía en tres trazos sueltos que parecían marcar palabras al azar.
@@ -634,8 +637,7 @@ function Precio({
         <span className="relative text-[var(--accent-ink,var(--accent))]">
           {/* La mancha ahora nace DETRÁS de las palabras que venden (ronda 10 del revisor): antes caía
               a la derecha del titular, detrás de "se pierde — tu", y se leía como un manchón suelto. */}
-          <Blob className="-left-1 right-0 -inset-y-1 -z-10" opacidad={0.14} />
-          queda fechado
+          <Marcador>queda fechado</Marcador>
         </span>
       </h1>
 
@@ -990,7 +992,7 @@ function Precio({
                   rel="noreferrer"
                   className="-my-1.5 flex min-h-11 items-center gap-1.5 whitespace-nowrap underline decoration-[color-mix(in_oklab,var(--text-tertiary)_60%,transparent)] underline-offset-2 [touch-action:manipulation]"
                 >
-                  <ShieldCheck size={14} color="var(--accent)" aria-hidden="true" />
+                  <span className="w-[18px] shrink-0"><SelloMarca compacto animar={false} /></span>
                   Garantía del Primer Expediente · 15 días
                 </a>
               </div>
