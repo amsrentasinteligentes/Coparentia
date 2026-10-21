@@ -43,6 +43,7 @@ import {
 } from '@/components/funnel/ui';
 import { PanelExpediente, type FilaExpediente } from '@/components/funnel/PanelExpediente';
 import { Blob } from '@/components/landing/ui';
+import { SelloMarca } from '@/components/landing/SelloMarca';
 import { trackMeta } from '@/lib/meta-pixel';
 import { guardarRolPrevio, borrarRolPrevio } from '@/lib/rol-previo';
 
@@ -888,7 +889,9 @@ function PreguntaAtribucion({ valor, onElegir }: { valor: string; onElegir: (v: 
 function ReconocimientoFinal({ respuestas, onContinuar }: { respuestas: Respuestas; onContinuar: () => void }) {
   return (
     <div className="flex flex-1 flex-col items-center justify-center text-center lg:justify-start">
-      <CheckCelebracion />
+      <div className="w-[124px] drop-shadow-[0_12px_18px_rgba(18,40,92,0.26)]">
+        <SelloMarca />
+      </div>
       <h1 className="mt-6 text-balance text-[28px] font-bold leading-[1.12] text-[var(--text-primary)] [font-family:var(--font-display)]">
         Tus respuestas te describen
       </h1>

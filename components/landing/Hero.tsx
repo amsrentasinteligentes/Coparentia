@@ -55,6 +55,8 @@ export interface HeroProps {
   foto?: ReactNode;
   /** Burbuja con UN dato honesto sobre la escena ("Tu primer expediente · Listo en 10 minutos"). */
   burbuja?: { titulo: string; dato: string };
+  /** Sello de marca: firma sobre la escena (esquina superior izquierda, libre de foto, teléfono y burbuja). */
+  sello?: ReactNode;
   /** Fila de 3 píldoras bajo la escena — el mensaje literal de la dirección C
       ("Gastos al día · Comprobantes con fecha · Mente en calma"). */
   pilares?: string[];
@@ -78,6 +80,7 @@ export function Hero({
   visual,
   foto,
   burbuja,
+  sello,
   pilares = [],
   visualPlaceholderSugerencia = 'captura de la pantalla principal con datos reales',
   id = 'hero',
@@ -184,6 +187,13 @@ export function Hero({
             {foto && (
               <div className="absolute right-0 top-0 h-[66%] w-[74%] overflow-hidden blob shadow-[var(--shadow-2)]">
                 {foto}
+                {/* Mismo tono azul que la marca sobre la foto de archivo: que no parezca de otra paleta. */}
+                <span aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[var(--accent)] opacity-[0.28] mix-blend-color" />
+              </div>
+            )}
+            {sello && (
+              <div className="pointer-events-none absolute -left-1 top-0 z-20 w-[92px] -rotate-6 drop-shadow-[0_10px_16px_rgba(18,40,92,0.3)] lg:left-[2%] lg:top-3 lg:w-[124px]">
+                {sello}
               </div>
             )}
             {visual ? (

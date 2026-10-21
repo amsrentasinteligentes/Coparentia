@@ -24,6 +24,7 @@ import { Faq } from '@/components/landing/Faq';
 import { CtaFinal } from '@/components/landing/CtaFinal';
 import { FooterLegal } from '@/components/landing/FooterLegal';
 import { LogoPlaca } from '@/components/landing/LogoPlaca';
+import { SelloMarca } from '@/components/landing/SelloMarca';
 import { ENLACES_LEGALES, ENLACE_ESPECIALISTAS } from '@/components/landing/enlaces-legales';
 import { StickyCtaMobile } from '@/components/landing/ui';
 
@@ -78,6 +79,7 @@ export default function Home() {
         foto={<img src="/fotos/hero-mama-hijo-celular.jpg" alt="Mamá e hijo sonriendo mientras miran el celular en el sofá" className="h-full w-full object-cover object-[60%_35%]" width={1200} height={675} />}
         // "10 minutos" es el tiempo medido del onboarding + primer comprobante — no una cifra de marketing inventada.
         burbuja={{ titulo: 'Tu primer expediente', dato: 'Listo en 10 minutos' }}
+        sello={<SelloMarca />}
         pilares={['Gastos al día', 'Sello de Confianza con fecha', 'Mente en calma']}
       />
 
