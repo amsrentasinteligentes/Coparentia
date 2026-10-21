@@ -99,10 +99,8 @@ function manejarFlechasChips(e: KeyboardEvent<HTMLDivElement>): void {
 
 function InfoContextual({ children, anclar = true }: { children: ReactNode; anclar?: boolean }) {
   return (
-    <div
-      className={`flex items-start gap-3 rounded-[var(--radius-card)] bg-[var(--surface-2)] p-3.5 ${anclar ? 'mt-auto' : 'mt-4'}`}
-    >
-      <Info size={18} className="mt-0.5 shrink-0 text-[var(--text-tertiary)]" aria-hidden="true" />
+    <div className={`flex items-start gap-2.5 px-1 ${anclar ? 'mt-auto' : 'mt-4'}`}>
+      <Info size={16} className="mt-0.5 shrink-0 text-[var(--text-tertiary)]" aria-hidden="true" />
       <p className="text-[13px] leading-[1.5] text-[var(--text-secondary)]">{children}</p>
     </div>
   );
@@ -367,12 +365,12 @@ export default function Onboarding() {
         </>
       }
     >
-      <FunnelHeader />
+      <FunnelHeader sello={<SelloMarca compacto animar={false} />} />
       {paso < PASO_LOADING && (
         <BarraAtras
           porcentaje={(PASOS_PREGUNTA.filter((p) => p <= paso).length / PASOS_PREGUNTA.length) * 100}
-          pasoActual={PASOS_PREGUNTA.filter((p) => p <= paso).length}
-          pasoTotal={PASOS_PREGUNTA.length}
+          pasoActual={paso === 8 ? undefined : PASOS_PREGUNTA.filter((p) => p <= paso).length}
+          pasoTotal={paso === 8 ? undefined : PASOS_PREGUNTA.length}
           palabra="Pregunta"
           onAtras={atrasLocal ?? (paso === 0 ? () => router.push('/') : atras)}
         />
@@ -614,7 +612,7 @@ function PreguntaSituacion({
           {/* Nunca `disabled` por defecto (ancla del SO): una píldora gris muerta esperando el
               input desanima. Se ve activo; si está vacío al tocarlo, avisa qué falta. */}
           <CtaFunnel type="submit">
-            Continuar
+            Seguir con mi expediente
           </CtaFunnel>
           {faltaTexto && !texto.trim() && (
             <p role="alert" className="mt-2 text-center text-[13px] text-[var(--status-error)]">
@@ -731,7 +729,8 @@ function ReconocimientoPreocupacion({
   };
   const mostrarRefuerzoUnilateral = situacion === 'Tengo disputas frecuentes por la cuota';
   return (
-    <div className="flex flex-1 flex-col items-center justify-center text-center lg:justify-start">
+    <div className="flex flex-1 flex-col text-center">
+      <div className="flex flex-1 flex-col items-center justify-center lg:flex-none lg:justify-start">
       <CheckCelebracion />
       <h1 className="mt-6 text-balance text-[28px] font-bold leading-[1.12] text-[var(--text-primary)] [font-family:var(--font-display)]">
         Tiene sentido que te preocupes
@@ -750,8 +749,9 @@ function ReconocimientoPreocupacion({
           </p>
         </div>
       )}
-      <div className="mt-10 w-full lg:mt-auto lg:pt-8">
-        <CtaFunnel onClick={onContinuar}>Continuar</CtaFunnel>
+      </div>
+      <div className="mt-8 w-full lg:mt-auto lg:pt-8">
+        <CtaFunnel onClick={onContinuar}>Seguir con mi expediente</CtaFunnel>
       </div>
     </div>
   );
@@ -888,7 +888,8 @@ function PreguntaAtribucion({ valor, onElegir }: { valor: string; onElegir: (v: 
    acaba de configurar") — antes solo vivía en landing/paywall, nunca en el onboarding. ── */
 function ReconocimientoFinal({ respuestas, onContinuar }: { respuestas: Respuestas; onContinuar: () => void }) {
   return (
-    <div className="flex flex-1 flex-col items-center justify-center text-center lg:justify-start">
+    <div className="flex flex-1 flex-col text-center">
+      <div className="flex flex-1 flex-col items-center justify-center lg:flex-none lg:justify-start">
       <div className="w-[124px] drop-shadow-[0_12px_18px_rgba(18,40,92,0.26)]">
         <SelloMarca />
       </div>
@@ -912,14 +913,15 @@ function ReconocimientoFinal({ respuestas, onContinuar }: { respuestas: Respuest
           Cada comprobante que subas llevará el <Marcador>Sello de Confianza</Marcador>: fecha y respaldo que nadie puede alterar en silencio.
         </p>
       </div>
-      <div className="mt-10 w-full lg:mt-auto lg:pt-8">
+      </div>
+      <div className="mt-8 w-full lg:mt-auto lg:pt-8">
         <CtaFunnel
           onClick={() => {
             trackMeta('VerPlan', { desde: 'onboarding' }, { personalizado: true });
             onContinuar();
           }}
         >
-          Ver mi plan
+          Ver mi expediente y mi plan
         </CtaFunnel>
       </div>
     </div>

@@ -13,11 +13,19 @@ import type { ReactNode } from 'react';
 import { LogoPlaca } from '@/components/landing/LogoPlaca';
 
 /* ── <FunnelHeader> — logo + nombre arriba de TODA pantalla del funnel (50, regla de marca) ── */
-export function FunnelHeader({ appName = 'Coparentia' }: { appName?: string }) {
-  return (
+export function FunnelHeader({ appName = 'Coparentia', sello }: { appName?: string; sello?: ReactNode }) {
+  const enlace = (
     <Link href="/" aria-label={appName} className="mb-1 inline-flex items-center py-2">
       <LogoPlaca alt={appName} />
     </Link>
+  );
+  if (!sello) return enlace;
+  // Sello pequeño a la derecha: la marca se ve desde la primera pregunta, no solo al final.
+  return (
+    <div className="flex items-center justify-between">
+      {enlace}
+      <span className="w-8 shrink-0">{sello}</span>
+    </div>
   );
 }
 
