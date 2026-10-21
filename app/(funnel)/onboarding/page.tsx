@@ -141,6 +141,7 @@ function PantallaChips({
   tituloDespues = '',
   subtitulo,
   porQue,
+  pie,
   children,
 }: {
   tituloAntes: string;
@@ -148,6 +149,8 @@ function PantallaChips({
   tituloDespues?: string;
   subtitulo?: string;
   porQue: ReactNode;
+  /** Bloque opcional bajo la explicación (solo la pregunta 1: qué se va a armar). */
+  pie?: ReactNode;
   children: ReactNode;
 }) {
   return (
@@ -155,7 +158,7 @@ function PantallaChips({
       {/* Mancha de marca (el dispositivo ownable de FICHA-ARTE): hasta hoy las preguntas no llevaban
           ninguna y el revisor-visual las puntuó sin identidad (2026-10-20). Detrás del título, sin tocar el flujo. */}
       <span aria-hidden="true" className="pointer-events-none absolute inset-x-0 -top-2 -z-10 h-28">
-        <Blob className="right-0 top-0 h-20 w-28" opacidad={0.16} />
+        <Blob className="right-0 top-0 h-20 w-28" opacidad={0.26} />
       </span>
       <h1 className="relative text-balance text-[28px] font-bold leading-[1.1] text-[var(--text-primary)] [font-family:var(--font-display)]">
         <Halo />
@@ -169,6 +172,20 @@ function PantallaChips({
         {children}
       </div>
       <InfoContextual anclar={false}>{porQue}</InfoContextual>
+      {pie}
+    </div>
+  );
+}
+
+/* Pregunta 1: en vez de ~230 px de aire, lo que se va a llevar, con una página real del PDF (datos ficticios). */
+function LoQueArmas() {
+  return (
+    <div className="mt-5 flex items-center gap-4 rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--text-tertiary)_22%,transparent)] bg-[var(--surface)] p-4 shadow-[var(--shadow-1)]">
+      <img src="/ejemplo-expediente-pagina.webp" alt="Página de ejemplo del expediente en PDF, con datos ficticios" width={56} height={72} className="h-[72px] w-[56px] shrink-0 rounded-[6px] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-white object-cover object-top" />
+      <p className="text-[14px] leading-[1.5] text-[var(--text-secondary)]">
+        <span className="block text-[15px] font-semibold text-[var(--text-primary)]">Esto es lo que vas a armar</span>
+        Un expediente en PDF, con cada página numerada y con fecha.
+      </p>
     </div>
   );
 }
@@ -369,8 +386,8 @@ export default function Onboarding() {
       {paso < PASO_LOADING && (
         <BarraAtras
           porcentaje={(PASOS_PREGUNTA.filter((p) => p <= paso).length / PASOS_PREGUNTA.length) * 100}
-          pasoActual={paso === 8 ? undefined : PASOS_PREGUNTA.filter((p) => p <= paso).length}
-          pasoTotal={paso === 8 ? undefined : PASOS_PREGUNTA.length}
+          pasoActual={paso === 4 || paso === 8 ? undefined : PASOS_PREGUNTA.filter((p) => p <= paso).length}
+          pasoTotal={paso === 4 || paso === 8 ? undefined : PASOS_PREGUNTA.length}
           palabra="Pregunta"
           onAtras={atrasLocal ?? (paso === 0 ? () => router.push('/') : atras)}
         />
@@ -454,7 +471,7 @@ export default function Onboarding() {
             {paso === 6 && <PreguntaMomento valor={r.momento} onElegir={(v) => avanzar({ momento: v })} />}
             {paso === 7 && <PreguntaAtribucion valor={r.atribucion} onElegir={(v) => avanzar({ atribucion: v })} />}
             {paso === 8 && <ReconocimientoFinal respuestas={r} onContinuar={() => avanzar()} />}
-            {paso === PASO_LOADING && <LoadingPlan respuestas={r} onListo={() => router.push('/paywall')} />}
+            {paso === PASO_LOADING && <LoadingPlan respuestas={r} onListo={() => router.push('/paywall')} onVolver={() => setPaso(8)} />}
           </motion.div>
         </AnimatePresence>
       </div>
@@ -508,6 +525,7 @@ function PreguntaRol({ valor, onElegir }: { valor: Rol; onElegir: (v: Rol) => vo
   ];
   return (
     <PantallaChips
+      pie={<LoQueArmas />}
       tituloAntes="¿Cuál es tu "
       palabraClave="rol"
       tituloDespues=" hoy?"
@@ -784,7 +802,7 @@ function PreguntaMeta({ valor, onFijar }: { valor: number; onFijar: (v: number) 
         <Halo />
         ¿Cuántos <Marcador>meses</Marcador> de comprobantes quieres organizar primero?
       </h1>
-      <div className="mt-10 flex flex-col items-center">
+      <div className="mt-6 flex flex-1 flex-col items-center justify-center lg:mt-10 lg:flex-none lg:justify-start">
         <p className="text-[48px] font-bold leading-none tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
           {display}
         </p>
@@ -908,10 +926,11 @@ function ReconocimientoFinal({ respuestas, onContinuar }: { respuestas: Respuest
         Tu expediente se arma para que cada pago, visita y acuerdo quede con fecha y a mano.
       </p>
       <div className="mt-6 flex max-w-[38ch] items-start gap-3 rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--accent)_25%,transparent)] bg-[color-mix(in_oklab,var(--accent)_8%,transparent)] p-4 text-left">
-        <ShieldCheck size={20} className="mt-0.5 shrink-0 text-[var(--accent)]" aria-hidden="true" />
         <p className="text-[14px] leading-[1.5] text-[var(--text-secondary)]">
-          Cada comprobante que subas llevará el <Marcador>Sello de Confianza</Marcador>: fecha y respaldo que nadie puede alterar en silencio.
+          Cada comprobante que subas llevará el <Marcador>Sello de Confianza</Marcador>: fecha y respaldo que nadie puede alterar en silencio. Así se ve una página de tu expediente en PDF.
         </p>
+        {/* Página real del PDF con datos ficticios: la prueba concreta de lo que sale de aquí, sin testimonios. */}
+        <img src="/ejemplo-expediente-pagina.webp" alt="Página de ejemplo del expediente en PDF, con datos ficticios" width={48} height={62} className="h-[62px] w-[48px] shrink-0 rounded-[6px] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-white object-cover object-top shadow-[var(--shadow-1)]" />
       </div>
       </div>
       <div className="mt-8 w-full lg:mt-auto lg:pt-8">
@@ -923,6 +942,7 @@ function ReconocimientoFinal({ respuestas, onContinuar }: { respuestas: Respuest
         >
           Ver mi expediente y mi plan
         </CtaFunnel>
+        <p className="mt-2 text-center text-[13px] text-[var(--text-secondary)]">Garantía de 15 días: si no armas tu primer expediente, te devolvemos todo.</p>
       </div>
     </div>
   );
@@ -939,7 +959,7 @@ const FRASE_MOMENTO: Record<string, string> = {
 
 /* ── Loading "construyendo tu plan" (B) — el argumento de apertura del paywall. Nombra el
    Sello de Confianza explícitamente (antes solo aparecía en landing/paywall). ── */
-function LoadingPlan({ respuestas, onListo }: { respuestas: Respuestas; onListo: () => void }) {
+function LoadingPlan({ respuestas, onListo, onVolver }: { respuestas: Respuestas; onListo: () => void; onVolver: () => void }) {
   const reduce = useReducedMotion();
   const lineas = [
     `Registrando tu situación: ${respuestas.situacion === 'Otra cosa' && respuestas.situacionOtra ? respuestas.situacionOtra : respuestas.situacion || 'tu caso'}`,
@@ -987,7 +1007,7 @@ function LoadingPlan({ respuestas, onListo }: { respuestas: Respuestas; onListo:
   const pct = Math.round(((completadas.length) / lineas.length) * 100);
 
   return (
-    <div className="flex flex-1 flex-col items-center pt-6" aria-live="polite" aria-busy={pct < 100}>
+    <div className="flex flex-1 flex-col items-center pt-6" aria-busy={pct < 100}>
       <div className="relative flex size-28 items-center justify-center">
         <svg width={112} height={112} viewBox="0 0 112 112" aria-hidden="true">
           <circle cx="56" cy="56" r="48" fill="none" stroke="color-mix(in oklab, var(--text-tertiary) 18%, transparent)" strokeWidth="9" />
@@ -1006,7 +1026,7 @@ function LoadingPlan({ respuestas, onListo }: { respuestas: Respuestas; onListo:
             transform="rotate(-90 56 56)"
           />
         </svg>
-        <span className="absolute text-[22px] font-bold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
+        <span role="status" aria-live="polite" className="absolute text-[22px] font-bold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
           {pct}%
         </span>
       </div>
@@ -1035,6 +1055,13 @@ function LoadingPlan({ respuestas, onListo }: { respuestas: Respuestas; onListo:
           );
         })}
       </ul>
+      <button
+        type="button"
+        onClick={onVolver}
+        className="mt-auto min-h-11 pt-6 text-[14px] font-medium text-[var(--text-secondary)] underline underline-offset-2 [touch-action:manipulation]"
+      >
+        Volver a mis respuestas
+      </button>
     </div>
   );
 }

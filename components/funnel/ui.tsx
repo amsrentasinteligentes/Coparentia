@@ -24,7 +24,7 @@ export function FunnelHeader({ appName = 'Coparentia', sello }: { appName?: stri
   return (
     <div className="flex items-center justify-between">
       {enlace}
-      <span className="w-8 shrink-0">{sello}</span>
+      <span className="w-10 shrink-0">{sello}</span>
     </div>
   );
 }
