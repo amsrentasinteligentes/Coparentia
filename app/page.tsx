@@ -10,7 +10,7 @@
 // la app, el onboarding y el paywall siguen oscuros y no se tocan.
 
 import { Figtree, Nunito_Sans } from 'next/font/google';
-import { MessageCircleWarning, ShieldAlert, AlarmClock, Wallet, CalendarDays, Home as HomeIcon, ListChecks, Upload, Scale } from 'lucide-react';
+import { MessageCircleWarning, ReceiptText, ShieldAlert, AlarmClock, Wallet, FileQuestion, CalendarDays, Home as HomeIcon, ListChecks, Upload, Scale } from 'lucide-react';
 import { DIA_PRIMER_COBRO, PRECIOS, TRIAL_DIAS, usd } from '@/lib/precios';
 import { Hero } from '@/components/landing/Hero';
 import { Problema } from '@/components/landing/Problema';
@@ -96,12 +96,14 @@ export default function Home() {
             preguntas: [
               { icon: AlarmClock, textoMarked: '¿Te toca [b]perseguir la cuota[/b] cada mes para que llegue completa?' },
               { icon: Wallet, textoMarked: '¿Cubres [b]los gastos extra por tu cuenta[/b] y nadie te lo reconoce?' },
+              { icon: FileQuestion, textoMarked: '¿Te da miedo que digan que [b]tus cuentas no estaban claras[/b]?' },
             ],
           },
           {
             encabezado: 'Si pagas la cuota',
             preguntas: [
               { icon: MessageCircleWarning, textoMarked: '¿Por más que pagas te siguen tratando de [b]"mala paga"[/b]?' },
+              { icon: ReceiptText, textoMarked: '¿Te piden dinero para gastos "urgentes" sin ningún soporte?' },
               { icon: ShieldAlert, textoMarked: '¿Vives con miedo a una demanda que no sabrías cómo responder?' },
             ],
           },
