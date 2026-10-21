@@ -17,6 +17,7 @@ import { Problema } from '@/components/landing/Problema';
 import { Agitacion } from '@/components/landing/Agitacion';
 import { Solucion } from '@/components/landing/Solucion';
 import { EjemploPdf } from '@/components/landing/EjemploPdf';
+import { ListaEsperaPais } from '@/components/landing/ListaEsperaPais';
 import { AppPorDentro } from '@/components/landing/AppPorDentro';
 import { Oferta } from '@/components/landing/Oferta';
 import { Garantia } from '@/components/landing/Garantia';
@@ -275,7 +276,8 @@ export default function Home() {
           },
           {
             pregunta: '¿Funciona fuera de Colombia?',
-            respuestaMarked: 'Pronto disponible para otros países.',
+            respuestaMarked: 'Por ahora, solo en Colombia. Si quieres que llegue a tu país, déjanos tu correo y te avisamos.',
+            respuesta: <ListaEsperaPais />,
           },
         ]}
       />
