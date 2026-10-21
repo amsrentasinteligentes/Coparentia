@@ -447,10 +447,10 @@ function ValorYPrueba({
     <div className="flex flex-1 flex-col">
       <div className="relative">
         {/* Firma de marca junto al titular (compacto: escudo limpio con visto bueno; a este tamaño el logo y la palabra no se leen). */}
-        <div className="pointer-events-none absolute -top-1 right-0 w-[68px] rotate-[6deg] drop-shadow-[0_6px_10px_rgba(18,40,92,0.25)]">
+        <div className="pointer-events-none absolute top-0 right-0 w-[56px] drop-shadow-[0_6px_10px_rgba(18,40,92,0.25)]">
           <SelloMarca compacto />
         </div>
-      <h1 className="relative text-balance pr-[80px] text-[28px] font-bold leading-[1.12] text-[var(--text-primary)] [font-family:var(--font-display)]">
+      <h1 className="relative text-balance pr-[68px] text-[28px] font-bold leading-[1.12] text-[var(--text-primary)] [font-family:var(--font-display)]">
         <Halo />
         {/* Con respuestas guardadas el titular dice lo que es cierto: ya empezó a armarse (2026-10-20, elegido por el dueño);
             sin respuestas (entrada directa) se conserva el anterior, que no afirma nada de ellas. */}
@@ -575,7 +575,7 @@ function ValorYPrueba({
             Garantía del Primer Expediente · 15 días
           </span>
         </div>
-        <CtaFunnel onClick={onContinuar}>Ver mi plan y precio</CtaFunnel>
+        <CtaFunnel onClick={onContinuar}>Ver mi plan y empezar gratis</CtaFunnel>
       </div>
     </div>
   );
@@ -686,7 +686,7 @@ function Precio({
             <div className="flex-1">
               <div className="flex items-baseline justify-between">
                 <span className="text-[15px] font-semibold text-[var(--text-primary)]">Anual</span>
-                <span className="text-[22px] font-bold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
+                <span className="text-[26px] font-bold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
                   <PrecioContado valor={PLAN_ANUAL.precioMes} /><span className="text-[13px] font-normal text-[var(--text-secondary)]">/mes</span>
                 </span>
               </div>
@@ -724,7 +724,7 @@ function Precio({
           <div className="flex-1">
             <div className="flex items-baseline justify-between">
               <span className="text-[15px] font-semibold text-[var(--text-primary)]">Mensual</span>
-              <span className="text-[22px] font-bold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
+              <span className="text-[26px] font-bold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
                 <PrecioContado valor={PLAN_MENSUAL.precioMes} /><span className="text-[13px] font-normal text-[var(--text-secondary)]">/mes</span>
               </span>
             </div>
