@@ -4774,3 +4774,9 @@ Se hacen juntos al tocar la sección de planes (hallazgos 3 y 9), para revisar u
 - Logo de la esquina: decisión del dueño = plateado solo, sin placa ni contorno, más grande (32 px arriba, 40 px en recorrido/planes/pie), imagen re-muestreada y afinada (`public/logo-horizontal-240.webp` y `-360.webp`). Verificado a 360/375/390 sin desborde.
 - Recorrido en preview llega a Hotmart OK. Maquetas en docs/revisiones/sello-propuestas (sin commitear).
 - Próximo paso: esperar "publica" del dueño (merge a master, verificar coparentia.co).
+
+### Checkpoint (2026-10-20) — Ruta 1 y 1b en rama `ruta-1-rediseno` (limpieza guardada)
+- Fase: rediseño de estructura probado en 2 rondas (ruta 1 y 1b) y medido por el revisor: principal 30/15/15, recorrido 30/14/14, planes 30/14/15 (usabilidad/diseño/texto). Ninguna LISTA; las notas no se movieron con ajustes. Punto de control previo: tag `punto-control-logo-plateado` (rama `tanda-1`, commit 0824c0d). NADA publicado: master/coparentia.co siguen en 5c2a09b.
+- Decisiones del dueño: dejar las 3 citas; pregunta "¿Cómo conociste Coparentia?" se mantiene; opción 1 = limpiar (se quitaron las miniaturas del PDF del recorrido y de planes; garantía con su nombre) y publicar cuando diga "publica".
+- Pendiente: esperar "publica" (merge de ruta-1-rediseno a master, verificar coparentia.co). Un rediseño visual de marca (fondo, sello, citas) sería decisión de marca aparte.
+- Problemas conocidos: veredicto:landing, veredicto:onboarding, veredicto:paywall siguen NO LISTA (solo falla usabilidad ≥36 y diseño/texto por 1-2 puntos; no es seguridad ni datos).

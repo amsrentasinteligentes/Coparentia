@@ -429,7 +429,7 @@ function ValorYPrueba({
 
   const incluye: { texto: string; detalle?: string; miniatura?: string }[] = [
     { texto: 'El Sello de Confianza en cada comprobante', detalle: 'Con fecha y respaldo que nadie puede alterar.' },
-    { texto: 'Expediente exportable en PDF foliado', detalle: 'Cada página numerada y con fecha.', miniatura: '/ejemplo-expediente-pagina.webp' },
+    { texto: 'Expediente exportable en PDF foliado', detalle: 'Cada página numerada y con fecha.' },
     // La objeción nº 1 del avatar (FICHA-AVATAR) va aquí, a la vista, en vez de una promesa genérica de alertas.
     { texto: 'Funciona aunque la otra persona no la use' },
   ];

@@ -30,6 +30,7 @@ import {
   Users,
   HelpCircle,
   Zap,
+  FileText,
 } from 'lucide-react';
 import {
   BarraAtras,
@@ -158,7 +159,7 @@ function PantallaChips({
       {/* Mancha de marca (el dispositivo ownable de FICHA-ARTE): hasta hoy las preguntas no llevaban
           ninguna y el revisor-visual las puntuó sin identidad (2026-10-20). Detrás del título, sin tocar el flujo. */}
       <span aria-hidden="true" className="pointer-events-none absolute inset-x-0 -top-2 -z-10 h-28">
-        <Blob className="right-0 top-0 h-20 w-28" opacidad={0.26} />
+        <Blob className="right-0 top-0 h-20 w-28" opacidad={0.16} />
       </span>
       <h1 className="relative text-balance text-[28px] font-bold leading-[1.1] text-[var(--text-primary)] [font-family:var(--font-display)]">
         <Halo />
@@ -181,7 +182,9 @@ function PantallaChips({
 function LoQueArmas() {
   return (
     <div className="mt-5 flex items-center gap-4 rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--text-tertiary)_22%,transparent)] bg-[var(--surface)] p-4 shadow-[var(--shadow-1)]">
-      <img src="/ejemplo-expediente-pagina.webp" alt="Página de ejemplo del expediente en PDF, con datos ficticios" width={56} height={72} className="h-[72px] w-[56px] shrink-0 rounded-[6px] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-white object-cover object-top" />
+      <span aria-hidden="true" className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[color-mix(in_oklab,var(--accent)_12%,transparent)]">
+        <FileText size={22} strokeWidth={1.9} color="var(--accent)" />
+      </span>
       <p className="text-[14px] leading-[1.5] text-[var(--text-secondary)]">
         <span className="block text-[15px] font-semibold text-[var(--text-primary)]">Esto es lo que vas a armar</span>
         Un expediente en PDF, con cada página numerada y con fecha.
@@ -926,11 +929,10 @@ function ReconocimientoFinal({ respuestas, onContinuar }: { respuestas: Respuest
         Tu expediente se arma para que cada pago, visita y acuerdo quede con fecha y a mano.
       </p>
       <div className="mt-6 flex max-w-[38ch] items-start gap-3 rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--accent)_25%,transparent)] bg-[color-mix(in_oklab,var(--accent)_8%,transparent)] p-4 text-left">
+        <ShieldCheck size={20} className="mt-0.5 shrink-0 text-[var(--accent)]" aria-hidden="true" />
         <p className="text-[14px] leading-[1.5] text-[var(--text-secondary)]">
-          Cada comprobante que subas llevará el <Marcador>Sello de Confianza</Marcador>: fecha y respaldo que nadie puede alterar en silencio. Así se ve una página de tu expediente en PDF.
+          Cada comprobante que subas llevará el <Marcador>Sello de Confianza</Marcador>: fecha y respaldo que nadie puede alterar en silencio.
         </p>
-        {/* Página real del PDF con datos ficticios: la prueba concreta de lo que sale de aquí, sin testimonios. */}
-        <img src="/ejemplo-expediente-pagina.webp" alt="Página de ejemplo del expediente en PDF, con datos ficticios" width={48} height={62} className="h-[62px] w-[48px] shrink-0 rounded-[6px] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-white object-cover object-top shadow-[var(--shadow-1)]" />
       </div>
       </div>
       <div className="mt-8 w-full lg:mt-auto lg:pt-8">
@@ -942,7 +944,7 @@ function ReconocimientoFinal({ respuestas, onContinuar }: { respuestas: Respuest
         >
           Ver mi expediente y mi plan
         </CtaFunnel>
-        <p className="mt-2 text-center text-[13px] text-[var(--text-secondary)]">Garantía de 15 días: si no armas tu primer expediente, te devolvemos todo.</p>
+        <p className="mt-2 text-center text-[13px] text-[var(--text-secondary)]">Garantía del Primer Expediente: si en 15 días no armas tu primer expediente, te devolvemos todo.</p>
       </div>
     </div>
   );
