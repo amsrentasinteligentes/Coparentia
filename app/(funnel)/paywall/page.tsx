@@ -445,7 +445,12 @@ function ValorYPrueba({
 
   return (
     <div className="flex flex-1 flex-col">
-      <h1 className="relative text-balance text-[28px] font-bold leading-[1.12] text-[var(--text-primary)] [font-family:var(--font-display)]">
+      <div className="relative">
+        {/* Firma de marca junto al titular (compacto: escudo limpio con visto bueno; a este tamaño el logo y la palabra no se leen). */}
+        <div className="pointer-events-none absolute -top-1 right-0 w-[68px] rotate-[6deg] drop-shadow-[0_6px_10px_rgba(18,40,92,0.25)]">
+          <SelloMarca compacto />
+        </div>
+      <h1 className="relative text-balance pr-[80px] text-[28px] font-bold leading-[1.12] text-[var(--text-primary)] [font-family:var(--font-display)]">
         <Halo />
         {/* Con respuestas guardadas el titular dice lo que es cierto: ya empezó a armarse (2026-10-20, elegido por el dueño);
             sin respuestas (entrada directa) se conserva el anterior, que no afirma nada de ellas. */}
@@ -459,6 +464,7 @@ function ValorYPrueba({
           </>
         )}
       </h1>
+      </div>
       <p className="mt-2 text-[13px] text-[var(--text-secondary)]">
         {/* El plural se rompía justo en la línea que PRUEBA la personalización ("Hecho con tus 1
             respuestas") — ante un avatar que desconfía de las cuentas que no cuadran, ese detalle
@@ -514,11 +520,7 @@ function ValorYPrueba({
           dos pantallas seguidas (defecto del revisor). Además el calendario de cobros es lo que más
           se relee antes de decidir: merece su propio plano. */}
       <div className="relative rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--text-tertiary)_16%,transparent)] bg-[var(--surface)] p-4 shadow-[var(--shadow-1)]">
-        {/* Firma de marca: el sello "estampado" sobre el calendario de la prueba. Compacto (sin logo): a ~60 px el isotipo no se lee. */}
-        <div className="pointer-events-none absolute -top-6 right-3 w-[60px] rotate-[6deg] drop-shadow-[0_6px_10px_rgba(18,40,92,0.25)]">
-          <SelloMarca compacto />
-        </div>
-        <h2 className="pr-16 text-[19px] font-bold leading-[1.2] text-[var(--text-primary)] [font-family:var(--font-display)]">
+        <h2 className="text-[19px] font-bold leading-[1.2] text-[var(--text-primary)] [font-family:var(--font-display)]">
           {TRIAL_DIAS} días gratis, sin sorpresas
         </h2>
         <div className="mt-4 flex flex-col">
@@ -553,22 +555,24 @@ function ValorYPrueba({
 
       {/* El botón del paso 1 también queda fijo al fondo en celular (igual que en el paso 2): con el sello y la
           explicación la pantalla creció y el botón quedaba bajo el pliegue a 375×812. */}
-      <div className="sticky bottom-0 z-10 -mx-4 mt-auto bg-[var(--bg)] px-4 pb-[max(8px,env(safe-area-inset-bottom))] pt-4 lg:static lg:mx-0 lg:bg-transparent lg:px-0 lg:pb-0 lg:pt-6">
-        {/* Las mismas dos señales que acompañan al CTA del paso 2: antes aquí había ~100px de
-            fondo vacío entre la tarjeta del trial y el botón (revisor claro r1). */}
-        <div className="mb-3 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-center text-[13px] font-medium text-[var(--text-secondary)]">
+      {/* Señales secundarias en una línea normal (no fija): la barra fija del paso 1 llegó a medir ~150 px y tapaba la
+          tarjeta de la prueba (revisor, 2026-10-20). Decisión #8: "Disponible para Colombia" sigue visible en este paso. */}
+      <div className="mt-4 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-center text-[13px] font-medium text-[var(--text-secondary)]">
+        <span className="flex items-center gap-1.5">
+          <Lock size={13} color="var(--accent)" aria-hidden="true" />
+          Pago seguro con Hotmart
+        </span>
+        <span className="flex items-center gap-1.5">
+          <MapPin size={13} color="var(--accent)" aria-hidden="true" />
+          Disponible para Colombia
+        </span>
+      </div>
+
+      <div className="sticky bottom-0 z-10 -mx-4 mt-auto bg-[var(--bg)] px-4 pb-[max(8px,env(safe-area-inset-bottom))] pt-3 lg:static lg:mx-0 lg:bg-transparent lg:px-0 lg:pb-0 lg:pt-4">
+        <div className="mb-2 flex items-center justify-center text-center text-[13px] font-medium text-[var(--text-secondary)]">
           <span className="flex items-center gap-1.5">
             <ShieldCheck size={14} color="var(--accent)" aria-hidden="true" />
             Garantía del Primer Expediente · 15 días
-          </span>
-          <span className="flex items-center gap-1.5">
-            <Lock size={13} color="var(--accent)" aria-hidden="true" />
-            Pago seguro con Hotmart
-          </span>
-          {/* Decisión #8 (2026-10-20): por ahora la app es solo para Colombia (cuota en pesos, normativa colombiana). */}
-          <span className="flex items-center gap-1.5">
-            <MapPin size={13} color="var(--accent)" aria-hidden="true" />
-            Disponible para Colombia
           </span>
         </div>
         <CtaFunnel onClick={onContinuar}>Ver mi plan y precio</CtaFunnel>

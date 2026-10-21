@@ -4,7 +4,7 @@
 // Es el "dispositivo propio" de la identidad: el mismo escudo con visto bueno que la app ya muestra al
 // sellar un comprobante (components/app/SelloConfianza.tsx), ahora con el isotipo de Coparentia adentro.
 //
-// · `compacto` (sin logo, solo visto bueno): para tamaños de menos de ~90 px, donde el isotipo se vuelve mancha.
+// · `compacto` (escudo limpio con visto bueno, sin logo ni palabra): para menos de ~90 px, donde el isotipo y la palabra no se leen.
 // · La palabra es "FECHADO", sin número: una fecha escrita en la imagen sería falsa mañana. La fecha real
 //   solo va dentro de la app, donde sí es la del comprobante.
 // · Se asienta una sola vez al entrar en pantalla (como un sello que se estampa), sin fanfarria; con
@@ -56,12 +56,17 @@ export function SelloMarca({
         </defs>
         <path d={ESCUDO} fill={`url(#g${uid})`} />
         <path d={ESCUDO} fill={`url(#l${uid})`} />
-        <g clipPath={`url(#c${uid})`}>
-          <rect x="0" y="88" width="120" height="50" fill="#fff" />
-          <rect x="0" y="86.5" width="120" height="2.5" style={{ fill: 'var(--accent, #2f6fdc)' }} />
-        </g>
+        {!compacto && (
+          <g clipPath={`url(#c${uid})`}>
+            <rect x="0" y="88" width="120" height="50" fill="#fff" />
+            <rect x="0" y="86.5" width="120" height="2.5" style={{ fill: 'var(--accent, #2f6fdc)' }} />
+          </g>
+        )}
         {compacto ? (
-          <path d="M36 50l17 17 31-35" fill="none" stroke="#fff" strokeWidth="11" strokeLinecap="round" strokeLinejoin="round" />
+          <>
+            <path d="M60 14 L100 27 V62 C100 88 82 105 60 116 C38 105 20 88 20 62 V27 Z" fill="none" stroke="#fff" strokeOpacity=".35" strokeWidth="1.6" />
+            <path d="M33 62l18 18 36-40" fill="none" stroke="#fff" strokeWidth="13" strokeLinecap="round" strokeLinejoin="round" />
+          </>
         ) : (
           <>
             <image href="/logo-isotipo.png" x="30" y="20" width="60" height="60" />
@@ -70,6 +75,7 @@ export function SelloMarca({
             <path d="M86 70.5l3.6 3.6 6.6-7.2" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
           </>
         )}
+        {!compacto && (
         <text
           x="60"
           y="108"
@@ -82,6 +88,7 @@ export function SelloMarca({
         >
           FECHADO
         </text>
+        )}
       </svg>
     </motion.span>
   );
