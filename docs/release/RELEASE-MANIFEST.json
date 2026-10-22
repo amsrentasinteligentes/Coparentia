@@ -1,0 +1,30 @@
+{
+  "producto": "Coparentia",
+  "fecha_auditoria": "2026-10-22",
+  "produccion_url": "https://coparentia.co",
+  "produccion_commit_al_auditar": "6fe327a (master)",
+  "rama_con_correcciones": "certificacion-prelanzamiento (sin publicar)",
+  "vercel_deployment_id": "NO VERIFICADO (no se leyó el id desde el panel)",
+  "migraciones_base_de_datos": "35 archivos en supabase/*.sql, corridos a mano en Supabase (sin historial automático)",
+  "variables_requeridas": [
+    "NEXT_PUBLIC_SUPABASE_URL",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "HOTMART_HOTTOK",
+    "HOTMART_PRODUCT_ID",
+    "HOTMART_CLIENT_ID",
+    "HOTMART_CLIENT_SECRET",
+    "HOTMART_BASIC_TOKEN",
+    "RESEND_API_KEY",
+    "CRON_SECRET",
+    "ANTHROPIC_API_KEY (lo lee el SDK)",
+    "AI_MODEL (opcional)",
+    "NEXT_PUBLIC_VAPID_PUBLIC_KEY",
+    "VAPID_PRIVATE_KEY",
+    "NEXT_PUBLIC_META_PIXEL_ID",
+    "NEXT_PUBLIC_TURNSTILE_SITE_KEY",
+    "CONSULTAS_JURIDICAS_EMAIL (opcional)"
+  ],
+  "endpoint_de_version": "/api/version (solo en la rama de correcciones; en producción responde 404 hasta publicar)",
+  "evidencia": "docs/release/*.md y docs/revisiones/*"
+}

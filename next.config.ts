@@ -42,6 +42,27 @@ const nextConfig: NextConfig = {
           { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
           { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
           { key: 'X-DNS-Prefetch-Control', value: 'off' },
+          // CSP en modo SOLO-REPORTE (2026-10-22, certificación pre-lanzamiento): el navegador anota en su consola lo que
+          // bloquearía, pero NO bloquea nada todavía. Primero se observa con tráfico real (Meta Pixel, Supabase, Hotmart,
+          // fuentes, video) y recién después se pasa a `Content-Security-Policy` real. Sin nonce todavía: usa 'unsafe-inline'
+          // para scripts y estilos (Next los inyecta), y aun así cierra frame-ancestors, object-src, base-uri y form-action.
+          {
+            key: 'Content-Security-Policy-Report-Only',
+            value: [
+              "default-src 'self'",
+              "script-src 'self' 'unsafe-inline' https://connect.facebook.net",
+              "style-src 'self' 'unsafe-inline'",
+              "img-src 'self' data: blob: https://*.supabase.co https://www.facebook.com",
+              "font-src 'self' data:",
+              "media-src 'self' blob:",
+              "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://www.facebook.com https://connect.facebook.net",
+              "frame-src 'none'",
+              "frame-ancestors 'none'",
+              "object-src 'none'",
+              "base-uri 'self'",
+              "form-action 'self' https://pay.hotmart.com",
+            ].join('; '),
+          },
         ],
       },
     ];

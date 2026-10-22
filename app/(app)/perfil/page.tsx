@@ -322,7 +322,7 @@ export default function PerfilPage() {
                 <button type="button" onClick={() => setAgregando(true)} className="flex w-full flex-col items-center py-4 text-center [touch-action:manipulation]">
                   <IconoCirculo icon={Baby} size={22} tono="info" grande />
                   <p className="mt-3 text-[14px] font-bold text-[var(--text-primary)]">Agrega a tus hijos</p>
-                  <p className="mt-1 max-w-[30ch] text-[13px] text-[var(--text-secondary)]">Con su nombre, la app y tu expediente hablan de ellos, no de "el menor".</p>
+                  <p className="mt-1 max-w-[30ch] text-[13px] text-[var(--text-secondary)]">Con su nombre, la app y tu expediente hablan de ellos, no de &quot;el menor&quot;.</p>
                 </button>
               ) : (
                 <ul className="flex flex-col">

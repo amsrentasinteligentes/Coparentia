@@ -174,7 +174,7 @@ export function ListaEsperaPais() {
         )}
         {estado === 'error' && (
           <p role="alert" className="text-sm leading-[1.5] text-[var(--status-error)]">
-            No pudimos guardar tu correo. Revisa tu conexión y toca "Avísame" otra vez.
+            No pudimos guardar tu correo. Revisa tu conexión y toca &quot;Avísame&quot; otra vez.
           </p>
         )}
       </div>
