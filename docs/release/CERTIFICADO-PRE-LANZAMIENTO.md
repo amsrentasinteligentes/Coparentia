@@ -2,7 +2,7 @@
 
 **Producción auditada:** coparentia.co, commit `6fe327a` (master). **Correcciones preparadas, sin publicar:** rama `certificacion-prelanzamiento`.
 
-## VEREDICTO: ❌ NO APTO para cobrar todavía — 55 / 100
+## VEREDICTO: ❌ NO APTO para cobrar todavía — 57 / 100
 
 Regla del sistema: un solo bloqueante de dinero, acceso, privacidad o seguridad deja el veredicto en NO APTO sin importar el puntaje. Hay varios (abajo). Menos de 80 puntos también es NO APTO.
 
@@ -10,11 +10,11 @@ Regla del sistema: un solo bloqueante de dinero, acceso, privacidad o seguridad 
 |---|---|---|
 | VENTA (página principal) | **16 / 20** | Estructura completa; el revisor la puntúa 30/40 usabilidad, 15/20 diseño, 15/20 texto. |
 | FUNNEL (recorrido y planes) | **13 / 20** | Recorrido y planes completos; el revisor da 30/40 y 14/20 en ambos; el puente de la prueba (día 1 a 7) está a medias. |
-| PRODUCTO (dentro de la app) | **4 / 20** | Solo medí **Inicio** (29/40 · 12/20, NO LISTA) y recorrí a ojo las demás secciones sin tocar nada; el resto sigue sin medir y vale 0. |
+| PRODUCTO (dentro de la app) | **6 / 20** | Medí **Inicio** (29/40 · 12/20, NO LISTA) y recorrí el **primer arranque** de una cuenta nueva (estados vacíos de Inicio, Pagos, Calendario, Expediente, Perfil y Ajustes: claros y sin errores); el resto del puntaje con el revisor sigue sin medir. |
 | CONFIANZA (seguridad, legal, pago) | **10 / 15** | Muy buena base de seguridad y legal; faltan pruebas reales de cancelación y reembolso, prueba de acceso cruzado entre usuarios y un CSP activo. |
 | VELOCIDAD | **4 / 10** | Cambio de diseño estable (CLS 0) y poco bloqueo; pero el contenido principal tarda ≈5–6 s en celular lento (debería ser ≤2,5 s). |
 | RETENCIÓN | **8 / 15** | Recordatorios, avisos de cobro y recuperación de pagos existen en código; falta medir embudo y comprobar entrega real. |
-| **TOTAL** | **55 / 100** | Banda <80 = NO APTO |
+| **TOTAL** | **57 / 100** | Banda <80 = NO APTO |
 
 ## Lo que encontré y ya corregí en la rama (sin publicar)
 1. ✅ **Next.js desactualizado con 7 avisos de seguridad** (uno "crítico" que no afecta a este sitio porque no usa `next/og`, y uno "alto" de optimización de imágenes que sí podía afectar). Actualizado de 16.3.4 a 16.4.2 y limpiadas 3 dependencias más: `npm audit` pasó de 4 vulnerabilidades (1 crítica, 2 altas) a **0**.
@@ -82,3 +82,11 @@ Recorrí la página principal, el recorrido y los planes como una persona que pa
   5. En Calendario, una tarjeta con solo un ícono y el número "1" no dice qué cuenta.
   6. "Meses con registro" mezcla conteo, barra y un total en pesos en la misma línea.
 - Revisor visual de Inicio: `docs/revisiones/inicio-veredicto.md` (29/40 · 12/20 · NO LISTA). Limitación: recortes de ~420 px, no 375 px exactos.
+
+## Primer arranque de una cuenta nueva (2026-10-22, noche; cuenta de prueba `+prueba2`, solo lectura)
+- **Camino de entrada:** compra en Hotmart → correo de bienvenida de la app (menos de 1 minuto, bandeja principal) → enlace de confirmación → `/consentimiento` (3 casillas obligatorias y 1 opcional, todas sin marcar; consentimiento tras verificar el correo) → `/inicio`.
+- **Inicio de una cuenta nueva** muestra "Primeros pasos · Paso 1 de 2 · Configura tu cuota alimentaria" (monto, día de pago, rol, reajuste) con un aviso de qué falta para guardar.
+- **Estados vacíos con explicación y acción:** Pagos ("Todavía no hay comprobantes · Toca Registrar…"), Calendario ("Sin eventos este mes · Toca un día…"), Expediente ("Sin autorizaciones registradas…"), Perfil ("Agrega a tus hijos…"). Sin errores de consola.
+- **Ajustes:** el aviso del rol sale en gris (corrección publicada hoy). Explica con claridad que cancelar se hace en Hotmart y que borrar la cuenta NO cancela el cobro.
+- **Hallazgo grave de correo:** cuando la persona pide un enlace en `/entrar` antes de haber confirmado su cuenta, Supabase manda la plantilla **"Confirm your email address", en inglés, sin marca y sin el código de 8 dígitos** que la pantalla promete. Pendiente: traducir y personalizar las plantillas en Supabase → Authentication → Email Templates.
+- **Observaciones menores:** en Pagos la pestaña por defecto de una cuenta nueva es "Historial" y no "Cuotas"; Inicio no muestra valor hasta completar la configuración.
