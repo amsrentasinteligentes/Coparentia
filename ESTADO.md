@@ -4809,3 +4809,9 @@ Se hacen juntos al tocar la sección de planes (hallazgos 3 y 9), para revisar u
 - Login por enlace: falla en la ventana integrada del asistente (Turnstile), funciona en Chrome normal. CSP: antes de activarlo, agregar `challenges.cloudflare.com` (script, frame, connect).
 - Pendiente (dueño): cancelación/reembolso reales en Hotmart, Supabase Pro, Sentry + página de estado, prueba IDOR con dos cuentas, costo de IA (`ai_calls`), cuenta demo, 36/40.
 - Problemas conocidos (sin cambios): veredicto:landing, veredicto:onboarding, veredicto:paywall NO LISTA por usabilidad (30/40); veredicto:inicio NO LISTA (29/40 · 12/20).
+
+### Checkpoint (2026-10-22, noche) — Pulido de la app interna PUBLICADO (master beb10dc)
+- Publicado y verificado en producción con Claude en Chrome (solo lectura, cuenta del dueño): textos de 12 px mínimo en Inicio/Pagos/Perfil, aviso de rol en Ajustes en gris (ya no rojo), total en pesos en su propia línea en "Meses con registro", CSP solo-reporte ahora permite Turnstile. `/api/version` → beb10dc. Sin errores de consola en Inicio ni Ajustes.
+- NO arreglado: botón flotante "Registrar" que tapa "Especialistas" (decisión de diseño), tarjeta con solo "1" en Calendario (no localizada en el código), dato héroe de Inicio / banner duplicado / identidad genérica (rediseño), notificación "Prueba del historial" en la cuenta del dueño (dato, se borra en Supabase → `notificaciones_app` con su permiso).
+- Pendiente (dueño): cancelación/reembolso reales en Hotmart, Supabase Pro, Sentry + página de estado, prueba IDOR con dos cuentas, costo de IA (`ai_calls`), cuenta demo, decisión sobre 36/40, purga de `cerrar-sesiones.sql` del historial de GitHub.
+- Problemas conocidos (sin cambios): veredicto:landing, veredicto:onboarding, veredicto:paywall NO LISTA (30/40); veredicto:inicio NO LISTA (29/40 · 12/20).
