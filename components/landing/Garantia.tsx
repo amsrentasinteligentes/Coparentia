@@ -31,7 +31,7 @@ export function Garantia({ nombre, condicionMarked, pisoLegal, icon: Icono = Shi
   const reduce = useReducedMotion() ?? false;
 
   return (
-    <SectionShell id={id} elevacion="elevada" compacta ariaLabel="Garantía">
+    <SectionShell id={id} elevacion="hundida" compacta ariaLabel="Garantía">
       <motion.div
         variants={contenedor}
         initial="hidden"
@@ -41,7 +41,7 @@ export function Garantia({ nombre, condicionMarked, pisoLegal, icon: Icono = Shi
       >
         <motion.div variants={item}>
           {/* La card de garantía: uno de los 1-3 usos de hairline permitidos por vista */}
-          <Hairline surface="surface" className="shadow-[var(--shadow-1)]">
+          <Hairline surface="surface" className="shadow-[var(--shadow-2)]">
             <div className="flex flex-col items-center gap-4 px-6 py-12 text-center">
               {/* Hito real (la promesa de devolución): el sello entra con un rebote corto —
                   la única celebración de la página, reservada para lo que de verdad tranquiliza. */}

@@ -124,7 +124,7 @@ export function OpinionProfesionales({ kicker = 'OPINIÓN DE PROFESIONALES', tit
             }}
             variants={item}
             aria-label="Opiniones de profesionales, desliza para ver más"
-            className="-mx-5 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:mx-0 lg:flex-col lg:overflow-visible lg:px-0"
+            className="-mx-5 flex snap-x snap-mandatory items-start gap-4 overflow-x-auto px-5 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:mx-0 lg:flex-col lg:overflow-visible lg:px-0"
           >
             {citas.map((c) => (
               <li

@@ -82,7 +82,6 @@ export default function Home() {
         // "10 minutos" es el tiempo medido del onboarding + primer comprobante — no una cifra de marketing inventada.
         burbuja={{ titulo: 'Tu primer expediente', dato: 'Listo en 10 minutos' }}
         sello={<SelloMarca />}
-        pilares={['Gastos al día', 'Sello de Confianza con fecha', 'Mente en calma']}
       />
 
       {/* 2. PROBLEMA */}
@@ -114,7 +113,7 @@ export default function Home() {
 
       {/* 3. AGITACIÓN */}
       <Agitacion
-        titulo="Te reclaman un pago o una visita. [acento]¿Dónde quedó lo acordado?[/acento]"
+        titulo="Te reclaman. [acento]¿Dónde quedó lo acordado?[/acento]"
         // Escena real del avatar (FICHA-AVATAR: el reclamo por WhatsApp) en vez de lenguaje legal, y una sola línea de promesa.
         frases={[
           'Te escriben por WhatsApp reclamando un pago y buscas el comprobante entre capturas.',
@@ -192,7 +191,11 @@ export default function Home() {
           // Antes repetía 4 de los 5 bullets del plan anual y el diferenciador real se diluía.
           // Ahora dice solo en qué se diferencia: mismas funciones, sin compromiso de 12 meses.
           features: [
-            'Sello, PDF y alertas, igual que el plan Anual',
+            // Cada plan lista lo que incluye (sin remitir a la otra tarjeta): quien compara no tiene que recordar la de arriba.
+            'Sello de Confianza en cada comprobante',
+            'Expediente en PDF, con cada página numerada',
+            'Autorizaciones y desacuerdos, por escrito',
+            'Alertas de vencimiento y soporte faltante',
             'Sin compromiso de 12 meses',
           ],
         }}
@@ -202,7 +205,7 @@ export default function Home() {
       <Garantia
         nombre="Garantía del Primer Expediente"
         condicionMarked="Si en 15 días no tienes tu primer comprobante organizado y listo para exportar, escribes un correo y [b]te devolvemos todo[/b]. Sin preguntas."
-        pisoLegal="Respaldada por la garantía Hotmart de 15 días"
+        pisoLegal="Respaldada por la garantía de Hotmart"
       />
 
       {/* 7B. OPINIÓN DE PROFESIONALES DE FAMILIA (2026-10-15) — prueba de terceros, justo antes de las preguntas.
@@ -216,7 +219,7 @@ export default function Home() {
             texto:
               'Como abogada conciliadora y litigante en derecho de familia, sé lo importante que es tener tus documentos organizados cuando más los necesitas. Con COPARENTIA puedes construir un expediente digital con acuerdos, pagos y comunicaciones que facilite una conciliación o la preparación de una demanda y su contestación. Organiza hoy la información que puede ayudarte a proteger tus derechos y los de tus hijos.',
             // El extracto visible es la frase LITERAL de cada cita que nombra el producto (el texto completo sigue palabra por palabra).
-            extracto: 'Con COPARENTIA puedes construir un expediente digital con acuerdos, pagos y comunicaciones que facilite una conciliación o la preparación de una demanda y su contestación.',
+            extracto: 'Con COPARENTIA puedes construir un expediente digital con acuerdos, pagos y comunicaciones…',
             nombre: 'Ivonne Reyes',
             especialidad: 'Abogada Especialista Conciliadora y Litigante en Derecho de Familia',
             ciudad: 'Bogotá',
@@ -224,7 +227,7 @@ export default function Home() {
           {
             texto:
               'En los procesos de familia, contar con evidencias claras y oportunamente disponibles puede marcar una diferencia importante. Desde mi experiencia como abogada, sé que reconstruir el historial de cumplimiento de las obligaciones económicas se vuelve complejo cuando la documentación se encuentra dispersa, y esto puede dificultar la preparación de una estrategia jurídica dentro de los plazos legales. COPARENTIA ofrece una alternativa práctica para conservar la trazabilidad de los compromisos familiares y disponer de un registro organizado que facilite la consulta y el seguimiento de cada situación.',
-            extracto: 'COPARENTIA ofrece una alternativa práctica para conservar la trazabilidad de los compromisos familiares y disponer de un registro organizado que facilite la consulta y el seguimiento de cada situación.',
+            extracto: 'COPARENTIA ofrece una alternativa práctica para conservar la trazabilidad de los compromisos familiares…',
             nombre: 'Liliana Peñuela',
             especialidad: 'Abogada Litigante Especialista en Derecho de Familia',
             ciudad: 'Bogotá',
@@ -232,7 +235,7 @@ export default function Home() {
           {
             texto:
               'Como psicóloga que acompaña a adultos durante y después de un divorcio emocionalmente difícil, reconozco que reorganizar la vida y asumir una nueva dinámica familiar puede resultar abrumador. El acompañamiento psicológico ayuda a elaborar la pérdida, fortalecer los recursos personales y establecer límites saludables. En este camino, COPARENTIA puede apoyar la organización de acuerdos y responsabilidades relacionados con los hijos, aportando claridad para que cada persona pueda concentrarse también en su recuperación y bienestar emocional.',
-            extracto: 'En este camino, COPARENTIA puede apoyar la organización de acuerdos y responsabilidades relacionados con los hijos, aportando claridad para que cada persona pueda concentrarse también en su recuperación y bienestar emocional.',
+            extracto: 'En este camino, COPARENTIA puede apoyar la organización de acuerdos y responsabilidades relacionados con los hijos…',
             nombre: 'Sandra Pineda',
             especialidad: 'Magíster en Psicología Clínica',
             ciudad: 'Bogotá',
@@ -283,7 +286,7 @@ export default function Home() {
           {
             pregunta: '¿Mis datos financieros están seguros?',
             respuestaMarked:
-              'Tus datos viajan y se guardan con cifrado. [b]Nunca se comparten[/b] sin tu autorización.',
+              'Tus datos viajan y se guardan con cifrado. [b]Nunca se comparten[/b] sin tu autorización. El pago lo procesa Hotmart: los datos de tu tarjeta no pasan por Coparentia.',
           },
           {
             pregunta: '¿Funciona fuera de Colombia?',

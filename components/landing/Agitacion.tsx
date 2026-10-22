@@ -67,7 +67,7 @@ export function Agitacion({ titulo, frases, contraste, id }: AgitacionProps) {
               // se lea como una nota gris; la última es la promesa, en tamaño de cuerpo.
               className={
                 i === 0
-                  ? 'text-left text-[20px] font-semibold leading-[1.4] text-[var(--text-primary)] lg:text-[24px]'
+                  ? 'text-left text-[20px] font-medium leading-[1.4] text-[var(--text-primary)] lg:text-[24px]'
                   : 'text-left text-[16px] leading-[1.6] text-[var(--text-secondary)] lg:text-[19px]'
               }
             >

@@ -14,8 +14,11 @@ const FORMATO_CORREO = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 type Estado = 'quieto' | 'enviando' | 'listo' | 'error';
 
-const CAMPO =
-  'mt-1 h-12 w-full rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_35%,transparent)] bg-[var(--surface)] px-4 text-[16px] text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)]';
+// El campo con error cambia de borde (rojo de error con contraste), no solo muestra el mensaje debajo.
+const campo = (error?: string): string =>
+  `mt-1 h-12 w-full rounded-[var(--radius-button)] border bg-[var(--surface)] px-4 text-[16px] text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)] ${
+    error ? 'border-[var(--status-error)]' : 'border-[color-mix(in_oklab,var(--text-tertiary)_35%,transparent)]'
+  }`;
 
 function MensajeError({ id, texto }: { id: string; texto?: string }) {
   if (!texto) return null;
@@ -115,7 +118,8 @@ export function ListaEsperaPais() {
           }}
           aria-invalid={errores.pais ? true : undefined}
           aria-describedby={errores.pais ? `${id}-pais-err` : undefined}
-          className={CAMPO}
+          onBlur={() => !pais && setErrores((prev) => ({ ...prev, pais: 'Elige tu país.' }))}
+          className={campo(errores.pais)}
         >
           <option value="">Elige tu país</option>
           {PAISES.map((p) => (
@@ -143,7 +147,7 @@ export function ListaEsperaPais() {
             }}
             aria-invalid={errores.otro ? true : undefined}
             aria-describedby={errores.otro ? `${id}-otro-err` : undefined}
-            className={CAMPO}
+            className={campo(errores.otro)}
           />
           <MensajeError id={`${id}-otro-err`} texto={errores.otro} />
         </div>
@@ -166,7 +170,12 @@ export function ListaEsperaPais() {
           }}
           aria-invalid={errores.correo ? true : undefined}
           aria-describedby={errores.correo ? `${id}-correo-err` : undefined}
-          className={CAMPO}
+          onBlur={() =>
+            email.trim() &&
+            !FORMATO_CORREO.test(email.trim()) &&
+            setErrores((prev) => ({ ...prev, correo: 'Escribe un correo válido, por ejemplo nombre@correo.com.' }))
+          }
+          className={campo(errores.correo)}
         />
         <MensajeError id={`${id}-correo-err`} texto={errores.correo} />
       </div>
@@ -189,7 +198,9 @@ export function ListaEsperaPais() {
           className={`mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-[8px] border-2 transition-colors peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[var(--text-primary)] ${
             autoriza
               ? 'border-[var(--accent)] bg-[var(--accent)]'
-              : 'border-[color-mix(in_oklab,var(--text-tertiary)_55%,transparent)] bg-[var(--surface)]'
+              : errores.autoriza
+                ? 'border-[var(--status-error)] bg-[var(--surface)]'
+                : 'border-[color-mix(in_oklab,var(--text-tertiary)_55%,transparent)] bg-[var(--surface)]'
           }`}
         >
           {autoriza && <Check size={13} strokeWidth={3} color="var(--on-accent, var(--bg))" />}
