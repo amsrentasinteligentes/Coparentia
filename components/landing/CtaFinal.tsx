@@ -53,7 +53,7 @@ export function CtaFinal({
     <section
       id={id}
       aria-label="Empieza hoy"
-      className="relative overflow-hidden py-20 md:py-24"
+      className="relative overflow-hidden py-16 md:py-24"
       // En el tema oscuro: superficie elevada con halo. En la landing clara (tokens-claro.css):
       // degradé de marca con texto blanco — el "sector azul" que pidió el usuario.
       style={{ background: 'var(--cta-final-bg, var(--surface))' }}
@@ -79,7 +79,7 @@ export function CtaFinal({
         className="relative mx-auto flex max-w-[680px] flex-col items-center px-5 text-center"
       >
         {sello && (
-          <motion.div variants={item} className="mb-5 w-[80px]">
+          <motion.div variants={item} className="mb-6 w-[80px]">
             {sello}
           </motion.div>
         )}
@@ -116,7 +116,7 @@ export function CtaFinal({
         {psMarked !== undefined && (
           <motion.p
             variants={item}
-            className="mt-10 max-w-[520px] border-l-2 border-[var(--cta-final-text-3,var(--accent))] pl-4 text-left text-[16px] font-medium leading-[1.6] text-[var(--cta-final-text-2,var(--text-secondary))] lg:text-[17px]"
+            className="mt-12 max-w-[520px] border-l-2 border-[var(--cta-final-text-3,var(--accent))] pl-4 text-left text-[16px] font-medium leading-[1.6] text-[var(--cta-final-text-2,var(--text-secondary))] lg:text-[17px]"
           >
             <MarkedCopy text={psMarked} />
           </motion.p>

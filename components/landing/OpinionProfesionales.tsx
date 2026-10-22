@@ -9,7 +9,7 @@
 
 import { useId, useState } from 'react';
 import { motion } from 'motion/react';
-import { MapPin, Quote } from 'lucide-react';
+import { MapPin } from 'lucide-react';
 import { Kicker, SectionShell, useReveal, VIEWPORT_ONCE } from './ui';
 
 export interface CitaProfesional {
@@ -62,11 +62,20 @@ function TextoCita({ texto, extracto }: { texto: string; extracto?: string }) {
   );
 }
 
+function iniciales(nombre: string): string {
+  return nombre
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((p) => p[0]?.toUpperCase() ?? '')
+    .join('');
+}
+
 export function OpinionProfesionales({ kicker = 'OPINIÓN DE PROFESIONALES', titulo, citas, imagen, nota, id }: OpinionProfesionalesProps) {
   const { contenedor, item } = useReveal();
 
   return (
-    <SectionShell id={id} elevacion="base" ariaLabel="Opinión de profesionales de familia">
+    <SectionShell id={id} elevacion="marino" ariaLabel="Opinión de profesionales de familia">
       <motion.div
         variants={contenedor}
         initial="hidden"
@@ -75,25 +84,32 @@ export function OpinionProfesionales({ kicker = 'OPINIÓN DE PROFESIONALES', tit
         className="mx-auto max-w-[1040px]"
       >
         <motion.div variants={item} className="mx-auto max-w-[680px] text-center">
-          <Kicker>{kicker}</Kicker>
-          <h2 className="text-balance text-[28px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)] md:text-[40px] lg:text-[46px]">
+          <Kicker sobreMarino>{kicker}</Kicker>
+          <h2 className="text-balance text-[28px] font-bold leading-[1.15] text-[var(--on-marino)] [font-family:var(--font-display)] md:text-[40px] lg:text-[46px]">
             {titulo}
           </h2>
         </motion.div>
 
-        <div className="mt-10 grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,380px)] lg:items-start">
-          <motion.ul variants={item} className="flex flex-col gap-4">
+        <div className="mt-12 grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,380px)] lg:items-start">
+          {/* En celular las citas van en un carrusel horizontal con snap (la siguiente asoma, así se ve que se desliza), igual que
+              "Así se ve por dentro"; en pantallas grandes vuelven a ser una columna. */}
+          <motion.ul
+            variants={item}
+            aria-label="Opiniones de profesionales, desliza para ver más"
+            className="-mx-5 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:mx-0 lg:flex-col lg:overflow-visible lg:px-0"
+          >
             {citas.map((c) => (
               <li
                 key={c.nombre}
-                className="rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] bg-[var(--surface)] p-6 shadow-[var(--shadow-1)]"
+                className="w-[85%] max-w-[420px] shrink-0 snap-center rounded-[var(--radius-card)] bg-[var(--surface)] p-6 shadow-[var(--shadow-2)] lg:w-auto lg:max-w-none"
               >
                 <figure className="flex flex-col gap-4">
+                  {/* Monograma de quien opina (sus iniciales): le da un rostro tipográfico a cada cita sin inventar fotos. */}
                   <span
                     aria-hidden="true"
-                    className="hidden size-10 items-center justify-center rounded-full sm:flex border border-[color-mix(in_oklab,var(--accent)_22%,transparent)] bg-[var(--chip-bg)]"
+                    className="flex size-12 items-center justify-center rounded-full border border-[color-mix(in_oklab,var(--accent)_22%,transparent)] bg-[var(--chip-bg)] text-[16px] font-bold text-[var(--accent-ink)] [font-family:var(--font-display)]"
                   >
-                    <Quote size={18} strokeWidth={1.9} color="var(--accent)" aria-hidden="true" />
+                    {iniciales(c.nombre)}
                   </span>
                   <TextoCita texto={c.texto} extracto={c.extracto} />
                   <figcaption>
@@ -121,13 +137,13 @@ export function OpinionProfesionales({ kicker = 'OPINIÓN DE PROFESIONALES', tit
             >
               <img src={imagen.src} alt={imagen.alt} width={imagen.ancho} height={imagen.alto} loading="lazy" className="block h-auto w-full" />
             </a>
-            <figcaption className="mt-3 text-center text-[13px] leading-snug text-[var(--text-secondary)]">
-              {imagen.pie} <span className="text-[var(--text-tertiary)]">Tócala para ampliarla.</span>
+            <figcaption className="mt-3 text-center text-[13px] leading-snug text-[var(--on-marino-2)]">
+              {imagen.pie} Tócala para ampliarla.
             </figcaption>
           </motion.figure>
         </div>
 
-        <motion.p variants={item} className="mx-auto mt-8 max-w-[62ch] text-center text-[13px] leading-[1.55] text-[var(--text-tertiary)] lg:text-[14px]">
+        <motion.p variants={item} className="mx-auto mt-8 max-w-[62ch] text-center text-[13px] leading-[1.55] text-[var(--on-marino-2)] lg:text-[14px]">
           {nota}
         </motion.p>
       </motion.div>

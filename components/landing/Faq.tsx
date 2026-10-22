@@ -93,9 +93,9 @@ export function Faq({ kicker = 'PREGUNTAS', titulo = 'Lo que quizá te estás pr
                   className="overflow-hidden"
                 >
                   {it.respuesta ? (
-                    <div className="pb-5">{it.respuesta}</div>
+                    <div className="pb-6">{it.respuesta}</div>
                   ) : (
-                    <p className="pb-5 pr-9 text-[16px] leading-relaxed text-[var(--text-secondary)] lg:text-[17px]">
+                    <p className="pb-6 pr-8 text-[16px] leading-relaxed text-[var(--text-secondary)] lg:text-[17px]">
                       <MarkedCopy text={it.respuestaMarked} />
                     </p>
                   )}

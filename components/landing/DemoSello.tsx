@@ -98,7 +98,7 @@ export function DemoSello({ id, tituloMarked, subtitulo, pasos, video, ctaLabel,
           </motion.div>
 
           {/* El teléfono: mismo marco que la captura del hero, para que se lea como la misma app. */}
-          <motion.div variants={item} className="mt-10 flex justify-center lg:mt-0">
+          <motion.div variants={item} className="mt-12 flex justify-center lg:mt-0">
             <Hairline emphasis surface="surface" className="relative w-full max-w-[300px] p-2 shadow-[var(--shadow-2)] lg:max-w-[340px]">
               <video
                 ref={ref}

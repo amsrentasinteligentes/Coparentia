@@ -178,7 +178,7 @@ export function Solucion({
           </Hairline>
         </motion.div>
 
-        <motion.p variants={item} className="mt-5 max-w-[620px] text-[16px] leading-relaxed text-[var(--text-secondary)] md:text-[18px] lg:text-[20px]">
+        <motion.p variants={item} className="mt-6 max-w-[620px] text-[16px] leading-relaxed text-[var(--text-secondary)] md:text-[18px] lg:text-[20px]">
           <MarkedCopy text={bigIdeaMarked} />
         </motion.p>
 
@@ -186,8 +186,8 @@ export function Solucion({
             para que se lea el paso y se vea ocurriendo. Sin demo: la foto humana y los pasos
             en 3 columnas, como en el resto del kit. */}
         {demo ? (
-          <div className="mt-10 flex flex-col lg:grid lg:grid-cols-[0.95fr_1.05fr] lg:items-center lg:gap-16">
-            <motion.div variants={item} className="order-2 mt-10 flex flex-col items-center lg:order-2 lg:mt-0">
+          <div className="mt-12 flex flex-col lg:grid lg:grid-cols-[0.95fr_1.05fr] lg:items-center lg:gap-16">
+            <motion.div variants={item} className="order-2 mt-12 flex flex-col items-center lg:order-2 lg:mt-0">
               <Hairline emphasis surface="surface" className="relative w-full max-w-[280px] p-2 shadow-[var(--shadow-2)] lg:max-w-[320px]">
                 <video
                   ref={ref}
@@ -296,13 +296,13 @@ export function Solucion({
         ) : (
           <>
             {foto && (
-              <motion.div variants={item} className="relative mx-auto mt-10 h-[220px] w-full max-w-[520px] sm:h-[260px]">
+              <motion.div variants={item} className="relative mx-auto mt-12 h-[220px] w-full max-w-[520px] sm:h-[260px]">
                 <Blob variante="b" className="-left-6 -top-4 h-full w-[70%]" opacidad={0.12} />
                 <div className="absolute inset-y-0 right-0 w-[82%] overflow-hidden blob-b shadow-[var(--shadow-2)]">{foto}</div>
               </motion.div>
             )}
 
-            <ol className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-3">
+            <ol className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-3">
               {pasos.map((p, i) => (
                 <motion.li key={i} variants={item} className="flex items-start gap-4 md:flex-col">
                   <span
@@ -323,7 +323,7 @@ export function Solucion({
 
         {demo?.pie && (
           <motion.p variants={item} className="mt-8 flex items-start justify-center gap-2 text-[13px] text-[var(--text-tertiary)] lg:text-[14px]">
-            <ShieldCheck size={15} className="mt-[3px] shrink-0 text-[var(--accent-ink,var(--accent))]" aria-hidden="true" />
+            <ShieldCheck size={15} className="mt-1 shrink-0 text-[var(--accent-ink,var(--accent))]" aria-hidden="true" />
             {demo.pie}
           </motion.p>
         )}

@@ -167,11 +167,11 @@ export function Hero({
               <MarkedCopy text={h1Marked} />
             </motion.h1>
 
-            <motion.p variants={item} className="mt-5 max-w-[600px] text-[16px] leading-relaxed text-[var(--text-secondary)] md:text-[18px] lg:text-[21px]">
+            <motion.p variants={item} className="mt-6 max-w-[600px] text-[16px] leading-relaxed text-[var(--text-secondary)] md:text-[18px] lg:text-[21px]">
               <MarkedCopy text={subtitulo} />
             </motion.p>
 
-            <motion.div variants={item} className="mt-7 w-full sm:w-auto">
+            <motion.div variants={item} className="mt-6 w-full sm:w-auto">
               <CtaButton href={ctaHref} alto={56}>{ctaLabel}</CtaButton>
             </motion.div>
 
@@ -186,7 +186,7 @@ export function Hero({
               1 s más tarde (medido con Lighthouse). La burbuja sí conserva su entrada.
               LA ESCENA: forma orgánica + foto + captura + burbuja. Alto fijo por breakpoint para
               que no haya salto de layout (CLS 0) mientras cargan las imágenes. */}
-          <motion.div variants={{ hidden: { opacity: 1, y: 0 }, visible: { opacity: 1, y: 0 } }} className="relative mt-10 h-[390px] w-full max-w-[420px] sm:h-[420px] lg:mt-0 lg:h-[540px] lg:max-w-none lg:justify-self-end">
+          <motion.div variants={{ hidden: { opacity: 1, y: 0 }, visible: { opacity: 1, y: 0 } }} className="relative mt-12 h-[390px] w-full max-w-[420px] sm:h-[420px] lg:mt-0 lg:h-[540px] lg:max-w-none lg:justify-self-end">
             <Blob className="-right-10 -top-6 h-[92%] w-[88%]" opacidad={0.14} />
             {foto && (
               <div className="absolute right-0 top-0 h-[66%] w-[74%] overflow-hidden blob shadow-[var(--shadow-2)]">
@@ -244,7 +244,7 @@ export function Hero({
             variants={contenedor}
             initial="hidden"
             animate="visible"
-            className="mx-auto mt-10 grid w-fit max-w-[820px] grid-cols-1 gap-3 sm:w-auto sm:grid-cols-3 lg:mx-0 lg:max-w-none"
+            className="mx-auto mt-12 grid w-fit max-w-[820px] grid-cols-1 gap-3 sm:w-auto sm:grid-cols-3 lg:mx-0 lg:max-w-none"
           >
             {pilares.slice(0, 3).map((p) => (
               <motion.li

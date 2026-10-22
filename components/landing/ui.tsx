@@ -103,9 +103,13 @@ export function Accent({ children }: { children: ReactNode }) {
 }
 
 /* ── <Kicker> — caps 12px/600 tracking +0.08em en acento (máx 1 por sección) ── */
-export function Kicker({ children }: { children: ReactNode }) {
+export function Kicker({ children, sobreMarino = false }: { children: ReactNode; sobreMarino?: boolean }) {
   return (
-    <p className="mb-3 text-[13px] font-semibold uppercase tracking-[0.08em] text-[var(--accent-ink)] lg:text-[14px]">
+    <p
+      className={`mb-3 text-[13px] font-semibold uppercase tracking-[0.08em] lg:text-[14px] ${
+        sobreMarino ? 'text-[var(--accent-on-marino)]' : 'text-[var(--accent-ink)]'
+      }`}
+    >
       {children}
     </p>
   );
@@ -239,7 +243,7 @@ export function SectionShell({
   children,
 }: {
   id?: string;
-  elevacion?: 'base' | 'elevada';
+  elevacion?: 'base' | 'elevada' | 'marino';
   compacta?: boolean;
   flush?: 'none' | 'top' | 'bottom';
   ariaLabel?: string;
@@ -251,13 +255,21 @@ export function SectionShell({
   /* Degradé suave dentro de la misma familia de FICHA-ARTE (nunca un color nuevo):
      mesh radial del acento sobre la superficie base/elevada — rompe el fill plano
      sin tocar los hex aprobados (solo color-mix del token ya existente). */
+  /* Las secciones "flush" son UN movimiento visual: la de arriba no pinta su resplandor inferior y la de abajo no pinta el
+     superior, para que no haya costura de tono entre las dos (revisor, landing g3). */
+  const brilloArriba =
+    'radial-gradient(1100px 620px at 15% -10%, color-mix(in oklab, var(--accent) 16%, transparent) 0%, transparent 60%), ';
+  const brilloAbajo =
+    'radial-gradient(700px 500px at 105% 105%, color-mix(in oklab, var(--accent) 12%, transparent) 0%, transparent 55%), ';
   const mesh =
-    elevacion === 'elevada'
-      ? 'radial-gradient(1100px 620px at 15% -10%, color-mix(in oklab, var(--accent) 16%, transparent) 0%, transparent 60%), ' +
-        'radial-gradient(700px 500px at 105% 105%, color-mix(in oklab, var(--accent) 12%, transparent) 0%, transparent 55%), ' +
-        'var(--surface)'
-      : 'radial-gradient(900px 560px at 100% -5%, color-mix(in oklab, var(--accent) 13%, transparent) 0%, transparent 60%), ' +
-        'var(--bg)';
+    elevacion === 'marino'
+      ? 'radial-gradient(900px 520px at 85% -10%, color-mix(in oklab, var(--accent-on-marino) 22%, transparent) 0%, transparent 60%), ' +
+        'radial-gradient(700px 480px at -5% 110%, color-mix(in oklab, var(--accent-on-marino) 12%, transparent) 0%, transparent 60%), ' +
+        'linear-gradient(180deg, var(--marino-2), var(--marino))'
+      : elevacion === 'elevada'
+        ? (flush === 'top' ? '' : brilloArriba) + (flush === 'bottom' ? '' : brilloAbajo) + 'var(--surface)'
+        : 'radial-gradient(900px 560px at 100% -5%, color-mix(in oklab, var(--accent) 13%, transparent) 0%, transparent 60%), ' +
+          'var(--bg)';
   /* Hairline horizontal en el cambio base↔elevada (nunca entre secciones "flush",
      que son UN solo movimiento visual — 55 T1): ancla el ojo al límite exacto de
      cada bloque, el mismo problema que "Secciones adyacentes distinguibles". */

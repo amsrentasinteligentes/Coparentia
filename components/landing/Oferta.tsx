@@ -100,7 +100,7 @@ function Features({ items, origen }: { items: string[]; origen: string }) {
   warnRango(`${origen} → features`, items.length, 4, 6);
   items.forEach((f, i) => warnCopy(`${origen} → feature ${i + 1}`, f, 12));
   return (
-    <ul className="mt-5 flex flex-col gap-3">
+    <ul className="mt-6 flex flex-col gap-3">
       {items.map((f, i) => (
         <li key={i} className="flex items-start gap-3 text-[16px] leading-snug text-[var(--text-primary)] lg:text-[17px]">
           <CheckCustom />
@@ -163,7 +163,7 @@ export function Oferta({
         )}
 
         {/* Cards: ANUAL PRIMERO en el DOM — en mobile apilado arriba, nunca scroll horizontal */}
-        <div className="mx-auto mt-10 grid max-w-[880px] grid-cols-1 items-stretch lg:max-w-[1000px] gap-6 md:grid-cols-2">
+        <div className="mx-auto mt-12 grid max-w-[880px] grid-cols-1 items-stretch lg:max-w-[1000px] gap-6 md:grid-cols-2">
           {/* ── ANUAL (recomendado): hairline 2px + fondo acento sutil + sombra tintada ── */}
           <motion.div variants={item} className="relative">
             {anual.badge && (

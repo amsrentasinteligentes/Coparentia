@@ -39,6 +39,15 @@
   --halo-alpha: 12%;
   --marcador-color: var(--accent-ink); /* <Marcador> del funnel: palabra clave en acento, sin subrayado (como <Accent>) */               /* <Halo> del funnel: sobre claro, 26% era una mancha (2026-09-18) */
 
+  /* ── BANDA MARINO (ritmo de la página, 2026-10-22): el marino de tokens-app-claro.css (#0B2A57) como fondo de UNA sección
+        a mitad de página. Contrastes medidos sobre #0B2A57: --on-marino #E7EEF8 ≈ 12:1 · --on-marino-2 #B8C7E0 ≈ 8:1 ·
+        --accent-on-marino #7BA6EE ≈ 5.8:1 (el acento normal #2F6FDC NO sirve aquí: ≈ 2.4:1). ── */
+  --marino: #0b2a57;
+  --marino-2: #123a73;
+  --on-marino: #e7eef8;
+  --on-marino-2: #b8c7e0;
+  --accent-on-marino: #7ba6ee;
+
   /* ── FORMA: todo curvo (dispositivo de la dirección C) ── */
   --radius-card: 22px;
   --radius-button: 999px;

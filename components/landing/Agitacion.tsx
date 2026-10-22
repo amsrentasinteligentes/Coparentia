@@ -72,7 +72,7 @@ export function Agitacion({ titulo, frases, contraste, id }: AgitacionProps) {
 
         {contraste && (
           <motion.div variants={item} className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <div className="flex items-center gap-4 rounded-[var(--radius-card)] bg-[var(--bg)] p-5">
+            <div className="flex items-center gap-4 rounded-[var(--radius-card)] bg-[var(--bg)] p-6">
               {contraste.anilloHoy !== undefined && (
                 <div className="relative shrink-0">
                   <MiniRing value={contraste.anilloHoy} tone="muted" />
@@ -89,7 +89,7 @@ export function Agitacion({ titulo, frases, contraste, id }: AgitacionProps) {
               </div>
             </div>
             {/* "si nada cambia": más apagado/frío — el peso lo pone el copy, no el rojo */}
-            <div className="flex items-center gap-4 rounded-[var(--radius-card)] bg-[var(--surface-2)] p-5">
+            <div className="flex items-center gap-4 rounded-[var(--radius-card)] bg-[var(--surface-2)] p-6">
               {contraste.anilloFuturo !== undefined && (
                 <div className="relative shrink-0">
                   <MiniRing value={contraste.anilloFuturo} tone="muted" />

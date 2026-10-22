@@ -133,7 +133,7 @@ export function AppPorDentro({
         </motion.div>
 
         {/* Pista con scroll-snap + fade en ambos bordes (mask-image) */}
-        <motion.div variants={item} className="mt-10">
+        <motion.div variants={item} className="mt-12">
           <div
             ref={scrollerRef}
             onPointerDown={onPointerDown}
@@ -141,7 +141,7 @@ export function AppPorDentro({
             onPointerUp={onPointerUp}
             onPointerLeave={onPointerUp}
             onDragStart={(e) => e.preventDefault()}
-            className="flex snap-x snap-mandatory gap-5 overflow-x-auto px-[max(20px,calc(50%-125px))] pb-2 lg:px-[calc(50%-395px)] select-none [scrollbar-width:none] active:cursor-grabbing md:cursor-grab [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)] [&::-webkit-scrollbar]:hidden"
+            className="flex snap-x snap-mandatory gap-6 overflow-x-auto px-[max(20px,calc(50%-125px))] pb-2 lg:px-[calc(50%-395px)] select-none [scrollbar-width:none] active:cursor-grabbing md:cursor-grab [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)] [&::-webkit-scrollbar]:hidden"
           >
             {frames.map((f, i) => (
               <div key={i} className="shrink-0 snap-center">
@@ -222,7 +222,7 @@ export function AppPorDentro({
 
         {/* CTA mid-page (reglas de CTA de 19): tras la prueba visual, cuando la confianza es alta */}
         {ctaLabel && ctaHref && (
-          <motion.div variants={item} className="mt-10 flex justify-center">
+          <motion.div variants={item} className="mt-12 flex justify-center">
             <CtaButton href={ctaHref}>{ctaLabel}</CtaButton>
           </motion.div>
         )}
