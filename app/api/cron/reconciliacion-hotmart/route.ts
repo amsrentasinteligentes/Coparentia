@@ -16,6 +16,7 @@ import { obtenerTodasLasSuscripciones, deberiaTenerAcceso, credencialesHotmartCo
 import { tieneAccesoCompleto, type Status } from '@/lib/membership-fsm';
 import { enviarCorreoDriftDetectado } from '@/lib/email';
 import { comparacionSegura } from '@/lib/hotmart-verify';
+import { reportarError } from '@/lib/monitoreo';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
@@ -41,6 +42,7 @@ export async function GET(request: Request): Promise<NextResponse> {
     suscripcionesHotmart = await obtenerTodasLasSuscripciones(productId);
   } catch (e) {
     console.error('reconciliación hotmart: fallo al leer la API', e instanceof Error ? e.message : e);
+    reportarError('reconciliación hotmart: fallo al leer la API');
     return NextResponse.json({ error: 'fallo al leer la API de Hotmart' }, { status: 502 });
   }
 

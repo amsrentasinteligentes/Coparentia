@@ -10,6 +10,7 @@ import { crearClienteSupabaseAdmin } from '@/lib/supabase/admin';
 import { enviarConstanciasDelPeriodo, mesAnteriorEnColombia } from '@/lib/constancias';
 import { hoyEnColombia } from '@/lib/fecha';
 import { comparacionSegura } from '@/lib/hotmart-verify';
+import { reportarError } from '@/lib/monitoreo';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
@@ -39,6 +40,7 @@ export async function GET(request: Request): Promise<NextResponse> {
     .not('otro_progenitor_email', 'is', null);
   if (error) {
     console.error('cron constancias: no se pudo leer los perfiles', error.message);
+    reportarError('cron constancias: no se pudo leer los perfiles');
     return NextResponse.json({ error: 'fallo al leer perfiles' }, { status: 500 });
   }
 

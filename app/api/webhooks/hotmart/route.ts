@@ -11,6 +11,7 @@ import { createClient } from '@supabase/supabase-js';
 import { verificarHotmart } from '@/lib/hotmart-verify';
 import { estadoParaEvento, tieneAccesoCompleto, type Status } from '@/lib/membership-fsm';
 import { evaluarProducto } from '@/lib/hotmart-catalogo';
+import { reportarError } from '@/lib/monitoreo';
 import { enviarCorreoBienvenida, enviarCorreoCancelacion, enviarCorreoPagoFallido } from '@/lib/email';
 import { TRIAL_DIAS } from '@/lib/precios';
 
@@ -113,6 +114,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   );
   if (veredictoProducto === 'config_faltante') {
     console.error('webhook hotmart: falta HOTMART_PRODUCT_ID — todo aviso se rechaza hasta configurarla');
+    reportarError('webhook hotmart: falta HOTMART_PRODUCT_ID, se rechazan todos los avisos');
     await registrar(eventId, evento, 'unauthorized');
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 }); // 4xx/5xx → Hotmart reintenta: no se pierde el aviso
   }
@@ -164,6 +166,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   if (error) {
     // Nunca loguear el payload completo (correo/nombre = datos personales) — solo el código.
     console.error('webhook hotmart error', { evento, code: error.code });
+    reportarError('webhook hotmart: no se pudo aplicar el aviso', { evento: String(evento), code: error.code });
     await registrar(eventId, evento, 'error');
     return NextResponse.json({ error: 'processing failed' }, { status: 500 }); // 5xx → Hotmart reintenta
   }

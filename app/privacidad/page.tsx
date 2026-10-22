@@ -401,7 +401,7 @@ export default function Privacidad() {
           <Seccion numero="17" titulo="Encargados del Tratamiento y proveedores">
             <p>
               Coparentia podrá utilizar proveedores para alojamiento en nube, almacenamiento,
-              mensajería, autenticación, atención al cliente, analítica técnica, pasarelas de pago,
+              mensajería, autenticación, atención al cliente, analítica técnica, monitoreo de errores técnicos, pasarelas de pago,
               facturación, ciberseguridad, respaldo y otros servicios necesarios. Cuando un
               proveedor trate datos por cuenta de Coparentia actuará como Encargado del Tratamiento
               y deberá estar sujeto a obligaciones contractuales sobre alcance, finalidad,
@@ -409,7 +409,7 @@ export default function Privacidad() {
               supresión de datos y cumplimiento de las instrucciones de Coparentia. Coparentia
               mantendrá un inventario interno actualizado de encargados; la lista de proveedores que
               hoy tratan datos por cuenta de Coparentia (alojamiento, base de datos, correo,
-              inteligencia artificial y procesamiento de pagos) puede solicitarse escribiendo a
+              inteligencia artificial, monitoreo de errores técnicos y procesamiento de pagos) puede solicitarse escribiendo a
               soporte@coparentia.co.
             </p>
           </Seccion>

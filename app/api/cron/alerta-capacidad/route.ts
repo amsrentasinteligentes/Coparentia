@@ -17,6 +17,7 @@ import { NextResponse } from 'next/server';
 import { crearClienteSupabaseAdmin } from '@/lib/supabase/admin';
 import { enviarCorreoAlertaCapacidad, type AvisoCapacidad } from '@/lib/email';
 import { comparacionSegura } from '@/lib/hotmart-verify';
+import { reportarError } from '@/lib/monitoreo';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
@@ -45,6 +46,7 @@ export async function GET(request: Request): Promise<NextResponse> {
   const { data, error } = await admin.rpc('uso_del_proyecto');
   if (error || !data) {
     console.error('cron alerta-capacidad: no se pudo leer el uso', error?.message);
+    reportarError('cron alerta-capacidad: no se pudo leer el uso');
     return NextResponse.json({ error: 'fallo al leer el uso' }, { status: 500 });
   }
   const uso = data as Uso;
