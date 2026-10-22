@@ -69,7 +69,7 @@ export function SelloMarca({
           </>
         ) : (
           <>
-            <image href="/logo-isotipo.png" x="30" y="20" width="60" height="60" />
+            <image href="/logo-isotipo-160.webp" x="30" y="20" width="60" height="60" />
             <circle cx="91" cy="70" r="12.5" fill="#fff" />
             <circle cx="91" cy="70" r="10" style={{ fill: 'var(--accent, #2f6fdc)' }} />
             <path d="M86 70.5l3.6 3.6 6.6-7.2" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />

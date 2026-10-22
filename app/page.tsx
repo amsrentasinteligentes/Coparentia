@@ -75,10 +75,10 @@ export default function Home() {
             </span>
           </span>
         }
-        visual={<img src="/frame-inicio.webp" alt="Pantalla de inicio de Coparentia: tu expediente con el avance del mes, el total registrado y los últimos movimientos" className="w-full" />}
+        visual={<img src="/frame-inicio.webp" alt="Pantalla de inicio de Coparentia: tu expediente con el avance del mes, el total registrado y los últimos movimientos" width={800} height={1616} className="h-auto w-full" />}
         // Fotos de Unsplash (licencia Unsplash: uso comercial libre) elegidas por el usuario el 2026-09-18
         // (opciones A y E de docs/referencias-diseno/fotos-propuesta.html), optimizadas a 1200px en public/fotos/.
-        foto={<img src="/fotos/hero-mama-hijo-celular.jpg" alt="Mamá e hijo sonriendo mientras miran el celular en el sofá" className="h-full w-full object-cover object-[60%_35%]" width={1200} height={675} />}
+        foto={<img src="/fotos/hero-mama-hijo-celular-1200.webp" srcSet="/fotos/hero-mama-hijo-celular-640.webp 640w, /fotos/hero-mama-hijo-celular-1200.webp 1200w" sizes="(max-width: 1023px) 80vw, 560px" alt="Mamá e hijo sonriendo mientras miran el celular en el sofá" fetchPriority="high" className="h-full w-full object-cover object-[60%_35%]" width={1200} height={675} />}
         // "10 minutos" es el tiempo medido del onboarding + primer comprobante — no una cifra de marketing inventada.
         burbuja={{ titulo: 'Tu primer expediente', dato: 'Listo en 10 minutos' }}
         sello={<SelloMarca />}

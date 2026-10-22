@@ -25,7 +25,7 @@ export default function AvisoIA() {
           <p>
             La lectura automática puede ser incorrecta o incompleta — una foto borrosa, un recibo
             manuscrito o un formato inusual pueden confundir a la IA. El monto detectado{' '}
-            <strong>siempre aparece marcado como "Detectado automáticamente" y queda sujeto a tu
+            <strong>siempre aparece marcado como &quot;Detectado automáticamente&quot; y queda sujeto a tu
             revisión</strong> antes de guardarse: tú decides si lo confirmas o lo corriges. Nada se
             registra en tu expediente sin que tú lo veas primero.
           </p>

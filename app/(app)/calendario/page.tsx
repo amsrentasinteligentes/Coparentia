@@ -183,7 +183,7 @@ export default function Calendario() {
                   <div className="flex flex-col items-center py-6 text-center">
                     <IconoCirculo icon={CalendarDays} size={22} />
                     <p className="mt-3 text-[14px] font-bold text-[var(--text-primary)]">Sin eventos este mes</p>
-                    <p className="mt-1 max-w-[30ch] text-[13px] text-[var(--text-secondary)]">Toca un día del calendario o el botón "Nuevo evento" para registrar una visita, una cita o una llamada.</p>
+                    <p className="mt-1 max-w-[30ch] text-[13px] text-[var(--text-secondary)]">Toca un día del calendario o el botón &quot;Nuevo evento&quot; para registrar una visita, una cita o una llamada.</p>
                   </div>
                 ) : (
                   <ul className="mt-1 flex flex-col">

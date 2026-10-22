@@ -1,3 +1,13 @@
+### Checkpoint (2026-10-22) — Mercadeo: plan consolidado, semana 2 planeada, biblioteca de 20 piezas sin publicar
+- `docs/marketing/PLAN-DE-MARKETING.md` es el archivo único del plan (pilares, reglas, calendario, método de producción, medición, pendientes).
+  Incluye la sección 5B (semana 2 como prueba con reglas de decisión para pocos datos) y la 5C (biblioteca de 20 piezas de `docs/piezas/`,
+  ligada al plan: «¿Te suena?» para el viernes, 3 pasos para el jueves, comparación para el pilar 1). Ninguna de esas 20 piezas está publicada.
+- Estado: video del lunes hecho y con buena aceptación (se deja tal cual); carrusel del pilar 4 listo, cifras DANE verificadas, falta
+  confirmar el botón del Linktree `?src=pilar4`; miércoles/jueves/viernes de la semana 1 y la semana 2 por producir o publicar.
+- Al publicar con las piezas de `docs/piezas/`, cambiar el cierre «coparentia.co» por «Link en la bio».
+- Esta sesión solo toca archivos de marketing; los veredictos NO LISTA de landing, onboarding y paywall y los cambios en app/ son de la
+  sesión de auditoría, que sigue abierta (no se lanza el revisor visual hasta que el dueño lo pida).
+
 ### Checkpoint (2026-10-13) — Carrusel del pilar 4: cifras del DANE VERIFICADAS
 - 36,1 % (jefatura femenina) y 28,4 % (masculina), año 2024, total nacional: boletín técnico DANE «Pobreza monetaria en Colombia 2024»
   (24/07/2025), página 9, sección 1.5 (y Tabla 2, pág. 10). Verificado leyendo el PDF oficial. Pendiente solo confirmar que el botón del Linktree apunte a `https://coparentia.co/?src=pilar4`.
@@ -4785,3 +4795,10 @@ Se hacen juntos al tocar la sección de planes (hallazgos 3 y 9), para revisar u
 - Estudio de países (sin tocar la app): Colombia sigue como único mercado. Segundo mercado a validar: México (el mayor, ~3x el público de Colombia en Meta) o Chile (un solo marco legal); Argentina tercera (misma frase "cuota alimentaria", riesgo de moneda); Ecuador y Perú al final. Datos: Trends (interés por frase y país) y Meta (padres 25–60: CO 3,6–4,2M · MX 10,7–12,6M · AR 4,9–5,7M · CL 2,1–2,5M · EC 1,1–1,3M). Puntajes son criterio propio; leyes, pagos y competencia por país sin verificar (abogado local antes de abrir cualquier país).
 - Publicado: formulario "lista de espera por país" en la pregunta "¿Funciona fuera de Colombia?" (`components/landing/ListaEsperaPais.tsx`, `app/api/lista-espera/route.ts`, tabla `lista_espera_paises` creada en Supabase producción por el dueño, política de privacidad 6.9). Guardado probado en local (fila de prueba borrada por el dueño). Pendiente: texto 6.9 sin revisión de abogado; la lista solo se llena si llegan visitas de otros países.
 - Problemas conocidos (sin cambios): veredicto:landing, veredicto:onboarding, veredicto:paywall siguen NO LISTA por usabilidad (30/40); no es seguridad ni datos.
+
+### Checkpoint (2026-10-22) — CERTIFICACIÓN PRE-LANZAMIENTO: ❌ NO APTO · 54/100 (rama `certificacion-prelanzamiento`, SIN publicar)
+- Certificado /100: VENTA 16/20 · FUNNEL 13/20 · PRODUCTO 3/20 (app interna NO medida) · CONFIANZA 10/15 · VELOCIDAD 4/10 · RETENCIÓN 8/15. Documentos en `docs/release/` (CERTIFICADO-PRE-LANZAMIENTO, CLAIMS-LEDGER, PAYMENT/ECONOMICS-CERTIFICATION, PRIVACY-DATA-MAP, PUBLICATION-CERTIFICATE, RELEASE-MANIFEST) y `docs/MANUAL-DEL-DUENO.md`.
+- Corregido en la rama: Next 16.3.4 → 16.4.2 (npm audit 4 vulns → 0), CSP en solo-reporte, isotipo 341 KB → 18 KB, foto del hero en webp y visible sin esperar JS, `/api/version`, README, script `typecheck`, 8 errores de lint. tsc ✓ build ✓. Producción sigue en `6fe327a` con Next vulnerable hasta que el dueño diga "publica".
+- Bloqueantes abiertos: (1) publicar esta rama; (2) prueba real de cancelación/reembolso en Hotmart; (3) pasar Supabase Free → Pro antes del primer cliente; (4) sin Sentry ni página de estado; (5) sin prueba de IDOR (dos cuentas); (6) pantallas en 30/40 (decisión: aceptar o rediseño de marca); (7) app interna sin medir (el dueño inicia sesión con la cuenta demo en el navegador integrado); (8) costo de IA sin medir (`ai_calls`); (9) cuenta demo@coparentia.co en producción.
+- Mediciones: Lighthouse móvil en producción 75 · LCP 6,2 s · CLS 0; compilación corregida local 79–82 · LCP ≈5 s · CLS 0. Revisor r27: 30/15/15 · 30/14/14 · 30/14/15.
+- Problemas conocidos (sin cambios): veredicto:landing, veredicto:onboarding, veredicto:paywall NO LISTA por usabilidad (30/40).

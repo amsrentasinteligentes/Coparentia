@@ -440,7 +440,7 @@ export function CabeceraApp({ aviso = false }: { aviso?: boolean }) {
   return (
     <header className="flex items-center justify-between bg-[var(--surface)] px-4 pb-2 pt-[max(10px,env(safe-area-inset-top))]">
       <Link href="/inicio" className="flex items-center gap-2 [touch-action:manipulation]">
-        <img src="/logo-isotipo.png" alt="" aria-hidden="true" className="size-8 object-contain" />
+        <img src="/logo-isotipo-160.webp" alt="" aria-hidden="true" className="size-8 object-contain" />
         <span>
           <span className="block text-[18px] font-extrabold leading-none tracking-[-0.01em] text-[var(--text-primary)] [font-family:var(--font-display)]">Coparentia</span>
           <span className="mt-0.5 block text-[10px] text-[var(--text-secondary)]">Tu expediente, en confianza.</span>

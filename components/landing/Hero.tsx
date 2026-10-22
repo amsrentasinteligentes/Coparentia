@@ -14,6 +14,7 @@
 // enlaces de sección en computador (las tres referencias los tienen; en celular sigue mínimo).
 
 import type { ReactNode } from 'react';
+import Link from 'next/link';
 import { motion, useReducedMotion } from 'motion/react';
 import { Camera } from 'lucide-react';
 import { Blob, CheckCustom, CountUp, CtaButton, useReveal } from './ui';
@@ -111,10 +112,10 @@ export function Hero({
         {/* Header 64px: marca a la izquierda; en computador enlaces de sección + CTA chico;
             en celular SOLO "Entrar" terciario (19). */}
         <header className="flex h-16 items-center justify-between gap-4">
-          <a href="/" className="flex shrink-0 items-center gap-2 text-[16px] font-semibold text-[var(--text-primary)] lg:text-[18px]">
+          <Link href="/" className="flex shrink-0 items-center gap-2 text-[16px] font-semibold text-[var(--text-primary)] lg:text-[18px]">
             {logo ?? <span aria-hidden="true" className="size-6 rounded-[8px] bg-[var(--accent)]" />}
             {!marcaSoloLogo && appName}
-          </a>
+          </Link>
           <nav aria-label="Secciones" className="flex items-center gap-0 sm:gap-2">
             {navLinks.slice(0, 4).map((l) => (
               <a
@@ -180,9 +181,12 @@ export function Hero({
             )}
           </div>
 
-          {/* LA ESCENA: forma orgánica + foto + captura + burbuja. Alto fijo por breakpoint para
+          {/* LA ESCENA (2026-10-22): sin desvanecimiento de entrada. La foto es el elemento más grande de la pantalla en celular
+              (LCP): si nacía con opacity 0 hasta que cargaba el JavaScript, el navegador no la contaba y el sitio parecía cargar
+              1 s más tarde (medido con Lighthouse). La burbuja sí conserva su entrada.
+              LA ESCENA: forma orgánica + foto + captura + burbuja. Alto fijo por breakpoint para
               que no haya salto de layout (CLS 0) mientras cargan las imágenes. */}
-          <motion.div variants={item} className="relative mt-10 h-[390px] w-full max-w-[420px] sm:h-[420px] lg:mt-0 lg:h-[540px] lg:max-w-none lg:justify-self-end">
+          <motion.div variants={{ hidden: { opacity: 1, y: 0 }, visible: { opacity: 1, y: 0 } }} className="relative mt-10 h-[390px] w-full max-w-[420px] sm:h-[420px] lg:mt-0 lg:h-[540px] lg:max-w-none lg:justify-self-end">
             <Blob className="-right-10 -top-6 h-[92%] w-[88%]" opacidad={0.14} />
             {foto && (
               <div className="absolute right-0 top-0 h-[66%] w-[74%] overflow-hidden blob shadow-[var(--shadow-2)]">
