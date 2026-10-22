@@ -41,6 +41,9 @@ Vercel → Deployments → busca el despliegue anterior que funcionaba (el que d
 | "Sesión pausada" o la app deja de responder tras días sin uso | El plan gratuito de Supabase se pausa a los 7 días sin actividad: entra a Supabase y toca "Restore". **Esto es un riesgo real con clientes: pasa al plan Pro antes de vender.** |
 | La IA que lee recibos falla | Es normal: la app pasa a registro manual. Revisa la tabla `ai_calls` y el panel de Anthropic. |
 
+## 6B. Cuándo subir Supabase a Pro
+Tu app te escribe sola a `soporte@coparentia.co` cuando la base de datos o las fotos pasan del 70% del plan gratuito, o cuando ya hay 3 clientes que pagan. Además, una vez al mes haz la revisión de 5 minutos de `docs/release/REVISION-MENSUAL-SUPABASE.md` (descargas del mes, cuentas de prueba, correos por hora).
+
 ## 7. Lo que cuesta (resumen)
 Supabase Pro US$25/mes · Vercel Pro US$20/mes · Resend gratis hasta ~3.000 correos/mes · Hotmart ≈10% + tarifa por venta · dominio ≈US$25-35/año. Detalle y fuentes en `ESTADO.md` (24/09/2026) y `docs/release/ECONOMICS-CERTIFICATION.md`.
 
