@@ -16,6 +16,16 @@
   por WhatsApp en la agitación (sin lenguaje legal) y "Coparentia" sin mayúsculas. Altura de la landing 9.620 → 9.555 px. Pendiente de
   capas 2-6: ritmo de fondos con banda marino, carrusel de opiniones, sello como dispositivo, FAQ "Avísame", burbuja del hero cortada.
 
+- RONDAS DEL REVISOR sobre la landing (rama `rediseno-base`): ronda 1 → 30/40 · 15/20 · 16/20 copy; ronda 2 → **31/40** · 15/20 · 16/20,
+  veredicto NO LISTA (h9 errores subió a 4 por FAQ con `inert` y rojo de error con contraste; las otras 9 heurísticas siguen en 3). Tras la
+  ronda 2 se aplicó (sin revisar aún): línea de costo en la agitación (del dolor 1 de FICHA-AVATAR), "Cancelas antes del día 8 y no pagas
+  nada" bajo la barra de la Anual (verificado: cancelar en prueba no cobra), etiquetas de la barra en una línea, viñetas propias en la Mensual,
+  "Hotmart, la plataforma de pagos" (también en el paywall vía `FRASE_MONTO_HOTMART`), puntos del carrusel iguales a los de "Así se ve por dentro".
+  Lo que el revisor pide aún para 4 en cada heurística (pendiente): estado "Abriendo…" en los CTA, pie en lenguaje llano ("Aviso de IA", "SIC"),
+  "volver arriba"/ir a Planes, un solo tamaño de botón sólido (hoy 56/52/48) y un solo botón outline, errores por campo en la lista de espera,
+  flechas de teclado en los carruseles, quitar píldoras del hero, reducir la tarjeta Anual (11 elementos), respuesta a "¿cómo cancelo?" en el FAQ.
+  Pendiente de las otras 2 pantallas (onboarding, planes): no tocadas todavía.
+
 ### PUNTO DE CONTROL (2026-10-22, noche) — ANTES del rediseño de diseño desde la base
 - Etiqueta `punto-de-control-2026-10-22` y rama `punto-de-control-2026-10-22` en GitHub = estado completo previo al rediseño (código en
   producción `e0afb60` + documentos al día). Para volver: `git switch -c volver punto-de-control-2026-10-22` (no toca producción).

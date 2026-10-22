@@ -89,7 +89,7 @@ function BarraPrueba({ dias }: { dias: number }) {
         />
       </div>
       <div className="mt-1 flex justify-between text-[13px] font-medium text-[var(--text-secondary)]">
-        <span>Hoy: sin cobro, registras tu medio de pago</span>
+        <span>Hoy: sin cobro</span>
         <span>Día {DIA_PRIMER_COBRO}: primer cobro</span>
       </div>
     </div>
@@ -194,8 +194,14 @@ export function Oferta({
                     {anual.ctaLabel}
                   </CtaButton>
                   {trialDias !== undefined && (
-                    // Una sola vez el mensaje "hoy sin cobro, primer cobro el día 8": va en las etiquetas de la barra, no repetido debajo.
-                    <BarraPrueba dias={trialDias} />
+                    <>
+                      <BarraPrueba dias={trialDias} />
+                      {/* "Hoy sin cobro / día 8 primer cobro" vive solo en las etiquetas de la barra; debajo va la salida (objeción 5 de
+                          FICHA-AVATAR: ¿y si no me sirve?). Es verdad: cancelar durante la prueba no genera ningún cobro. */}
+                      <p className="mt-2 text-center text-[14px] text-[var(--text-secondary)] lg:text-[15px]">
+                        Cancelas antes del día {DIA_PRIMER_COBRO} y no pagas nada.
+                      </p>
+                    </>
                   )}
                 </div>
               </div>

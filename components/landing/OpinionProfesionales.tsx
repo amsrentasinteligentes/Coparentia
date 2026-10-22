@@ -153,9 +153,10 @@ export function OpinionProfesionales({ kicker = 'OPINIÓN DE PROFESIONALES', tit
                 aria-current={activa === i}
                 className="flex size-11 items-center justify-center [touch-action:manipulation]"
               >
+                {/* Mismos puntos que "Así se ve por dentro" (círculo de 8 px, el activo en el color de acento): un solo patrón. */}
                 <span
-                  className={`block h-2 rounded-full transition-[width,background-color] duration-200 ease-out ${
-                    activa === i ? 'w-6 bg-[var(--accent-on-marino)]' : 'w-2 bg-[var(--on-marino-2)] opacity-60'
+                  className={`size-2 rounded-full transition-colors duration-200 ${
+                    activa === i ? 'bg-[var(--accent-on-marino)]' : 'bg-[color-mix(in_oklab,var(--on-marino-2)_40%,transparent)]'
                   }`}
                 />
               </button>

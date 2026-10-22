@@ -18,7 +18,7 @@ export const DIA_PRIMER_COBRO = TRIAL_DIAS + 1;
 /** Nombre con el que el vendedor aparece en el checkout de Hotmart. */
 export const NOMBRE_VENDEDOR_HOTMART = 'amsrentasinteligentes';
 
-export const FRASE_MONTO_HOTMART = 'El monto final en tu moneda lo calcula Hotmart al pagar.';
+export const FRASE_MONTO_HOTMART = 'El monto final en tu moneda lo calcula Hotmart, la plataforma de pagos, al pagar.';
 
 export const PRECIOS = {
   anual: {

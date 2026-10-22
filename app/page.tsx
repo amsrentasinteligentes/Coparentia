@@ -118,6 +118,8 @@ export default function Home() {
         // Escena real del avatar (FICHA-AVATAR: el reclamo por WhatsApp) en vez de lenguaje legal, y una sola línea de promesa.
         frases={[
           'Te escriben por WhatsApp reclamando un pago y buscas el comprobante entre capturas.',
+          // El costo, tomado de FICHA-AVATAR (dolor 1): la noche entera buscando en chats viejos para demostrar que sí pagó.
+          'Y pasas la noche buscando en chats de meses atrás para demostrar que sí pagaste.',
           'Con Coparentia cada pago, visita y acuerdo queda registrado, con fecha y en un solo lugar.',
         ]}
       />
@@ -190,7 +192,7 @@ export default function Home() {
           // Antes repetía 4 de los 5 bullets del plan anual y el diferenciador real se diluía.
           // Ahora dice solo en qué se diferencia: mismas funciones, sin compromiso de 12 meses.
           features: [
-            'Todas las funciones del plan Anual',
+            'Sello, PDF y alertas, igual que el plan Anual',
             'Sin compromiso de 12 meses',
           ],
         }}
