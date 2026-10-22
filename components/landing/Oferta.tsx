@@ -89,8 +89,8 @@ function BarraPrueba({ dias }: { dias: number }) {
         />
       </div>
       <div className="mt-1 flex justify-between text-[13px] font-medium text-[var(--text-secondary)]">
-        <span>Hoy: sin cobro</span>
-        <span>{dias} días de prueba</span>
+        <span>Hoy: sin cobro, registras tu medio de pago</span>
+        <span>Día {DIA_PRIMER_COBRO}: primer cobro</span>
       </div>
     </div>
   );
@@ -194,12 +194,8 @@ export function Oferta({
                     {anual.ctaLabel}
                   </CtaButton>
                   {trialDias !== undefined && (
-                    <>
-                      <BarraPrueba dias={trialDias} />
-                      <p className="mt-2 text-center text-[14px] text-[var(--text-secondary)] lg:text-[15px]">
-                        Registras tu medio de pago hoy; el primer cobro entra el día {DIA_PRIMER_COBRO}.
-                      </p>
-                    </>
+                    // Una sola vez el mensaje "hoy sin cobro, primer cobro el día 8": va en las etiquetas de la barra, no repetido debajo.
+                    <BarraPrueba dias={trialDias} />
                   )}
                 </div>
               </div>

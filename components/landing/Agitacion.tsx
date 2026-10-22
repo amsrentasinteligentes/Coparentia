@@ -63,7 +63,13 @@ export function Agitacion({ titulo, frases, contraste, id }: AgitacionProps) {
             <motion.p
               key={i}
               variants={item}
-              className="text-left text-[16px] leading-[1.6] text-[var(--text-secondary)] lg:text-[19px]"
+              // La primera frase es la ESCENA (el núcleo emocional): sube un nivel (20 px, tinta principal, semibold) para que no
+              // se lea como una nota gris; la última es la promesa, en tamaño de cuerpo.
+              className={
+                i === 0
+                  ? 'text-left text-[20px] font-semibold leading-[1.4] text-[var(--text-primary)] lg:text-[24px]'
+                  : 'text-left text-[16px] leading-[1.6] text-[var(--text-secondary)] lg:text-[19px]'
+              }
             >
               <MarkedCopy text={f} />
             </motion.p>

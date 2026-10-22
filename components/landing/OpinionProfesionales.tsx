@@ -7,7 +7,7 @@
 // se dice debajo de su nombre (`vinculo`) — una opinión con vínculo no se presenta como independiente.
 // Con UNA sola cita el bloque sigue viéndose bien (la columna de la imagen no depende de cuántas haya).
 
-import { useId, useState } from 'react';
+import { useId, useRef, useState } from 'react';
 import { motion } from 'motion/react';
 import { MapPin } from 'lucide-react';
 import { Kicker, SectionShell, useReveal, VIEWPORT_ONCE } from './ui';
@@ -73,6 +73,21 @@ function iniciales(nombre: string): string {
 
 export function OpinionProfesionales({ kicker = 'OPINIÓN DE PROFESIONALES', titulo, citas, imagen, nota, id }: OpinionProfesionalesProps) {
   const { contenedor, item } = useReveal();
+  // Carrusel móvil: qué cita está al centro (para los puntos) y cómo llevar a una cita con un toque.
+  const lista = useRef<HTMLUListElement>(null);
+  const [activa, setActiva] = useState(0);
+  const alDeslizar = () => {
+    const ul = lista.current;
+    const primera = ul?.firstElementChild as HTMLElement | null;
+    if (!ul || !primera) return;
+    setActiva(Math.min(citas.length - 1, Math.max(0, Math.round(ul.scrollLeft / (primera.offsetWidth + 16)))));
+  };
+  const irA = (i: number) => {
+    const ul = lista.current;
+    const tarjeta = ul?.children[i] as HTMLElement | undefined;
+    if (!ul || !tarjeta) return;
+    ul.scrollTo({ left: tarjeta.offsetLeft - (ul.clientWidth - tarjeta.offsetWidth) / 2, behavior: 'smooth' });
+  };
 
   return (
     <SectionShell id={id} elevacion="marino" ariaLabel="Opinión de profesionales de familia">
@@ -94,6 +109,8 @@ export function OpinionProfesionales({ kicker = 'OPINIÓN DE PROFESIONALES', tit
           {/* En celular las citas van en un carrusel horizontal con snap (la siguiente asoma, así se ve que se desliza), igual que
               "Así se ve por dentro"; en pantallas grandes vuelven a ser una columna. */}
           <motion.ul
+            ref={lista}
+            onScroll={alDeslizar}
             variants={item}
             aria-label="Opiniones de profesionales, desliza para ver más"
             className="-mx-5 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:mx-0 lg:flex-col lg:overflow-visible lg:px-0"
@@ -101,9 +118,9 @@ export function OpinionProfesionales({ kicker = 'OPINIÓN DE PROFESIONALES', tit
             {citas.map((c) => (
               <li
                 key={c.nombre}
-                className="w-[85%] max-w-[420px] shrink-0 snap-center rounded-[var(--radius-card)] bg-[var(--surface)] p-6 shadow-[var(--shadow-2)] lg:w-auto lg:max-w-none"
+                className="flex w-[85%] max-w-[420px] shrink-0 snap-center flex-col rounded-[var(--radius-card)] bg-[var(--surface)] p-6 shadow-[var(--shadow-2)] lg:w-auto lg:max-w-none"
               >
-                <figure className="flex flex-col gap-4">
+                <figure className="flex flex-1 flex-col gap-4">
                   {/* Monograma de quien opina (sus iniciales): le da un rostro tipográfico a cada cita sin inventar fotos. */}
                   <span
                     aria-hidden="true"
@@ -112,7 +129,7 @@ export function OpinionProfesionales({ kicker = 'OPINIÓN DE PROFESIONALES', tit
                     {iniciales(c.nombre)}
                   </span>
                   <TextoCita texto={c.texto} extracto={c.extracto} />
-                  <figcaption>
+                  <figcaption className="mt-auto">
                     <p className="text-[16px] font-bold text-[var(--text-primary)] [font-family:var(--font-display)]">{c.nombre}</p>
                     <p className="mt-0.5 text-[14px] leading-snug text-[var(--text-secondary)]">{c.especialidad}</p>
                     <p className="mt-1 flex items-center gap-1 text-[13px] text-[var(--text-tertiary)]">
@@ -125,6 +142,25 @@ export function OpinionProfesionales({ kicker = 'OPINIÓN DE PROFESIONALES', tit
               </li>
             ))}
           </motion.ul>
+          {/* Puntos tocables del carrusel (solo celular): dicen cuántas citas hay y en cuál vas. */}
+          <div className="-mt-4 flex justify-center lg:hidden" role="group" aria-label="Ir a la opinión">
+            {citas.map((c, i) => (
+              <button
+                key={c.nombre}
+                type="button"
+                onClick={() => irA(i)}
+                aria-label={`Opinión ${i + 1} de ${citas.length}: ${c.nombre}`}
+                aria-current={activa === i}
+                className="flex size-11 items-center justify-center [touch-action:manipulation]"
+              >
+                <span
+                  className={`block h-2 rounded-full transition-[width,background-color] duration-200 ease-out ${
+                    activa === i ? 'w-6 bg-[var(--accent-on-marino)]' : 'w-2 bg-[var(--on-marino-2)] opacity-60'
+                  }`}
+                />
+              </button>
+            ))}
+          </div>
 
           <motion.figure variants={item} className="mx-auto hidden w-full max-w-[420px] lg:sticky lg:top-24 lg:block">
             {/* En celular la página de ejemplo vive en "Cómo funciona" (EjemploPdf), donde prueba lo que produce el Sello. */}

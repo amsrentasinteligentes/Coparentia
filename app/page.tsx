@@ -213,7 +213,8 @@ export default function Home() {
           {
             texto:
               'Como abogada conciliadora y litigante en derecho de familia, sé lo importante que es tener tus documentos organizados cuando más los necesitas. Con COPARENTIA puedes construir un expediente digital con acuerdos, pagos y comunicaciones que facilite una conciliación o la preparación de una demanda y su contestación. Organiza hoy la información que puede ayudarte a proteger tus derechos y los de tus hijos.',
-            extracto: 'Como abogada conciliadora y litigante en derecho de familia, sé lo importante que es tener tus documentos organizados cuando más los necesitas.',
+            // El extracto visible es la frase LITERAL de cada cita que nombra el producto (el texto completo sigue palabra por palabra).
+            extracto: 'Con COPARENTIA puedes construir un expediente digital con acuerdos, pagos y comunicaciones que facilite una conciliación o la preparación de una demanda y su contestación.',
             nombre: 'Ivonne Reyes',
             especialidad: 'Abogada Especialista Conciliadora y Litigante en Derecho de Familia',
             ciudad: 'Bogotá',
@@ -221,7 +222,7 @@ export default function Home() {
           {
             texto:
               'En los procesos de familia, contar con evidencias claras y oportunamente disponibles puede marcar una diferencia importante. Desde mi experiencia como abogada, sé que reconstruir el historial de cumplimiento de las obligaciones económicas se vuelve complejo cuando la documentación se encuentra dispersa, y esto puede dificultar la preparación de una estrategia jurídica dentro de los plazos legales. COPARENTIA ofrece una alternativa práctica para conservar la trazabilidad de los compromisos familiares y disponer de un registro organizado que facilite la consulta y el seguimiento de cada situación.',
-            extracto: 'En los procesos de familia, contar con evidencias claras y oportunamente disponibles puede marcar una diferencia importante.',
+            extracto: 'COPARENTIA ofrece una alternativa práctica para conservar la trazabilidad de los compromisos familiares y disponer de un registro organizado que facilite la consulta y el seguimiento de cada situación.',
             nombre: 'Liliana Peñuela',
             especialidad: 'Abogada Litigante Especialista en Derecho de Familia',
             ciudad: 'Bogotá',
@@ -229,7 +230,7 @@ export default function Home() {
           {
             texto:
               'Como psicóloga que acompaña a adultos durante y después de un divorcio emocionalmente difícil, reconozco que reorganizar la vida y asumir una nueva dinámica familiar puede resultar abrumador. El acompañamiento psicológico ayuda a elaborar la pérdida, fortalecer los recursos personales y establecer límites saludables. En este camino, COPARENTIA puede apoyar la organización de acuerdos y responsabilidades relacionados con los hijos, aportando claridad para que cada persona pueda concentrarse también en su recuperación y bienestar emocional.',
-            extracto: 'Como psicóloga que acompaña a adultos durante y después de un divorcio emocionalmente difícil, reconozco que reorganizar la vida y asumir una nueva dinámica familiar puede resultar abrumador.',
+            extracto: 'En este camino, COPARENTIA puede apoyar la organización de acuerdos y responsabilidades relacionados con los hijos, aportando claridad para que cada persona pueda concentrarse también en su recuperación y bienestar emocional.',
             nombre: 'Sandra Pineda',
             especialidad: 'Magíster en Psicología Clínica',
             ciudad: 'Bogotá',

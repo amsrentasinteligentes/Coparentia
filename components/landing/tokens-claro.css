@@ -48,6 +48,9 @@
   --on-marino-2: #b8c7e0;
   --accent-on-marino: #7ba6ee;
 
+  /* ── ERROR sobre claro: el rojo del tema oscuro (#E85B6B) medía ~3,3:1 sobre blanco y fallaba AA en los mensajes de 14 px. ── */
+  --status-error: #c9463d; /* ≈ 5:1 sobre blanco */
+
   /* ── FORMA: todo curvo (dispositivo de la dirección C) ── */
   --radius-card: 22px;
   --radius-button: 999px;

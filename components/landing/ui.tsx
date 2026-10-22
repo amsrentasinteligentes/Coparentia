@@ -243,7 +243,7 @@ export function SectionShell({
   children,
 }: {
   id?: string;
-  elevacion?: 'base' | 'elevada' | 'marino';
+  elevacion?: 'base' | 'elevada' | 'marino' | 'hundida';
   compacta?: boolean;
   flush?: 'none' | 'top' | 'bottom';
   ariaLabel?: string;
@@ -266,7 +266,10 @@ export function SectionShell({
       ? 'radial-gradient(900px 520px at 85% -10%, color-mix(in oklab, var(--accent-on-marino) 22%, transparent) 0%, transparent 60%), ' +
         'radial-gradient(700px 480px at -5% 110%, color-mix(in oklab, var(--accent-on-marino) 12%, transparent) 0%, transparent 60%), ' +
         'linear-gradient(180deg, var(--marino-2), var(--marino))'
-      : elevacion === 'elevada'
+      : elevacion === 'hundida'
+        ? // Tercer nivel de profundidad (hundida): un paso más azul que la base, con un resplandor suave arriba a la izquierda.
+          'radial-gradient(900px 520px at 0% 0%, color-mix(in oklab, var(--accent) 10%, transparent) 0%, transparent 60%), var(--surface-2)'
+        : elevacion === 'elevada'
         ? (flush === 'top' ? '' : brilloArriba) + (flush === 'bottom' ? '' : brilloAbajo) + 'var(--surface)'
         : 'radial-gradient(900px 560px at 100% -5%, color-mix(in oklab, var(--accent) 13%, transparent) 0%, transparent 60%), ' +
           'var(--bg)';

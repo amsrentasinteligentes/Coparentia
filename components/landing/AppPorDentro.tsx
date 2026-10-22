@@ -123,7 +123,7 @@ export function AppPorDentro({
   };
 
   return (
-    <SectionShell id={id} elevacion="elevada" ariaLabel="La app por dentro">
+    <SectionShell id={id} elevacion="hundida" ariaLabel="La app por dentro">
       <motion.div variants={contenedor} initial="hidden" whileInView="visible" viewport={VIEWPORT_ONCE}>
         <motion.div variants={item} className="mx-auto max-w-[620px] text-center">
           <Kicker>{kicker}</Kicker>

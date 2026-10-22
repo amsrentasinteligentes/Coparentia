@@ -87,6 +87,8 @@ export function Faq({ kicker = 'PREGUNTAS', titulo = 'Lo que quizá te estás pr
                   id={panelId}
                   role="region"
                   aria-labelledby={btnId}
+                  // Cerrado = sin paradas de Tab ni lectura: el formulario y los enlaces de adentro no reciben foco invisible.
+                  inert={!estaAbierto}
                   initial={false}
                   animate={{ height: estaAbierto ? 'auto' : 0, opacity: estaAbierto ? 1 : 0 }}
                   transition={{ duration: reduce ? 0 : 0.28, ease: [0.16, 1, 0.3, 1] }}
