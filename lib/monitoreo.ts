@@ -5,6 +5,21 @@
 
 import * as Sentry from '@sentry/nextjs';
 
+// "Latido" de una tarea diaria: al terminar bien, avisa a Better Stack ("sigo viva"). Si pasa más tiempo del esperado sin latido,
+// Better Stack escribe al dueño; así se detecta una tarea que NO se ejecutó (algo que Sentry no ve porque no hay error).
+// La dirección de cada latido vive en una variable de Vercel (HEARTBEAT_<NOMBRE>), nunca en el código. Sin variable no hace nada.
+export type TareaConLatido = 'CONSTANCIAS' | 'AVISO_PRE_COBRO' | 'DUNNING' | 'RECONCILIACION';
+
+export async function latido(tarea: TareaConLatido): Promise<void> {
+  const direccion = process.env[`HEARTBEAT_${tarea}`];
+  if (!direccion || !direccion.startsWith('https://')) return;
+  try {
+    await fetch(direccion, { signal: AbortSignal.timeout(5000) });
+  } catch {
+    // Un latido que falla nunca debe romper la tarea: Better Stack avisará por la falta de latido.
+  }
+}
+
 export function reportarError(mensaje: string, detalle?: Record<string, string | number | boolean | undefined>): void {
   try {
     Sentry.captureMessage(mensaje, { level: 'error', extra: detalle });

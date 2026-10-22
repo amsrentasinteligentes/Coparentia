@@ -12,7 +12,7 @@ import { NextResponse } from 'next/server';
 import { crearClienteSupabaseAdmin } from '@/lib/supabase/admin';
 import { enviarCorreoRecordatorioPago, enviarCorreoUltimoAvisoPago } from '@/lib/email';
 import { comparacionSegura } from '@/lib/hotmart-verify';
-import { reportarError } from '@/lib/monitoreo';
+import { latido, reportarError } from '@/lib/monitoreo';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
@@ -64,5 +64,6 @@ export async function GET(request: Request): Promise<NextResponse> {
     }
   }
 
+  await latido('DUNNING');
   return NextResponse.json({ ok: true, recordatorios, ultimosAvisos });
 }

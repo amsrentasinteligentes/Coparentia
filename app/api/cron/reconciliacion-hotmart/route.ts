@@ -16,7 +16,7 @@ import { obtenerTodasLasSuscripciones, deberiaTenerAcceso, credencialesHotmartCo
 import { tieneAccesoCompleto, type Status } from '@/lib/membership-fsm';
 import { enviarCorreoDriftDetectado } from '@/lib/email';
 import { comparacionSegura } from '@/lib/hotmart-verify';
-import { reportarError } from '@/lib/monitoreo';
+import { latido, reportarError } from '@/lib/monitoreo';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
@@ -84,5 +84,6 @@ export async function GET(request: Request): Promise<NextResponse> {
     await enviarCorreoDriftDetectado(hallazgos.length);
   }
 
+  await latido('RECONCILIACION');
   return NextResponse.json({ ok: true, revisados: suscripcionesHotmart.length, diferencias: hallazgos.length });
 }

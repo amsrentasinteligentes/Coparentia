@@ -10,7 +10,7 @@ import { crearClienteSupabaseAdmin } from '@/lib/supabase/admin';
 import { enviarConstanciasDelPeriodo, mesAnteriorEnColombia } from '@/lib/constancias';
 import { hoyEnColombia } from '@/lib/fecha';
 import { comparacionSegura } from '@/lib/hotmart-verify';
-import { reportarError } from '@/lib/monitoreo';
+import { latido, reportarError } from '@/lib/monitoreo';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
@@ -27,6 +27,7 @@ export async function GET(request: Request): Promise<NextResponse> {
   const hoy = hoyEnColombia();
   const forzar = new URL(request.url).searchParams.get('forzar') === '1';
   if (!hoy.endsWith('-01') && !forzar) {
+    await latido('CONSTANCIAS'); // los días que no toca enviar también cuentan como "corrió bien"
     return NextResponse.json({ ok: true, omitido: 'solo corre el día 1 de cada mes', hoy });
   }
 
@@ -70,5 +71,6 @@ export async function GET(request: Request): Promise<NextResponse> {
     enviadas += r.enviadas;
   }
 
+  await latido('CONSTANCIAS');
   return NextResponse.json({ ok: true, periodo, enviadas, omitidas });
 }
