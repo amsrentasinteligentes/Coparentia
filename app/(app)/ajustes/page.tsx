@@ -268,8 +268,9 @@ function EditorCuota() {
         ))}
       </div>
 
+      {/* Sin rol elegido es una indicación, no un error: se ve neutra. El rojo queda para datos mal escritos (2026-10-22, certificación). */}
       {!valido && (
-        <p className="mt-3 text-[12.5px] text-[var(--status-error)]">
+        <p className={`mt-3 text-[12.5px] ${rolPago === '' ? 'text-[var(--text-secondary)]' : 'text-[var(--status-error)]'}`}>
           {rolPago === ''
             ? 'Elige tu rol (pagas o recibes) para poder guardar.'
             : 'Revisa los datos: el monto debe ser mayor que cero y el día, entre 1 y 31.'}

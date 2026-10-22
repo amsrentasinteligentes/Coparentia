@@ -298,7 +298,7 @@ export function Pildora({ texto, tono }: { texto: string; tono: TonoPildora }) {
   const t = TONOS[tono];
   return (
     <span
-      className="inline-flex shrink-0 items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-bold"
+      className="inline-flex shrink-0 items-center gap-1 rounded-full px-2.5 py-1 text-[12px] font-bold"
       style={{ backgroundColor: t.bg, color: t.texto }}
     >
       {/* FICHA-ARTE fija "éxito" en el MISMO azul de marca y resuelve la ambigüedad con el ícono,
@@ -493,7 +493,7 @@ export function AccesosRapidos({ items }: { items: { href: string; label: string
   return (
     <nav aria-label="Accesos rápidos" className="mt-3 grid grid-cols-4 gap-2 rounded-[var(--radius-card)] bg-[var(--surface)] px-2 py-3 shadow-[var(--shadow-1)]">
       {items.slice(0, 4).map(({ href, label, icon }) => (
-        <Link key={href} href={href} className="flex flex-col items-center gap-1.5 py-1 text-[11px] font-bold text-[var(--text-primary)] transition-transform duration-100 active:scale-95 [touch-action:manipulation]">
+        <Link key={href} href={href} className="flex flex-col items-center gap-1.5 py-1 text-[12px] font-bold text-[var(--text-primary)] transition-transform duration-100 active:scale-95 [touch-action:manipulation]">
           <IconoCirculo icon={icon} size={22} grande />
           {label}
         </Link>
