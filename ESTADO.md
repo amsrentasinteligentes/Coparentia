@@ -1,3 +1,81 @@
+### Checkpoint (2026-10-22, noche) — Alarma de tendencia de correos de acceso PUBLICADA (master `e0afb60`)
+- `uso_del_proyecto()` ahora devuelve `correos_acceso_24h` (personas distintas con correo de acceso en 24 h; aproximación por debajo). SQL ya
+  corrido por el dueño: devuelve 3. `/api/cron/alerta-capacidad` avisa a soporte@ si ≥ 50 (Resend Free = 100/día); llega con un día de retraso.
+  Sin clave nueva de Resend (se descartó la clave de acceso total). Recordatorio con fecha NO creado: el dueño eligió la alarma automática;
+  seguir recomendando pasar Resend a plan pago el día antes de la primera campaña pagada.
+
+### Checkpoint (2026-10-22, noche) — Revisión legal: CERRADA (confirmada por el dueño)
+- El dueño confirma (22/10) que la revisión legal quedó ok. Sale de los pendientes del certificado. No se registró alcance ni fecha
+  detallados; si más adelante cambia el texto legal (privacidad, términos, reembolsos), volver a pasarlo por el abogado.
+
+### Checkpoint (2026-10-22, noche) — Latidos de las tareas diarias PUBLICADOS (master `e871533`), apagados hasta poner las variables
+- `latido()` en `lib/monitoreo.ts`, llamado al final feliz de constancias (también el día "omitido"), dunning, aviso-pre-cobro y
+  reconciliación-hotmart. Variables `HEARTBEAT_CONSTANCIAS`, `_AVISO_PRE_COBRO`, `_DUNNING`, `_RECONCILIACION` (solo en Vercel). Sin variable no
+  hace nada. Verificado en producción: commit e871533, `/` `/entrar` `/paywall` `/privacidad` 200, crons sin clave 401, webhook sin firma 401.
+  HECHO POR EL DUEÑO: 4 Heartbeats creados en Better Stack (plan Free, sin costo), 4 variables en Vercel (Production, Secret) y redeploy.
+  VERIFICADO EN VIVO: al correr `constancias` desde Vercel → Cron Jobs → Run, su heartbeat pasó de Pending a Up. Las otras 3 siguen en
+  Pending hasta su hora normal (mañana 9-10 am Colombia las diarias; lunes la de Hotmart); NO correrlas a mano (envían correos reales).
+  Recordatorio-cuota y alerta-capacidad quedan sin latido (decisión: solo las del dinero). PENDIENTE: mañana confirmar Up en los 3 diarios.
+
+### Checkpoint (2026-10-22, noche) — Status page pública creada (plan Free de Better Stack, sin costo)
+- `coparentia.betteruptime.com`: sección "Estado actual" con 3 servicios (Página principal, Acceso a la cuenta, Servidor de la app). NO
+  compartida ni enlazada desde la web todavía. Textos en inglés por defecto (pestaña Translations pendiente). La barra roja de hoy en
+  "Servidor de la app" es el falso incidente del 22/10 (URL mal escrita `/api/versio`); se deja y se diluye en 90 días: no enlazar la
+  página desde la web hasta pasados unos días. Pendiente: Translations a español, heartbeats de los crons, enlace en pie de la web.
+
+### Checkpoint (2026-10-22, noche) — `cerrar-sesiones.sql` en el historial de GitHub: se DEJA (decisión del dueño)
+- El archivo entró en `e34856e` y se sacó en `09a4511`; sigue en el historial de 5 ramas (master, alerta-capacidad, app-interna-pulido,
+  certificacion-prelanzamiento, sentry-servidor). Expone el correo del dueño y un comentario sobre un token temporal ya vencido (22/09); sin
+  claves ni contraseñas. Purgar exige reescribir 424 envíos y forzar el push (riesgo para producción, y GitHub puede seguir sirviendo los
+  envíos viejos por su dirección). Decisión: NO purgar. Si importa, cambiar el correo de la cuenta de dueño. Archivo local sin versionar.
+
+### Checkpoint (2026-10-22, noche) — Hotmart: correo de atención y nombre de factura puestos (hecho por el dueño)
+- Hotmart → producto Coparentia → Fijación de precios → Configurar checkout → "Configuraciones de la página de pago": Email de Atención
+  al Cliente = soporte@coparentia.co; nombre en factura = "Coparentia" (extracto: `HTM*HT Coparentia`, reduce contracargos). Guardado
+  ("¡Hecho!"). VERIFICADO en la página pay.hotmart.com (ventana de incógnito): el pie muestra soporte@coparentia.co y ya no aparece
+  arqmunoz10@hotmail.com. Pendiente menor: ese correo puede seguir visible en los correos de recibo de Hotmart al comprador (revisar con
+  la próxima compra de prueba, +prueba2 el 29/10).
+
+### Checkpoint (2026-10-22, noche) — Límites de correo medidos (cuello de botella antes de publicidad)
+- Supabase Auth: 30 correos/h (editable en Rate Limits), 30 verificaciones de código/5 min por IP. Resend plan Free: 3.000/mes y **100/DÍA**
+  (uso hoy: 23/mes, 5/día). El tope real es el de Resend: con acceso por código, cada ingreso gasta un correo → ~50-100 personas activas/día
+  lo llenan. ANTES de la primera campaña pagada: pasar Resend a plan pago (verificar precio y tope vigentes al contratar) y recién
+  entonces subir el límite de Supabase (ej. 150/h). Decisión de gasto del dueño; no hecho.
+
+### Checkpoint (2026-10-22, noche) — Limpieza de cuentas de prueba (con OK del dueño)
+- Borradas 4 cuentas sin datos ni rol admin (vista previa previa: 0 títulos/pagos/hijos/eventos): `testecomprador271101postman15@example.com`
+  (con su suscripción falsa "active") y 3 correos mal escritos parecidos al del dueño. Quedan 6: dueño (admin), ivonnereyes.abogada (activa,
+  real), +prueba2 (compra de prueba en curso, no tocar), alejo.mu100 (cuenta A de pruebas), demo@coparentia.co y auditoriasrentas (por
+  decidir). Pendiente: decidir demo y auditoriasrentas. Verificado: 6 cuentas y 4 suscripciones.
+  `test@hotmart.com` (cancelled, sin cobro, sin cuenta) se DEJA a propósito por decisión del dueño: dato de prueba inofensivo (la alerta
+  de capacidad cuenta por primer cobro real; el único hoy es ivonnereyes.abogada, 2026-09-23).
+  Borrada también (con OK del dueño) la notificación "Prueba del historial" (2026-09-28) de su cuenta.
+
+### Checkpoint (2026-10-22, noche) — Costo de IA verificado en la base real
+- `presupuesto_ia_disponible` EXISTE en producción (tope global US$1/día, hora Colombia; sin tope por usuario — riesgo menor: un abusador
+  agota el día para todos y la app degrada a monto manual). 16 llamadas, US$0,034624 en total (~US$0,0022 por recibo), 0 errores, modelo
+  claude-haiku-4-5. Console de Anthropic verificado: saldo de créditos USD 4,97 con recarga automática DESACTIVADA → el techo real de gasto es ese saldo; al
+  agotarse, la API se detiene y la app degrada a monto manual. Vigilar el saldo (recargar a mano cuando baje de ~US$2).
+
+### Checkpoint (2026-10-22, noche) — Prueba de aislamiento entre cuentas (IDOR) APROBADA en lo probable
+- Desde Supabase SQL Editor (solo lectura, rol `authenticated` con la sesión de la cuenta +prueba2): 0 filas de la cuenta alejo.mu100 en las 13
+  consultas (titulos, pagos, autorizaciones, eventos, hijos, constancias, notificaciones_app, consentimientos, push_subscriptions, profiles,
+  suscripciones, storage, ai_calls). Control: la cuenta alejo.mu100 SÍ tiene datos en titulos (1), pagos (3) y archivos (1) → la prueba es
+  real solo en esas tres. En eventos/hijos/constancias esa cuenta tiene 0 filas, así que ahí solo se confirma por lectura del código
+  (misma política `auth.uid() = user_id`). Pendiente (opcional): repetir con datos de A en esas tablas, y probar escrituras cruzadas.
+
+### Checkpoint (2026-10-22, noche) — Sentry (solo servidor) PUBLICADO y PROBADO
+- master `4c409cb` en producción; `SENTRY_DSN` en Vercel (Production). Prueba hecha: llegó "Prueba de Sentry: la conexión del servidor
+  funciona" desde producción, sin usuario, url ni transacción (sin datos personales); 13 eventos (varias copias del servidor). `SENTRY_PRUEBA`
+  BORRADA y redeploy hecho; el contador quedó quieto en 13. Aviso marcado Resolved. Verificado con capturas: Better Stack con los 3 monitores en Up (cada 3 min) y cron
+  `/api/cron/alerta-capacidad` activo en Vercel (15:30 UTC diario, Cron Jobs habilitado).
+- Reembolso de prueba en curso (alias +prueba2, cobro 29/10, pedir reembolso antes del 6/11, NO cancelar antes).
+- Certificado 57/100 NO APTO; abiertos: reembolso/cobro real, IDOR con 2 cuentas, costo IA, cuenta demo y datos de prueba, 30/40,
+  purga de `supabase/cerrar-sesiones.sql` del historial, revisión de abogado.
+- Problemas conocidos (pospuestos a propósito, no hay cambios nuevos en esas pantallas):
+  **veredicto:landing**, **veredicto:onboarding**, **veredicto:paywall** siguen NO LISTA (30/40) tras el rediseño; no se relanza el
+  revisor-visual hasta que el dueño lo pida al cerrar la auditoría (ver memoria "sin revisor hasta cerrar auditoría"). Decisión: aceptar o rediseño de marca.
+
 ### Checkpoint (2026-10-22) — Mercadeo: plan consolidado, semana 2 planeada, biblioteca de 20 piezas sin publicar
 - `docs/marketing/PLAN-DE-MARKETING.md` es el archivo único del plan (pilares, reglas, calendario, método de producción, medición, pendientes).
   Incluye la sección 5B (semana 2 como prueba con reglas de decisión para pocos datos) y la 5C (biblioteca de 20 piezas de `docs/piezas/`,
@@ -3225,6 +3303,9 @@ FICHA-ARTE.md que la landing.
 
 ## Problemas conocidos
 
+- **veredicto:landing**, **veredicto:onboarding**, **veredicto:paywall** (2026-10-22): los tres veredictos dicen NO LISTA (30/40) tras el
+  rediseño. POSPUESTO a propósito: el dueño pidió no lanzar el revisor-visual hasta cerrar la auditoría; esta sesión solo tocó la
+  vigilancia de errores del servidor (Sentry), sin cambios en esas pantallas. Se relanza el revisor cuando el dueño lo pida.
 - **veredicto:paywall** (2026-10-09, hallazgo 2 de la auditoría — campo de correo + casilla de autorización + "Ya pagué con otro correo"): 11 rondas del revisor-visual, NO LISTA: r1 29/40·14/20·16 → r11 **36/40 · 15/20 · copy 17/20** (r10 con FICHA-AVATAR leída bajó el copy por el dato "≈US$100 el correo de un abogado", de una sola fuente extranjera: PENDIENTE de claims para la segunda auditoría) (usabilidad ya en el umbral; falta +1 de craft: el revisor pide tocar el diseño ANTERIOR — mancha azul del titular y pastillas de precio — decisión de identidad pendiente del dueño) (meseta: cada ronda aparece un defecto nuevo de pulido; la r6 en realidad sumaba 34) (faltan +1 usabilidad y +1 craft; fixes baratos: "Cerrar mi sesión" como botón secundario, una sola fila de confianza con dos chips, garantía subrayada) (antes del cambio estaba LISTA 36/40·16/20·18). Faltan +2 usabilidad y +1 craft. Defectos vivos (pulido, no funcionales): aviso en línea y panel abierto repiten "Entraste con X"; el panel abierto pesa más que el botón; plazo y vía de la garantía solo dentro del desplegable; jerarquía plana (13-14px gris) en el tramo previo al botón; pie de 2 filas con hueco. Veredictos intermedios en docs/revisiones/paywall-veredicto-ronda1…4-correo.md. El flujo SÍ está verificado en local (validaciones, guardado, Hotmart con email prellenado, /entrar prefill, sesión simulada). Pendientes de diseño que el revisor sigue pidiendo para craft 16 (todos del diseño anterior): mover "Te sale a US$0.24 al día" dentro de la tarjeta Anual, logo en azul (asset), ritmo vertical 24/24 antes de la garantía. Decisión del dueño pendiente: publicar así o seguir.
 - **veredicto:landing/onboarding/paywall** (2026-10-09, sesión de mercadeo): el gate avisa "caducado" por
   mtime de app/(app)/ajustes/page.tsx y app/(app)/asistencia/** — ninguna es landing/onboarding/paywall,

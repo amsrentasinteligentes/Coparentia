@@ -38,7 +38,7 @@ Regla del sistema: un solo bloqueante de dinero, acceso, privacidad o seguridad 
 | 9 | **Cuenta `demo@coparentia.co` existe en producción** | Decidir si se borra o se deja (tiene datos inventados) | Dueño |
 
 ## Pendientes menores (⚠️)
-- Revisión de abogado de privacidad/términos y de la sección 6.9.
+- ~~Revisión de abogado de privacidad/términos y de la sección 6.9~~ — CERRADA: el dueño confirmó (22/10/2026) que la revisión legal quedó ok.
 - Verificar en el panel de Hotmart que el producto tenga prueba de 7 días y garantía de 15.
 - CSP: observarlo con tráfico real y luego pasarlo a modo activo.
 - Velocidad: LCP todavía ≈5 s en celular lento; requiere aligerar el JavaScript del inicio.
