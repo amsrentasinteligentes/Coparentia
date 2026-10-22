@@ -5,7 +5,7 @@ Todo supuesto está rotulado. Lo que no se midió con datos reales queda **NO ME
 | Concepto | Plan anual (US$89/año) | Plan mensual (US$9,99/mes) | Fuente |
 |---|---|---|---|
 | Ingreso efectivo mensual | US$7,42 | US$9,99 | `lib/precios.ts` |
-| Comisión de Hotmart | ≈10% + tarifa fija por venta (supuesto) | igual | ESTADO.md 2026-09-24 (sin URL oficial ni fecha: **verificar**) |
+| Comisión de Hotmart | **MEDIDA (2026-10-22):** en Hotmart → Ventas, "Ingreso Neto" = US$77,33 por la compra completa de Ivonne Reyes (23/09/2026, "cuota 2"). Si corresponde al plan anual de US$89, Hotmart retiene ≈US$11,67 (**≈13%**), no el ≈10% supuesto antes. Falta confirmar a qué importe equivale esa venta | igual | Captura de Hotmart → Ventas del 2026-10-22 |
 | IA (lectura de recibos con Claude Haiku, máx. 256 tokens de salida) | **NO MEDIDO** | **NO MEDIDO** | Se registra en `ai_calls`; falta consultar la tabla en Supabase para el costo real por usuario (mediana y p95) |
 | Infraestructura variable (Supabase, Resend, Vercel) | Supabase Pro US$25/mes + Vercel Pro US$20/mes fijos (supuesto de ESTADO.md); Resend gratis hasta ≈3.000 correos/mes | igual | ESTADO.md 2026-09-24 |
 | Margen de contribución | **NO CALCULABLE sin el costo de IA real** | idem | — |

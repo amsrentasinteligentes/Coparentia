@@ -30,6 +30,11 @@ Regla: una simulación local no certifica el panel real de Hotmart. Lo que no se
 
 Veredicto de pagos: **NO VERIFICADO / NO APTO** hasta completar las pruebas de la segunda tabla.
 
+## Segunda compra de prueba (reembolso) — en curso
+- Plan mensual, `amsrentasinteligentes+prueba2@gmail.com`, **22/10/2026 10:26:50**, transacción de prueba gratis **HP2046817874** (Hotmart → Ventas, "Gratis · Aprobada"). Correo de bienvenida de la app: 10:27, Recibidos. Hotmart cobra un valor simbólico para validar la tarjeta y lo devuelve.
+- Primer cobro esperado **29/10/2026** (generará una transacción HP nueva: esa se reembolsa en refund.hotmart.com, idealmente antes del 6/11).
+- Pendiente de verificar: fila en `suscripciones` (trialing), aviso de pre-cobro (~26–27/10), cobro y `active` (29/10), reembolso y `refunded` con acceso cerrado.
+
 ## Datos de prueba que siguen en producción (a decidir por el dueño)
 - `suscripciones`: `test@hotmart.com` (cancelled) y `testeComprador271101postman15@…` (**active**, `first_paid_at` 11/09, `grace_ends_at` 21/09). Son del 16/09/2026 (herramienta de prueba de Hotmart, antes del filtro de producto del 13/10). Pueden inflar métricas del panel de administración.
 
