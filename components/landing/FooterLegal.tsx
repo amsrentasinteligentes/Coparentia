@@ -63,13 +63,18 @@ export function FooterLegal({ appName, logo, marcaSoloLogo = false, enlaces, sop
           </nav>
         </div>
 
-        {/* Fila 2: copyright + soporte */}
-        <p className="mt-3 text-[14px] text-[var(--text-secondary)] lg:text-[15px]">
-          © {year} {appName} ·{' '}
-          <a href={`mailto:${soporteEmail}`} className="py-3 underline-offset-4 hover:underline">
-            {soporteEmail}
+        {/* Fila 2: copyright + soporte + salida rápida al inicio (control del usuario en una página de ~9.000 px) */}
+        <div className="mt-3 flex flex-wrap items-center justify-between gap-x-4 text-[14px] text-[var(--text-secondary)] lg:text-[15px]">
+          <p>
+            © {year} {appName} ·{' '}
+            <a href={`mailto:${soporteEmail}`} className="py-3 underline-offset-4 hover:underline">
+              {soporteEmail}
+            </a>
+          </p>
+          <a href="#main" className="flex min-h-11 items-center font-semibold text-[var(--accent-ink,var(--accent))] underline-offset-4 hover:underline">
+            Volver arriba ↑
           </a>
-        </p>
+        </div>
       </div>
     </footer>
   );

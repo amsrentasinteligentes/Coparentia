@@ -136,6 +136,19 @@ export function AppPorDentro({
         <motion.div variants={item} className="mt-12">
           <div
             ref={scrollerRef}
+            // Teclado (heurística 7): con el carrusel enfocado, las flechas pasan de una pantalla a la otra.
+            tabIndex={0}
+            role="region"
+            aria-label="Pantallas de la app, usa las flechas para moverte"
+            onKeyDown={(e) => {
+              if (e.key === 'ArrowRight') {
+                e.preventDefault();
+                irA(Math.min(frames.length - 1, activo + 1));
+              } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                irA(Math.max(0, activo - 1));
+              }
+            }}
             onPointerDown={onPointerDown}
             onPointerMove={onPointerMove}
             onPointerUp={onPointerUp}

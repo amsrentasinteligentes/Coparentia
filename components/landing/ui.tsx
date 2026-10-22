@@ -17,7 +17,7 @@ import {
   animate,
   type Variants,
 } from 'motion/react';
-import { Camera, Check, X } from 'lucide-react';
+import { Camera, Check, Loader2, X } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { rastrearClicCta } from '@/lib/meta-pixel';
 
@@ -351,9 +351,18 @@ export function CtaButton({
         variant === 'outline'
           ? 'border border-[color-mix(in_oklab,var(--accent)_45%,transparent)] text-[var(--accent-ink)] hover:bg-[var(--chip-bg)]'
           : 'cta-solid bg-[var(--accent)] text-[var(--on-accent)] shadow-[0_8px_30px_color-mix(in_oklab,var(--accent)_25%,transparent)] hover:bg-[color-mix(in_oklab,var(--accent)_88%,var(--text-primary))]'
-      } ${alto === 56 ? 'h-14 lg:h-16' : 'h-[52px] lg:h-14'} ${fullMobile ? 'w-full sm:w-auto' : ''}`}
+      } h-[52px] lg:h-14 ${fullMobile ? 'w-full sm:w-auto' : ''}`}
     >
-      {children}
+      {/* Estado del sistema (heurística 1): al tocar, el botón lo dice ("Abriendo…" + giro), no solo se atenúa. `alto` se
+          conserva por compatibilidad, pero TODOS los botones sólidos miden lo mismo (52 px; 56 en pantallas grandes). */}
+      {yendo ? (
+        <span className="flex items-center gap-2" role="status">
+          <Loader2 size={18} className="motion-safe:animate-spin" aria-hidden="true" />
+          Abriendo…
+        </span>
+      ) : (
+        children
+      )}
     </motion.a>
   );
 }
@@ -384,6 +393,12 @@ export function StickyCtaMobile({
   // siempre: si el usuario sigue navegando, la barra vuelve a ofrecer ayuda cuando haga falta.
   const [descartada, setDescartada] = useState(false);
   const [ctaEnPantalla, setCtaEnPantalla] = useState(false);
+  const [yendo, setYendo] = useState(false);
+  useEffect(() => {
+    const limpiar = () => setYendo(false);
+    window.addEventListener('pageshow', limpiar);
+    return () => window.removeEventListener('pageshow', limpiar);
+  }, []);
   const ultimoHito = useRef({ heroVisible, ofertaVisible, finalVisible });
 
   useEffect(() => {
@@ -463,10 +478,21 @@ export function StickyCtaMobile({
           <motion.a
             whileTap={{ scale: 0.97 }}
             href={href}
-            onClick={() => rastrearClicCta(href, labelComercial)}
-            className="flex h-12 flex-1 items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-[16px] font-semibold text-[var(--on-accent)] [touch-action:manipulation] lg:text-[18px]"
+            onClick={() => {
+              setYendo(true);
+              rastrearClicCta(href, labelComercial);
+            }}
+            aria-busy={yendo || undefined}
+            className="flex h-[52px] flex-1 items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-[16px] font-semibold text-[var(--on-accent)] [touch-action:manipulation] lg:text-[18px]"
           >
-            {labelComercial}
+            {yendo ? (
+              <span className="flex items-center gap-2" role="status">
+                <Loader2 size={18} className="motion-safe:animate-spin" aria-hidden="true" />
+                Abriendo…
+              </span>
+            ) : (
+              labelComercial
+            )}
           </motion.a>
           <button
             type="button"

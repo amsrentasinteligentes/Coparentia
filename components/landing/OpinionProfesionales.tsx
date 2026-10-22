@@ -111,6 +111,17 @@ export function OpinionProfesionales({ kicker = 'OPINIÓN DE PROFESIONALES', tit
           <motion.ul
             ref={lista}
             onScroll={alDeslizar}
+            // Teclado (heurística 7): con el carrusel enfocado, las flechas pasan de una cita a la otra.
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === 'ArrowRight') {
+                e.preventDefault();
+                irA(Math.min(citas.length - 1, activa + 1));
+              } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                irA(Math.max(0, activa - 1));
+              }
+            }}
             variants={item}
             aria-label="Opiniones de profesionales, desliza para ver más"
             className="-mx-5 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:mx-0 lg:flex-col lg:overflow-visible lg:px-0"

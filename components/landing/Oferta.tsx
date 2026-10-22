@@ -185,7 +185,6 @@ export function Oferta({
                   <p className="mt-1 text-[14px] font-semibold text-[var(--text-primary)] lg:text-[16px]">{anual.totalAnual}</p>
                   {/* El aviso del monto en pesos va en SU propia línea, un nivel más legible (13px, tinta secundaria):
                       antes iba pegado a la línea de arriba, en 12px terciario y a dos renglones. */}
-                  <p className="mt-1 text-[13px] leading-[1.45] text-[var(--text-secondary)] lg:text-[14px]">{FRASE_MONTO_HOTMART}</p>
                   {anual.ahorro && <p className="mt-2 text-[16px] font-semibold text-[var(--accent-ink,var(--accent))] lg:text-[17px]">{anual.ahorro}</p>}
                 </div>
                 <Features items={anual.features} origen="Oferta → anual" />
@@ -232,6 +231,10 @@ export function Oferta({
             </div>
           </motion.div>
         </div>
+        {/* La nota del monto en tu moneda va UNA vez, al pie de los dos planes (antes iba dentro de la tarjeta Anual y la cargaba). */}
+        <motion.p variants={item} className="mx-auto mt-6 max-w-[48ch] text-center text-[13px] leading-[1.45] text-[var(--text-secondary)] lg:text-[14px]">
+          {FRASE_MONTO_HOTMART}
+        </motion.p>
       </motion.div>
     </SectionShell>
   );

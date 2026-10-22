@@ -274,6 +274,13 @@ export default function Home() {
               'Menos de US$0.25 al día con el plan anual. Un abogado puede cobrar US$100 por una asesoría: [b]se paga solo[/b].',
           },
           {
+            // Objeción 5 de FICHA-AVATAR (¿y si no me sirve?). Verificado: cancelar durante la prueba no genera cobro y la
+            // garantía de 15 días existe (ver /reembolsos).
+            pregunta: '¿Puedo cancelar cuando quiera?',
+            respuestaMarked:
+              'Sí. Cancelas desde tu cuenta de Hotmart y, [b]si es antes del día 8, no pagas nada[/b]. Si ya te cobraron, cuentas con la Garantía de 15 días.',
+          },
+          {
             pregunta: '¿Mis datos financieros están seguros?',
             respuestaMarked:
               'Tus datos viajan y se guardan con cifrado. [b]Nunca se comparten[/b] sin tu autorización.',

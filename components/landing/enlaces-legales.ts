@@ -10,7 +10,7 @@ export const ENLACES_LEGALES: EnlaceLegal[] = [
   { label: 'Aviso de IA', href: '/aviso-ia' },
   // Exigido por la normativa colombiana de protección al consumidor (2026-09-24, aportada
   // por el equipo jurídico): enlace visible a la autoridad de protección al consumidor.
-  { label: 'SIC (Superintendencia)', href: 'https://www.sic.gov.co/' },
+  { label: 'SIC (Superintendencia de Industria y Comercio)', href: 'https://www.sic.gov.co/' },
 ];
 
 /** Salida discreta hacia el directorio y los artículos (2026-10-14): ya no viven al final de la página de

@@ -17,9 +17,10 @@ export function EjemploPdf({ src, alt, pie, ancho, alto }: { src: string; alt: s
         onClick={() => setAbierto((v) => !v)}
         aria-expanded={abierto}
         aria-controls={id}
-        className="flex min-h-12 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--surface)] px-4 text-[16px] font-semibold text-[var(--accent-ink,var(--accent))] [touch-action:manipulation]"
+        // Mismo botón "outline" del kit (CtaButton variant outline): un solo estilo de botón secundario en toda la página.
+        className="flex h-[52px] w-full items-center justify-center gap-2 rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--accent)_45%,transparent)] px-8 text-[16px] font-semibold text-[var(--accent-ink)] hover:bg-[var(--chip-bg)] [touch-action:manipulation]"
       >
-        {abierto ? 'Ocultar la página de ejemplo' : 'Ver una página de ejemplo del expediente'}
+        {abierto ? 'Ocultar la página de ejemplo' : 'Ver una página de ejemplo'}
         <ChevronDown size={18} aria-hidden="true" className={`transition-transform duration-200 ${abierto ? 'rotate-180' : ''}`} />
       </button>
       <figure id={id} className={abierto ? 'mt-4 block' : 'hidden'}>
