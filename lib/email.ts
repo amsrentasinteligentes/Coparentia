@@ -285,6 +285,56 @@ export async function enviarCorreoDriftDetectado(cantidad: number): Promise<void
   }
 }
 
+export type AvisoCapacidad = { titulo: string; detalle: string };
+
+/**
+ * Alerta al DUEÑO (no al cliente) cuando el proyecto se acerca a los topes del plan gratuito de Supabase o ya hay
+ * clientes pagando (app/api/cron/alerta-capacidad/route.ts). Se manda a `soporte@coparentia.co`, igual que la alerta de
+ * reconciliación. Devuelve true si Resend aceptó el envío; el texto del aviso lo arma el cron, no viene de un usuario.
+ */
+export async function enviarCorreoAlertaCapacidad(
+  avisos: AvisoCapacidad[],
+  resumen: { dbMb: number; storageMb: number; usuarios: number; suscripcionesConCobro: number },
+  esPrueba: boolean
+): Promise<boolean> {
+  const resend = clienteResend();
+  if (!resend) return false;
+
+  const lista = avisos
+    .map(
+      (a) => `
+        <li style="margin:0 0 14px;">
+          <strong>${escaparHtml(a.titulo)}</strong><br />
+          <span>${escaparHtml(a.detalle)}</span>
+        </li>`
+    )
+    .join('');
+
+  try {
+    await resend.emails.send({
+      from: REMITENTE,
+      to: RESPONDER_A,
+      subject: esPrueba ? 'Coparentia: correo de prueba de la alerta de capacidad' : 'Coparentia: conviene revisar el plan de Supabase',
+      html: `
+        <h1 style="font-family:sans-serif;color:#111827;">${esPrueba ? 'Correo de prueba' : 'Conviene subir a Supabase Pro'}</h1>
+        <ul style="font-family:sans-serif;color:#374151;font-size:15px;line-height:1.5;padding-left:20px;">${lista}</ul>
+        <p style="font-family:sans-serif;color:#374151;font-size:14px;line-height:1.5;">
+          Hoy: base de datos ${resumen.dbMb} MB · fotos ${resumen.storageMb} MB · ${resumen.usuarios} cuentas ·
+          ${resumen.suscripcionesConCobro} cliente${resumen.suscripcionesConCobro === 1 ? '' : 's'} con pago.
+        </p>
+        <p style="font-family:sans-serif;color:#6b7280;font-size:13px;line-height:1.5;">
+          Esta alerta no mide las descargas del mes (tope gratuito ≈5 GB) ni los usuarios activos: míralos a mano en
+          Supabase → Reports. Para subir de plan: Supabase → Settings → Billing → Upgrade.
+        </p>
+      `,
+    });
+    return true;
+  } catch (e) {
+    console.error('fallo al enviar alerta de capacidad', e instanceof Error ? e.message : e);
+    return false;
+  }
+}
+
 /** Se manda cuando un cobro de renovación FALLA (estado `past_due`) — hay días de gracia, no se corta el acceso todavía. */
 export async function enviarCorreoPagoFallido(email: string, graceEndsAt?: Date | null): Promise<void> {
   const resend = clienteResend();
