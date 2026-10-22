@@ -167,7 +167,7 @@ export function Hero({
               <MarkedCopy text={h1Marked} />
             </motion.h1>
 
-            <motion.p variants={item} className="mt-5 max-w-[600px] text-[17px] leading-relaxed text-[var(--text-secondary)] md:text-[18px] lg:text-[21px]">
+            <motion.p variants={item} className="mt-5 max-w-[600px] text-[16px] leading-relaxed text-[var(--text-secondary)] md:text-[18px] lg:text-[21px]">
               <MarkedCopy text={subtitulo} />
             </motion.p>
 
@@ -231,7 +231,7 @@ export function Hero({
                 style={{ background: 'linear-gradient(150deg, var(--accent), var(--accent-deep, var(--accent)))' }}
               >
                 <p className="text-[13px] font-semibold lg:text-[14px]">{burbuja.titulo}</p>
-                <p className="mt-1 text-[22px] font-extrabold leading-[1.1] [font-family:var(--font-display)] md:text-[26px]">
+                <p className="mt-1 text-[20px] font-extrabold leading-[1.1] [font-family:var(--font-display)] md:text-[26px]">
                   <CountUp text={burbuja.dato} />
                 </p>
               </motion.div>
@@ -250,7 +250,7 @@ export function Hero({
               <motion.li
                 variants={item}
                 key={p}
-                className="flex items-center gap-3 px-1 py-2 text-[15px] font-semibold text-[var(--text-primary)] lg:text-[17px]"
+                className="flex items-center gap-3 px-1 py-2 text-[16px] font-semibold text-[var(--text-primary)] lg:text-[17px]"
               >
                 <CheckCustom />
                 {p}

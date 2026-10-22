@@ -85,14 +85,14 @@ export function CtaFinal({
         )}
         <motion.h2
           variants={item}
-          className="text-balance text-[30px] font-bold leading-[1.15] text-[var(--cta-final-text,var(--text-primary))] [font-family:var(--font-display)] md:text-[44px]"
+          className="text-balance text-[28px] font-bold leading-[1.15] text-[var(--cta-final-text,var(--text-primary))] [font-family:var(--font-display)] md:text-[44px]"
         >
           <MarkedCopy text={h2Marked} />
         </motion.h2>
 
         <motion.p
           variants={item}
-          className="mt-4 max-w-[520px] text-[17px] leading-relaxed text-[var(--cta-final-text-2,var(--text-secondary))] lg:text-[19px]"
+          className="mt-4 max-w-[520px] text-[16px] leading-relaxed text-[var(--cta-final-text-2,var(--text-secondary))] lg:text-[19px]"
         >
           <MarkedCopy text={futurePacingMarked} />
         </motion.p>

@@ -1,3 +1,21 @@
+### REDISEÑO DE BASE (rama `rediseno-base`, 2026-10-22) — Fases 1 y 2 hechas; plan presentado, a la espera del OK del dueño
+- Meta: landing, onboarding y paywall de 30/40 → ≥36/40 y ≥16/20 (veredictos del revisor del 20/10 siguen vigentes como diagnóstico).
+- YA EXISTE (verificado en código y a 375 px): `useReveal` (stagger 0,07 s, una vez, reduced-motion), `CountUp`, `MiniRing`, `CtaButton`
+  (whileTap 0,97, ≥52 px), barra fija con cierre, demo del Sello con pausa, transición entre pasos y anillo/conteo en el funnel,
+  reduced-motion en todo. FALTA: celebración del hito en el sello final (aparece estático), sello "que se fecha" como dispositivo
+  recurrente, ritmo de fondos (todo es plano azul pálido + tarjetas blancas), prueba concreta legible (miniaturas de PDF de 44-56 px).
+- MEDIDO en la landing a 375 px (altura 9.620 px): 12 tamaños de letra distintos (12,5/13/14/15/16/17/18/20/22/30/34/36; el sistema pide
+  4 niveles), 14 textos de 30 px casi igual de grandes que el H1 (jerarquía plana), una 3.ª familia ("IBM Plex Sans", 4 textos) colada,
+  desborde horizontal 0. Onboarding p.1: ~110 px de vacío entre la tarjeta y 5 enlaces legales, mancha azul que cae sobre el titular.
+  Planes p.1: la barra fija tapa "Pago seguro con Hotmart".
+- Evidencia local (no versionada): capturas en el scratchpad de la sesión (`f1-*.png`).
+- CORRECCIÓN: lo de la "3.ª familia IBM Plex" era un falso positivo (solo el enlace "Saltar al contenido", invisible, y etiquetas script).
+- CAPA 1 de la landing HECHA (commit en `rediseno-base`): escala de letra 12 → 7 tamaños visibles (34 titular · 28 títulos de sección ·
+  20 títulos de tarjeta · 16 cuerpo · 14 secundario · 13 etiqueta · 36 solo el precio); el titular a 36 px dejaba "y fecha" huérfano en
+  5 renglones y se devolvió a 34. Copy: microcopy del hero ("registras tu medio de pago, no se cobra hasta el día 8"), escena del reclamo
+  por WhatsApp en la agitación (sin lenguaje legal) y "Coparentia" sin mayúsculas. Altura de la landing 9.620 → 9.555 px. Pendiente de
+  capas 2-6: ritmo de fondos con banda marino, carrusel de opiniones, sello como dispositivo, FAQ "Avísame", burbuja del hero cortada.
+
 ### PUNTO DE CONTROL (2026-10-22, noche) — ANTES del rediseño de diseño desde la base
 - Etiqueta `punto-de-control-2026-10-22` y rama `punto-de-control-2026-10-22` en GitHub = estado completo previo al rediseño (código en
   producción `e0afb60` + documentos al día). Para volver: `git switch -c volver punto-de-control-2026-10-22` (no toca producción).

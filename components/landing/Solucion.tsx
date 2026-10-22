@@ -163,7 +163,7 @@ export function Solucion({
       >
         <motion.div variants={item}>
           <Kicker>{kicker}</Kicker>
-          <h2 className="text-balance text-[30px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)] md:text-[40px] lg:text-[46px]">
+          <h2 className="text-balance text-[28px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)] md:text-[40px] lg:text-[46px]">
             <MarkedCopy text={tituloMarked} />
           </h2>
         </motion.div>
@@ -172,13 +172,13 @@ export function Solucion({
         <motion.div variants={item} className="mt-4 flex items-center gap-3">
           {sello && <span className="w-12 shrink-0 lg:w-14">{sello}</span>}
           <Hairline surface="bg" radio="button" className="w-fit">
-            <span className="block px-4 py-2 text-[15px] font-semibold [--accent:var(--accent-ink)] lg:text-[17px]">
+            <span className="block px-4 py-2 text-[16px] font-semibold [--accent:var(--accent-ink)] lg:text-[17px]">
               <Accent>{mecanismo}</Accent>
             </span>
           </Hairline>
         </motion.div>
 
-        <motion.p variants={item} className="mt-5 max-w-[620px] text-[17px] leading-relaxed text-[var(--text-secondary)] md:text-[18px] lg:text-[20px]">
+        <motion.p variants={item} className="mt-5 max-w-[620px] text-[16px] leading-relaxed text-[var(--text-secondary)] md:text-[18px] lg:text-[20px]">
           <MarkedCopy text={bigIdeaMarked} />
         </motion.p>
 
@@ -269,7 +269,7 @@ export function Solucion({
                   )}
                   <span
                     aria-hidden="true"
-                    className="relative flex size-11 shrink-0 flex-col items-center justify-center rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--accent)_22%,transparent)] bg-[var(--chip-bg)] text-[17px] font-bold tabular-nums text-[var(--accent-ink,var(--accent))] lg:text-[19px]"
+                    className="relative flex size-11 shrink-0 flex-col items-center justify-center rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--accent)_22%,transparent)] bg-[var(--chip-bg)] text-[16px] font-bold tabular-nums text-[var(--accent-ink,var(--accent))] lg:text-[19px]"
                   >
                     {String(i + 1).padStart(2, '0')}
                   </span>
@@ -287,7 +287,7 @@ export function Solucion({
                         </button>
                       )}
                     </h3>
-                    <p className="mt-1 text-[15px] leading-snug text-[var(--text-secondary)] lg:text-[17px]">{p.detalle}</p>
+                    <p className="mt-1 text-[16px] leading-snug text-[var(--text-secondary)] lg:text-[17px]">{p.detalle}</p>
                   </div>
                 </motion.li>
               ))}
@@ -307,13 +307,13 @@ export function Solucion({
                 <motion.li key={i} variants={item} className="flex items-start gap-4 md:flex-col">
                   <span
                     aria-hidden="true"
-                    className="flex size-11 shrink-0 items-center justify-center rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--accent)_22%,transparent)] bg-[var(--chip-bg)] text-[17px] font-bold tabular-nums text-[var(--accent-ink,var(--accent))] lg:text-[19px]"
+                    className="flex size-11 shrink-0 items-center justify-center rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--accent)_22%,transparent)] bg-[var(--chip-bg)] text-[16px] font-bold tabular-nums text-[var(--accent-ink,var(--accent))] lg:text-[19px]"
                   >
                     {String(i + 1).padStart(2, '0')}
                   </span>
                   <div className="pt-1 md:pt-0">
                     <h3 className="text-[16px] font-semibold text-[var(--text-primary)] lg:text-[18px]">{p.titulo}</h3>
-                    <p className="mt-1 text-[15px] leading-snug text-[var(--text-secondary)] lg:text-[17px]">{p.detalle}</p>
+                    <p className="mt-1 text-[16px] leading-snug text-[var(--text-secondary)] lg:text-[17px]">{p.detalle}</p>
                   </div>
                 </motion.li>
               ))}

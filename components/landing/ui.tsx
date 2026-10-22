@@ -332,7 +332,7 @@ export function CtaButton({
       }}
       aria-busy={yendo || undefined}
       data-cta-pagina=""
-      className={`inline-flex items-center justify-center rounded-[var(--radius-button)] px-8 text-[17px] font-semibold transition-[colors,opacity] lg:px-10 lg:text-[18px] duration-150 [touch-action:manipulation] ${yendo ? 'opacity-80' : ''} ${
+      className={`inline-flex items-center justify-center rounded-[var(--radius-button)] px-8 text-[16px] font-semibold transition-[colors,opacity] lg:px-10 lg:text-[18px] duration-150 [touch-action:manipulation] ${yendo ? 'opacity-80' : ''} ${
         variant === 'outline'
           ? 'border border-[color-mix(in_oklab,var(--accent)_45%,transparent)] text-[var(--accent-ink)] hover:bg-[var(--chip-bg)]'
           : 'cta-solid bg-[var(--accent)] text-[var(--on-accent)] shadow-[0_8px_30px_color-mix(in_oklab,var(--accent)_25%,transparent)] hover:bg-[color-mix(in_oklab,var(--accent)_88%,var(--text-primary))]'

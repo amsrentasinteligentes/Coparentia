@@ -68,10 +68,10 @@ export default function Home() {
         ctaHref={CTA_HREF}
         socialProof={
           <span className="block text-balance">
-            {TRIAL_DIAS} días gratis · Garantía de 15 días
+            {TRIAL_DIAS} días gratis · registras tu medio de pago, no se cobra hasta el día {DIA_PRIMER_COBRO}
             {/* Decisión #8 (2026-10-20): por ahora la app es solo para Colombia. */}
             <span className="mt-1 block text-[13px] font-semibold text-[var(--text-secondary)] lg:text-[14px]">
-              Disponible para Colombia
+              Garantía de 15 días · Disponible para Colombia
             </span>
           </span>
         }
@@ -115,9 +115,10 @@ export default function Home() {
       {/* 3. AGITACIÓN */}
       <Agitacion
         titulo="Te reclaman un pago o una visita. [acento]¿Dónde quedó lo acordado?[/acento]"
+        // Escena real del avatar (FICHA-AVATAR: el reclamo por WhatsApp) en vez de lenguaje legal, y una sola línea de promesa.
         frases={[
-          'Con COPARENTIA cada pago, visita y acuerdo queda registrado, con fecha y en un solo lugar.',
-          'Y si surge una reclamación, tendrás la información reunida para preparar una respuesta o sustentar una actuación.',
+          'Te escriben por WhatsApp reclamando un pago y buscas el comprobante entre capturas.',
+          'Con Coparentia cada pago, visita y acuerdo queda registrado, con fecha y en un solo lugar.',
         ]}
       />
 

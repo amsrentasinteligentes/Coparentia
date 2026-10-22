@@ -55,10 +55,10 @@ export function Garantia({ nombre, condicionMarked, pisoLegal, icon: Icono = Shi
               >
                 <Icono size={32} strokeWidth={1.8} color="var(--accent)" aria-hidden="true" />
               </motion.span>
-              <h2 className="text-balance text-[22px] font-bold leading-tight [font-family:var(--font-display)]">
+              <h2 className="text-balance text-[20px] font-bold leading-tight [font-family:var(--font-display)]">
                 <Accent>{nombre}</Accent>
               </h2>
-              <p className="max-w-[44ch] text-[15px] leading-[1.6] text-[var(--text-secondary)] lg:text-[17px]">
+              <p className="max-w-[44ch] text-[16px] leading-[1.6] text-[var(--text-secondary)] lg:text-[17px]">
                 <MarkedCopy text={condicionMarked} />
               </p>
               {pisoLegal && (

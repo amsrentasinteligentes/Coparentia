@@ -43,7 +43,7 @@ function TextoCita({ texto, extracto }: { texto: string; extracto?: string }) {
     <>
       <blockquote
         id={id}
-        className="text-[15px] leading-[1.65] text-[var(--text-primary)] lg:text-[16px]"
+        className="text-[16px] leading-[1.65] text-[var(--text-primary)] lg:text-[16px]"
       >
         “{larga && !abierta ? extracto : texto}”
       </blockquote>
@@ -76,7 +76,7 @@ export function OpinionProfesionales({ kicker = 'OPINIÓN DE PROFESIONALES', tit
       >
         <motion.div variants={item} className="mx-auto max-w-[680px] text-center">
           <Kicker>{kicker}</Kicker>
-          <h2 className="text-balance text-[30px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)] md:text-[40px] lg:text-[46px]">
+          <h2 className="text-balance text-[28px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)] md:text-[40px] lg:text-[46px]">
             {titulo}
           </h2>
         </motion.div>

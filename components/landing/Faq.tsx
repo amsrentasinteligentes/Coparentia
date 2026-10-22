@@ -51,7 +51,7 @@ export function Faq({ kicker = 'PREGUNTAS', titulo = 'Lo que quizá te estás pr
       >
         <motion.div variants={item} className="mb-8">
           <Kicker>{kicker}</Kicker>
-          <h2 className="text-balance text-[30px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)] md:text-[40px] lg:text-[46px]">
+          <h2 className="text-balance text-[28px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)] md:text-[40px] lg:text-[46px]">
             {titulo}
           </h2>
         </motion.div>
@@ -95,7 +95,7 @@ export function Faq({ kicker = 'PREGUNTAS', titulo = 'Lo que quizá te estás pr
                   {it.respuesta ? (
                     <div className="pb-5">{it.respuesta}</div>
                   ) : (
-                    <p className="pb-5 pr-9 text-[15px] leading-relaxed text-[var(--text-secondary)] lg:text-[17px]">
+                    <p className="pb-5 pr-9 text-[16px] leading-relaxed text-[var(--text-secondary)] lg:text-[17px]">
                       <MarkedCopy text={it.respuestaMarked} />
                     </p>
                   )}
