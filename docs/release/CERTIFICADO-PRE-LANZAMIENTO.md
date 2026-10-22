@@ -1,8 +1,49 @@
 # CERTIFICADO PRE-LANZAMIENTO — Coparentia (2026-10-22)
 
-**Producción auditada:** coparentia.co, commit `6fe327a` (master). **Correcciones preparadas, sin publicar:** rama `certificacion-prelanzamiento`.
+**Producción auditada (mañana):** coparentia.co, commit `6fe327a`. **Producción actual (noche):** commit `e0afb60`.
 
-## VEREDICTO: ❌ NO APTO para cobrar todavía — 57 / 100
+## ACTUALIZACIÓN DE LA NOCHE (2026-10-22) — ❌ NO APTO todavía — 62 / 100 (antes 57)
+
+El veredicto sigue en NO APTO: hay un bloqueante de dinero abierto (reembolso y primer cobro reales sin probar) y 62 es menor que 80. Los puntajes de los pilares sin pantallas son **estimación mía** con la evidencia de abajo; los de VENTA, FUNNEL y PRODUCTO dependen del revisor visual y **no se volvieron a medir** (no lo lanzamos por orden del dueño).
+
+| Pilar | Antes | Ahora | Qué cambió |
+|---|---|---|---|
+| VENTA | 16 | 16 | Sin cambios; el revisor sigue en 30/40. |
+| FUNNEL | 13 | 13 | Sin cambios. |
+| PRODUCTO | 6 | 7 | Costo de IA medido en la base real (16 llamadas, US$0,035, tope diario puesto, saldo de Anthropic US$4,97 sin recarga automática). |
+| CONFIANZA | 10 | 13 | Next actualizado y publicado (0 vulnerabilidades); Sentry probado; vigilancia de disponibilidad y status page; prueba de aislamiento entre cuentas aprobada en títulos, pagos y archivos; revisión legal cerrada (dueño); correo de soporte de Hotmart. Falta: reembolso/cobro reales, CSP activo, Supabase Free. |
+| VELOCIDAD | 4 | 4 | No se volvió a medir en producción. |
+| RETENCIÓN | 8 | 9 | Latidos en las 4 tareas del dinero (1 probada en vivo) y alarma de tendencia de correos. Falta comprobar la entrega real del aviso de cobro (26–27/10). |
+| **TOTAL** | **57** | **62** | NO APTO (<80 y con bloqueante de dinero). |
+
+### Bloqueantes: estado de la noche
+| # | Bloqueante | Estado |
+|---|---|---|
+| 1 | Producción con Next vulnerable | ✅ CERRADO: publicado y verificado. |
+| 2 | Prueba real de cancelación y reembolso | ⚠️ PARCIAL: cancelación en prueba y cierre del acceso verificados; **falta el cobro real (29/10) y el reembolso (antes del 6/11)** con la compra `+prueba2`. |
+| 3 | Supabase Free (pausa a los 7 días, sin copias restaurables) | ⚠️ RIESGO ACEPTADO por el dueño, con alerta automática al llegar a 3 clientes que pagan y revisión mensual. Ya hay 1 cliente real que pagó (23/09). |
+| 4 | Sin vigilancia de errores ni página de estado | ✅ CERRADO: Sentry (servidor) probado; Better Stack con 3 monitores; status page creada (sin enlazar aún); latidos de las 4 tareas del dinero. |
+| 5 | Acceso cruzado entre usuarios (IDOR) | ⚠️ PARCIAL: probado con datos reales en títulos, pagos y archivos (0 filas vistas); en eventos, hijos y constancias solo por lectura de código; sin probar escrituras cruzadas. |
+| 6 | Tres pantallas en 30/40 | ❌ ABIERTO: decidir aceptar o rediseño de marca. |
+| 7 | App interna medida solo en parte | ❌ ABIERTO (el primer arranque sí se recorrió). |
+| 8 | Costo de la IA por usuario sin medir | ✅ CERRADO: medido; sin tope por persona (un abusador agota el tope del día para todos; la app degrada a monto manual). |
+| 9 | Cuenta `demo@coparentia.co` en producción | ⚠️ DECIDIDO: se deja por ahora; con `auditoriasrentas` queda por decidir. Se borraron 4 cuentas y una notificación de prueba. |
+| 10 | **Nuevo:** tope de 100 correos/día de Resend (plan gratis) | ⚠️ ABIERTO antes de publicidad: pasar Resend a plan pago y subir el límite de Supabase (30/h → ~150/h). La alarma automática avisa con un día de retraso. |
+
+### Gates que cambian
+- Gate 1 (superficie y autenticación): ✅ con IDOR parcialmente probado.
+- Gate 6 (IA): ✅ el costo por usuario ya está medido.
+- Gate 10 (analítica y operación): ✅ Sentry y vigilancia; ❌ sin piloto de 5 a 10 compradores.
+- Gates 2 y 9 siguen igual (sin reembolso real; sin pruebas automáticas ni CI).
+
+### Pendientes con fecha
+- **23/10, después de las 10 am (Colombia):** confirmar en Better Stack que los latidos de pre-cobro y pagos fallidos están en Up.
+- **26–27/10:** aviso de cobro al alias `+prueba2`; revisar si el recibo de Hotmart todavía muestra el correo viejo del vendedor.
+- **29/10 → 6/11:** cobro real y reembolso.
+
+---
+
+## Versión de la mañana (histórica) — ❌ NO APTO — 57 / 100
 
 Regla del sistema: un solo bloqueante de dinero, acceso, privacidad o seguridad deja el veredicto en NO APTO sin importar el puntaje. Hay varios (abajo). Menos de 80 puntos también es NO APTO.
 
