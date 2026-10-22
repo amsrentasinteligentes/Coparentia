@@ -11,6 +11,7 @@ import { NextResponse } from 'next/server';
 import { crearClienteSupabaseAdmin } from '@/lib/supabase/admin';
 import { enviarCorreoAvisoPreCobro } from '@/lib/email';
 import { comparacionSegura } from '@/lib/hotmart-verify';
+import { reportarError } from '@/lib/monitoreo';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
@@ -41,6 +42,7 @@ export async function GET(request: Request): Promise<NextResponse> {
     .lte('trial_ends_at', hasta);
   if (error) {
     console.error('cron aviso-pre-cobro: no se pudo leer suscripciones', error.message);
+    reportarError('cron aviso-pre-cobro: no se pudo leer suscripciones');
     return NextResponse.json({ error: 'fallo al leer suscripciones' }, { status: 500 });
   }
 

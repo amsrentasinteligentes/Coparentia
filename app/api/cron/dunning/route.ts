@@ -12,6 +12,7 @@ import { NextResponse } from 'next/server';
 import { crearClienteSupabaseAdmin } from '@/lib/supabase/admin';
 import { enviarCorreoRecordatorioPago, enviarCorreoUltimoAvisoPago } from '@/lib/email';
 import { comparacionSegura } from '@/lib/hotmart-verify';
+import { reportarError } from '@/lib/monitoreo';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
@@ -40,6 +41,7 @@ export async function GET(request: Request): Promise<NextResponse> {
     .not('grace_ends_at', 'is', null);
   if (error) {
     console.error('cron dunning: no se pudo leer suscripciones', error.message);
+    reportarError('cron dunning: no se pudo leer suscripciones');
     return NextResponse.json({ error: 'fallo al leer suscripciones' }, { status: 500 });
   }
 

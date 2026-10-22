@@ -17,6 +17,7 @@ import { crearClienteSupabaseAdmin } from '@/lib/supabase/admin';
 import { enviarPushAUsuario } from '@/lib/push';
 import { comparacionSegura } from '@/lib/hotmart-verify';
 import { diaDelMesEnColombia, mesEnColombia } from '@/lib/fecha';
+import { reportarError } from '@/lib/monitoreo';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
@@ -46,6 +47,7 @@ export async function GET(request: Request): Promise<NextResponse> {
     .neq('recordatorio_cuota_enviado_mes', mesActual);
   if (error) {
     console.error('cron recordatorio-cuota: no se pudo leer titulos', error.message);
+    reportarError('cron recordatorio-cuota: no se pudo leer titulos');
     return NextResponse.json({ error: 'fallo al leer titulos' }, { status: 500 });
   }
 
