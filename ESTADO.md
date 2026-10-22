@@ -26,6 +26,17 @@
   flechas de teclado en los carruseles, quitar píldoras del hero, reducir la tarjeta Anual (11 elementos), respuesta a "¿cómo cancelo?" en el FAQ.
   Pendiente de las otras 2 pantallas (onboarding, planes): no tocadas todavía.
 
+- **LANDING: LISTA (ronda 4 del revisor, commit `f8a5614`, rama `rediseno-base`, NO publicada): 38/40 · 16/20 craft · 17/20 copy.**
+  Evidencia: `docs/revisiones/r31-landing-g1..g12.png`, `r31-landing-barra-fija.png`, `r31-landing-final.png`,
+  `r31-landing-formulario-con-errores.png`; veredicto: `docs/revisiones/landing-veredicto.md`. Craft queda JUSTO en el límite (16): si la
+  Garantía pierde el fondo "hundido" vuelve a NO LISTA. Cualquier cambio posterior a la landing exige nueva revisión. Opcionales que el
+  revisor propuso para dar margen (NO aplicados, para no invalidar la evidencia): quitar el `recap` duplicado del cierre, alinear el pie a
+  20 px, oscurecer `--status-error` a ~#b93a32 (hoy ~4,4:1 en texto de 14 px), Garantía h2 a 28 px, h2 del cierre alineado con el titular,
+  FAQ de 7 a 6 preguntas, recapturar el corte g12 con la altura real.
+- BASES REUTILIZABLES para onboarding y planes (ya en el código): escala de letra 34/28/20/16/14/13; espaciado a la escala; banda
+  `marino` y nivel `hundida` en `SectionShell`; tokens `--marino`, `--on-marino`, `--accent-on-marino`, `--status-error`; `CtaButton` con
+  "Abriendo…" y alto único 52 px; errores por campo (patrón de `ListaEsperaPais`); carruseles con puntos y flechas de teclado.
+
 ### PUNTO DE CONTROL (2026-10-22, noche) — ANTES del rediseño de diseño desde la base
 - Etiqueta `punto-de-control-2026-10-22` y rama `punto-de-control-2026-10-22` en GitHub = estado completo previo al rediseño (código en
   producción `e0afb60` + documentos al día). Para volver: `git switch -c volver punto-de-control-2026-10-22` (no toca producción).
