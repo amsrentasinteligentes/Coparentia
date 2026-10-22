@@ -1,3 +1,12 @@
+### PUNTO DE CONTROL (2026-10-22, noche) — ANTES del rediseño de diseño desde la base
+- Etiqueta `punto-de-control-2026-10-22` y rama `punto-de-control-2026-10-22` en GitHub = estado completo previo al rediseño (código en
+  producción `e0afb60` + documentos al día). Para volver: `git switch -c volver punto-de-control-2026-10-22` (no toca producción).
+- Objetivo del rediseño: llevar las 3 pantallas que deciden el dinero (página principal, recorrido de inicio, pantalla de planes) de 30/40 a
+  ≥36/40 con el revisor-visual (y craft ≥16/20). Hoy: landing 30/15/15, onboarding 30/14/14, paywall 30/14/15. Certificado: NO APTO 62/100.
+- Pendientes que NO dependen del rediseño: latidos mañana (23/10, >10 am), aviso de cobro 26–27/10, cobro y reembolso 29/10–6/11, Resend de
+  pago antes de publicidad. Archivos locales del dueño sin versionar a propósito: `Usuario Github.png`, `supabase/cerrar-sesiones.sql` (tiene su
+  correo) y el cambio en `docs/marketing/pilar4-cifras/texto-del-post.txt`.
+
 ### Checkpoint (2026-10-22, noche) — Alarma de tendencia de correos de acceso PUBLICADA (master `e0afb60`)
 - `uso_del_proyecto()` ahora devuelve `correos_acceso_24h` (personas distintas con correo de acceso en 24 h; aproximación por debajo). SQL ya
   corrido por el dueño: devuelve 3. `/api/cron/alerta-capacidad` avisa a soporte@ si ≥ 50 (Resend Free = 100/día); llega con un día de retraso.
