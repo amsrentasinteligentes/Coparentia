@@ -311,7 +311,7 @@ function PrimerosPasos({ onListo }: { onListo: () => void }) {
               </button>
             ))}
           </div>
-          <p className="mt-1.5 text-[11.5px] text-[var(--text-secondary)]">Así podemos avisarte lo correcto: a quien paga, subir el comprobante; a quien recibe, que ya casi le llega.</p>
+          <p className="mt-1.5 text-[12px] text-[var(--text-secondary)]">Así podemos avisarte lo correcto: a quien paga, subir el comprobante; a quien recibe, que ya casi le llega.</p>
 
           <label className="mt-5 text-[13px] font-medium text-[var(--text-secondary)]">Reajuste anual</label>
           <select
@@ -693,7 +693,7 @@ function Dashboard() {
                 <IconoCirculo icon={Bell} size={18} />
                 <div className="min-w-0 flex-1">
                   <p className="text-[13px] font-extrabold text-[var(--text-primary)]">{n.titulo}</p>
-                  <p className="mt-0.5 text-[11.5px] text-[var(--text-secondary)]">{n.cuerpo}</p>
+                  <p className="mt-0.5 text-[12px] text-[var(--text-secondary)]">{n.cuerpo}</p>
                 </div>
                 <button
                   type="button"
@@ -741,7 +741,7 @@ function Dashboard() {
                   <p className="mt-2 text-[17px] font-extrabold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
                     {titulo ? <NumeroContado valor={titulo.montoMensual} formato={formatoCOP} /> : '—'}
                   </p>
-                  <p className="mt-0.5 text-[11.5px] text-[var(--text-secondary)]">
+                  <p className="mt-0.5 text-[12px] text-[var(--text-secondary)]">
                     {titulo ? `Mes actual · día ${titulo.diaPago}` : 'Cuota sin definir'}
                   </p>
                 </Tarjeta>
@@ -778,9 +778,11 @@ function Dashboard() {
                     />
                   </div>
                   {/* El primer mes "1 de 1" con barra llena no dice nada: se nombra el hito en su lugar. */}
-                  <p className="mt-1 text-[11.5px] text-[var(--text-secondary)]">
-                    {metaMeses === 1 ? 'Primer mes registrado' : metaMeses === 12 ? 'de los últimos 12 meses' : 'meses que lleva tu expediente'} · {formatoCOP(totalRegistrado)}
+                  <p className="mt-1 text-[12px] text-[var(--text-secondary)]">
+                    {metaMeses === 1 ? 'Primer mes registrado' : metaMeses === 12 ? 'de los últimos 12 meses' : 'meses que lleva tu expediente'}
                   </p>
+                  {/* El total en pesos va en su propia línea: antes se mezclaba con el conteo y la barra (revisor, 2026-10-22). */}
+                  <p className="mt-0.5 text-[12px] font-semibold tabular-nums text-[var(--text-primary)]">{formatoCOP(totalRegistrado)} registrados</p>
                 </Tarjeta>
               </Link>
             </div>
@@ -808,12 +810,12 @@ function Dashboard() {
                       <IconoCirculo icon={p.tipo === 'cuota' ? Check : ReceiptText} size={16} tono={p.tipo === 'cuota' ? 'exito' : 'info'} />
                       <div className="min-w-0 flex-1">
                         <p className="truncate text-[13px] font-bold text-[var(--text-primary)]">{p.tipo === 'cuota' ? 'Cuota con Sello de Confianza' : 'Gasto extra registrado'}</p>
-                        <p className="flex items-baseline gap-1 text-[11.5px] text-[var(--text-secondary)]">
+                        <p className="flex items-baseline gap-1 text-[12px] text-[var(--text-secondary)]">
                           <span className="truncate">{p.hijoNombre ? `${p.hijoNombre} · ` : ''}{p.concepto}</span>
                           <span className="shrink-0">· {formatoCOP(p.monto)}</span>
                         </p>
                       </div>
-                      <time className="shrink-0 text-right text-[11.5px] leading-tight text-[var(--text-secondary)]">{formatoFechaCorta(p.fecha)}</time>
+                      <time className="shrink-0 text-right text-[12px] leading-tight text-[var(--text-secondary)]">{formatoFechaCorta(p.fecha)}</time>
                     </li>
                   ))}
                 </ul>
@@ -826,7 +828,7 @@ function Dashboard() {
                 <IconoCirculo icon={ShieldCheck} size={18} />
                 <div className="min-w-0 flex-1">
                   <p className="text-[13px] font-extrabold text-[var(--text-primary)]">Tu expediente, listo para mostrar</p>
-                  <p className="text-[11.5px] text-[var(--text-secondary)]">
+                  <p className="text-[12px] text-[var(--text-secondary)]">
                     {pagos.length} {pagos.length === 1 ? 'comprobante' : 'comprobantes'} con Sello
                     {gastosExtraMes.length > 0 ? ` · ${formatoCOP(totalExtraMes)} en gastos extra este mes` : ' · PDF disponible'}
                   </p>

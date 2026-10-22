@@ -299,11 +299,11 @@ export default function PerfilPage() {
               <div className="mt-3 grid grid-cols-2 gap-2">
                 <div className="rounded-[var(--radius-chip,14px)] bg-[var(--surface-2)] px-3 py-2.5">
                   <p className="text-[16px] font-extrabold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">{hijos.length}</p>
-                  <p className="text-[11px] text-[var(--text-secondary)]">{hijos.length === 1 ? 'hijo en tu expediente' : 'hijos en tu expediente'}</p>
+                  <p className="text-[12px] text-[var(--text-secondary)]">{hijos.length === 1 ? 'hijo en tu expediente' : 'hijos en tu expediente'}</p>
                 </div>
                 <div className="rounded-[var(--radius-chip,14px)] bg-[var(--surface-2)] px-3 py-2.5">
                   <p className="text-[16px] font-extrabold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">{nComprobantes ?? '—'}</p>
-                  <p className="text-[11px] text-[var(--text-secondary)]">comprobantes con Sello</p>
+                  <p className="text-[12px] text-[var(--text-secondary)]">comprobantes con Sello</p>
                 </div>
               </div>
             </Tarjeta>
@@ -411,11 +411,11 @@ export default function PerfilPage() {
             <div className="mt-3 grid grid-cols-2 gap-3">
               <Tarjeta indice={3} className="flex flex-col gap-2 p-3">
                 <IconoCirculo icon={CalendarCheck} size={18} />
-                <div><p className="text-[11px] text-[var(--text-secondary)]">Miembro desde</p><p className="text-[13px] font-extrabold leading-tight text-[var(--text-primary)]">{desde}</p></div>
+                <div><p className="text-[12px] text-[var(--text-secondary)]">Miembro desde</p><p className="text-[13px] font-extrabold leading-tight text-[var(--text-primary)]">{desde}</p></div>
               </Tarjeta>
               <Tarjeta indice={4} className="flex flex-col gap-2 p-3">
                 <IconoCirculo icon={Crown} size={18} tono="pendiente" />
-                <div><p className="text-[11px] text-[var(--text-secondary)]">Plan actual</p><p className="text-[13px] font-extrabold leading-tight text-[var(--text-primary)]">{planTexto ?? 'Plan no disponible'}</p></div>
+                <div><p className="text-[12px] text-[var(--text-secondary)]">Plan actual</p><p className="text-[13px] font-extrabold leading-tight text-[var(--text-primary)]">{planTexto ?? 'Plan no disponible'}</p></div>
               </Tarjeta>
             </div>
 

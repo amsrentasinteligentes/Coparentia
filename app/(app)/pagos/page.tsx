@@ -214,7 +214,7 @@ export default function Pagos() {
                   <p className="mt-1.5 text-[18px] font-extrabold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
                     {titulo ? formatoCOP(cuotaDelMes?.monto ?? titulo.montoMensual) : '—'}
                   </p>
-                  <p className="text-[11.5px] text-[var(--text-secondary)]">
+                  <p className="text-[12px] text-[var(--text-secondary)]">
                     {cuotaDelMes ? `Pagada el ${formatoFechaLarga(cuotaDelMes.fecha)}` : titulo ? `Vence el día ${titulo.diaPago}` : 'Define tu cuota en Ajustes'}
                   </p>
                 </div>
@@ -223,7 +223,7 @@ export default function Pagos() {
                 <div className="flex items-center gap-2 border-t border-[color-mix(in_oklab,var(--text-tertiary)_16%,transparent)] pt-3">
                   <IconoCirculo icon={CalendarDays} size={16} />
                   <div className="min-w-0">
-                    <p className="text-[11px] text-[var(--text-secondary)]">Próximo vencimiento</p>
+                    <p className="text-[12px] text-[var(--text-secondary)]">Próximo vencimiento</p>
                     <p className="text-[13px] font-bold text-[var(--text-primary)]">{proximoVencimiento}</p>
                   </div>
                   <ChevronRight size={16} className="ml-auto shrink-0 text-[var(--text-tertiary)]" aria-hidden="true" />
@@ -240,7 +240,7 @@ export default function Pagos() {
                   <p className="mt-1 text-[17px] font-extrabold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
                     {vencida && titulo ? formatoCOP(titulo.montoMensual) : formatoCOP(0)}
                   </p>
-                  <p className="text-[11.5px] text-[var(--text-secondary)]">{vencida ? 'Cuota del mes sin comprobante' : 'Sin pagos vencidos'}</p>
+                  <p className="text-[12px] text-[var(--text-secondary)]">{vencida ? 'Cuota del mes sin comprobante' : 'Sin pagos vencidos'}</p>
                 </div>
               </Tarjeta>
               <Tarjeta indice={2}>
@@ -251,7 +251,7 @@ export default function Pagos() {
                   <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-[color-mix(in_oklab,var(--accent)_16%,transparent)]">
                     <span className="block h-full rounded-full bg-[var(--accent)]" style={{ width: `${Math.min(100, extrasDelMes.length * 25)}%` }} />
                   </div>
-                  <p className="mt-1 text-[11.5px] text-[var(--text-secondary)]">{extrasDelMes.length} este mes</p>
+                  <p className="mt-1 text-[12px] text-[var(--text-secondary)]">{extrasDelMes.length} este mes</p>
                 </div>
               </Tarjeta>
             </div>
@@ -271,7 +271,7 @@ export default function Pagos() {
                         <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[color-mix(in_oklab,var(--accent)_12%,transparent)] text-[13px] font-bold text-[var(--accent-ink,var(--accent))]">{inicialHijo(hijo.nombre)}</span>
                         <div className="min-w-0 flex-1">
                           <p className="truncate text-[13.5px] font-bold text-[var(--text-primary)]">{hijo.nombre}</p>
-                          <p className="text-[11.5px] text-[var(--text-secondary)]">{cantidad === 0 ? 'Sin gastos este año' : cantidad === 1 ? '1 gasto extra' : `${cantidad} gastos extra`}</p>
+                          <p className="text-[12px] text-[var(--text-secondary)]">{cantidad === 0 ? 'Sin gastos este año' : cantidad === 1 ? '1 gasto extra' : `${cantidad} gastos extra`}</p>
                         </div>
                         <p className="shrink-0 text-[13.5px] font-extrabold tabular-nums text-[var(--text-primary)]">{formatoCOP(total)}</p>
                         <ChevronRight size={16} className="shrink-0 text-[var(--text-tertiary)]" aria-hidden="true" />
@@ -284,7 +284,7 @@ export default function Pagos() {
                         <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[var(--surface-2)] text-[var(--text-secondary)]"><Users size={16} aria-hidden="true" /></span>
                         <div className="min-w-0 flex-1">
                           <p className="truncate text-[13.5px] font-bold text-[var(--text-primary)]">Sin hijo asignado</p>
-                          <p className="text-[11.5px] text-[var(--text-secondary)]">{sinAsignar.length === 1 ? '1 gasto extra' : `${sinAsignar.length} gastos extra`} · comunes o anteriores</p>
+                          <p className="text-[12px] text-[var(--text-secondary)]">{sinAsignar.length === 1 ? '1 gasto extra' : `${sinAsignar.length} gastos extra`} · comunes o anteriores</p>
                         </div>
                         <p className="shrink-0 text-[13.5px] font-extrabold tabular-nums text-[var(--text-primary)]">{formatoCOP(totalSinAsignar)}</p>
                         <ChevronRight size={16} className="shrink-0 text-[var(--text-tertiary)]" aria-hidden="true" />
@@ -403,7 +403,7 @@ export default function Pagos() {
                         <IconoCirculo icon={esCuota ? CalendarDays : ReceiptText} size={18} tono={esCuota ? 'accent' : 'info'} />
                         <div className="min-w-0 flex-1">
                           <p className="truncate text-[13.5px] font-bold text-[var(--text-primary)]">{p.concepto}</p>
-                          <p className="truncate text-[11.5px] text-[var(--text-secondary)]">
+                          <p className="truncate text-[12px] text-[var(--text-secondary)]">
                             {p.hijoNombre && <span className="font-semibold text-[var(--accent-ink,var(--accent))]">{p.hijoNombre} · </span>}
                             Pagado el {formatoFechaLarga(p.fecha)}
                           </p>
@@ -431,7 +431,7 @@ export default function Pagos() {
                             </button>
                           </div>
                         ) : (
-                          <button type="button" onClick={() => setConfirmandoBorrado(p.id)} aria-label={`Borrar ${p.concepto}`} className="self-end py-1 text-[11.5px] text-[var(--text-tertiary)] underline-offset-2 hover:underline [touch-action:manipulation]">Borrar</button>
+                          <button type="button" onClick={() => setConfirmandoBorrado(p.id)} aria-label={`Borrar ${p.concepto}`} className="self-end py-1 text-[12px] text-[var(--text-tertiary)] underline-offset-2 hover:underline [touch-action:manipulation]">Borrar</button>
                         )}
                         {errorFila?.id === p.id && (
                           <p role="alert" className="text-[12.5px] leading-[1.5] text-[var(--status-error)]">{errorFila.mensaje}</p>
@@ -448,11 +448,11 @@ export default function Pagos() {
             <div className="mt-3 grid grid-cols-2 gap-3">
               <Tarjeta indice={5} className="flex items-center gap-3">
                 <IconoCirculo icon={BarChart3} />
-                <div><p className="text-[11.5px] text-[var(--text-secondary)]">{labelCierreCuotas}</p><p className="text-[17px] font-extrabold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">{cuotasCierre}</p></div>
+                <div><p className="text-[12px] text-[var(--text-secondary)]">{labelCierreCuotas}</p><p className="text-[17px] font-extrabold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">{cuotasCierre}</p></div>
               </Tarjeta>
               <Tarjeta indice={6} className="flex items-center gap-3">
                 <IconoCirculo icon={ShieldCheck} tono="exito" />
-                <div><p className="text-[11.5px] text-[var(--text-secondary)]">Con Sello</p><p className="text-[17px] font-extrabold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">{conSelloCierre}</p></div>
+                <div><p className="text-[12px] text-[var(--text-secondary)]">Con Sello</p><p className="text-[17px] font-extrabold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">{conSelloCierre}</p></div>
               </Tarjeta>
             </div>
           </>
