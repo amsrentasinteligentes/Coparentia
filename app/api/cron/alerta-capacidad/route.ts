@@ -5,7 +5,8 @@
 // Cuándo avisa:
 //   · base de datos ≥ 70% del tope gratuito (500 MB);
 //   · fotos de comprobantes ≥ 70% del tope gratuito (1 GB) — lo primero que se llena;
-//   · ya hay clientes que pagaron (≥ CLIENTES_PARA_PRO): el plan gratuito no guarda copias de seguridad restaurables.
+//   · ya hay clientes que pagaron (≥ CLIENTES_PARA_PRO): el plan gratuito no guarda copias de seguridad restaurables;
+//   · ≥ 50 personas pidieron un correo de acceso en 24 h: el plan gratuito de Resend se llena a los 100 correos al día.
 // Cada aviso se repite como máximo cada 7 días (tabla `alertas_capacidad`).
 // NO se puede medir desde aquí: las descargas del mes (egress, tope 5 GB) ni los usuarios activos del mes; el correo
 // recuerda revisarlos a mano en Supabase → Reports.
@@ -30,7 +31,19 @@ const CLIENTES_PARA_PRO = 3;
 const REAVISO_MS = 7 * 86_400_000;
 const MB = 1024 * 1024;
 
-type Uso = { db_bytes: number; storage_bytes: number; usuarios: number; suscripciones_con_cobro: number };
+// Resend (plan gratuito) permite 100 correos al día. Como el acceso es por código de correo, cada ingreso gasta uno; se avisa a
+// partir de 50 personas distintas en 24 h (aproximación por debajo, ver supabase/alerta-capacidad.sql). `correos_acceso_24h` es
+// opcional: si el dueño todavía no volvió a correr el SQL, la función no lo devuelve y este aviso simplemente no se evalúa.
+const UMBRAL_CORREOS_ACCESO = 50;
+const TOPE_RESEND_DIA = 100;
+
+type Uso = {
+  db_bytes: number;
+  storage_bytes: number;
+  usuarios: number;
+  suscripciones_con_cobro: number;
+  correos_acceso_24h?: number;
+};
 
 export async function GET(request: Request): Promise<NextResponse> {
   const secreto = process.env.CRON_SECRET;
@@ -74,6 +87,14 @@ export async function GET(request: Request): Promise<NextResponse> {
       titulo: `Ya tienes ${uso.suscripciones_con_cobro} clientes que pagan`,
       detalle:
         'El plan gratuito de Supabase no guarda copias de seguridad restaurables y se pausa tras una semana sin actividad. Con clientes pagando, conviene pasar a Supabase Pro (US$25/mes).',
+    });
+  }
+
+  if (typeof uso.correos_acceso_24h === 'number' && uso.correos_acceso_24h >= UMBRAL_CORREOS_ACCESO) {
+    avisos.push({
+      clave: 'correos',
+      titulo: `${uso.correos_acceso_24h} personas pidieron acceso en las últimas 24 horas`,
+      detalle: `El plan gratuito de Resend permite ${TOPE_RESEND_DIA} correos al día en total y esta cifra es una aproximación por debajo. Si el tope se llena, quien pida su código ese día no lo recibe. Conviene pasar Resend a un plan pago y subir el límite de correos por hora de Supabase (Authentication → Rate Limits) antes de seguir con publicidad.`,
     });
   }
 

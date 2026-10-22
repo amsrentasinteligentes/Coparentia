@@ -27,6 +27,13 @@ as $$
       where status in ('active', 'past_due')
         and first_paid_at is not null
         and email !~* '^test'
+    ),
+    -- Personas distintas a las que Supabase les mandó un correo de acceso (código, confirmación o cambio de correo) en las
+    -- últimas 24 horas. Es una aproximación POR DEBAJO del gasto real de Resend (una misma persona que pide su código varias veces
+    -- cuenta una vez, y los correos propios de la app no se incluyen): sirve para ver la tendencia frente al tope de 100 al día.
+    'correos_acceso_24h', (
+      select count(*) from auth.users
+      where greatest(confirmation_sent_at, recovery_sent_at, email_change_sent_at) >= now() - interval '24 hours'
     )
   );
 $$;

@@ -42,7 +42,7 @@ Vercel → Deployments → busca el despliegue anterior que funcionaba (el que d
 | La IA que lee recibos falla | Es normal: la app pasa a registro manual. Revisa la tabla `ai_calls` y el panel de Anthropic. |
 
 ## 6B. Cuándo subir Supabase a Pro
-Tu app te escribe sola a `soporte@coparentia.co` cuando la base de datos o las fotos pasan del 70% del plan gratuito, o cuando ya hay 3 clientes que pagan. Además, una vez al mes haz la revisión de 5 minutos de `docs/release/REVISION-MENSUAL-SUPABASE.md` (descargas del mes, cuentas de prueba, correos por hora).
+Tu app te escribe sola a `soporte@coparentia.co` cuando la base de datos o las fotos pasan del 70% del plan gratuito, cuando ya hay 3 clientes que pagan, o cuando 50 o más personas piden su código de acceso en 24 horas (el plan gratuito de Resend se llena a los 100 correos al día: ahí conviene pasar Resend a plan pago y subir el límite de correos de Supabase). Esa última alarma es una aproximación y llega con un día de retraso. Además, una vez al mes haz la revisión de 5 minutos de `docs/release/REVISION-MENSUAL-SUPABASE.md` (descargas del mes, cuentas de prueba, correos por hora).
 
 ## 6C. Avisos de errores (Sentry)
 Sentry te escribe por correo cuando falla algo en el servidor (aviso de pago de Hotmart, tareas diarias). Solo vigila el servidor y no recibe datos de personas (ver `sentry.server.config.ts`). Para encenderlo: crea el proyecto en sentry.io, copia su clave DSN y pégala **solo en Vercel** → Settings → Environment Variables → `SENTRY_DSN` (entorno Production); nunca en el chat ni en el código. Prueba: agrega también `SENTRY_PRUEBA` = `1`, publica de nuevo, mira que llegue el mensaje "Prueba de Sentry" y **borra** `SENTRY_PRUEBA`. Sin `SENTRY_DSN`, Sentry queda apagado.
