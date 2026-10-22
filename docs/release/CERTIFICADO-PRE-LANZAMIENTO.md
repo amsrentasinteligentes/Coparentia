@@ -2,7 +2,7 @@
 
 **Producción auditada:** coparentia.co, commit `6fe327a` (master). **Correcciones preparadas, sin publicar:** rama `certificacion-prelanzamiento`.
 
-## VEREDICTO: ❌ NO APTO para cobrar todavía — 54 / 100
+## VEREDICTO: ❌ NO APTO para cobrar todavía — 55 / 100
 
 Regla del sistema: un solo bloqueante de dinero, acceso, privacidad o seguridad deja el veredicto en NO APTO sin importar el puntaje. Hay varios (abajo). Menos de 80 puntos también es NO APTO.
 
@@ -10,11 +10,11 @@ Regla del sistema: un solo bloqueante de dinero, acceso, privacidad o seguridad 
 |---|---|---|
 | VENTA (página principal) | **16 / 20** | Estructura completa; el revisor la puntúa 30/40 usabilidad, 15/20 diseño, 15/20 texto. |
 | FUNNEL (recorrido y planes) | **13 / 20** | Recorrido y planes completos; el revisor da 30/40 y 14/20 en ambos; el puente de la prueba (día 1 a 7) está a medias. |
-| PRODUCTO (dentro de la app) | **3 / 20** | **No medido:** no pude entrar a la app interna sin tu cuenta (no se piden claves en el chat). Lo no medido vale 0. |
+| PRODUCTO (dentro de la app) | **4 / 20** | Solo medí **Inicio** (29/40 · 12/20, NO LISTA) y recorrí a ojo las demás secciones sin tocar nada; el resto sigue sin medir y vale 0. |
 | CONFIANZA (seguridad, legal, pago) | **10 / 15** | Muy buena base de seguridad y legal; faltan pruebas reales de cancelación y reembolso, prueba de acceso cruzado entre usuarios y un CSP activo. |
 | VELOCIDAD | **4 / 10** | Cambio de diseño estable (CLS 0) y poco bloqueo; pero el contenido principal tarda ≈5–6 s en celular lento (debería ser ≤2,5 s). |
 | RETENCIÓN | **8 / 15** | Recordatorios, avisos de cobro y recuperación de pagos existen en código; falta medir embudo y comprobar entrega real. |
-| **TOTAL** | **54 / 100** | Banda <80 = NO APTO |
+| **TOTAL** | **55 / 100** | Banda <80 = NO APTO |
 
 ## Lo que encontré y ya corregí en la rama (sin publicar)
 1. ✅ **Next.js desactualizado con 7 avisos de seguridad** (uno "crítico" que no afecta a este sitio porque no usa `next/og`, y uno "alto" de optimización de imágenes que sí podía afectar). Actualizado de 16.3.4 a 16.4.2 y limpiadas 3 dependencias más: `npm audit` pasó de 4 vulnerabilidades (1 crítica, 2 altas) a **0**.
@@ -33,7 +33,7 @@ Regla del sistema: un solo bloqueante de dinero, acceso, privacidad o seguridad 
 | 4 | **Sin vigilancia de errores ni página de estado** (no hay Sentry) | Crear cuenta gratis en Sentry y una vigilancia de disponibilidad; yo la conecto | Dueño + yo |
 | 5 | **Sin prueba de acceso cruzado entre usuarios (IDOR)** | Dos cuentas de prueba (la demo y otra) para intentar leer los datos del otro, desde la pantalla y desde la API | Dueño + yo |
 | 6 | **Tres pantallas por debajo del 36/40** (30, 30, 30) | Decidir: aceptar el 30 para vender, o un rediseño visual de marca | Dueño |
-| 7 | **No se midió la app interna** (inicio, pagos, calendario, expediente, perfil, asistencia) | Iniciar sesión tú con la cuenta demo en el navegador integrado y yo recorro todo | Dueño + yo |
+| 7 | **App interna medida solo en parte:** Inicio 29/40 · 12/20; Pagos, Calendario, Expediente, Especialistas, Perfil y Ajustes recorridos a ojo (sin errores de consola) pero sin puntuar; sin probar estados vacío/error/sin conexión ni el primer arranque | Puntuar el resto con el revisor, y una cuenta nueva para ver el primer arranque | Dueño + yo |
 | 8 | **Costo de la IA por usuario sin medir** | Pasarme el total de `ai_calls` de Supabase | Dueño |
 | 9 | **Cuenta `demo@coparentia.co` existe en producción** | Decidir si se borra o se deja (tiene datos inventados) | Dueño |
 
@@ -68,3 +68,17 @@ Recorrí la página principal, el recorrido y los planes como una persona que pa
 - Lighthouse móvil sobre coparentia.co: rendimiento 75, accesibilidad 99, SEO 92, buenas prácticas 100, LCP 6,2 s, CLS 0, TBT 180 ms. Misma medición sobre la compilación local corregida: 79–82, LCP ≈5 s, CLS 0.
 - Revisor visual (ronda r27): `docs/revisiones/landing-veredicto.md`, `onboarding-veredicto.md`, `paywall-veredicto.md` (30/15/15, 30/14/14, 30/14/15) y sus capturas `r27*`.
 - Cabeceras de producción verificadas con `curl -I`.
+
+## Evidencia añadida el 2026-10-22 (tarde)
+- **Login por enlace:** falló en la ventana integrada del asistente (la verificación anti-robot de Cloudflare, Turnstile, no entregó permiso a ese navegador; sin ella Supabase responde `captcha_failed`) y **funcionó en un Chrome normal**. Sin confirmar un fallo real de producción.
+- **CSP en solo-reporte ya sirvió:** marcó que Turnstile (`challenges.cloudflare.com`) falta en la lista. **Antes de activar el CSP hay que agregar ese dominio a `script-src`, `frame-src` y `connect-src`.**
+- **Seguridad comprobada con llamadas reales a producción (sin sesión):** `/inicio`, `/pagos`, `/expediente`, `/admin` redirigen al login; los 5 `cron` responden 401; el webhook de Hotmart sin firma responde 401; las 19 tablas no devuelven datos privados con la clave pública (solo `profesionales`, que es público por diseño); `/pagina-inexistente` da 404.
+- **Pendiente de seguridad:** acceso cruzado entre dos usuarios con sesión (IDOR) sigue sin probar.
+- **Hallazgos de la app interna (cuenta real del dueño, solo lectura):**
+  1. El botón flotante "Registrar" tapa el atajo "Especialistas" en Inicio.
+  2. Inicio no tiene un dato héroe: cifras de 17 px y textos de 11,5 px (bajo el mínimo de 12 px); siete bloques apilados; banner "expediente listo" duplica el acceso Expediente.
+  3. Una notificación de prueba ("Prueba del historial") quedó guardada en la cuenta y se ve en Inicio (es un dato, no un componente fijo).
+  4. En Ajustes, una cuenta sin rol elegido ve en rojo "Elige tu rol…" apenas abre la pantalla (el aviso debería aparecer solo al intentar guardar).
+  5. En Calendario, una tarjeta con solo un ícono y el número "1" no dice qué cuenta.
+  6. "Meses con registro" mezcla conteo, barra y un total en pesos en la misma línea.
+- Revisor visual de Inicio: `docs/revisiones/inicio-veredicto.md` (29/40 · 12/20 · NO LISTA). Limitación: recortes de ~420 px, no 375 px exactos.
