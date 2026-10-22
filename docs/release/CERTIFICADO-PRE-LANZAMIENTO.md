@@ -90,3 +90,9 @@ Recorrí la página principal, el recorrido y los planes como una persona que pa
 - **Ajustes:** el aviso del rol sale en gris (corrección publicada hoy). Explica con claridad que cancelar se hace en Hotmart y que borrar la cuenta NO cancela el cobro.
 - **Hallazgo grave de correo:** cuando la persona pide un enlace en `/entrar` antes de haber confirmado su cuenta, Supabase manda la plantilla **"Confirm your email address", en inglés, sin marca y sin el código de 8 dígitos** que la pantalla promete. Pendiente: traducir y personalizar las plantillas en Supabase → Authentication → Email Templates.
 - **Observaciones menores:** en Pagos la pestaña por defecto de una cuenta nueva es "Historial" y no "Cuotas"; Inicio no muestra valor hasta completar la configuración.
+
+## Vigilancia de disponibilidad (2026-10-22, noche)
+- **Better Stack (plan gratuito)**: 3 monitores HTTP con revisión cada 3 minutos — `https://coparentia.co/`, `https://coparentia.co/api/version` y `https://coparentia.co/entrar` — con aviso por correo al dueño. Cuenta creada sin tarjeta.
+- **Alerta verificada de punta a punta (por accidente):** un monitor con la dirección mal escrita (`/api/versio`) generó un incidente real y el correo "New incident started" llegó a Recibidos en ~1 minuto; al corregir la dirección el monitor pasó a "Up" y el incidente se cerró.
+- Limitaciones del plan gratuito: la verificación por palabra clave es de pago ("Billable"), así que solo se vigila que la dirección responda; llamadas/SMS no activados.
+- Pendiente: página de estado pública (opcional, sin dominio propio por ahora), *heartbeats* de las tareas diarias (requiere cambio de código) y vigilancia de errores (Sentry o equivalente).
