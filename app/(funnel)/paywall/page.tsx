@@ -74,6 +74,15 @@ function CheckPlan({ activo }: { activo: boolean }) {
   );
 }
 
+// Plan elegido: relleno tintado + borde en degradé de marca (acento → acento claro), visible a 375 px. Con "border: transparent" el
+// degradé del borde se pinta en la capa border-box y el relleno en la padding-box (mismo recurso que PanelExpediente).
+const BORDE_ELEGIDO = {
+  background:
+    'linear-gradient(color-mix(in oklab, var(--accent) 7%, var(--surface)), color-mix(in oklab, var(--accent) 7%, var(--surface))) padding-box, ' +
+    'linear-gradient(135deg, var(--accent), var(--accent-2) 60%, var(--accent-deep)) border-box',
+  borderWidth: '1.5px',
+} as const;
+
 type Respuestas = {
   // `rol` lo guarda el onboarding desde 2026-09-07 y aquí no se leía: hace falta para poder
   // mostrar el expediente ya armado en el panel de computador con las palabras correctas.
@@ -270,7 +279,7 @@ export default function Paywall() {
     <MarcoFunnel
       panel={
         <>
-          <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-[var(--accent-ink,var(--accent))]">
+          <p className="text-[13px] font-semibold uppercase tracking-[0.08em] text-[var(--accent-ink,var(--accent))]">
             {filasExpediente.length > 0 ? 'Tu expediente ya está armado' : 'Lo que vas a tener'}
           </p>
           <h2 className="mt-3 text-balance text-[28px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)]">
@@ -314,7 +323,7 @@ export default function Paywall() {
                     <Icon size={20} color="var(--accent)" aria-hidden="true" />
                   </span>
                   <div>
-                    <p className="text-[15px] font-semibold text-[var(--text-primary)]">{titulo}</p>
+                    <p className="text-[16px] font-semibold text-[var(--text-primary)]">{titulo}</p>
                     <p className="mt-1 text-[14px] leading-[1.6] text-[var(--text-secondary)]">{detalle}</p>
                   </div>
                 </li>
@@ -496,7 +505,7 @@ function ValorYPrueba({
               <Check size={13} strokeWidth={2.8} color="var(--accent)" />
             </span>
             <span>
-              <span className="block text-[15px] leading-[1.35] text-[var(--text-primary)]">{f.texto}</span>
+              <span className="block text-[16px] leading-[1.35] text-[var(--text-primary)]">{f.texto}</span>
               {f.detalle && <span className="mt-0.5 block text-[13px] leading-[1.4] text-[var(--text-secondary)]">{f.detalle}</span>}
             </span>
             {f.miniatura && (
@@ -523,7 +532,7 @@ function ValorYPrueba({
           dos pantallas seguidas (defecto del revisor). Además el calendario de cobros es lo que más
           se relee antes de decidir: merece su propio plano. */}
       <div className="relative rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--text-tertiary)_16%,transparent)] bg-[var(--surface)] p-4 shadow-[var(--shadow-1)]">
-        <h2 className="text-[19px] font-bold leading-[1.2] text-[var(--text-primary)] [font-family:var(--font-display)]">
+        <h2 className="text-[20px] font-bold leading-[1.2] text-[var(--text-primary)] [font-family:var(--font-display)]">
           {TRIAL_DIAS} días gratis, sin sorpresas
         </h2>
         <div className="mt-4 flex flex-col">
@@ -545,7 +554,7 @@ function ValorYPrueba({
               )}
             </div>
               <div className="pb-4">
-                <p className="text-[15px] font-semibold text-[var(--text-primary)]">{nodo.titulo}</p>
+                <p className="text-[16px] font-semibold text-[var(--text-primary)]">{nodo.titulo}</p>
                 <p className="mt-0.5 text-[13px] text-[var(--text-secondary)]">{nodo.detalle}</p>
               </div>
             </motion.div>
@@ -628,7 +637,11 @@ function Precio({
     <div className="relative flex flex-1 flex-col">
       {/* FORMA ORGÁNICA de la variante clara (FICHA-ARTE: blobs en degradé azul) detrás del
           titular — el dispositivo ownable que al paywall le faltaba (revisor claro r1). */}
-      <h1 className="relative text-balance text-[24px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)]">
+      {/* Firma de marca junto al titular (la misma del paso 1): el Sello de Confianza como dispositivo propio de la decisión. */}
+      <div className="pointer-events-none absolute right-0 top-0 w-[56px] drop-shadow-[0_6px_10px_rgba(18,40,92,0.25)]">
+        <SelloMarca compacto />
+      </div>
+      <h1 className="relative text-balance pr-[68px] text-[24px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)]">
         <Halo />
         {/* El <Marcador> envolvía "captura de WhatsApp": a 375px esa frase cruza tres renglones y
             el subrayado se partía en tres trazos sueltos que parecían marcar palabras al azar.
@@ -668,9 +681,10 @@ function Precio({
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: reduce ? 0 : 0.25, delay: reduce ? 0 : 0, ease: [0.16, 1, 0.3, 1] }}
+          style={plan === 'anual' ? BORDE_ELEGIDO : undefined}
           className={`flex flex-col rounded-[var(--radius-card)] border p-4 text-left transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--text-primary)] [touch-action:manipulation] ${
             plan === 'anual'
-              ? 'border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_7%,transparent)] shadow-[0_6px_20px_color-mix(in_oklab,var(--accent)_18%,transparent)]'
+              ? 'border-transparent shadow-[0_6px_20px_color-mix(in_oklab,var(--accent)_18%,transparent)]'
               : 'border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] bg-[var(--surface)] shadow-[var(--shadow-1)]'
           }`}
         >
@@ -687,16 +701,16 @@ function Precio({
             <CheckPlan activo={plan === 'anual'} />
             <div className="flex-1">
               <div className="flex items-baseline justify-between">
-                <span className="text-[15px] font-semibold text-[var(--text-primary)]">Anual</span>
-                <span className="text-[26px] font-bold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
-                  <PrecioContado valor={PLAN_ANUAL.precioMes} /><span className="text-[13px] font-normal text-[var(--text-secondary)]">/mes</span>
+                <span className="text-[16px] font-semibold text-[var(--text-primary)]">Anual</span>
+                <span className="text-[32px] font-bold leading-none tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
+                  <PrecioContado valor={PLAN_ANUAL.precioMes} /><span className="text-[14px] font-normal text-[var(--text-secondary)]">/mes</span>
                 </span>
               </div>
               {/* TERCER PLANO DE PROFUNDIDAD (2026-09-17, defecto #4 del revisor): la pantalla solo
                   tenía fondo base y tarjeta elevada; FICHA-ARTE declara tres niveles. La referencia
                   en pesos —dato de apoyo, no el precio— va sobre una superficie HUNDIDA: se
                   distingue del precio principal sin agregar otro color ni otro tamaño de letra. */}
-              <p className={`mt-1.5 rounded-[8px] ${plan === 'anual' ? 'bg-[var(--surface)]' : 'bg-[var(--surface-2)]'} px-3 py-1 text-[13px] text-[var(--text-secondary)] shadow-[inset_0_1px_2px_rgb(20_40_80_/_0.08)] lg:min-h-0`}>
+              <p className={`mt-2 rounded-[8px] ${plan === 'anual' ? 'bg-[var(--surface)]' : 'bg-[var(--surface-2)]'} px-3 py-1 text-[13px] text-[var(--text-secondary)] shadow-[inset_0_1px_2px_rgb(20_40_80_/_0.08)] lg:min-h-0`}>
                 {PLAN_ANUAL.totalAnual}
                 <span className="hidden text-[var(--text-primary)] lg:ml-2 lg:inline">
                   Te sale a <span className="font-semibold">{PLAN_ANUAL.costoDia}</span> al día
@@ -716,23 +730,24 @@ function Precio({
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: reduce ? 0 : 0.25, delay: reduce ? 0 : 0.06, ease: [0.16, 1, 0.3, 1] }}
+          style={plan === 'mensual' ? BORDE_ELEGIDO : undefined}
           className={`flex items-start gap-3 rounded-[var(--radius-card)] border p-4 text-left transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--text-primary)] [touch-action:manipulation] ${
             plan === 'mensual'
-              ? 'border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_7%,transparent)] shadow-[0_6px_20px_color-mix(in_oklab,var(--accent)_18%,transparent)]'
+              ? 'border-transparent shadow-[0_6px_20px_color-mix(in_oklab,var(--accent)_18%,transparent)]'
               : 'border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] bg-[var(--surface)] shadow-[var(--shadow-1)]'
           }`}
         >
           <CheckPlan activo={plan === 'mensual'} />
           <div className="flex-1">
             <div className="flex items-baseline justify-between">
-              <span className="text-[15px] font-semibold text-[var(--text-primary)]">Mensual</span>
-              <span className="text-[26px] font-bold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
-                <PrecioContado valor={PLAN_MENSUAL.precioMes} /><span className="text-[13px] font-normal text-[var(--text-secondary)]">/mes</span>
+              <span className="text-[16px] font-semibold text-[var(--text-primary)]">Mensual</span>
+              <span className="text-[28px] font-bold leading-none tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
+                <PrecioContado valor={PLAN_MENSUAL.precioMes} /><span className="text-[14px] font-normal text-[var(--text-secondary)]">/mes</span>
               </span>
             </div>
             {/* Solo la tarjeta Anual mostraba su total, así que el "ahorras US$30.88" no se podía
                 comprobar contra nada: faltaba el término de comparación. */}
-            <p className={`mt-1.5 rounded-[8px] ${plan === 'mensual' ? 'bg-[var(--surface)]' : 'bg-[var(--surface-2)]'} px-3 py-1 text-[13px] text-[var(--text-secondary)] shadow-[inset_0_1px_2px_rgb(20_40_80_/_0.08)] lg:min-h-0`}>
+            <p className={`mt-2 rounded-[8px] ${plan === 'mensual' ? 'bg-[var(--surface)]' : 'bg-[var(--surface-2)]'} px-3 py-1 text-[13px] text-[var(--text-secondary)] shadow-[inset_0_1px_2px_rgb(20_40_80_/_0.08)] lg:min-h-0`}>
               {PLAN_MENSUAL.totalAnual}
               <span className="hidden text-[var(--text-primary)] lg:ml-2 lg:inline">
                 Te sale a <span className="font-semibold">{PLAN_MENSUAL.costoDia}</span> al día
@@ -753,7 +768,7 @@ function Precio({
           y del botón fijo para que no tape el campo. La autorización de datos es una casilla nunca
           premarcada (Ley 1581 de 2012), igual que en /entrar. */}
       <div className="mt-3">
-        <label htmlFor="paywall-correo" className="text-[15px] font-semibold text-[var(--text-primary)]">
+        <label htmlFor="paywall-correo" className="text-[16px] font-semibold text-[var(--text-primary)]">
           Tu correo para pagar y entrar
         </label>
         {correoFijo ? (
@@ -788,19 +803,21 @@ function Precio({
           }}
           aria-invalid={errorCorreo ? true : undefined}
           aria-describedby={errorCorreo ? 'paywall-correo-error' : undefined}
-          className="mt-2 h-12 w-full rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--surface)] px-4 text-[16px] text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)]"
+          className={`mt-2 h-12 w-full rounded-[var(--radius-button)] border bg-[var(--surface)] px-4 text-[16px] text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)] ${
+            errorCorreo && !correoValido ? 'border-[var(--status-error)] focus-visible:border-[var(--status-error)]' : 'border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)]'
+          }`}
         />
         )}
         {!correoFijo && sugerirCorreo(correo) && (
           <button
             type="button"
             onClick={() => onCorreo(sugerirCorreo(correo) as string)}
-            className="mt-1.5 block w-full text-left text-[13px] leading-[1.4] text-[var(--text-secondary)] [touch-action:manipulation]"
+            className="mt-2 block w-full text-left text-[13px] leading-[1.4] text-[var(--text-secondary)] [touch-action:manipulation]"
           >
             ¿Quisiste decir <span className="font-semibold text-[var(--accent-ink,var(--accent))] underline underline-offset-2">{sugerirCorreo(correo)}</span>? Tócalo para corregirlo.
           </button>
         )}
-        <label className="mt-2 flex items-start gap-2.5 [touch-action:manipulation]">
+        <label className="mt-2 flex items-start gap-3 [touch-action:manipulation]">
           <input
             id="paywall-autoriza"
             type="checkbox"
@@ -937,7 +954,7 @@ function Precio({
 
       <p className="mt-3 text-[13px] leading-[1.45] text-[var(--text-secondary)]">
         <Lock size={13} className="mr-1 inline-block align-[-2px]" color="var(--accent)" aria-hidden="true" />Pago seguro con Hotmart. {FRASE_MONTO_HOTMART} Verás a{' '}
-        <span className="font-medium text-[var(--text-primary)]">{NOMBRE_VENDEDOR_HOTMART}</span>{' '}como vendedor.
+        <span className="font-medium text-[var(--text-primary)]">{NOMBRE_VENDEDOR_HOTMART}</span>{' '}como vendedor: es el nombre de la cuenta de Coparentia en Hotmart.
       </p>
 
       <div className="mt-auto pt-4">

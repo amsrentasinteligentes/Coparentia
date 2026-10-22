@@ -30,7 +30,6 @@ import {
   Users,
   HelpCircle,
   Zap,
-  FileText,
 } from 'lucide-react';
 import {
   BarraAtras,
@@ -100,7 +99,7 @@ function manejarFlechasChips(e: KeyboardEvent<HTMLDivElement>): void {
 
 function InfoContextual({ children, anclar = true }: { children: ReactNode; anclar?: boolean }) {
   return (
-    <div className={`flex items-start gap-2.5 px-1 ${anclar ? 'mt-auto' : 'mt-4'}`}>
+    <div className={`flex items-start gap-3 px-1 ${anclar ? 'mt-auto' : 'mt-4'}`}>
       <Info size={16} className="mt-0.5 shrink-0 text-[var(--text-tertiary)]" aria-hidden="true" />
       <p className="text-[13px] leading-[1.5] text-[var(--text-secondary)]">{children}</p>
     </div>
@@ -156,11 +155,9 @@ function PantallaChips({
 }) {
   return (
     <div className="relative isolate flex flex-1 flex-col">
-      {/* Mancha de marca (el dispositivo ownable de FICHA-ARTE): hasta hoy las preguntas no llevaban
-          ninguna y el revisor-visual las puntuó sin identidad (2026-10-20). Detrás del título, sin tocar el flujo. */}
-      <span aria-hidden="true" className="pointer-events-none absolute inset-x-0 -top-2 -z-10 h-28">
-        <Blob className="right-0 top-0 h-20 w-28" opacidad={0.16} />
-      </span>
+      {/* La mancha azul de las preguntas se quitó (2026-10-22): caía sobre el final del titular o sobre el contador y parecía un
+          manchón accidental (revisor-visual). El rasgo de marca de las preguntas es el halo del titular + el sello del encabezado;
+          la forma orgánica queda para las pantallas de celebración, donde sí enmarca algo. */}
       <h1 className="relative text-balance text-[28px] font-bold leading-[1.1] text-[var(--text-primary)] [font-family:var(--font-display)]">
         <Halo />
         {tituloAntes}
@@ -169,7 +166,7 @@ function PantallaChips({
       </h1>
       {/* El subtítulo (`subtitulo`) ya no se pinta: decía casi lo mismo que la caja "¿Por qué lo preguntamos?"
           de abajo (revisor-visual, 2026-10-20). La caja es la que explica el motivo. */}
-      <div className="mt-5 flex flex-col gap-2.5" onKeyDown={manejarFlechasChips}>
+      <div className="mt-6 flex flex-col gap-3" onKeyDown={manejarFlechasChips}>
         {children}
       </div>
       <InfoContextual anclar={false}>{porQue}</InfoContextual>
@@ -181,13 +178,22 @@ function PantallaChips({
 /* Pregunta 1: en vez de ~230 px de aire, lo que se va a llevar, con una página real del PDF (datos ficticios). */
 function LoQueArmas() {
   return (
-    <div className="mt-5 flex items-center gap-4 rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--text-tertiary)_22%,transparent)] bg-[var(--surface)] p-4 shadow-[var(--shadow-1)]">
-      <span aria-hidden="true" className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[color-mix(in_oklab,var(--accent)_12%,transparent)]">
-        <FileText size={22} strokeWidth={1.9} color="var(--accent)" />
-      </span>
+    <div className="mt-6 flex items-center gap-4 rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--text-tertiary)_22%,transparent)] bg-[var(--surface)] p-4 shadow-[var(--shadow-1)]">
+      {/* Página 1 del PDF real que genera la app, con datos ficticios (la misma de la página de ventas). 96 px de ancho: se
+          lee que es una hoja numerada y con fecha; al tocarla se abre ampliada (antes era un ícono que no probaba nada). */}
+      <a
+        href="/ejemplo-expediente-pagina.webp"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Ver ampliada una página de ejemplo del expediente (se abre en otra pestaña)"
+        className="block h-[124px] w-24 shrink-0 overflow-hidden rounded-[8px] border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] bg-white shadow-[var(--shadow-1)] [touch-action:manipulation]"
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/ejemplo-expediente-pagina.webp" alt="" width={96} height={124} loading="lazy" className="h-full w-full object-cover object-top" />
+      </a>
       <p className="text-[14px] leading-[1.5] text-[var(--text-secondary)]">
-        <span className="block text-[15px] font-semibold text-[var(--text-primary)]">Esto es lo que vas a armar</span>
-        Un expediente en PDF, con cada página numerada y con fecha.
+        <span className="block text-[16px] font-semibold text-[var(--text-primary)]">Esto es lo que vas a armar</span>
+        Un expediente en PDF, con cada página numerada y con fecha. Toca la hoja para verla.
       </p>
     </div>
   );
@@ -372,7 +378,7 @@ export default function Onboarding() {
           <p className="text-[13px] font-semibold uppercase tracking-[0.08em] text-[var(--accent-ink,var(--accent))] lg:mt-3">
             Tu expediente se está armando
           </p>
-          <h2 className="mt-3 text-balance text-[21px] font-semibold leading-[1.25] text-[var(--text-primary)] [font-family:var(--font-display)]">
+          <h2 className="mt-3 text-balance text-[20px] font-semibold leading-[1.25] text-[var(--text-primary)] [font-family:var(--font-display)]">
             Cada respuesta le da forma a lo que vas a poder mostrar
           </h2>
           <p className="mt-3 text-[14px] leading-[1.6] text-[var(--text-secondary)]">
@@ -494,13 +500,13 @@ export default function Onboarding() {
           revisor ya aprobó varias rondas — un enlace nuevo por pantalla movería esa ancla. Aquí,
           antes de que la persona conteste nada, no hay CTA anclado que perturbar. */}
       {paso === 0 && (
-        <nav aria-label="Enlaces legales" className="mt-auto flex flex-wrap items-center justify-center gap-x-4 gap-y-0 pb-2 text-center lg:justify-start">
+        <nav aria-label="Enlaces legales" className="mt-auto flex flex-wrap items-center justify-center gap-x-3 gap-y-0 pb-2 pt-6 text-center lg:justify-start">
           {[
             { label: 'Privacidad', href: '/privacidad' },
             { label: 'Términos y Condiciones', href: '/terminos' },
             { label: 'Reembolsos', href: '/reembolsos' },
             { label: 'Aviso de IA', href: '/aviso-ia' },
-            { label: 'SIC (Superintendencia)', href: 'https://www.sic.gov.co/', externo: true },
+            { label: 'SIC (Superintendencia de Industria y Comercio)', href: 'https://www.sic.gov.co/', externo: true },
           ].map((e) => (
             <a
               key={e.href}
@@ -616,9 +622,16 @@ function PreguntaSituacion({
           type="text"
           maxLength={120}
           value={texto}
-          onChange={(e) => setTexto(e.target.value)}
+          onChange={(e) => {
+            setTexto(e.target.value);
+            if (faltaTexto) setFaltaTexto(false);
+          }}
+          aria-invalid={faltaTexto && !texto.trim() ? true : undefined}
+          aria-describedby={faltaTexto && !texto.trim() ? 'situacion-otra-error' : undefined}
           placeholder="Ej. Pago, pero cada mes discutimos el monto"
-          className="mt-2 h-14 w-full rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--surface)] px-4 text-[16px] text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)]"
+          className={`mt-2 h-14 w-full rounded-[var(--radius-button)] border bg-[var(--surface)] px-4 text-[16px] text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)] ${
+            faltaTexto && !texto.trim() ? 'border-[var(--status-error)] focus-visible:border-[var(--status-error)]' : 'border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)]'
+          }`}
         />
         {/* Helper pegado al input + la caja de contexto de sus hermanas (sustancia real en un
             paso que si no sería un campo perdido en negro). El CTA sí se ancla al fondo con
@@ -636,7 +649,7 @@ function PreguntaSituacion({
             Seguir con mi expediente
           </CtaFunnel>
           {faltaTexto && !texto.trim() && (
-            <p role="alert" className="mt-2 text-center text-[13px] text-[var(--status-error)]">
+            <p id="situacion-otra-error" role="alert" className="mt-2 text-center text-[13px] text-[var(--status-error)]">
               Escribe unas palabras sobre tu situación para continuar.
             </p>
           )}
@@ -904,6 +917,22 @@ function PreguntaAtribucion({ valor, onElegir }: { valor: string; onElegir: (v: 
   );
 }
 
+/* Hito real del recorrido (celebración N3 de FICHA-ARTE: "sello de fecha, sin fanfarria"): el sello se estampa — entra un poco
+   grande y se asienta con un rebote suave. Con "reducir movimiento" aparece directamente, sin escala ni giro. */
+function SelloEstampado() {
+  const reduce = useReducedMotion();
+  return (
+    <motion.div
+      initial={reduce ? { opacity: 0 } : { opacity: 0, scale: 1.18, rotate: -4 }}
+      animate={reduce ? { opacity: 1 } : { opacity: 1, scale: 1, rotate: 0 }}
+      transition={reduce ? { duration: 0.2 } : { type: 'spring', bounce: 0.18, duration: 0.52 }}
+      className="w-[124px] drop-shadow-[0_12px_18px_rgba(18,40,92,0.26)]"
+    >
+      <SelloMarca />
+    </motion.div>
+  );
+}
+
 /* ── Reconocimiento final (A5, variante etiquetado positivo — regla b de LA ESCALERA).
    Nombra el mecanismo (regla del 02B: "el usuario debe poder decir el nombre de lo que
    acaba de configurar") — antes solo vivía en landing/paywall, nunca en el onboarding. ── */
@@ -911,9 +940,7 @@ function ReconocimientoFinal({ respuestas, onContinuar }: { respuestas: Respuest
   return (
     <div className="flex flex-1 flex-col text-center">
       <div className="flex flex-1 flex-col items-center justify-center lg:flex-none lg:justify-start">
-      <div className="w-[124px] drop-shadow-[0_12px_18px_rgba(18,40,92,0.26)]">
-        <SelloMarca />
-      </div>
+      <SelloEstampado />
       <h1 className="mt-6 text-balance text-[28px] font-bold leading-[1.12] text-[var(--text-primary)] [font-family:var(--font-display)]">
         Tus respuestas te describen
       </h1>
@@ -944,7 +971,12 @@ function ReconocimientoFinal({ respuestas, onContinuar }: { respuestas: Respuest
         >
           Ver mi expediente y mi plan
         </CtaFunnel>
-        <p className="mt-2 text-center text-[13px] text-[var(--text-secondary)]">Garantía del Primer Expediente: si en 15 días no armas tu primer expediente, te devolvemos todo.</p>
+        <p className="mt-3 flex items-start justify-center gap-2 text-center text-[14px] leading-[1.45] text-[var(--text-secondary)]">
+          <ShieldCheck size={16} className="mt-0.5 shrink-0 text-[var(--accent)]" aria-hidden="true" />
+          <span>
+            <span className="font-semibold text-[var(--text-primary)]">Garantía del Primer Expediente · 15 días.</span> Si no armas el tuyo, te devolvemos todo.
+          </span>
+        </p>
       </div>
     </div>
   );
@@ -1032,7 +1064,7 @@ function LoadingPlan({ respuestas, onListo, onVolver }: { respuestas: Respuestas
           {pct}%
         </span>
       </div>
-      <h1 className="mt-6 text-center text-[26px] font-bold leading-[1.12] text-[var(--text-primary)] [font-family:var(--font-display)]">
+      <h1 className="mt-6 text-center text-[28px] font-bold leading-[1.12] text-[var(--text-primary)] [font-family:var(--font-display)]">
         Construyendo tu expediente…
       </h1>
       <ul className="mt-8 flex w-full flex-col gap-4">
@@ -1052,7 +1084,7 @@ function LoadingPlan({ respuestas, onListo, onVolver }: { respuestas: Respuestas
                   }`}
                 />
               )}
-              <span className="text-[15px] leading-snug text-[var(--text-primary)]">{linea}</span>
+              <span className="text-[16px] leading-snug text-[var(--text-primary)]">{linea}</span>
             </li>
           );
         })}
