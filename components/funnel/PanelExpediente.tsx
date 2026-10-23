@@ -46,10 +46,9 @@ export function PanelExpediente({
   const MAX_VISIBLES = compacto ? 2 : 5;
   const contestadas = filas.filter((f) => f.valor);
   const pendientes = filas.filter((f) => !f.valor);
-  const cuantasPendientes = Math.max(
-    contestadas.length >= filas.length ? 0 : 1,
-    MIN_VISIBLES - contestadas.length
-  );
+  const cuantasPendientes = compacto
+    ? 0
+    : Math.max(contestadas.length >= filas.length ? 0 : 1, MIN_VISIBLES - contestadas.length);
   // En celular, si hay más contestadas que cupo, se muestran las ÚLTIMAS (lo que acaba de responder).
   const visibles = [...(compacto ? contestadas.slice(-MAX_VISIBLES) : contestadas), ...pendientes.slice(0, cuantasPendientes)].slice(0, MAX_VISIBLES);
   const ocultas = filas.length - visibles.length;
@@ -121,7 +120,7 @@ export function PanelExpediente({
               {/* La fila pendiente usa --text-tertiary PLENO (5.1:1 sobre --surface): con el
                   `color-mix` al 75% caía a 3.46:1 y no pasaba AA — el revisor lo midió. */}
               <div className="min-w-0 flex-1">
-                <p className="text-[13px] text-[var(--text-tertiary)]">
+                <p className="text-[14px] text-[var(--text-tertiary)]">
                   {fila.label}
                 </p>
                 {lista && (

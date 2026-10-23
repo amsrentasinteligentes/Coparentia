@@ -16,9 +16,10 @@ import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { X, Check, ShieldCheck, Lock, FileCheck2, HeartHandshake, Loader2, MapPin } from 'lucide-react';
 import { SelloMarca } from '@/components/landing/SelloMarca';
+import { Blob } from '@/components/landing/ui';
 import { BarraAtras, CtaFunnel, FunnelHeader, Halo, MarcoFunnel, Marcador, usePasoVariants } from '@/components/funnel/ui';
 import { PanelExpediente, type FilaExpediente } from '@/components/funnel/PanelExpediente';
-import { DIA_PRIMER_COBRO, FRASE_MONTO_HOTMART, NOMBRE_VENDEDOR_HOTMART, PRECIOS, TRIAL_DIAS, usd } from '@/lib/precios';
+import { DIA_PRIMER_COBRO, NOMBRE_VENDEDOR_HOTMART, PRECIOS, TRIAL_DIAS, usd } from '@/lib/precios';
 import { trackMeta } from '@/lib/meta-pixel';
 import { crearClienteSupabase } from '@/lib/supabase/client';
 
@@ -188,7 +189,10 @@ export default function Paywall() {
   useEffect(() => {
     try {
       const guardado = localStorage.getItem(CLAVE_CORREO);
-      if (guardado) setCorreo(guardado);
+      if (guardado) {
+        setCorreo(guardado);
+        setPaso(1);
+      }
       const raw = sessionStorage.getItem('coparentia_onboarding');
       if (raw) setR(JSON.parse(raw));
       // El plan que la persona ya había elegido se guardaba al salir al checkout, pero nunca se
@@ -198,6 +202,16 @@ export default function Paywall() {
       if (planGuardado === 'anual' || planGuardado === 'mensual') setPlan(planGuardado);
     } catch {}
   }, []);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0 });
+  }, [paso]);
+
+  // h5: el correo se valida al salir del campo (antes solo al tocar el botón de pago).
+  const validarCorreoAlSalir = (): void => {
+    const v = correo.trim();
+    if (v && !FORMATO_CORREO.test(v.toLowerCase())) setErrorCorreo('Revisa tu correo: parece incompleto (falta algo como @ o .com).');
+  };
 
   const cerrar = (): void => router.push('/');
   // `yendo` bloquea el doble tap en la acción crítica del funnel y deja el botón en estado de
@@ -270,8 +284,8 @@ export default function Paywall() {
         { label: 'Tu rol', valor: r.rol === 'paga' ? 'Pago la cuota' : r.rol === 'recibe' ? 'Recibo la cuota' : undefined },
         { label: 'Tu situación', valor: r.situacion === 'Otra cosa' && r.situacionOtra ? r.situacionOtra : r.situacion || undefined },
         { label: 'Lo que más te preocupa', valor: r.preocupacion || undefined },
-        { label: 'Meses a documentar', valor: r.metaMeses ? `${r.metaMeses} ${r.metaMeses === 1 ? 'mes' : 'meses'}` : undefined },
-        { label: 'Cuándo registras', valor: r.momento || undefined },
+        { label: 'Meses por organizar', valor: r.metaMeses ? `${r.metaMeses} ${r.metaMeses === 1 ? 'mes' : 'meses'}` : undefined },
+        { label: 'Cuándo revisas', valor: r.momento || undefined },
       ].filter((f) => f.valor)
     : [];
 
@@ -386,6 +400,7 @@ export default function Paywall() {
                 yendo={yendo}
                 falloAlAbrir={falloAlAbrir}
                 correo={correo}
+                onCorreoBlur={validarCorreoAlSalir}
                 onCorreo={(v) => {
                   correoTocado.current = true;
                   setCorreo(v);
@@ -436,7 +451,7 @@ function ValorYPrueba({
     transition: { duration: 0.34, ease: [0.22, 0.61, 0.36, 1] as const, delay: reduce ? 0 : i * 0.05 },
   });
 
-  const incluye: { texto: string; detalle?: string; miniatura?: string }[] = [
+  const incluye: { texto: string; detalle?: string }[] = [
     { texto: 'El Sello de Confianza en cada comprobante', detalle: 'Con fecha y respaldo que nadie puede alterar.' },
     { texto: 'Expediente exportable en PDF foliado', detalle: 'Cada página numerada y con fecha.' },
     // La objeción nº 1 del avatar (FICHA-AVATAR) va aquí, a la vista, en vez de una promesa genérica de alertas.
@@ -455,10 +470,11 @@ function ValorYPrueba({
     <div className="flex flex-1 flex-col">
       <div className="relative">
         {/* Firma de marca junto al titular (compacto: escudo limpio con visto bueno; a este tamaño el logo y la palabra no se leen). */}
+        <Blob className="-right-5 -top-3 h-24 w-28" opacidad={0.16} />
         <div className="pointer-events-none absolute top-0 right-0 w-[56px] drop-shadow-[0_6px_10px_rgba(18,40,92,0.25)]">
           <SelloMarca compacto />
         </div>
-      <h1 className="relative text-balance pr-[68px] text-[28px] font-bold leading-[1.12] text-[var(--text-primary)] [font-family:var(--font-display)]">
+      <h1 className="relative text-balance pr-[68px] text-[24px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)]">
         <Halo />
         {/* Con respuestas guardadas el titular dice lo que es cierto: ya empezó a armarse (2026-10-20, elegido por el dueño);
             sin respuestas (entrada directa) se conserva el anterior, que no afirma nada de ellas. */}
@@ -508,10 +524,6 @@ function ValorYPrueba({
               <span className="block text-[16px] leading-[1.35] text-[var(--text-primary)]">{f.texto}</span>
               {f.detalle && <span className="mt-0.5 block text-[13px] leading-[1.4] text-[var(--text-secondary)]">{f.detalle}</span>}
             </span>
-            {f.miniatura && (
-              // Página de ejemplo del PDF real (datos ficticios): la prueba concreta de lo que se lleva, sin testimonios.
-              <img src={f.miniatura} alt="Página de ejemplo del expediente en PDF, con datos ficticios" width={44} height={57} loading="lazy" className="ml-auto h-[57px] w-[44px] shrink-0 rounded-[6px] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-white object-cover object-top shadow-[var(--shadow-1)]" />
-            )}
           </motion.div>
         ))}
       </div>
@@ -553,16 +565,13 @@ function ValorYPrueba({
                 />
               )}
             </div>
-              <div className="pb-4">
+              <div className={i < nodos.length - 1 ? 'pb-4' : ''}>
                 <p className="text-[16px] font-semibold text-[var(--text-primary)]">{nodo.titulo}</p>
                 <p className="mt-0.5 text-[13px] text-[var(--text-secondary)]">{nodo.detalle}</p>
               </div>
             </motion.div>
           ))}
         </div>
-        <p className="text-[13px] leading-[1.5] text-[var(--text-tertiary)]">
-          El aviso del día 5 llega por correo.
-        </p>
       </div>
 
       {/* El botón del paso 1 también queda fijo al fondo en celular (igual que en el paso 2): con el sello y la
@@ -580,14 +589,22 @@ function ValorYPrueba({
         </span>
       </div>
 
-      <div className="sticky bottom-0 z-10 -mx-4 mt-auto bg-[var(--bg)] px-4 pb-[max(8px,env(safe-area-inset-bottom))] pt-3 lg:static lg:mx-0 lg:bg-transparent lg:px-0 lg:pb-0 lg:pt-4">
-        <div className="mb-2 flex items-center justify-center text-center text-[13px] font-medium text-[var(--text-secondary)]">
-          <span className="flex items-center gap-1.5">
+      <div className="sticky bottom-0 z-10 -mx-4 mt-auto px-4 lg:static lg:mx-0 lg:px-0">
+        <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-full h-4 lg:hidden" style={{ background: 'linear-gradient(to top, var(--bg), transparent)' }} />
+        <div className="bg-[var(--bg)] pb-[max(8px,env(safe-area-inset-bottom))] pt-3 lg:bg-transparent lg:pb-0 lg:pt-4">
+        <div className="mb-2 flex items-center justify-center text-center text-[13px] font-medium text-[var(--text-primary)]">
+          <a
+            href="/reembolsos"
+            target="_blank"
+            rel="noreferrer"
+            className="-my-1.5 flex min-h-11 items-center gap-2 underline decoration-[color-mix(in_oklab,var(--text-tertiary)_60%,transparent)] underline-offset-2 [touch-action:manipulation]"
+          >
             <span className="w-[18px] shrink-0"><SelloMarca compacto animar={false} /></span>
-            Garantía del Primer Expediente · 15 días
-          </span>
+            Garantía del Primer Expediente · 15 días: te devolvemos tu pago
+          </a>
         </div>
         <CtaFunnel onClick={onContinuar}>Ver mi plan y mi prueba gratis</CtaFunnel>
+        </div>
       </div>
     </div>
   );
@@ -603,6 +620,7 @@ function Precio({
   falloAlAbrir,
   correo,
   onCorreo,
+  onCorreoBlur,
   autoriza,
   onAutoriza,
   errorCorreo,
@@ -617,6 +635,7 @@ function Precio({
   falloAlAbrir: boolean;
   correo: string;
   onCorreo: (v: string) => void;
+  onCorreoBlur: () => void;
   autoriza: boolean;
   onAutoriza: (v: boolean) => void;
   errorCorreo: string | null;
@@ -638,6 +657,7 @@ function Precio({
       {/* FORMA ORGÁNICA de la variante clara (FICHA-ARTE: blobs en degradé azul) detrás del
           titular — el dispositivo ownable que al paywall le faltaba (revisor claro r1). */}
       {/* Firma de marca junto al titular (la misma del paso 1): el Sello de Confianza como dispositivo propio de la decisión. */}
+      <Blob className="-right-5 -top-3 h-24 w-28" opacidad={0.16} />
       <div className="pointer-events-none absolute right-0 top-0 w-[56px] drop-shadow-[0_6px_10px_rgba(18,40,92,0.25)]">
         <SelloMarca compacto />
       </div>
@@ -646,7 +666,7 @@ function Precio({
         {/* El <Marcador> envolvía "captura de WhatsApp": a 375px esa frase cruza tres renglones y
             el subrayado se partía en tres trazos sueltos que parecían marcar palabras al azar.
             Marcando UNA sola palabra —la memorable— el trazo siempre cae entero en un renglón. */}
-        Una captura de WhatsApp se pierde — tu expediente{' '}
+        Una captura de WhatsApp se pierde — tu expediente{' '}
         <span className="relative text-[var(--accent-ink,var(--accent))]">
           {/* La mancha ahora nace DETRÁS de las palabras que venden (ronda 10 del revisor): antes caía
               a la derecha del titular, detrás de "se pierde — tu", y se leía como un manchón suelto. */}
@@ -702,7 +722,7 @@ function Precio({
             <div className="flex-1">
               <div className="flex items-baseline justify-between">
                 <span className="text-[16px] font-semibold text-[var(--text-primary)]">Anual</span>
-                <span className="text-[32px] font-bold leading-none tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
+                <span className={`leading-none tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)] ${plan === 'anual' ? 'text-[32px] font-bold' : 'text-[22px] font-semibold'}`}>
                   <PrecioContado valor={PLAN_ANUAL.precioMes} /><span className="text-[14px] font-normal text-[var(--text-secondary)]">/mes</span>
                 </span>
               </div>
@@ -741,7 +761,7 @@ function Precio({
           <div className="flex-1">
             <div className="flex items-baseline justify-between">
               <span className="text-[16px] font-semibold text-[var(--text-primary)]">Mensual</span>
-              <span className="text-[28px] font-bold leading-none tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
+              <span className={`leading-none tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)] ${plan === 'mensual' ? 'text-[32px] font-bold' : 'text-[22px] font-semibold'}`}>
                 <PrecioContado valor={PLAN_MENSUAL.precioMes} /><span className="text-[14px] font-normal text-[var(--text-secondary)]">/mes</span>
               </span>
             </div>
@@ -793,6 +813,7 @@ function Precio({
           autoComplete="email"
           value={correo}
           onChange={(e) => onCorreo(e.target.value)}
+          onBlur={onCorreoBlur}
           placeholder="tu@correo.com"
           enterKeyHint="go"
           onKeyDown={(e) => {
@@ -807,6 +828,15 @@ function Precio({
             errorCorreo && !correoValido ? 'border-[var(--status-error)] focus-visible:border-[var(--status-error)]' : 'border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)]'
           }`}
         />
+        )}
+        {errorCorreo && !errorCorreo.startsWith('Marca') ? (
+          <p id="paywall-correo-error" role="alert" className="mt-2 text-[13px] leading-[1.5] text-[var(--status-error)]">
+            {errorCorreo}
+          </p>
+        ) : (
+          !correoFijo && !sugerirCorreo(correo) && (
+            <p className="mt-2 text-[13px] leading-[1.5] text-[var(--text-secondary)]">Ahí te llegará tu enlace para entrar a tu expediente.</p>
+          )
         )}
         {!correoFijo && sugerirCorreo(correo) && (
           <button
@@ -823,7 +853,7 @@ function Precio({
             type="checkbox"
             checked={autoriza}
             onChange={(e) => onAutoriza(e.target.checked)}
-            aria-invalid={errorCorreo && !autoriza && FORMATO_CORREO.test(correo.trim()) ? true : undefined}
+            aria-invalid={errorCorreo && !autoriza ? true : undefined}
             className="peer sr-only"
           />
           <span
@@ -831,7 +861,7 @@ function Precio({
             className={`mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-[8px] border-2 transition-colors peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[var(--text-primary)] ${
               autoriza
                 ? 'border-[var(--accent)] bg-[var(--accent)]'
-                : errorCorreo && correoValido
+                : errorCorreo && !autoriza
                   ? 'border-[var(--status-error)] bg-[var(--surface)]'
                   : 'border-[color-mix(in_oklab,var(--text-tertiary)_55%,transparent)] bg-[var(--surface)]'
             }`}
@@ -847,10 +877,10 @@ function Precio({
           </span>
         </label>
         <AnimatePresence initial={false}>
-          {errorCorreo && (
+          {errorCorreo && errorCorreo.startsWith('Marca') && (
             <motion.p
               key="error"
-              id="paywall-correo-error"
+              id="paywall-autoriza-error"
               role="alert"
               initial={{ opacity: 0, y: reduce ? 0 : 8 }}
               animate={{ opacity: 1, y: 0 }}
@@ -953,8 +983,8 @@ function Precio({
       </div>
 
       <p className="mt-3 text-[13px] leading-[1.45] text-[var(--text-secondary)]">
-        <Lock size={13} className="mr-1 inline-block align-[-2px]" color="var(--accent)" aria-hidden="true" />Pago seguro con Hotmart. {FRASE_MONTO_HOTMART} Verás a{' '}
-        <span className="font-medium text-[var(--text-primary)]">{NOMBRE_VENDEDOR_HOTMART}</span>{' '}como vendedor: es el nombre de la cuenta de Coparentia en Hotmart.
+        <Lock size={13} className="mr-1 inline-block align-[-2px]" color="var(--accent)" aria-hidden="true" />Pago seguro con Hotmart, la plataforma de pagos: ella calcula el monto en tu moneda. Verás a{' '}
+        <span className="font-medium text-[var(--text-primary)]">{NOMBRE_VENDEDOR_HOTMART}</span>{' '}como vendedor: es la cuenta de Coparentia.
       </p>
 
       <div className="mt-auto pt-4">
@@ -1010,7 +1040,7 @@ function Precio({
                   className="-my-1.5 flex min-h-11 items-center gap-1.5 whitespace-nowrap underline decoration-[color-mix(in_oklab,var(--text-tertiary)_60%,transparent)] underline-offset-2 [touch-action:manipulation]"
                 >
                   <span className="w-[18px] shrink-0"><SelloMarca compacto animar={false} /></span>
-                  Garantía del Primer Expediente · 15 días
+                  Garantía del Primer Expediente · 15 días: te devolvemos tu pago
                 </a>
               </div>
             </div>
