@@ -1,21 +1,35 @@
 # VEREDICTO revisor-visual — onboarding
-Fecha: 2026-10-20 23:30
-Screenshot: docs/revisiones/r27b-onb-1.png (serie r27b-onb-1 a r27b-onb-9, 375px DPR 1)
-Usabilidad: 30/40 (h1:3 h2:3 h3:3 h4:3 h5:3 h6:3 h7:3 h8:3 h9:3 h10:3)
-Craft: 14/20 (jerarquia:3 profundidad:3 identidad:2 movimiento:3 encaje:3)
-Copy (si vende): 14/20 (idea:3 especificidad:3 emocion:3 oferta:2 accion:3)
+Fecha: 2026-10-22 14:00
+Screenshot: docs/revisiones/r33-onb-1-rol.png (serie r33-onb-1 a r33-onb-9, 375px DPR 1, commit 28aa602)
+Usabilidad: 37/40 (h1:3 h2:4 h3:4 h4:4 h5:3 h6:4 h7:4 h8:3 h9:4 h10:4)
+Craft: 16/20 (jerarquia:3 profundidad:4 identidad:3 movimiento:3 encaje:3)
+Copy (si vende): 16/20 (idea:3 especificidad:3 emocion:3 oferta:3 accion:4)
 Fidelidad (si hubo referencia): N-A
-Veredicto: NO LISTA
+Veredicto: LISTA
 Top defectos:
-1. [Craft identidad, preguntas 1-3, 5-6] Cinco de nueve pantallas son pildoras blancas + azul generico + mancha azul suelta arriba a la derecha. La mancha cae sobre el final del titular (pregunta 2, "hoy?") y bajo el primer chip (pregunta 1): parece un manchon accidental, no un dispositivo de marca. Solo el sello FECHADO del cierre es ownable. Fix: anclar el sello/escudo como dispositivo recurrente (p. ej. marca de agua o sello pequeno que se "fecha" al responder) y mover la mancha a una posicion fija que no toque titular ni chips.
-2. [Pregunta 1, entre la tarjeta "Esto es lo que vas a armar" y los 5 enlaces legales] ~110px de vacio y 5 enlaces subrayados de 13px compiten con la pregunta; la miniatura de 56x72 px del PDF es ilegible y parece un boton sin accion. Fix: mover los enlaces legales a una sola linea compacta o al pie de la tarjeta, y hacer la miniatura tocable (ampliar a una hoja) o agrandarla a >=96px de ancho.
-3. [Sello final, tarjeta "Cada comprobante..."] La miniatura de 48x62 px dice "Asi se ve una pagina de tu expediente en PDF" pero no se lee ni un dato: la prueba concreta no prueba nada a ese tamano. Fix: ampliar la hoja (>=96px, recortada a la franja del sello con fecha) y sacar el texto de 14px a 2 lineas.
-4. [Sello final, bajo el boton] "Garantia de 15 dias" en 13px sin nombre: la politica ya se llama "La Garantia del Primer Expediente" (app/reembolsos/page.tsx) y aqui no aparece. Sub-check de garantia nombrada falla y la oferta queda en 2. Fix: "Garantia del Primer Expediente: 15 dias, si no armas el tuyo te devolvemos todo", con icono de escudo.
-5. [Preguntas 2, 3, 5, 6, tarjeta "Tu expediente" inferior] Repite lo que ya hay en la barra y en la caja de contexto: fila "Tu situacion —" vacia, "y 4 preguntas mas", "1 respuesta anterior guardada · faltan 3": ruido de contador que contradice el "Pregunta n de 6" de arriba y empuja el titulo y la ayuda. Fix: dejar solo las 2 ultimas respuestas con check, sin filas vacias ni contadores, y fundir la caja de contexto con la tarjeta.
+1. [Pantalla de carga, boton "Ver mi plan ahora"] El atajo nuevo hace router.push('/paywall') sin ningun feedback (la pantalla queda quieta lo que tarde la red) y el temporizador de la animacion sigue vivo: puede navegar dos veces. Tambien falta scroll arriba al cambiar de paso (no hay scrollTo en el onboarding; en 360x640 el paso siguiente aparece a mitad de pagina). Fix: page.tsx:1124-1130 estado yendo (clearTimeout, setYendo(true), boton "Abriendo tu plan...", ignorar toques) y router.prefetch('/paywall') al llegar al paso 8; page.tsx:467 onExitComplete={() => window.scrollTo({ top: 0 })} en el AnimatePresence.
+2. [Pregunta 2 "Otra cosa", validacion] Solo se valida "vacio": una letra pasa y termina en la carga como "Registrando tu situacion: a", mientras el mensaje pide "unas palabras". Fix: page.tsx:636, 655-659, 666: usar una sola constante invalido = texto.trim().length < 8 (en vez de !texto.trim()) para el envio, el aria-invalid, el borde rojo y el mensaje.
+3. [Todas las preguntas, tipografia] Siguen 4 tamanos (28/16/14/13) y en la tarjeta "Tu expediente" el titulo (13) es mas chico que sus filas (14). Fix: pasar todo 13 a 14 (ui.tsx:81 contador; page.tsx:423, 430, 446, 539, 644, 667, 671, 865; PanelExpediente.tsx:77, 83, 145, 157) y poner "Tu expediente" en 16 semibold: quedan 28/16/14 (+48 heroe de la meta). Comprobar que la fila legal de la pregunta 1 (3 enlaces) sigue cabiendo en 343 px.
+4. [Reconocimiento final, encabezado y pie] El escudo del encabezado repite el sello grande 200 px mas abajo (mismo dibujo dos veces) y la linea de garantia deja el icono pegado al borde izquierdo (x=25) con el texto centrado lejos de el. Fix: page.tsx:411 envolver el sello del encabezado en un div con 'invisible' cuando paso === 8 (conserva la altura); page.tsx:1004 a mx-auto max-w-[36ch] text-left para que el icono abrace su texto.
+5. [Identidad y movimiento fuera del sello final] En las 6 preguntas el unico rasgo propio visible es un escudo de 40 px y un halo al 12%; la carga y los reconocimientos entran como un solo bloque. Fix: PanelExpediente.tsx:107-111 que el visto de cada respuesta se "estampe" (scale 1.35 a 1, rotate -8 a 0, spring corto, igual gesto que SelloEstampado); stagger 60 ms por bloque en page.tsx:795-815, 848-876, 973-1010; en la carga, check con spring al completarse una linea (page.tsx:1107) y conteo del % (page.tsx:1093); retraso de 150 ms al estampado (page.tsx:958) para que no compita con el deslizamiento del paso; avisos de page.tsx:427 y 443 con la misma entrada animada de page.tsx:423.
 
-Notas de verificacion:
-- Gate de carga cognitiva: 1-2 fallas (miniatura de pregunta 1 y escudo del header parecen interactivos y no hacen nada; en preguntas 1-3 elegir avanza sin CTA, "que sigue" no se anuncia). No critico.
-- Ficha-arte: Figtree + Nunito Sans, azul #2F6FDC, radios 999/22 coinciden con la variante clara. No es clon de Capitulo ni de Umbral. Logo plateado sin placa: decision del dueno, no puntuado.
-- CTA heroe: h-14, acento pleno, whileTap 0.97, nunca disabled: cumple los 4. Ausente en preguntas 1-3, 5 y 6 por diseno (tap-para-avanzar).
-- Codigo: h3 ok (Atras en cada paso, deshacer reinicio 6 s, "Volver a mis respuestas" en carga); h7 ok (flechas arriba/abajo, estado guardado en sessionStorage, meta con default 3). Movimiento: stagger de chips, whileTap, transicion entre pasos, anillo que se dibuja, conteo del slider, spring del check, reduced-motion en todo. Falta celebracion de hito real en el sello final (aparece estatico).
-- Copy: no hay precio ni oferta explicita en esta pantalla; el eco del dolor "que no me crean que ya pague" y el reconocimiento "No es que no pagues" trazan al dolor 1 de FICHA-AVATAR. Puntaje <16 por oferta y especificidad.
+## Verificacion de la ronda 1 (33/40, 15/20)
+- D1 placeholder cortado, error lejos del campo, helper contradictorio: CORREGIDO (2b: placeholder completo, borde rojo, error pegado y en lugar del helper; foco devuelto, page.tsx:638).
+- D2 pie legal: CORREGIDO a 3+2 ordenado; sigue habiendo 5 enlaces pero ya no compiten.
+- D3 slider 24 px y sin ayuda: CORREGIDO por codigo (h-11 con pulgar centrado, -mt-2.5 sobre pista de 4 px) y en captura (caja "no es un compromiso").
+- D4 panel: CORREGIDO. Sin fila pendiente en celular, etiquetas iguales a las preguntas, contador "Pregunta n de 6" tambien en los reconocimientos (3 de 6 y 6 de 6).
+- D5 craft: MITAD. Superficie hundida (--surface-2) presente y visible; lineas de la carga con transicion de 300 ms. Siguen 4 tamanos y los avisos de 430/446 entran de golpe.
+- Estados sin captura (verificados solo en codigo): aviso "No pudimos guardar", "Retomamos...", "Borraste...".
+
+## Que esta en 4 y por que
+- h2: etiquetas = preguntas; sin jerga ("rol" es aceptable, los chips lo explican). h3: Atras en todo paso, deshacer 6 s, confirmar reinicio, "Volver a mis respuestas". h4: un solo CTA/chip/caja en todo el flujo; el CTA a media pantalla en "Otra cosa" es correcto (queda sobre el teclado). h5 no; h6: opciones y resumen visibles. h7: flechas en chips, Enter envia, meta por defecto 3, guardado incremental, atajo de la carga. h9: error por campo con que-paso + que-hacer. h10: caja "por que lo preguntamos" en las 6 + ejemplo en el campo.
+- profundidad 4: base #F3F7FC con halo, elevada blanca con --shadow-1 y hairline degradada, hundida #E7EEF8; consistente en las 6 preguntas y los reconocimientos. Unica pantalla plana: la carga (opcional: lista dentro de tarjeta blanca elevada).
+
+## Notas
+- Ficha-arte (variante clara): Figtree + Nunito Sans, #F3F7FC, #2F6FDC, radios 999/22: coinciden. No es clon de Capitulo ni de Umbral. Logo plateado: decision del dueno, no penalizado.
+- Gate de carga cognitiva: 0 fallas. CTA heroe: cumple los 4 (blanco/#2F6FDC 4.7:1, whileTap 0.97, nunca disabled, h-14 ancho completo).
+- Sello final: capturas a (650 ms) y b (760 ms) muestran el sello mas grande y translucido asentandose; c (900 ms) y asentado ya iguales: la animacion se ve y termina en ~1 s.
+- Movimiento por codigo: stagger solo en chips; conteo del numero de la meta; barra y anillo que se dibujan; tap en chips/CTA; transicion de paso; sello y check con spring; reduced-motion en todo; modales N/A.
+- Copy trazado a FICHA-AVATAR (dolor "mala paga", "captura de WhatsApp", lexico expediente/Sello de Confianza); garantia nombrada con plazo junto al CTA final (pasa). Sin precio en esta pantalla. Message-match N/A.
+- Margen: 16/20 en craft es el minimo del gate; cualquier regresion en profundidad lo rompe.
+- Ningun arreglo exige tocar components/landing ni tokens-claro.css.

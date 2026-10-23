@@ -149,6 +149,7 @@ function sugerirCorreo(valor: string): string | null {
 export default function Paywall() {
   const router = useRouter();
   const [paso, setPaso] = useState(0);
+  const [listo, setListo] = useState(false);
   const [r, setR] = useState<Respuestas | null>(null);
   const [plan, setPlan] = useState<'anual' | 'mensual'>('anual');
   const [yendo, setYendo] = useState(false);
@@ -156,6 +157,7 @@ export default function Paywall() {
   const [correo, setCorreo] = useState('');
   const [autoriza, setAutoriza] = useState(false);
   const [errorCorreo, setErrorCorreo] = useState<string | null>(null);
+  const [errorAutoriza, setErrorAutoriza] = useState<string | null>(null);
   const [sesionEmail, setSesionEmail] = useState<string | null>(null);
   const correoTocado = useRef(false);
   const temporizador = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -201,6 +203,7 @@ export default function Paywall() {
       const planGuardado = sessionStorage.getItem('coparentia_plan_elegido');
       if (planGuardado === 'anual' || planGuardado === 'mensual') setPlan(planGuardado);
     } catch {}
+    setListo(true);
   }, []);
 
   useEffect(() => {
@@ -223,20 +226,18 @@ export default function Paywall() {
     // Sin correo válido y sin la autorización, el botón NO abre Hotmart: dice qué falta y lleva el
     // foco al campo para que se corrija sin buscar.
     if (!FORMATO_CORREO.test(limpio) || !autoriza) {
-      setErrorCorreo(
-        !limpio
-          ? 'Escribe tu correo para continuar.'
-          : !FORMATO_CORREO.test(limpio)
-            ? 'Revisa tu correo: parece incompleto (falta algo como @ o .com).'
-            : 'Marca la autorización de tus datos para continuar.'
-      );
       const correoMal = !limpio || !FORMATO_CORREO.test(limpio);
+      setErrorCorreo(
+        correoMal ? (!limpio ? 'Escribe tu correo para continuar.' : 'Revisa tu correo: parece incompleto (falta algo como @ o .com).') : null
+      );
+      setErrorAutoriza(!autoriza ? 'Marca la autorización de tus datos para continuar.' : null);
       const destino = document.getElementById(correoMal ? 'paywall-correo' : 'paywall-autoriza');
       destino?.scrollIntoView({ block: 'center', behavior: 'smooth' });
       destino?.focus({ preventScroll: true });
       return;
     }
     setErrorCorreo(null);
+    setErrorAutoriza(null);
     setFalloAlAbrir(false);
     setYendo(true);
     // Se guarda el plan elegido ANTES de salir de la app: útil el día que exista una pantalla de
@@ -378,6 +379,7 @@ export default function Paywall() {
           el marco y estirarla reabriría el vacío que este rediseño cierra. */}
       <div className="relative mt-4 flex flex-1 flex-col lg:flex-none">
         <AnimatePresence mode="wait" initial={false}>
+          {listo && (
           <motion.div key={paso} variants={variants} initial="enter" animate="center" exit="exit" className="flex flex-1 flex-col">
             {paso === 0 && (
               <ValorYPrueba
@@ -409,9 +411,10 @@ export default function Paywall() {
                 autoriza={autoriza}
                 onAutoriza={(v) => {
                   setAutoriza(v);
-                  setErrorCorreo(null);
+                  setErrorAutoriza(null);
                 }}
                 errorCorreo={errorCorreo}
+                errorAutoriza={errorAutoriza}
                 sesionEmail={sesionEmail}
                 onCerrarSesion={async () => {
                   await crearClienteSupabase().auth.signOut();
@@ -420,6 +423,7 @@ export default function Paywall() {
               />
             )}
           </motion.div>
+          )}
         </AnimatePresence>
       </div>
     </MarcoFunnel>
@@ -624,6 +628,7 @@ function Precio({
   autoriza,
   onAutoriza,
   errorCorreo,
+  errorAutoriza,
   sesionEmail,
   onCerrarSesion,
 }: {
@@ -639,6 +644,7 @@ function Precio({
   autoriza: boolean;
   onAutoriza: (v: boolean) => void;
   errorCorreo: string | null;
+  errorAutoriza: string | null;
   sesionEmail: string | null;
   onCerrarSesion: () => void;
 }) {
@@ -722,15 +728,15 @@ function Precio({
             <div className="flex-1">
               <div className="flex items-baseline justify-between">
                 <span className="text-[16px] font-semibold text-[var(--text-primary)]">Anual</span>
-                <span className={`leading-none tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)] ${plan === 'anual' ? 'text-[32px] font-bold' : 'text-[22px] font-semibold'}`}>
-                  <PrecioContado valor={PLAN_ANUAL.precioMes} /><span className="text-[14px] font-normal text-[var(--text-secondary)]">/mes</span>
+                <span className={`leading-none tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)] ${plan === 'anual' ? 'text-[32px] font-bold' : 'text-[24px] font-semibold'}`}>
+                  <PrecioContado valor={PLAN_ANUAL.precioMes} /><span className="text-[13px] font-normal text-[var(--text-secondary)]">/mes</span>
                 </span>
               </div>
               {/* TERCER PLANO DE PROFUNDIDAD (2026-09-17, defecto #4 del revisor): la pantalla solo
                   tenía fondo base y tarjeta elevada; FICHA-ARTE declara tres niveles. La referencia
                   en pesos —dato de apoyo, no el precio— va sobre una superficie HUNDIDA: se
                   distingue del precio principal sin agregar otro color ni otro tamaño de letra. */}
-              <p className={`mt-2 rounded-[8px] ${plan === 'anual' ? 'bg-[var(--surface)]' : 'bg-[var(--surface-2)]'} px-3 py-1 text-[13px] text-[var(--text-secondary)] shadow-[inset_0_1px_2px_rgb(20_40_80_/_0.08)] lg:min-h-0`}>
+              <p className={`mt-2 rounded-full ${plan === 'anual' ? 'bg-[var(--surface)]' : 'bg-[var(--surface-2)]'} px-3 py-1 text-[13px] text-[var(--text-secondary)] shadow-[inset_0_1px_2px_rgb(20_40_80_/_0.08)] lg:min-h-0`}>
                 {PLAN_ANUAL.totalAnual}
                 <span className="hidden text-[var(--text-primary)] lg:ml-2 lg:inline">
                   Te sale a <span className="font-semibold">{PLAN_ANUAL.costoDia}</span> al día
@@ -761,13 +767,13 @@ function Precio({
           <div className="flex-1">
             <div className="flex items-baseline justify-between">
               <span className="text-[16px] font-semibold text-[var(--text-primary)]">Mensual</span>
-              <span className={`leading-none tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)] ${plan === 'mensual' ? 'text-[32px] font-bold' : 'text-[22px] font-semibold'}`}>
-                <PrecioContado valor={PLAN_MENSUAL.precioMes} /><span className="text-[14px] font-normal text-[var(--text-secondary)]">/mes</span>
+              <span className={`leading-none tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)] ${plan === 'mensual' ? 'text-[32px] font-bold' : 'text-[24px] font-semibold'}`}>
+                <PrecioContado valor={PLAN_MENSUAL.precioMes} /><span className="text-[13px] font-normal text-[var(--text-secondary)]">/mes</span>
               </span>
             </div>
             {/* Solo la tarjeta Anual mostraba su total, así que el "ahorras US$30.88" no se podía
                 comprobar contra nada: faltaba el término de comparación. */}
-            <p className={`mt-2 rounded-[8px] ${plan === 'mensual' ? 'bg-[var(--surface)]' : 'bg-[var(--surface-2)]'} px-3 py-1 text-[13px] text-[var(--text-secondary)] shadow-[inset_0_1px_2px_rgb(20_40_80_/_0.08)] lg:min-h-0`}>
+            <p className={`mt-2 rounded-full ${plan === 'mensual' ? 'bg-[var(--surface)]' : 'bg-[var(--surface-2)]'} px-3 py-1 text-[13px] text-[var(--text-secondary)] shadow-[inset_0_1px_2px_rgb(20_40_80_/_0.08)] lg:min-h-0`}>
               {PLAN_MENSUAL.totalAnual}
               <span className="hidden text-[var(--text-primary)] lg:ml-2 lg:inline">
                 Te sale a <span className="font-semibold">{PLAN_MENSUAL.costoDia}</span> al día
@@ -825,17 +831,20 @@ function Precio({
           aria-invalid={errorCorreo ? true : undefined}
           aria-describedby={errorCorreo ? 'paywall-correo-error' : undefined}
           className={`mt-2 h-12 w-full rounded-[var(--radius-button)] border bg-[var(--surface)] px-4 text-[16px] text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)] ${
-            errorCorreo && !correoValido ? 'border-[var(--status-error)] focus-visible:border-[var(--status-error)]' : 'border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)]'
+            errorCorreo ? 'border-[var(--status-error)] focus-visible:border-[var(--status-error)]' : 'border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)]'
           }`}
         />
         )}
-        {errorCorreo && !errorCorreo.startsWith('Marca') ? (
+        {errorCorreo ? (
           <p id="paywall-correo-error" role="alert" className="mt-2 text-[13px] leading-[1.5] text-[var(--status-error)]">
             {errorCorreo}
           </p>
         ) : (
           !correoFijo && !sugerirCorreo(correo) && (
-            <p className="mt-2 text-[13px] leading-[1.5] text-[var(--text-secondary)]">Ahí te llegará tu enlace para entrar a tu expediente.</p>
+            <p className="mt-2 text-[13px] leading-[1.5] text-[var(--text-secondary)]">
+              Ahí te llegará tu enlace para entrar a tu expediente.{' '}
+              <a href="/entrar" className="font-semibold text-[var(--accent-ink,var(--accent))] underline underline-offset-2">¿Ya pagaste? Entra aquí</a>
+            </p>
           )
         )}
         {!correoFijo && sugerirCorreo(correo) && (
@@ -853,15 +862,16 @@ function Precio({
             type="checkbox"
             checked={autoriza}
             onChange={(e) => onAutoriza(e.target.checked)}
-            aria-invalid={errorCorreo && !autoriza ? true : undefined}
+            aria-invalid={errorAutoriza ? true : undefined}
+            aria-describedby={errorAutoriza ? 'paywall-autoriza-error' : undefined}
             className="peer sr-only"
           />
           <span
             aria-hidden="true"
-            className={`mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-[8px] border-2 transition-colors peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[var(--text-primary)] ${
+            className={`mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-[6px] border-2 transition-colors peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[var(--text-primary)] ${
               autoriza
                 ? 'border-[var(--accent)] bg-[var(--accent)]'
-                : errorCorreo && !autoriza
+                : errorAutoriza
                   ? 'border-[var(--status-error)] bg-[var(--surface)]'
                   : 'border-[color-mix(in_oklab,var(--text-tertiary)_55%,transparent)] bg-[var(--surface)]'
             }`}
@@ -877,7 +887,7 @@ function Precio({
           </span>
         </label>
         <AnimatePresence initial={false}>
-          {errorCorreo && errorCorreo.startsWith('Marca') && (
+          {errorAutoriza && (
             <motion.p
               key="error"
               id="paywall-autoriza-error"
@@ -888,7 +898,7 @@ function Precio({
               transition={{ duration: reduce ? 0 : 0.2 }}
               className="mt-2 text-[13px] leading-[1.5] text-[var(--status-error)]"
             >
-              {errorCorreo}
+              {errorAutoriza}
             </motion.p>
           )}
           {sesionEmail && !abiertoOtroCorreo && correoValido && correo.trim().toLowerCase() !== sesionEmail.toLowerCase() && (
@@ -1031,18 +1041,16 @@ function Precio({
           <div className="relative bg-[var(--bg)] pt-4 pb-[max(8px,env(safe-area-inset-bottom))] lg:bg-transparent lg:pb-0 lg:pt-0">
             {/* Sin punto medio entre las dos señales: a 375px la línea siempre parte en dos y el
                 "·" quedaba huérfano al final de la primera. Los íconos ya separan cada señal. */}
-            <div className="mb-2">
-              <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1 text-[13px] font-medium text-[var(--text-primary)]">
-                <a
-                  href="/reembolsos"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="-my-1.5 flex min-h-11 items-center gap-1.5 whitespace-nowrap underline decoration-[color-mix(in_oklab,var(--text-tertiary)_60%,transparent)] underline-offset-2 [touch-action:manipulation]"
-                >
-                  <span className="w-[18px] shrink-0"><SelloMarca compacto animar={false} /></span>
-                  Garantía del Primer Expediente · 15 días: te devolvemos tu pago
-                </a>
-              </div>
+            <div className="mb-2 flex items-center justify-center text-center text-[13px] font-medium text-[var(--text-primary)]">
+              <a
+                href="/reembolsos"
+                target="_blank"
+                rel="noreferrer"
+                className="-my-1.5 flex min-h-11 items-center gap-2 underline decoration-[color-mix(in_oklab,var(--text-tertiary)_60%,transparent)] underline-offset-2 [touch-action:manipulation]"
+              >
+                <span className="w-[18px] shrink-0"><SelloMarca compacto animar={false} /></span>
+                Garantía del Primer Expediente · 15 días: te devolvemos tu pago
+              </a>
             </div>
             <CtaFunnel onClick={onCta} disabled={yendo}>
               {yendo ? (
@@ -1062,7 +1070,7 @@ function Precio({
               </p>
             )}
             <p className="mt-2 text-center text-[13px] leading-[1.45] text-[var(--text-secondary)]">
-              Plan {plan === 'anual' ? 'anual' : 'mensual'} · Hoy no pagas nada · Primer cobro el día {DIA_PRIMER_COBRO}:{' '}
+              Hoy no pagas nada · Primer cobro el día {DIA_PRIMER_COBRO}:{' '}
               <span className="font-semibold text-[var(--text-primary)]">{plan === 'anual' ? PLAN_ANUAL.cobro : PLAN_MENSUAL.cobro}</span> · Cancelas cuando quieras
             </p>
           </div>
