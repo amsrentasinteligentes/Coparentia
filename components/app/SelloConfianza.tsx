@@ -64,7 +64,7 @@ export function SelloConfianza({ fecha, onTerminar }: { fecha: string; onTermina
         initial={reduce ? false : { opacity: 0, y: 6 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: reduce ? 0 : 0.14, duration: 0.3 }}
-        className="mt-5 text-[19px] font-bold text-[var(--text-primary)] [font-family:var(--font-display)]"
+        className="mt-5 text-[20px] font-bold text-[var(--text-primary)] [font-family:var(--font-display)]"
       >
         Sello de Confianza aplicado
       </motion.p>
@@ -72,7 +72,7 @@ export function SelloConfianza({ fecha, onTerminar }: { fecha: string; onTermina
         initial={reduce ? false : { opacity: 0, y: 6 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: reduce ? 0 : 0.2, duration: 0.3 }}
-        className="mt-1 text-[13.5px] text-[var(--text-secondary)]"
+        className="mt-1 text-[14px] text-[var(--text-secondary)]"
       >
         Queda fechado el {fecha}
       </motion.p>

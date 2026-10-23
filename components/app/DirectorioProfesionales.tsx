@@ -65,8 +65,8 @@ function TarjetaPerfil({ profesional }: { profesional: Profesional }) {
           <IconoCirculo icon={Scale} size={22} />
         )}
         <div className="min-w-0 flex-1 pt-0.5">
-          <p className="text-[15px] font-bold leading-[1.25] text-[var(--text-primary)]">{profesional.nombre}</p>
-          <p className="mt-0.5 text-[13px] leading-[1.3] text-[var(--text-secondary)]">{profesional.especialidad}</p>
+          <p className="text-[16px] font-bold leading-[1.25] text-[var(--text-primary)]">{profesional.nombre}</p>
+          <p className="mt-0.5 text-[14px] leading-[1.3] text-[var(--text-secondary)]">{profesional.especialidad}</p>
           {profesional.ciudad && (
             <p className="mt-1 flex items-center gap-1 text-[12px] text-[var(--text-tertiary)]">
               <MapPin size={12} aria-hidden="true" />
@@ -81,7 +81,7 @@ function TarjetaPerfil({ profesional }: { profesional: Profesional }) {
         target="_blank"
         rel="noopener noreferrer"
         onClick={() => registrarClicContactar(profesional)}
-        className="mt-4 flex h-11 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] bg-[var(--accent)] text-[13.5px] font-semibold text-[var(--on-accent,var(--bg))] [touch-action:manipulation]"
+        className="mt-4 flex h-11 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] bg-[var(--accent)] text-[14px] font-semibold text-[var(--on-accent,var(--bg))] [touch-action:manipulation]"
       >
         <MessageCircle size={16} aria-hidden="true" />
         Contactar
@@ -123,7 +123,7 @@ export function DirectorioProfesionales() {
 
   return (
     <div className="mt-6">
-      <p className="text-[15px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">Profesionales que pueden ayudarte</p>
+      <p className="text-[16px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">Profesionales que pueden ayudarte</p>
 
       {/* Selector de categoría — solo la elegida muestra su lista abajo (pedido del usuario,
           2026-09-28, ronda 2: "más resumido y ordenado" que las 3 apiladas). */}
@@ -150,10 +150,10 @@ export function DirectorioProfesionales() {
                   del cajón en vez de partirse en más líneas — Safari/iPhone lo partía solo, por
                   eso ahí se veía bien y en Android no (2026-09-29, 4ª ronda: no era un problema de
                   color, era que el texto se desbordaba). */}
-              <span className="w-full break-words text-[12.5px] font-bold leading-[1.2] text-[var(--text-primary)]" style={seleccionada ? { color: cat.color } : undefined}>
+              <span className="w-full break-words text-[12px] font-bold leading-[1.2] text-[var(--text-primary)]" style={seleccionada ? { color: cat.color } : undefined}>
                 {cat.etiqueta}
               </span>
-              <span className="w-full break-words text-[10.5px] leading-[1.3] text-[var(--text-tertiary)]">{cat.corta}</span>
+              <span className="w-full break-words text-[12px] leading-[1.3] text-[var(--text-tertiary)]">{cat.corta}</span>
             </button>
           );
         })}
@@ -165,7 +165,7 @@ export function DirectorioProfesionales() {
         </div>
       ) : error ? (
         <Tarjeta className="mt-3">
-          <p className="text-[13px] leading-[1.5] text-[var(--text-secondary)]">
+          <p className="text-[14px] leading-[1.5] text-[var(--text-secondary)]">
             No pudimos cargar el directorio. Puede ser una falla pasajera de conexión — vuelve a intentarlo en un momento.
           </p>
         </Tarjeta>
@@ -176,7 +176,7 @@ export function DirectorioProfesionales() {
           <div className="flex items-start gap-3">
             <IconoCirculo icon={categoria.icon} />
             <div className="min-w-0 flex-1">
-              <p className="text-[13px] leading-[1.5] text-[var(--text-secondary)]">{categoria.motivoVacio}</p>
+              <p className="text-[14px] leading-[1.5] text-[var(--text-secondary)]">{categoria.motivoVacio}</p>
             </div>
           </div>
           <a
@@ -188,7 +188,7 @@ export function DirectorioProfesionales() {
         </Tarjeta>
       )}
 
-      <p className="mt-3 text-[11px] leading-[1.5] text-[var(--text-tertiary)]">
+      <p className="mt-3 text-[12px] leading-[1.5] text-[var(--text-tertiary)]">
         La atención profesional no es gratuita. El valor y las condiciones del servicio se acordarán directamente con el especialista que elijas.
       </p>
     </div>

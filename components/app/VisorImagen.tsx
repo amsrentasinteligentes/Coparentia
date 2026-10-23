@@ -58,7 +58,7 @@ export function VisorImagen({ url, onCerrar }: { url: string | null; onCerrar: (
             >
               <span className="size-9 animate-spin rounded-full border-2 border-white/25 border-t-white" aria-hidden="true" />
               <p className="text-[14px] font-medium text-white">Cargando tu comprobante…</p>
-              <p className="max-w-[30ch] text-[12.5px] leading-[1.5] text-white/60">
+              <p className="max-w-[30ch] text-[12px] leading-[1.5] text-white/60">
                 Las fotos de cámara pesan varios MB. Si tu señal está lenta, puede tardar un momento.
               </p>
             </div>
@@ -71,15 +71,15 @@ export function VisorImagen({ url, onCerrar }: { url: string | null; onCerrar: (
               className="mx-8 flex max-w-[34ch] flex-col items-center gap-3 text-center"
             >
               <ImageOff size={32} className="text-white/70" aria-hidden="true" />
-              <p className="text-[15px] font-medium text-white">No pudimos mostrar la foto aquí</p>
-              <p className="text-[13px] leading-[1.5] text-white/70">
+              <p className="text-[16px] font-medium text-white">No pudimos mostrar la foto aquí</p>
+              <p className="text-[14px] leading-[1.5] text-white/70">
                 Tu comprobante sigue guardado y a salvo — es la conexión la que no alcanzó a traerlo.
               </p>
               <a
                 href={url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-1 flex h-11 items-center justify-center gap-2 rounded-[var(--radius-button)] border border-white/30 px-5 text-[13.5px] font-semibold text-white [touch-action:manipulation]"
+                className="mt-1 flex h-11 items-center justify-center gap-2 rounded-[var(--radius-button)] border border-white/30 px-5 text-[14px] font-semibold text-white [touch-action:manipulation]"
               >
                 Abrirla aparte
                 <ExternalLink size={15} aria-hidden="true" />

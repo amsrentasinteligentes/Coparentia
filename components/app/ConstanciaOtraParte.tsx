@@ -90,8 +90,8 @@ export function ConstanciaOtraParte() {
       <div className="flex items-start gap-3">
         <IconoCirculo icon={MailCheck} size={20} tono="info" grande />
         <div className="min-w-0 flex-1">
-          <p className="text-[15px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">Constancia a la otra parte</p>
-          <p className="mt-1 text-[13px] leading-[1.5] text-[var(--text-secondary)]">
+          <p className="text-[16px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">Constancia a la otra parte</p>
+          <p className="mt-1 text-[14px] leading-[1.5] text-[var(--text-secondary)]">
             {correoOtraParte
               ? 'Se envía un correo por cada hijo con lo registrado en el mes. Queda constancia de la fecha y la hora de cada envío, y sale en tu PDF.'
               : 'Guarda el correo de la otra parte en Perfil y podrás enviarle el resumen del mes. Queda constancia de que la informaste.'}
@@ -128,7 +128,7 @@ export function ConstanciaOtraParte() {
       {aviso && (
         <p
           role={aviso.ok ? 'status' : 'alert'}
-          className={`mt-2 flex items-start gap-1.5 text-[12.5px] leading-[1.5] ${aviso.ok ? 'text-[var(--status-success)]' : 'text-[var(--status-error)]'}`}
+          className={`mt-2 flex items-start gap-1.5 text-[12px] leading-[1.5] ${aviso.ok ? 'text-[var(--status-success)]' : 'text-[var(--status-error)]'}`}
         >
           {!aviso.ok && <AlertTriangle size={14} className="mt-0.5 shrink-0" aria-hidden="true" />}
           {aviso.texto}

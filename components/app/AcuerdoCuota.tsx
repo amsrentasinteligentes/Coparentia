@@ -132,7 +132,7 @@ export function AcuerdoCuota() {
         <IconoCirculo icon={Gavel} />
         <div className="min-w-0 flex-1">
           <p className="text-[14px] font-medium text-[var(--text-primary)]">Consultar acuerdo</p>
-          <p className="mt-1 text-[13px] leading-[1.5] text-[var(--text-secondary)]">
+          <p className="mt-1 text-[14px] leading-[1.5] text-[var(--text-secondary)]">
             {estado.fase === 'guardado'
               ? 'El acta de conciliación o la sentencia que fija tu cuota, guardada y lista para consultar.'
               : 'Guarda aquí el acta de conciliación o la sentencia que fija la cuota — así la tienes a mano cuando la necesites.'}
@@ -177,7 +177,7 @@ export function AcuerdoCuota() {
                 whileTap={{ scale: 0.98 }}
                 onClick={guardar}
                 disabled={guardando}
-                className="flex h-11 flex-1 items-center justify-center gap-2 rounded-[var(--radius-button)] bg-[var(--accent)] text-[13.5px] font-semibold text-[var(--on-accent,var(--bg))] transition-opacity disabled:opacity-60 [touch-action:manipulation]"
+                className="flex h-11 flex-1 items-center justify-center gap-2 rounded-[var(--radius-button)] bg-[var(--accent)] text-[14px] font-semibold text-[var(--on-accent,var(--bg))] transition-opacity disabled:opacity-60 [touch-action:manipulation]"
               >
                 {guardando ? 'Guardando…' : 'Guardar acuerdo'}
               </motion.button>
@@ -188,7 +188,7 @@ export function AcuerdoCuota() {
                   setErrorArchivo(null);
                 }}
                 disabled={guardando}
-                className="h-11 shrink-0 px-3 text-[13px] text-[var(--text-tertiary)] disabled:opacity-60 [touch-action:manipulation]"
+                className="h-11 shrink-0 px-3 text-[14px] text-[var(--text-tertiary)] disabled:opacity-60 [touch-action:manipulation]"
               >
                 Cambiar
               </button>
@@ -198,7 +198,7 @@ export function AcuerdoCuota() {
               type="button"
               whileTap={{ scale: 0.98 }}
               onClick={() => inputRef.current?.click()}
-              className="flex h-11 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--accent)_40%,transparent)] text-[13.5px] font-semibold text-[var(--accent)] [touch-action:manipulation]"
+              className="flex h-11 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--accent)_40%,transparent)] text-[14px] font-semibold text-[var(--accent)] [touch-action:manipulation]"
             >
               <FileText size={16} aria-hidden="true" />
               Guardar acuerdo
@@ -206,7 +206,7 @@ export function AcuerdoCuota() {
           )}
 
           {errorArchivo && (
-            <p role="alert" className="mt-2 text-[12.5px] leading-[1.5] text-[var(--status-error)]">
+            <p role="alert" className="mt-2 text-[12px] leading-[1.5] text-[var(--status-error)]">
               {errorArchivo}
             </p>
           )}
@@ -235,7 +235,7 @@ export function AcuerdoCuota() {
                   whileTap={{ scale: 0.98 }}
                   onClick={guardar}
                   disabled={guardando}
-                  className="flex h-11 flex-1 items-center justify-center gap-2 rounded-[var(--radius-button)] bg-[var(--accent)] text-[13.5px] font-semibold text-[var(--on-accent,var(--bg))] transition-opacity disabled:opacity-60 [touch-action:manipulation]"
+                  className="flex h-11 flex-1 items-center justify-center gap-2 rounded-[var(--radius-button)] bg-[var(--accent)] text-[14px] font-semibold text-[var(--on-accent,var(--bg))] transition-opacity disabled:opacity-60 [touch-action:manipulation]"
                 >
                   {guardando ? 'Guardando…' : 'Reemplazar acuerdo'}
                 </motion.button>
@@ -246,7 +246,7 @@ export function AcuerdoCuota() {
                     setErrorArchivo(null);
                   }}
                   disabled={guardando}
-                  className="h-11 shrink-0 px-3 text-[13px] text-[var(--text-tertiary)] disabled:opacity-60 [touch-action:manipulation]"
+                  className="h-11 shrink-0 px-3 text-[14px] text-[var(--text-tertiary)] disabled:opacity-60 [touch-action:manipulation]"
                 >
                   Cancelar
                 </button>
@@ -259,7 +259,7 @@ export function AcuerdoCuota() {
                   <FileText size={20} color="var(--accent)" aria-hidden="true" />
                 </span>
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-[13.5px] font-medium text-[var(--text-primary)]">{estado.nombre}</p>
+                  <p className="truncate text-[14px] font-medium text-[var(--text-primary)]">{estado.nombre}</p>
                   <p className="text-[12px] text-[var(--text-tertiary)]">Guardado</p>
                 </div>
               </div>
@@ -269,7 +269,7 @@ export function AcuerdoCuota() {
                 whileTap={{ scale: 0.98 }}
                 onClick={() => consultar(estado.ruta, estado.nombre)}
                 disabled={abriendo}
-                className="mt-3 flex h-11 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--accent)_40%,transparent)] text-[13.5px] font-semibold text-[var(--accent)] transition-opacity disabled:opacity-60 [touch-action:manipulation]"
+                className="mt-3 flex h-11 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--accent)_40%,transparent)] text-[14px] font-semibold text-[var(--accent)] transition-opacity disabled:opacity-60 [touch-action:manipulation]"
               >
                 <Eye size={16} aria-hidden="true" />
                 {abriendo ? 'Abriendo…' : 'Consultar acuerdo'}
@@ -321,12 +321,12 @@ export function AcuerdoCuota() {
           )}
 
           {errorArchivo && (
-            <p role="alert" className="mt-2 text-[12.5px] leading-[1.5] text-[var(--status-error)]">
+            <p role="alert" className="mt-2 text-[12px] leading-[1.5] text-[var(--status-error)]">
               {errorArchivo}
             </p>
           )}
           {errorAccion && (
-            <p role="alert" className="mt-2 text-[12.5px] leading-[1.5] text-[var(--status-error)]">
+            <p role="alert" className="mt-2 text-[12px] leading-[1.5] text-[var(--status-error)]">
               {errorAccion}
             </p>
           )}

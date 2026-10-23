@@ -224,7 +224,7 @@ export default function Pagos() {
                   <IconoCirculo icon={CalendarDays} size={16} />
                   <div className="min-w-0">
                     <p className="text-[12px] text-[var(--text-secondary)]">Próximo vencimiento</p>
-                    <p className="text-[13px] font-bold text-[var(--text-primary)]">{proximoVencimiento}</p>
+                    <p className="text-[14px] font-bold text-[var(--text-primary)]">{proximoVencimiento}</p>
                   </div>
                   <ChevronRight size={16} className="ml-auto shrink-0 text-[var(--text-tertiary)]" aria-hidden="true" />
                 </div>
@@ -237,7 +237,7 @@ export default function Pagos() {
                 <IconoCirculo icon={BarChart3} tono={vencida ? 'pendiente' : 'exito'} />
                 <div className="mt-3 min-w-0">
                   <p className="text-[12px] font-bold text-[var(--text-primary)]">Saldo pendiente</p>
-                  <p className="mt-1 text-[17px] font-extrabold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
+                  <p className="mt-1 text-[16px] font-extrabold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
                     {vencida && titulo ? formatoCOP(titulo.montoMensual) : formatoCOP(0)}
                   </p>
                   <p className="text-[12px] text-[var(--text-secondary)]">{vencida ? 'Cuota del mes sin comprobante' : 'Sin pagos vencidos'}</p>
@@ -247,7 +247,7 @@ export default function Pagos() {
                 <IconoCirculo icon={ReceiptText} tono="info" />
                 <div className="mt-3 min-w-0 flex-1">
                   <p className="text-[12px] font-bold text-[var(--text-primary)]">Gastos extra</p>
-                  <p className="mt-1 text-[17px] font-extrabold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">{formatoCOP(totalExtrasMes)}</p>
+                  <p className="mt-1 text-[16px] font-extrabold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">{formatoCOP(totalExtrasMes)}</p>
                   <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-[color-mix(in_oklab,var(--accent)_16%,transparent)]">
                     <span className="block h-full rounded-full bg-[var(--accent)]" style={{ width: `${Math.min(100, extrasDelMes.length * 25)}%` }} />
                   </div>
@@ -261,19 +261,19 @@ export default function Pagos() {
             {variosHijos && (
               <Tarjeta indice={3} className="mt-3">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-[15px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">Gastos extra por hijo</h2>
+                  <h2 className="text-[16px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">Gastos extra por hijo</h2>
                   <p className="text-[12px] text-[var(--text-secondary)]">{anioEnCurso}</p>
                 </div>
                 <ul className="mt-1 flex flex-col">
                   {porHijo.map(({ hijo, cantidad, total }, i) => (
                     <li key={hijo.id} className={i > 0 ? 'border-t border-[color-mix(in_oklab,var(--text-tertiary)_16%,transparent)]' : ''}>
                       <button type="button" onClick={() => verGastosDe(hijo.id)} className="flex w-full items-center gap-3 py-2.5 text-left [touch-action:manipulation]">
-                        <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[color-mix(in_oklab,var(--accent)_12%,transparent)] text-[13px] font-bold text-[var(--accent-ink,var(--accent))]">{inicialHijo(hijo.nombre)}</span>
+                        <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[color-mix(in_oklab,var(--accent)_12%,transparent)] text-[14px] font-bold text-[var(--accent-ink,var(--accent))]">{inicialHijo(hijo.nombre)}</span>
                         <div className="min-w-0 flex-1">
-                          <p className="truncate text-[13.5px] font-bold text-[var(--text-primary)]">{hijo.nombre}</p>
+                          <p className="truncate text-[14px] font-bold text-[var(--text-primary)]">{hijo.nombre}</p>
                           <p className="text-[12px] text-[var(--text-secondary)]">{cantidad === 0 ? 'Sin gastos este año' : cantidad === 1 ? '1 gasto extra' : `${cantidad} gastos extra`}</p>
                         </div>
-                        <p className="shrink-0 text-[13.5px] font-extrabold tabular-nums text-[var(--text-primary)]">{formatoCOP(total)}</p>
+                        <p className="shrink-0 text-[14px] font-extrabold tabular-nums text-[var(--text-primary)]">{formatoCOP(total)}</p>
                         <ChevronRight size={16} className="shrink-0 text-[var(--text-tertiary)]" aria-hidden="true" />
                       </button>
                     </li>
@@ -283,10 +283,10 @@ export default function Pagos() {
                       <button type="button" onClick={() => verGastosDe('sin')} className="flex w-full items-center gap-3 py-2.5 text-left [touch-action:manipulation]">
                         <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[var(--surface-2)] text-[var(--text-secondary)]"><Users size={16} aria-hidden="true" /></span>
                         <div className="min-w-0 flex-1">
-                          <p className="truncate text-[13.5px] font-bold text-[var(--text-primary)]">Sin hijo asignado</p>
+                          <p className="truncate text-[14px] font-bold text-[var(--text-primary)]">Sin hijo asignado</p>
                           <p className="text-[12px] text-[var(--text-secondary)]">{sinAsignar.length === 1 ? '1 gasto extra' : `${sinAsignar.length} gastos extra`} · comunes o anteriores</p>
                         </div>
-                        <p className="shrink-0 text-[13.5px] font-extrabold tabular-nums text-[var(--text-primary)]">{formatoCOP(totalSinAsignar)}</p>
+                        <p className="shrink-0 text-[14px] font-extrabold tabular-nums text-[var(--text-primary)]">{formatoCOP(totalSinAsignar)}</p>
                         <ChevronRight size={16} className="shrink-0 text-[var(--text-tertiary)]" aria-hidden="true" />
                       </button>
                     </li>
@@ -308,7 +308,7 @@ export default function Pagos() {
                   role="tab"
                   aria-selected={filtro === valor}
                   onClick={() => { setFiltro(valor); setFiltroHijo('todos'); setVerTodosLosMeses(false); }}
-                  className={`h-9 rounded-[var(--radius-button)] text-[13px] font-bold transition-colors duration-150 [touch-action:manipulation] ${
+                  className={`h-11 rounded-[var(--radius-button)] text-[14px] font-bold transition-colors duration-150 [touch-action:manipulation] ${
                     filtro === valor ? 'bg-[var(--accent)] text-[var(--on-accent,var(--bg))] shadow-[var(--shadow-1)]' : 'text-[var(--accent-ink,var(--accent))]'
                   }`}
                 >
@@ -327,7 +327,7 @@ export default function Pagos() {
                     role="tab"
                     aria-selected={filtroHijo === v}
                     onClick={() => setFiltroHijo(v)}
-                    className={`h-9 shrink-0 rounded-[var(--radius-chip,999px)] border px-3 text-[12.5px] font-semibold transition-colors duration-150 [touch-action:manipulation] ${
+                    className={`h-11 shrink-0 rounded-[var(--radius-chip,999px)] border px-3 text-[12px] font-semibold transition-colors duration-150 [touch-action:manipulation] ${
                       filtroHijo === v ? 'border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_10%,transparent)] text-[var(--accent-ink,var(--accent))]' : 'border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] text-[var(--text-secondary)]'
                     }`}
                   >
@@ -344,7 +344,7 @@ export default function Pagos() {
                 <button
                   type="button"
                   onClick={() => setVerTodosLosMeses(false)}
-                  className="text-[12.5px] font-semibold text-[var(--accent-ink,var(--accent))] underline-offset-2 hover:underline [touch-action:manipulation]"
+                  className="text-[12px] font-semibold text-[var(--accent-ink,var(--accent))] underline-offset-2 hover:underline [touch-action:manipulation]"
                 >
                   Viendo todos los meses · volver al mes actual
                 </button>
@@ -354,16 +354,16 @@ export default function Pagos() {
                     type="button"
                     onClick={() => setMesLista((d) => new Date(d.getFullYear(), d.getMonth() - 1, 1))}
                     aria-label="Mes anterior"
-                    className="flex size-9 items-center justify-center rounded-full text-[var(--text-secondary)] [touch-action:manipulation]"
+                    className="flex size-11 items-center justify-center rounded-full text-[var(--text-secondary)] [touch-action:manipulation]"
                   >
                     <ChevronLeft size={20} aria-hidden="true" />
                   </button>
-                  <p className="text-[13.5px] font-bold text-[var(--text-primary)]">{nombreMes(mesLista)}</p>
+                  <p className="text-[14px] font-bold text-[var(--text-primary)]">{nombreMes(mesLista)}</p>
                   <button
                     type="button"
                     onClick={() => setMesLista((d) => new Date(d.getFullYear(), d.getMonth() + 1, 1))}
                     aria-label="Mes siguiente"
-                    className="flex size-9 items-center justify-center rounded-full text-[var(--text-secondary)] [touch-action:manipulation]"
+                    className="flex size-11 items-center justify-center rounded-full text-[var(--text-secondary)] [touch-action:manipulation]"
                   >
                     <ChevronRight size={20} aria-hidden="true" />
                   </button>
@@ -374,7 +374,7 @@ export default function Pagos() {
             {/* LISTA — dentro de una tarjeta, filas con chip, mes/fecha, monto y estado */}
             <Tarjeta indice={4} className="mt-2">
               <div className="flex items-center justify-between">
-                <h2 className="truncate text-[15px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">
+                <h2 className="truncate text-[16px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">
                   {filtro === 'cuota' ? 'Detalle de cuotas' : filtro === 'gasto_extra' ? 'Gastos extra' : 'Historial'}
                   {filtroHijo !== 'todos' && (
                     <span className="font-semibold text-[var(--accent-ink,var(--accent))]"> · {filtroHijo === 'sin' ? 'sin asignar' : hijos.find((h) => h.id === filtroHijo)?.nombre}</span>
@@ -388,7 +388,7 @@ export default function Pagos() {
                   <p className="mt-3 text-[14px] font-bold text-[var(--text-primary)]">
                     {filtroHijo !== 'todos' ? 'Nada registrado con este filtro' : hayAlgunPago && !verTodosLosMeses ? `Nada registrado en ${nombreMes(mesLista).toLowerCase()}` : filtro === 'todos' ? 'Todavía no hay comprobantes' : filtro === 'cuota' ? 'Ninguna cuota registrada aún' : 'Ningún gasto extra aún'}
                   </p>
-                  <p className="mt-1 max-w-[30ch] text-[13px] text-[var(--text-secondary)]">
+                  <p className="mt-1 max-w-[30ch] text-[14px] text-[var(--text-secondary)]">
                     {hayAlgunPago && !verTodosLosMeses
                       ? 'Usa las flechas de arriba para revisar otro mes.'
                       : 'Toca "Registrar", sube la foto del comprobante y queda fechado con el Sello de Confianza.'}
@@ -402,13 +402,13 @@ export default function Pagos() {
                       <>
                         <IconoCirculo icon={esCuota ? CalendarDays : ReceiptText} size={18} tono={esCuota ? 'accent' : 'info'} />
                         <div className="min-w-0 flex-1">
-                          <p className="truncate text-[13.5px] font-bold text-[var(--text-primary)]">{p.concepto}</p>
+                          <p className="truncate text-[14px] font-bold text-[var(--text-primary)]">{p.concepto}</p>
                           <p className="truncate text-[12px] text-[var(--text-secondary)]">
                             {p.hijoNombre && <span className="font-semibold text-[var(--accent-ink,var(--accent))]">{p.hijoNombre} · </span>}
                             Pagado el {formatoFechaLarga(p.fecha)}
                           </p>
                         </div>
-                        <p className="shrink-0 text-[13.5px] font-extrabold tabular-nums text-[var(--text-primary)]">{formatoCOP(p.monto)}</p>
+                        <p className="shrink-0 text-[14px] font-extrabold tabular-nums text-[var(--text-primary)]">{formatoCOP(p.monto)}</p>
                         <Pildora texto={esCuota ? 'Sello' : 'Extra'} tono={esCuota ? 'exito' : 'neutro'} />
                         {p.comprobantePath && <ChevronRight size={16} className="shrink-0 text-[var(--text-tertiary)]" aria-hidden="true" />}
                       </>
@@ -424,9 +424,9 @@ export default function Pagos() {
                         )}
                         {confirmandoBorrado === p.id ? (
                           <div className="flex items-center gap-2 pt-1">
-                            <p className="flex-1 text-[12.5px] text-[var(--text-secondary)]">¿Borrar este registro y su comprobante?</p>
-                            <button type="button" onClick={() => setConfirmandoBorrado(null)} disabled={borrando === p.id} className="h-9 rounded-[var(--radius-button)] px-3 text-[12.5px] font-medium text-[var(--text-secondary)] [touch-action:manipulation]">No</button>
-                            <button type="button" onClick={() => borrarPago(p)} disabled={borrando === p.id} className="h-9 rounded-[var(--radius-button)] bg-[var(--status-error)] px-3 text-[12.5px] font-semibold text-white transition-opacity disabled:opacity-60 [touch-action:manipulation]">
+                            <p className="flex-1 text-[12px] text-[var(--text-secondary)]">¿Borrar este registro y su comprobante?</p>
+                            <button type="button" onClick={() => setConfirmandoBorrado(null)} disabled={borrando === p.id} className="h-11 rounded-[var(--radius-button)] px-3 text-[12px] font-medium text-[var(--text-secondary)] [touch-action:manipulation]">No</button>
+                            <button type="button" onClick={() => borrarPago(p)} disabled={borrando === p.id} className="h-11 rounded-[var(--radius-button)] bg-[var(--status-error)] px-3 text-[12px] font-semibold text-white transition-opacity disabled:opacity-60 [touch-action:manipulation]">
                               {borrando === p.id ? 'Borrando…' : 'Sí, borrar'}
                             </button>
                           </div>
@@ -434,7 +434,7 @@ export default function Pagos() {
                           <button type="button" onClick={() => setConfirmandoBorrado(p.id)} aria-label={`Borrar ${p.concepto}`} className="self-end py-1 text-[12px] text-[var(--text-tertiary)] underline-offset-2 hover:underline [touch-action:manipulation]">Borrar</button>
                         )}
                         {errorFila?.id === p.id && (
-                          <p role="alert" className="text-[12.5px] leading-[1.5] text-[var(--status-error)]">{errorFila.mensaje}</p>
+                          <p role="alert" className="text-[12px] leading-[1.5] text-[var(--status-error)]">{errorFila.mensaje}</p>
                         )}
                       </li>
                     );
@@ -448,11 +448,11 @@ export default function Pagos() {
             <div className="mt-3 grid grid-cols-2 gap-3">
               <Tarjeta indice={5} className="flex items-center gap-3">
                 <IconoCirculo icon={BarChart3} />
-                <div><p className="text-[12px] text-[var(--text-secondary)]">{labelCierreCuotas}</p><p className="text-[17px] font-extrabold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">{cuotasCierre}</p></div>
+                <div><p className="text-[12px] text-[var(--text-secondary)]">{labelCierreCuotas}</p><p className="text-[16px] font-extrabold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">{cuotasCierre}</p></div>
               </Tarjeta>
               <Tarjeta indice={6} className="flex items-center gap-3">
                 <IconoCirculo icon={ShieldCheck} tono="exito" />
-                <div><p className="text-[12px] text-[var(--text-secondary)]">Con Sello</p><p className="text-[17px] font-extrabold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">{conSelloCierre}</p></div>
+                <div><p className="text-[12px] text-[var(--text-secondary)]">Con Sello</p><p className="text-[16px] font-extrabold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">{conSelloCierre}</p></div>
               </Tarjeta>
             </div>
           </>
@@ -618,7 +618,7 @@ function ModalRegistro({ hijos, onCerrar, onGuardado }: { hijos: Hijo[]; onCerra
       >
         <div className="flex items-center justify-between">
           <h2 className="text-[18px] font-bold text-[var(--text-primary)] [font-family:var(--font-display)]">Nuevo registro</h2>
-          <button type="button" onClick={onCerrar} aria-label="Cerrar" className="flex size-9 items-center justify-center text-[var(--text-secondary)]">
+          <button type="button" onClick={onCerrar} aria-label="Cerrar" className="flex size-11 items-center justify-center text-[var(--text-secondary)]">
             <X size={20} aria-hidden="true" />
           </button>
         </div>
@@ -646,17 +646,17 @@ function ModalRegistro({ hijos, onCerrar, onGuardado }: { hijos: Hijo[]; onCerra
           ocultarSinHijos={tipo === 'cuota'}
         />
 
-        <label className="mt-4 block text-[13px] font-medium text-[var(--text-secondary)]">Concepto</label>
+        <label className="mt-4 block text-[14px] font-medium text-[var(--text-secondary)]">Concepto</label>
         <input
           type="text"
           value={concepto}
           onChange={(e) => setConcepto(e.target.value)}
           placeholder="Ej. Cuota de octubre"
-          className="mt-2 h-12 w-full rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--bg)] px-4 text-[15px] text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)]"
+          className="mt-2 h-12 w-full rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--bg)] px-4 text-[16px] text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)]"
         />
 
         <div className="mt-4 flex items-center justify-between">
-          <label className="text-[13px] font-medium text-[var(--text-secondary)]">Monto (COP)</label>
+          <label className="text-[14px] font-medium text-[var(--text-secondary)]">Monto (COP)</label>
           {leyendoRecibo && (
             <span className="flex items-center gap-1 text-[12px] text-[var(--accent)]">
               <span className="size-1.5 animate-pulse rounded-full bg-[var(--accent)]" />
@@ -678,7 +678,7 @@ function ModalRegistro({ hijos, onCerrar, onGuardado }: { hijos: Hijo[]; onCerra
             setMonto(e.target.value);
             setMontoDetectado(false); // el usuario corrigió a mano: ya no es "detectado", es suyo
           }}
-          className="mt-2 h-12 w-full rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--bg)] px-4 text-[15px] tabular-nums text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)]"
+          className="mt-2 h-12 w-full rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--bg)] px-4 text-[16px] tabular-nums text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)]"
         />
 
         <CampoFechaPago valor={fechaPago} onCambio={setFechaPago} className="mt-4" />
@@ -702,7 +702,7 @@ function ModalRegistro({ hijos, onCerrar, onGuardado }: { hijos: Hijo[]; onCerra
             <button
               type="button"
               onClick={() => inputRef.current?.click()}
-              className="mt-2 text-[12.5px] text-[var(--text-tertiary)] underline-offset-2 hover:underline [touch-action:manipulation]"
+              className="mt-2 text-[12px] text-[var(--text-tertiary)] underline-offset-2 hover:underline [touch-action:manipulation]"
             >
               Elegir otro archivo
             </button>
@@ -727,7 +727,7 @@ function ModalRegistro({ hijos, onCerrar, onGuardado }: { hijos: Hijo[]; onCerra
             campos estaba incompleto. Ahora se ve activo, y al tocarlo dice exactamente qué falta —
             que es como funciona el editor de Ajustes. Solo se deshabilita mientras guarda. */}
         {faltante && (
-          <p role="alert" className="mt-3 text-center text-[12.5px] text-[var(--status-error)]">
+          <p role="alert" className="mt-3 text-center text-[12px] text-[var(--status-error)]">
             {faltante}
           </p>
         )}

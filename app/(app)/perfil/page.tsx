@@ -68,7 +68,7 @@ function Avatar({ ruta, iniciales, tamano = 56, editable, onElegir }: { ruta: st
       {url ? (
         <img src={url} alt="" className="h-full w-full rounded-full object-cover" />
       ) : (
-        <span className="flex h-full w-full items-center justify-center rounded-full bg-[var(--accent)] font-extrabold text-[var(--on-accent,var(--bg))] [font-family:var(--font-display)]" style={{ fontSize: tamano * 0.34 }}>
+        <span className="flex h-full w-full items-center justify-center rounded-full bg-[var(--accent)] font-extrabold text-[var(--on-accent,var(--bg))] [font-family:var(--font-display)]" style={{ fontSize: tamano >= 56 ? 24 : 14 }}>
           {iniciales || '·'}
         </span>
       )}
@@ -78,7 +78,7 @@ function Avatar({ ruta, iniciales, tamano = 56, editable, onElegir }: { ruta: st
             type="button"
             onClick={() => inputRef.current?.click()}
             aria-label="Cambiar foto"
-            className="absolute -bottom-1 -right-1 flex size-8 items-center justify-center rounded-full bg-[var(--surface)] text-[var(--accent)] shadow-[var(--shadow-1)] [touch-action:manipulation]"
+            className="absolute -bottom-1 -right-1 flex size-8 items-center justify-center rounded-full bg-[var(--surface)] text-[var(--accent)] shadow-[var(--shadow-1)] before:absolute before:-inset-2 before:content-[''] [touch-action:manipulation]"
           >
             <Camera size={15} aria-hidden="true" />
           </button>
@@ -230,7 +230,7 @@ export default function PerfilPage() {
         <TituloSeccion titulo="Perfil" subtitulo="Tu información, tu familia y tus ajustes." icon={UserRound} />
 
         {aviso && (
-          <p role="status" className={`mt-3 rounded-[var(--radius-chip,14px)] px-3 py-2 text-[13px] font-semibold ${aviso.tipo === 'ok' ? 'bg-[var(--status-success-bg)] text-[var(--status-success)]' : 'bg-[var(--status-error-bg)] text-[var(--status-error)]'}`}>
+          <p role="status" className={`mt-3 rounded-[var(--radius-chip,14px)] px-3 py-2 text-[14px] font-semibold ${aviso.tipo === 'ok' ? 'bg-[var(--status-success-bg)] text-[var(--status-success)]' : 'bg-[var(--status-error-bg)] text-[var(--status-error)]'}`}>
             {aviso.texto}
           </p>
         )}
@@ -248,7 +248,7 @@ export default function PerfilPage() {
                   <div className="flex items-center gap-3">
                     <Avatar ruta={perfil.avatarPath} iniciales={iniciales} tamano={64} editable onElegir={cambiarAvatar} />
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-[17px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">
+                      <p className="truncate text-[16px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">
                         {perfil.nombre || 'Ponle tu nombre'}
                       </p>
                       <p className="text-[12px] text-[var(--text-secondary)]">{rolTexto} · Cuenta principal</p>
@@ -256,11 +256,11 @@ export default function PerfilPage() {
                     </div>
                   </div>
                   <div className="mt-3 flex flex-wrap items-center gap-2">
-                    <button type="button" onClick={() => setEditando(true)} className="inline-flex h-9 items-center gap-1.5 rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--accent)_35%,transparent)] px-4 text-[13px] font-bold text-[var(--accent-ink,var(--accent))] [touch-action:manipulation]">
+                    <button type="button" onClick={() => setEditando(true)} className="inline-flex h-11 items-center gap-1.5 rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--accent)_35%,transparent)] px-4 text-[14px] font-bold text-[var(--accent-ink,var(--accent))] [touch-action:manipulation]">
                       <Pencil size={14} aria-hidden="true" /> Editar perfil
                     </button>
                     {perfil.avatarPath && (
-                      <button type="button" onClick={borrarAvatar} className="h-9 px-2 text-[12px] text-[var(--text-secondary)] underline-offset-2 hover:underline [touch-action:manipulation]">Quitar foto</button>
+                      <button type="button" onClick={borrarAvatar} className="h-11 px-2 text-[12px] text-[var(--text-secondary)] underline-offset-2 hover:underline [touch-action:manipulation]">Quitar foto</button>
                     )}
                   </div>
                 </>
@@ -268,7 +268,7 @@ export default function PerfilPage() {
                 <form className="flex flex-col gap-3" onSubmit={(e) => { e.preventDefault(); guardarDatos(); }}>
                   <label className="block">
                     <span className="text-[12px] font-bold text-[var(--text-secondary)]">Tu nombre</span>
-                    <input value={nombre} onChange={(e) => setNombre(e.target.value)} maxLength={60} autoFocus placeholder="Como quieres que te saludemos" className="mt-1 h-12 w-full rounded-[var(--radius-chip,14px)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--surface-2)] px-4 text-[15px] text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)]" />
+                    <input value={nombre} onChange={(e) => setNombre(e.target.value)} maxLength={60} autoFocus placeholder="Como quieres que te saludemos" className="mt-1 h-12 w-full rounded-[var(--radius-chip,14px)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--surface-2)] px-4 text-[16px] text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)]" />
                   </label>
                   <div>
                     <span className="text-[12px] font-bold text-[var(--text-secondary)]">Tu rol</span>
@@ -280,12 +280,12 @@ export default function PerfilPage() {
                   </div>
                   <label className="block">
                     <span className="text-[12px] font-bold text-[var(--text-secondary)]">Nombre de la otra parte (mamá o papá de tus hijos)</span>
-                    <input value={otro} onChange={(e) => setOtro(e.target.value)} maxLength={60} placeholder="Opcional — solo para nombrarla en tu expediente" className="mt-1 h-12 w-full rounded-[var(--radius-chip,14px)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--surface-2)] px-4 text-[15px] text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)]" />
+                    <input value={otro} onChange={(e) => setOtro(e.target.value)} maxLength={60} placeholder="Opcional — solo para nombrarla en tu expediente" className="mt-1 h-12 w-full rounded-[var(--radius-chip,14px)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--surface-2)] px-4 text-[16px] text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)]" />
                     <span className="mt-1 block text-[12px] text-[var(--text-secondary)]">Se usa para nombrarla en tu expediente.</span>
                   </label>
                   <label className="block">
                     <span className="text-[12px] font-bold text-[var(--text-secondary)]">Correo de la otra parte</span>
-                    <input type="email" inputMode="email" value={otroEmail} onChange={(e) => setOtroEmail(e.target.value)} maxLength={120} placeholder="Opcional — para enviarle constancias" className="mt-1 h-12 w-full rounded-[var(--radius-chip,14px)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--surface-2)] px-4 text-[15px] text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)]" />
+                    <input type="email" inputMode="email" value={otroEmail} onChange={(e) => setOtroEmail(e.target.value)} maxLength={120} placeholder="Opcional — para enviarle constancias" className="mt-1 h-12 w-full rounded-[var(--radius-chip,14px)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--surface-2)] px-4 text-[16px] text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)]" />
                     <span className="mt-1 block text-[12px] text-[var(--text-secondary)]">Solo le llega lo que tú decidas enviarle: nunca se le avisa de cada registro.</span>
                   </label>
                   <div className="flex gap-2">
@@ -310,9 +310,9 @@ export default function PerfilPage() {
 
             {/* ── MI FAMILIA (referencia): hijos con foto, nombre y edad; alta en línea ── */}
             <div className="mt-6 flex items-center justify-between">
-              <h2 className="text-[15px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">Mi familia</h2>
+              <h2 className="text-[16px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">Mi familia</h2>
               {!agregando && hijos.length < 8 && (
-                <button type="button" onClick={() => setAgregando(true)} className="inline-flex items-center gap-1 text-[12px] font-bold text-[var(--accent-ink,var(--accent))] [touch-action:manipulation]">
+                <button type="button" onClick={() => setAgregando(true)} className="inline-flex min-h-11 items-center gap-1 text-[12px] font-bold text-[var(--accent-ink,var(--accent))] [touch-action:manipulation]">
                   <Plus size={14} aria-hidden="true" /> Agregar hijo
                 </button>
               )}
@@ -322,7 +322,7 @@ export default function PerfilPage() {
                 <button type="button" onClick={() => setAgregando(true)} className="flex w-full flex-col items-center py-4 text-center [touch-action:manipulation]">
                   <IconoCirculo icon={Baby} size={22} tono="info" grande />
                   <p className="mt-3 text-[14px] font-bold text-[var(--text-primary)]">Agrega a tus hijos</p>
-                  <p className="mt-1 max-w-[30ch] text-[13px] text-[var(--text-secondary)]">Con su nombre, la app y tu expediente hablan de ellos, no de &quot;el menor&quot;.</p>
+                  <p className="mt-1 max-w-[30ch] text-[14px] text-[var(--text-secondary)]">Con su nombre, la app y tu expediente hablan de ellos, no de &quot;el menor&quot;.</p>
                 </button>
               ) : (
                 <ul className="flex flex-col">
@@ -339,13 +339,13 @@ export default function PerfilPage() {
                           </div>
                           {confirmandoHijo === h.id ? (
                             <div className="flex items-center gap-1">
-                              <button type="button" onClick={() => borrarHijo(h)} aria-label={`Sí, quitar a ${h.nombre}`} className="flex size-9 items-center justify-center rounded-full bg-[var(--status-error-bg)] text-[var(--status-error)] [touch-action:manipulation]"><Check size={16} aria-hidden="true" /></button>
-                              <button type="button" onClick={() => setConfirmandoHijo(null)} aria-label="No quitar" className="flex size-9 items-center justify-center rounded-full bg-[var(--surface-2)] text-[var(--text-secondary)] [touch-action:manipulation]"><X size={16} aria-hidden="true" /></button>
+                              <button type="button" onClick={() => borrarHijo(h)} aria-label={`Sí, quitar a ${h.nombre}`} className="flex size-11 items-center justify-center rounded-full bg-[var(--status-error-bg)] text-[var(--status-error)] [touch-action:manipulation]"><Check size={16} aria-hidden="true" /></button>
+                              <button type="button" onClick={() => setConfirmandoHijo(null)} aria-label="No quitar" className="flex size-11 items-center justify-center rounded-full bg-[var(--surface-2)] text-[var(--text-secondary)] [touch-action:manipulation]"><X size={16} aria-hidden="true" /></button>
                             </div>
                           ) : (
                             <div className="flex items-center gap-1">
-                              <button type="button" onClick={() => setHijoEditando(h.id)} aria-label={`Editar a ${h.nombre}`} className="flex size-9 items-center justify-center rounded-full text-[var(--accent-ink,var(--accent))] [touch-action:manipulation]"><Pencil size={15} aria-hidden="true" /></button>
-                              <button type="button" onClick={() => setConfirmandoHijo(h.id)} aria-label={`Quitar a ${h.nombre}`} className="flex size-9 items-center justify-center rounded-full text-[var(--text-tertiary)] [touch-action:manipulation]"><Trash2 size={15} aria-hidden="true" /></button>
+                              <button type="button" onClick={() => setHijoEditando(h.id)} aria-label={`Editar a ${h.nombre}`} className="flex size-11 items-center justify-center rounded-full text-[var(--accent-ink,var(--accent))] [touch-action:manipulation]"><Pencil size={15} aria-hidden="true" /></button>
+                              <button type="button" onClick={() => setConfirmandoHijo(h.id)} aria-label={`Quitar a ${h.nombre}`} className="flex size-11 items-center justify-center rounded-full text-[var(--text-tertiary)] [touch-action:manipulation]"><Trash2 size={15} aria-hidden="true" /></button>
                             </div>
                           )}
                         </div>
@@ -386,7 +386,7 @@ export default function PerfilPage() {
                     aria-label="Enviar constancia mensual a la otra parte"
                     disabled={cambiandoConstancias}
                     onClick={alternarConstancias}
-                    className={`relative h-7 w-12 shrink-0 rounded-full transition-colors duration-200 [touch-action:manipulation] ${perfil.constanciasMensuales ? 'bg-[var(--accent)]' : 'bg-[color-mix(in_oklab,var(--text-tertiary)_35%,transparent)]'}`}
+                    className={`relative h-7 w-12 shrink-0 rounded-full transition-colors duration-200 before:absolute before:-inset-x-0 before:-inset-y-2 before:content-[''] [touch-action:manipulation] ${perfil.constanciasMensuales ? 'bg-[var(--accent)]' : 'bg-[color-mix(in_oklab,var(--text-tertiary)_35%,transparent)]'}`}
                   >
                     <span className={`absolute top-1 size-5 rounded-full bg-white shadow-[var(--shadow-1)] transition-transform duration-200 ${perfil.constanciasMensuales ? 'translate-x-6' : 'translate-x-1'}`} />
                   </button>
@@ -395,7 +395,7 @@ export default function PerfilPage() {
             </Tarjeta>
 
             {/* ── AJUSTES Y CUENTA (referencia) ── */}
-            <h2 className="mt-6 text-[15px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">Ajustes y cuenta</h2>
+            <h2 className="mt-6 text-[16px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">Ajustes y cuenta</h2>
             <Tarjeta indice={2} className="mt-3 py-1">
               {/* Antes decía "Cuota alimentaria y cuenta" — el dueño buscó literalmente "Ajustes"
                   (que es donde vive el interruptor de notificaciones, entre otras cosas) y no lo
@@ -411,11 +411,11 @@ export default function PerfilPage() {
             <div className="mt-3 grid grid-cols-2 gap-3">
               <Tarjeta indice={3} className="flex flex-col gap-2 p-3">
                 <IconoCirculo icon={CalendarCheck} size={18} />
-                <div><p className="text-[12px] text-[var(--text-secondary)]">Miembro desde</p><p className="text-[13px] font-extrabold leading-tight text-[var(--text-primary)]">{desde}</p></div>
+                <div><p className="text-[12px] text-[var(--text-secondary)]">Miembro desde</p><p className="text-[14px] font-extrabold leading-tight text-[var(--text-primary)]">{desde}</p></div>
               </Tarjeta>
               <Tarjeta indice={4} className="flex flex-col gap-2 p-3">
                 <IconoCirculo icon={Crown} size={18} tono="pendiente" />
-                <div><p className="text-[12px] text-[var(--text-secondary)]">Plan actual</p><p className="text-[13px] font-extrabold leading-tight text-[var(--text-primary)]">{planTexto ?? 'Plan no disponible'}</p></div>
+                <div><p className="text-[12px] text-[var(--text-secondary)]">Plan actual</p><p className="text-[14px] font-extrabold leading-tight text-[var(--text-primary)]">{planTexto ?? 'Plan no disponible'}</p></div>
               </Tarjeta>
             </div>
 
@@ -460,11 +460,11 @@ function FormHijo({ inicialNombre, inicialFecha, onCancelar, onGuardar }: { inic
     <form className="flex flex-col gap-2" onSubmit={(e) => { e.preventDefault(); if (n.trim()) onGuardar(n, f); }}>
       <div className="grid grid-cols-[1fr_auto] gap-2">
         <input value={n} onChange={(e) => setN(e.target.value)} maxLength={60} autoFocus placeholder="Nombre" aria-label="Nombre del hijo o hija" className="h-11 w-full rounded-[var(--radius-chip,14px)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--surface-2)] px-3 text-[14px] text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)]" />
-        <input type="date" value={f} max={hoy} onChange={(e) => setF(e.target.value)} aria-label="Fecha de nacimiento" className="h-11 w-[150px] rounded-[var(--radius-chip,14px)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--surface-2)] px-3 text-[13px] text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)]" />
+        <input type="date" value={f} max={hoy} onChange={(e) => setF(e.target.value)} aria-label="Fecha de nacimiento" className="h-11 w-[150px] rounded-[var(--radius-chip,14px)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--surface-2)] px-3 text-[14px] text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)]" />
       </div>
       <div className="flex gap-2">
-        <button type="button" onClick={onCancelar} className="h-10 flex-1 rounded-[var(--radius-button)] bg-[var(--surface-2)] text-[13px] font-bold text-[var(--text-secondary)] [touch-action:manipulation]">Cancelar</button>
-        <button type="submit" disabled={!n.trim()} className="h-10 flex-1 rounded-[var(--radius-button)] bg-[var(--accent)] text-[13px] font-bold text-[var(--on-accent,var(--bg))] disabled:opacity-50 [touch-action:manipulation]">Guardar</button>
+        <button type="button" onClick={onCancelar} className="h-10 flex-1 rounded-[var(--radius-button)] bg-[var(--surface-2)] text-[14px] font-bold text-[var(--text-secondary)] [touch-action:manipulation]">Cancelar</button>
+        <button type="submit" disabled={!n.trim()} className="h-10 flex-1 rounded-[var(--radius-button)] bg-[var(--accent)] text-[14px] font-bold text-[var(--on-accent,var(--bg))] disabled:opacity-50 [touch-action:manipulation]">Guardar</button>
       </div>
     </form>
   );

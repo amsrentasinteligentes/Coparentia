@@ -4994,3 +4994,10 @@ Se hacen juntos al tocar la sección de planes (hallazgos 3 y 9), para revisar u
 - Construido: `@sentry/nextjs` 11.8.0 (exacto, compatible con Next 16), `instrumentation.ts` (solo Node), `sentry.server.config.ts` (apagado sin `SENTRY_DSN`; sin trazas; `dataCollection` en falso: usuario, cookies, encabezados, cuerpos, parámetros de URL y datos de consultas; correos enmascarados en los textos de error; no reporta redirecciones de Next), `lib/monitoreo.ts` (`reportarError`) conectado en el webhook de Hotmart y en los 6 crons, privacidad §17 menciona "monitoreo de errores técnicos", `.env.example` y manual del dueño con los pasos.
 - Verificado: tsc ✓ build ✓ sin Sentry en el navegador (solo un texto de Next), páginas 200, `npm audit` 0. Pendiente del dueño: crear cuenta/proyecto Next.js en sentry.io, pegar `SENTRY_DSN` en Vercel (Production), publicar, usar `SENTRY_PRUEBA=1` una vez para probar y borrarla.
 - Problemas conocidos (sin cambios): veredicto:landing, veredicto:onboarding, veredicto:paywall NO LISTA (30/40); veredicto:inicio NO LISTA.
+
+### Checkpoint (2026-10-23) — Pantallas internas de la app (rama `app-interna-rediseno`, sin publicar)
+- Certificado 69/100 NO APTO; pilar más flojo PRODUCTO (7/20). Acuerdo "1,1": primero lo común a las 7 pantallas, luego Inicio → Pagos → Expediente → Calendario con revisor-visual solo en esas 4; Especialistas/Perfil/Ajustes con medición + checklist ("sin revisor (pantalla secundaria)").
+- Hecho (sin commit aún): escala de letra unificada (solo 12/14/16/18/24/28; 10px solo en la barra inferior por sus 6 pestañas), áreas táctiles 44px, FAB con pb-24, "Guardar cambios" siempre activo con aviso "No hay cambios por guardar", select de reajuste acortado.
+- En curso: Inicio — monto de cuota como dato héroe (28px) y menos duplicados (Accesos rápidos NO se eliminan: vienen de la referencia del usuario).
+- Incidente remediado: token de la cuenta demo expuesto por la herramienta de capturas → sesiones cerradas globalmente y sesión nueva por storageState; nunca pasar tokens en código a Playwright.
+- NO publicar sin confirmación del usuario.

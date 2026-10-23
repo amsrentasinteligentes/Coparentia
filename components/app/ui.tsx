@@ -198,7 +198,7 @@ export function PageHeader({
     <div className={`flex items-start justify-between gap-3 pb-6 pt-2 ${halo ? 'relative isolate' : ''}`}>
       {halo && <Halo />}
       <div>
-        <h1 className="text-[26px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)]">
+        <h1 className="text-[24px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)]">
           {conMarcador(titulo, palabraClave)}
         </h1>
         {subtitulo && <p className="mt-1 text-[14px] text-[var(--text-secondary)]">{subtitulo}</p>}
@@ -344,7 +344,7 @@ export function BotonFlotante({ onClick, children }: { onClick: () => void; chil
         type="button"
         onClick={onClick}
         whileTap={{ scale: 0.96 }}
-        className="pointer-events-auto flex h-14 items-center gap-2 rounded-full bg-[var(--accent)] px-5 text-[15px] font-semibold text-[var(--on-accent,var(--bg))] shadow-[0_8px_24px_color-mix(in_oklab,var(--accent)_35%,transparent)] [touch-action:manipulation]"
+        className="pointer-events-auto flex h-14 items-center gap-2 rounded-full bg-[var(--accent)] px-5 text-[16px] font-semibold text-[var(--on-accent,var(--bg))] shadow-[0_8px_24px_color-mix(in_oklab,var(--accent)_35%,transparent)] [touch-action:manipulation]"
       >
         {children}
       </motion.button>
@@ -367,14 +367,14 @@ export function ErrorDeCarga({ onReintentar }: { onReintentar: () => void }) {
         <CloudOff size={20} color="var(--status-warning)" aria-hidden="true" />
       </span>
       <p className="mt-3 text-[14px] font-medium text-[var(--text-primary)]">No pudimos cargar tu expediente</p>
-      <p className="mt-1 max-w-[32ch] text-[13px] text-[var(--text-secondary)]">
+      <p className="mt-1 max-w-[32ch] text-[14px] text-[var(--text-secondary)]">
         Tus datos están guardados y a salvo — es la conexión la que falló. Revísala e inténtalo otra vez.
       </p>
       <motion.button
         type="button"
         onClick={onReintentar}
         whileTap={{ scale: 0.97 }}
-        className="mt-4 flex h-11 items-center rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--accent)_40%,transparent)] px-5 text-[13.5px] font-semibold text-[var(--accent)] [touch-action:manipulation]"
+        className="mt-4 flex h-11 items-center rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--accent)_40%,transparent)] px-5 text-[14px] font-semibold text-[var(--accent)] [touch-action:manipulation]"
       >
         Reintentar
       </motion.button>
@@ -389,7 +389,7 @@ export function ErrorDeCarga({ onReintentar }: { onReintentar: () => void }) {
    falta calcular cuánto colchón dejarles. */
 export function ContenedorApp({ children, conFab = false, sinTope = false }: { children: ReactNode; conFab?: boolean; sinTope?: boolean }) {
   return (
-    <div className={`relative isolate mx-auto max-w-[520px] px-4 ${conFab ? 'pb-8' : 'pb-6'} ${sinTope ? 'pt-3' : 'pt-[max(20px,env(safe-area-inset-top))]'}`}>
+    <div className={`relative isolate mx-auto max-w-[520px] px-4 ${conFab ? 'pb-24' : 'pb-6'} ${sinTope ? 'pt-3' : 'pt-[max(20px,env(safe-area-inset-top))]'}`}>
       {/* LUZ AMBIENTAL — el fondo de la app interna era un color liso en las cuatro secciones, y
           "profundidad" fue el eje que el revisor bajó una y otra vez. Esto no es decoración: es el
           3er nivel de profundidad que FICHA-ARTE declara (base / elevado / hundido) y que aquí
@@ -439,23 +439,23 @@ export function CabeceraApp({ aviso = false }: { aviso?: boolean }) {
   }, []);
   return (
     <header className="flex items-center justify-between bg-[var(--surface)] px-4 pb-2 pt-[max(10px,env(safe-area-inset-top))]">
-      <Link href="/inicio" className="flex items-center gap-2 [touch-action:manipulation]">
+      <Link href="/inicio" className="flex min-h-11 items-center gap-2 [touch-action:manipulation]">
         <img src="/logo-isotipo-160.webp" alt="" aria-hidden="true" className="size-8 object-contain" />
         <span>
           <span className="block text-[18px] font-extrabold leading-none tracking-[-0.01em] text-[var(--text-primary)] [font-family:var(--font-display)]">Coparentia</span>
-          <span className="mt-0.5 block text-[10px] text-[var(--text-secondary)]">Tu expediente, en confianza.</span>
+          <span className="mt-0.5 block text-[12px] text-[var(--text-secondary)]">Tu expediente, en confianza.</span>
         </span>
       </Link>
       <div className="flex items-center gap-2">
-        <Link href="/calendario" aria-label="Próximos eventos" className="relative flex size-10 items-center justify-center rounded-full text-[var(--text-primary)] [touch-action:manipulation]">
+        <Link href="/calendario" aria-label="Próximos eventos" className="relative flex size-11 items-center justify-center rounded-full text-[var(--text-primary)] [touch-action:manipulation]">
           <Bell size={20} aria-hidden="true" />
           {aviso && <span aria-hidden="true" className="absolute right-2 top-2 size-2 rounded-full bg-[var(--accent)] ring-2 ring-[var(--surface)]" />}
         </Link>
-        <Link href="/perfil" aria-label="Tu perfil" className="flex items-center gap-1 rounded-full bg-[var(--surface-2)] py-1 pl-1 pr-2 [touch-action:manipulation]">
+        <Link href="/perfil" aria-label="Tu perfil" className="flex min-h-11 items-center gap-1 rounded-full bg-[var(--surface-2)] py-1 pl-1 pr-2 [touch-action:manipulation]">
           {foto ? (
             <img src={foto} alt="" className="size-7 rounded-full object-cover" />
           ) : (
-            <span className="flex size-7 items-center justify-center rounded-full bg-[var(--accent)] text-[11px] font-bold text-[var(--on-accent)]">{iniciales || '·'}</span>
+            <span className="flex size-7 items-center justify-center rounded-full bg-[var(--accent)] text-[12px] font-bold text-[var(--on-accent)]">{iniciales || '·'}</span>
           )}
           <ChevronDown size={14} className="text-[var(--accent-ink,var(--accent))]" aria-hidden="true" />
         </Link>
@@ -482,8 +482,8 @@ export function SaludoApp({ linea }: { linea: string }) {
         <img src="/fotos/app-familia-abrazo.jpg" alt="" className="h-full w-full object-cover object-[55%_40%]" />
         <span className="absolute inset-0" style={{ background: 'linear-gradient(90deg, var(--surface) 0%, transparent 40%)' }} />
       </div>
-      <h1 className="relative text-[26px] font-extrabold leading-tight tracking-[-0.01em] text-[var(--accent)] [font-family:var(--font-display)]">{saludo}</h1>
-      <p className="relative mt-1 max-w-[52%] text-[13px] leading-snug text-[var(--text-secondary)]">{linea}</p>
+      <h1 className="relative text-[28px] font-extrabold leading-tight tracking-[-0.01em] text-[var(--accent)] [font-family:var(--font-display)]">{saludo}</h1>
+      <p className="relative mt-1 max-w-[52%] text-[14px] leading-snug text-[var(--text-secondary)]">{linea}</p>
     </section>
   );
 }
@@ -509,7 +509,7 @@ export function TituloSeccion({ titulo, subtitulo, icon: Icon, accion }: { titul
     <div className="flex items-start justify-between gap-3 pt-2">
       <div className="min-w-0">
         <h1 className="text-[24px] font-extrabold leading-tight tracking-[-0.01em] text-[var(--text-primary)] [font-family:var(--font-display)]">{titulo}</h1>
-        {subtitulo && <p className="mt-1 text-[13px] text-[var(--text-secondary)]">{subtitulo}</p>}
+        {subtitulo && <p className="mt-1 text-[14px] text-[var(--text-secondary)]">{subtitulo}</p>}
       </div>
       {accion ?? (Icon && <IconoCirculo icon={Icon} size={22} grande />)}
     </div>

@@ -45,7 +45,7 @@ export function VistaPreviaArchivo({ archivo }: { archivo: File }) {
         <span className="size-16 shrink-0 animate-pulse rounded-[var(--radius-button)] bg-[color-mix(in_oklab,var(--text-tertiary)_16%,transparent)] [animation-duration:1.6s]" />
       )}
       <div className="min-w-0 flex-1 text-left">
-        <p className="truncate text-[13.5px] font-medium text-[var(--text-primary)]">{archivo.name}</p>
+        <p className="truncate text-[14px] font-medium text-[var(--text-primary)]">{archivo.name}</p>
         <p className="text-[12px] text-[var(--text-tertiary)]">
           {esPdf ? 'Documento PDF' : 'Imagen'} · {pesoMb} MB
         </p>

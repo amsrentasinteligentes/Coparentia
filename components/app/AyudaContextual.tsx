@@ -19,7 +19,7 @@ export function AyudaContextual({ titulo, children }: { titulo: string; children
         type="button"
         onClick={() => setAbierta(true)}
         aria-label={`Ayuda: ${titulo}`}
-        className="flex size-9 shrink-0 items-center justify-center rounded-full text-[var(--text-tertiary)] [touch-action:manipulation]"
+        className="flex size-11 shrink-0 items-center justify-center rounded-full text-[var(--text-tertiary)] [touch-action:manipulation]"
       >
         <CircleHelp size={20} aria-hidden="true" />
       </button>
@@ -45,12 +45,12 @@ export function AyudaContextual({ titulo, children }: { titulo: string; children
                 aria-label={titulo}
               >
                 <div className="flex items-center justify-between">
-                  <h2 className="text-[17px] font-bold text-[var(--text-primary)] [font-family:var(--font-display)]">{titulo}</h2>
+                  <h2 className="text-[16px] font-bold text-[var(--text-primary)] [font-family:var(--font-display)]">{titulo}</h2>
                   <button
                     type="button"
                     onClick={() => setAbierta(false)}
                     aria-label="Cerrar"
-                    className="flex size-9 items-center justify-center text-[var(--text-secondary)] [touch-action:manipulation]"
+                    className="flex size-11 items-center justify-center text-[var(--text-secondary)] [touch-action:manipulation]"
                   >
                     <X size={20} aria-hidden="true" />
                   </button>
@@ -59,7 +59,7 @@ export function AyudaContextual({ titulo, children }: { titulo: string; children
                 <button
                   type="button"
                   onClick={() => setAbierta(false)}
-                  className="mt-5 flex h-12 w-full items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-[15px] font-semibold text-[var(--on-accent,var(--bg))] [touch-action:manipulation]"
+                  className="mt-5 flex h-12 w-full items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-[16px] font-semibold text-[var(--on-accent,var(--bg))] [touch-action:manipulation]"
                 >
                   Entendido
                 </button>

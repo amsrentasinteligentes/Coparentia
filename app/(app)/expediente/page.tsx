@@ -107,8 +107,8 @@ export default function Expediente() {
       {/* TARJETA DEL PDF — el "sector azul" de la referencia dentro de la app: degradé de marca */}
       <Tarjeta className="mt-4 items-center text-center" style={{ background: 'linear-gradient(150deg, var(--accent), var(--accent-deep, var(--accent)))', color: 'var(--on-accent, var(--bg))' }}>
         <span className="mx-auto flex size-12 items-center justify-center rounded-[var(--radius-chip,999px)] bg-white/15"><FileCheck2 size={24} aria-hidden="true" /></span>
-        <p className="mt-3 text-[17px] font-extrabold [font-family:var(--font-display)]">Tu expediente en PDF, en 1 toque</p>
-        <p className="mt-1 text-[13px] opacity-90">
+        <p className="mt-3 text-[16px] font-extrabold [font-family:var(--font-display)]">Tu expediente en PDF, en 1 toque</p>
+        <p className="mt-1 text-[14px] opacity-90">
           Foliado y <strong>con la foto de cada comprobante adentro</strong> — listo para tu abogado o conciliador.
         </p>
         <motion.button
@@ -134,7 +134,7 @@ export default function Expediente() {
         {resultado && !generando && (
           <p
             role="status"
-            className={`mt-2 rounded-[var(--radius-chip,12px)] px-3 py-1.5 text-[12.5px] leading-[1.5] ${resultado.ok ? 'opacity-90' : 'bg-white text-[var(--status-error)]'}`}
+            className={`mt-2 rounded-[var(--radius-chip,12px)] px-3 py-1.5 text-[12px] leading-[1.5] ${resultado.ok ? 'opacity-90' : 'bg-white text-[var(--status-error)]'}`}
           >
             {resultado.mensaje}
           </p>
@@ -149,7 +149,7 @@ export default function Expediente() {
       <ConstanciaOtraParte />
 
       <div className="mt-6 flex items-center justify-between">
-        <h2 className="text-[15px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">Autorizaciones y controversias</h2>
+        <h2 className="text-[16px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">Autorizaciones y controversias</h2>
       </div>
       <div className="mt-3 flex flex-col gap-3">
         {falloCarga && <ErrorDeCarga onReintentar={() => setIntento((n) => n + 1)} />}
@@ -159,7 +159,7 @@ export default function Expediente() {
           <Tarjeta className="flex flex-col items-center py-8 text-center">
             <IconoCirculo icon={Scale} size={22} />
             <p className="mt-3 text-[14px] font-medium text-[var(--text-primary)]">Sin autorizaciones registradas</p>
-            <p className="mt-1 max-w-[32ch] text-[13px] text-[var(--text-secondary)]">
+            <p className="mt-1 max-w-[32ch] text-[14px] text-[var(--text-secondary)]">
               Aquí quedan los gastos extraordinarios que pediste autorizar y la respuesta que recibiste.
             </p>
           </Tarjeta>
@@ -176,7 +176,7 @@ export default function Expediente() {
                     <Pildora texto={PILDORA[a.estado].texto} tono={PILDORA[a.estado].tono} />
                   </div>
                   <p className="mt-0.5 text-[12px] text-[var(--text-secondary)]">{formatoFechaLarga(a.fecha)} · {formatoCOP(a.monto)}</p>
-                  {a.nota && <p className="mt-1.5 text-[13px] text-[var(--text-secondary)]">{a.nota}</p>}
+                  {a.nota && <p className="mt-1.5 text-[14px] text-[var(--text-secondary)]">{a.nota}</p>}
                 </div>
               </div>
             </Tarjeta>

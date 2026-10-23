@@ -21,7 +21,7 @@ export function ArticulosAsistencia({ basePath = '/asistencia' }: { basePath?: s
 
   return (
     <div className="mt-6">
-      <p className="text-[15px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">Artículos y consejos</p>
+      <p className="text-[16px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">Artículos y consejos</p>
       <div className="mt-3 flex flex-col gap-3">
         {destacados.map((articulo) => {
           const Icono = ICONO_POR_COLOR[articulo.color];
@@ -38,7 +38,7 @@ export function ArticulosAsistencia({ basePath = '/asistencia' }: { basePath?: s
                 <Icono size={24} style={{ color: FONDO_POR_COLOR[articulo.color] }} aria-hidden="true" />
               </span>
               <div className="min-w-0 flex-1">
-                <p className="text-[13.5px] font-bold leading-[1.3] text-[var(--text-primary)]">{articulo.titulo}</p>
+                <p className="text-[14px] font-bold leading-[1.3] text-[var(--text-primary)]">{articulo.titulo}</p>
                 <p className="mt-1 line-clamp-2 text-[12px] leading-[1.4] text-[var(--text-secondary)]">{articulo.resumen}</p>
               </div>
               <ChevronRight size={16} className="shrink-0 text-[var(--text-tertiary)]" aria-hidden="true" />

@@ -159,7 +159,7 @@ export function FilaNotificacionesPush() {
           aria-label="Recordatorio de cuota por notificación"
           disabled={ocupado || bloqueado}
           onClick={prendido ? desactivar : activar}
-          className={`relative h-7 w-12 shrink-0 rounded-full transition-colors duration-200 [touch-action:manipulation] disabled:opacity-40 ${prendido ? 'bg-[var(--accent)]' : 'bg-[color-mix(in_oklab,var(--text-tertiary)_35%,transparent)]'}`}
+          className={`relative h-7 w-12 shrink-0 rounded-full transition-colors duration-200 before:absolute before:-inset-x-0 before:-inset-y-2 before:content-[''] [touch-action:manipulation] disabled:opacity-40 ${prendido ? 'bg-[var(--accent)]' : 'bg-[color-mix(in_oklab,var(--text-tertiary)_35%,transparent)]'}`}
         >
           {/* `left-1` explícito (no depender de la posición "estática" implícita de un absolute
               sin left/right — dentro de un <button>, que centra su contenido por defecto, esa

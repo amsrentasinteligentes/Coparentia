@@ -254,12 +254,12 @@ function PrimerosPasos({ onListo }: { onListo: () => void }) {
         </div>
       )}
       <div className="pt-4">
-        <p className="text-[13px] font-semibold uppercase tracking-[0.06em] text-[var(--accent)]">Primeros pasos</p>
+        <p className="text-[14px] font-semibold uppercase tracking-[0.06em] text-[var(--accent)]">Primeros pasos</p>
       </div>
 
       {paso === 'titulo' && (
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col">
-          <h1 className="relative mt-2 text-[26px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)]">
+          <h1 className="relative mt-2 text-[24px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)]">
             <Halo />
             Configura tu cuota alimentaria
           </h1>
@@ -267,7 +267,7 @@ function PrimerosPasos({ onListo }: { onListo: () => void }) {
             Con esto armamos el título de tu expediente — puedes ajustarlo cuando quieras.
           </p>
 
-          <label className="mt-8 text-[13px] font-medium text-[var(--text-secondary)]">Monto mensual (COP)</label>
+          <label className="mt-8 text-[14px] font-medium text-[var(--text-secondary)]">Monto mensual (COP)</label>
           <input
             type="number"
             inputMode="numeric"
@@ -277,7 +277,7 @@ function PrimerosPasos({ onListo }: { onListo: () => void }) {
             className="mt-2 h-14 w-full rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--surface)] px-4 text-[16px] tabular-nums text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)]"
           />
 
-          <label className="mt-5 text-[13px] font-medium text-[var(--text-secondary)]">Día de pago de cada mes</label>
+          <label className="mt-5 text-[14px] font-medium text-[var(--text-secondary)]">Día de pago de cada mes</label>
           <input
             type="number"
             inputMode="numeric"
@@ -288,7 +288,7 @@ function PrimerosPasos({ onListo }: { onListo: () => void }) {
             className="mt-2 h-14 w-full rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--surface)] px-4 text-[16px] tabular-nums text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)]"
           />
 
-          <label className="mt-5 text-[13px] font-medium text-[var(--text-secondary)]">Tu rol en esta cuota</label>
+          <label className="mt-5 text-[14px] font-medium text-[var(--text-secondary)]">Tu rol en esta cuota</label>
           <div className="mt-2 grid grid-cols-2 gap-3">
             {(
               [
@@ -300,7 +300,7 @@ function PrimerosPasos({ onListo }: { onListo: () => void }) {
                 key={valor}
                 type="button"
                 onClick={() => setRolPago(valor)}
-                className={`flex h-14 items-center justify-center gap-2 rounded-[var(--radius-button)] border text-[15px] font-semibold [touch-action:manipulation] ${
+                className={`flex h-14 items-center justify-center gap-2 rounded-[var(--radius-button)] border text-[16px] font-semibold [touch-action:manipulation] ${
                   rolPago === valor
                     ? 'border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_10%,transparent)] text-[var(--accent)]'
                     : 'border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--surface)] text-[var(--text-secondary)]'
@@ -313,7 +313,7 @@ function PrimerosPasos({ onListo }: { onListo: () => void }) {
           </div>
           <p className="mt-1.5 text-[12px] text-[var(--text-secondary)]">Así podemos avisarte lo correcto: a quien paga, subir el comprobante; a quien recibe, que ya casi le llega.</p>
 
-          <label className="mt-5 text-[13px] font-medium text-[var(--text-secondary)]">Reajuste anual</label>
+          <label className="mt-5 text-[14px] font-medium text-[var(--text-secondary)]">Reajuste anual</label>
           <select
             value={reajuste}
             onChange={(e) => setReajuste(e.target.value)}
@@ -335,13 +335,13 @@ function PrimerosPasos({ onListo }: { onListo: () => void }) {
           </motion.button>
           {/* Si el botón no puede avanzar, dice qué falta (mismo aviso que el editor de Ajustes). */}
           {faltante && (
-            <p aria-live="polite" className="mt-3 text-[12.5px] text-[var(--status-error)]">
+            <p aria-live="polite" className="mt-3 text-[12px] text-[var(--status-error)]">
               {faltante}
             </p>
           )}
           {/* El fallo al guardar la cuota se avisaba solo en el paso siguiente (donde nunca se veía). */}
           {errorSubida && (
-            <p role="alert" className="mt-3 text-[12.5px] text-[var(--status-error)]">
+            <p role="alert" className="mt-3 text-[12px] text-[var(--status-error)]">
               {errorSubida}
             </p>
           )}
@@ -379,7 +379,7 @@ function PrimerosPasos({ onListo }: { onListo: () => void }) {
               <button
                 type="button"
                 onClick={() => inputRef.current?.click()}
-                className="mt-2 text-[12.5px] text-[var(--text-tertiary)] underline-offset-2 hover:underline [touch-action:manipulation]"
+                className="mt-2 text-[12px] text-[var(--text-tertiary)] underline-offset-2 hover:underline [touch-action:manipulation]"
               >
                 Elegir otro archivo
               </button>
@@ -387,7 +387,7 @@ function PrimerosPasos({ onListo }: { onListo: () => void }) {
           )}
 
           {procesando ? (
-            <div className="mt-6 flex h-14 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--accent)_30%,transparent)] text-[15px] text-[var(--text-secondary)]">
+            <div className="mt-6 flex h-14 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--accent)_30%,transparent)] text-[16px] text-[var(--text-secondary)]">
               <span className="size-2 animate-pulse rounded-full bg-[var(--accent)]" />
               Aplicando el Sello de Confianza a &quot;{archivo?.name}&quot;…
             </div>
@@ -427,7 +427,7 @@ function PrimerosPasos({ onListo }: { onListo: () => void }) {
           )}
 
           {errorSubida && (
-            <p role="alert" className="mt-3 max-w-[34ch] text-[13px] leading-[1.5] text-[var(--status-error)]">
+            <p role="alert" className="mt-3 max-w-[34ch] text-[14px] leading-[1.5] text-[var(--status-error)]">
               {errorSubida}
             </p>
           )}
@@ -466,8 +466,8 @@ function Revelacion({ onContinuar }: { onContinuar: () => void }) {
         <div className="flex items-center gap-3">
           <IconoCirculo icon={FileCheck2} />
           <div>
-            <p className="text-[15px] font-semibold text-[var(--text-primary)]">1 comprobante registrado</p>
-            <p className="text-[13px] text-[var(--text-secondary)]">Con Sello de Confianza · listo en tu expediente</p>
+            <p className="text-[16px] font-semibold text-[var(--text-primary)]">1 comprobante registrado</p>
+            <p className="text-[14px] text-[var(--text-secondary)]">Con Sello de Confianza · listo en tu expediente</p>
           </div>
         </div>
       </Tarjeta>
@@ -673,7 +673,7 @@ function Dashboard() {
                 <button
                   type="button"
                   onClick={() => router.push('/pagos?registrar=1')}
-                  className="mt-3 flex h-12 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] bg-[var(--accent)] text-[15px] font-semibold text-[var(--on-accent,var(--bg))] [touch-action:manipulation]"
+                  className="mt-3 flex h-12 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] bg-[var(--accent)] text-[16px] font-semibold text-[var(--on-accent,var(--bg))] [touch-action:manipulation]"
                 >
                   <Upload size={16} aria-hidden="true" />
                   Subir mi primer comprobante
@@ -692,7 +692,7 @@ function Dashboard() {
               >
                 <IconoCirculo icon={Bell} size={18} />
                 <div className="min-w-0 flex-1">
-                  <p className="text-[13px] font-extrabold text-[var(--text-primary)]">{n.titulo}</p>
+                  <p className="text-[14px] font-extrabold text-[var(--text-primary)]">{n.titulo}</p>
                   <p className="mt-0.5 text-[12px] text-[var(--text-secondary)]">{n.cuerpo}</p>
                 </div>
                 <button
@@ -711,17 +711,17 @@ function Dashboard() {
               <Tarjeta className="flex items-center gap-3">
                 <IconoCirculo icon={proximoEvento ? ICONO_EVENTO[proximoEvento.tipo] : CalendarClock} size={22} grande />
                 <div className="min-w-0 flex-1">
-                  <p className="text-[15px] font-bold text-[var(--text-primary)] [font-family:var(--font-display)]">Próximo evento</p>
+                  <p className="text-[16px] font-bold text-[var(--text-primary)] [font-family:var(--font-display)]">Próximo evento</p>
                   {proximoEvento ? (
                     <>
-                      <p className="truncate text-[13px] text-[var(--text-secondary)]">{proximoEvento.titulo}</p>
-                      <p className="mt-0.5 text-[13px] font-bold text-[var(--accent-ink,var(--accent))]">
+                      <p className="truncate text-[14px] text-[var(--text-secondary)]">{proximoEvento.titulo}</p>
+                      <p className="mt-0.5 text-[14px] font-bold text-[var(--accent-ink,var(--accent))]">
                         {formatoFechaCorta(proximoEvento.fecha)}
                         <span className="ml-2 font-normal text-[var(--text-secondary)]">{LABEL_EVENTO[proximoEvento.tipo]}{proximoEvento.hijoNombre ? ` · ${proximoEvento.hijoNombre}` : ''}</span>
                       </p>
                     </>
                   ) : (
-                    <p className="text-[13px] text-[var(--text-secondary)]">Sin eventos próximos · agenda una visita o una cita</p>
+                    <p className="text-[14px] text-[var(--text-secondary)]">Sin eventos próximos · agenda una visita o una cita</p>
                   )}
                 </div>
                 <ChevronRight size={18} className="shrink-0 text-[var(--text-tertiary)]" aria-hidden="true" />
@@ -738,7 +738,7 @@ function Dashboard() {
                   </div>
                   <p className="mt-3 text-[12px] font-bold text-[var(--text-primary)]">Cuota alimentaria</p>
                   <div className="mt-1.5"><Pildora texto={estadoDelMes.texto} tono={estadoDelMes.tono} /></div>
-                  <p className="mt-2 text-[17px] font-extrabold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
+                  <p className="mt-2 text-[24px] font-extrabold leading-tight tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
                     {titulo ? <NumeroContado valor={titulo.montoMensual} formato={formatoCOP} /> : '—'}
                   </p>
                   <p className="mt-0.5 text-[12px] text-[var(--text-secondary)]">
@@ -764,7 +764,7 @@ function Dashboard() {
                     <ChevronRight size={16} className="text-[var(--text-tertiary)]" aria-hidden="true" />
                   </div>
                   <p className="mt-3 text-[12px] font-bold text-[var(--text-primary)]">Meses con registro</p>
-                  <p className="mt-2 text-[17px] font-extrabold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
+                  <p className="mt-2 text-[16px] font-extrabold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
                     <NumeroContado valor={Math.min(mesesConRegistro, metaMeses)} />
                     <span className="ml-1 text-[12px] font-bold text-[var(--text-secondary)]">de {metaMeses}</span>
                   </p>
@@ -792,14 +792,14 @@ function Dashboard() {
             {/* ACTIVIDAD RECIENTE — últimos comprobantes con su fecha. */}
             <Tarjeta indice={3} className="mt-3">
               <div className="flex items-center justify-between">
-                <h2 className="text-[15px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">Actividad reciente</h2>
-                <Link href="/pagos" className="inline-flex items-center gap-0.5 text-[12px] font-bold text-[var(--accent-ink,var(--accent))] [touch-action:manipulation]">Ver todo<ChevronRight size={14} aria-hidden="true" /></Link>
+                <h2 className="text-[16px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">Actividad reciente</h2>
+                <Link href="/pagos" className="inline-flex min-h-11 items-center gap-0.5 text-[12px] font-bold text-[var(--accent-ink,var(--accent))] [touch-action:manipulation]">Ver todo<ChevronRight size={14} aria-hidden="true" /></Link>
               </div>
               {ultimosPagos.length === 0 ? (
                 <div className="flex flex-col items-center py-6 text-center">
                   <IconoCirculo icon={FileCheck2} size={22} />
                   <p className="mt-3 text-[14px] font-bold text-[var(--text-primary)]">Todavía no hay movimientos</p>
-                  <p className="mt-1 max-w-[30ch] text-[13px] text-[var(--text-secondary)]">
+                  <p className="mt-1 max-w-[30ch] text-[14px] text-[var(--text-secondary)]">
                     Cada comprobante que subas queda fechado aquí, listo para mostrar cuando lo necesites.
                   </p>
                 </div>
@@ -809,7 +809,7 @@ function Dashboard() {
                     <li key={p.id} className={`flex items-center gap-3 py-2.5 ${i > 0 ? 'border-t border-[color-mix(in_oklab,var(--text-tertiary)_16%,transparent)]' : ''}`}>
                       <IconoCirculo icon={p.tipo === 'cuota' ? Check : ReceiptText} size={16} tono={p.tipo === 'cuota' ? 'exito' : 'info'} />
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-[13px] font-bold text-[var(--text-primary)]">{p.tipo === 'cuota' ? 'Cuota con Sello de Confianza' : 'Gasto extra registrado'}</p>
+                        <p className="truncate text-[14px] font-bold text-[var(--text-primary)]">{p.tipo === 'cuota' ? 'Cuota con Sello de Confianza' : 'Gasto extra registrado'}</p>
                         <p className="flex items-baseline gap-1 text-[12px] text-[var(--text-secondary)]">
                           <span className="truncate">{p.hijoNombre ? `${p.hijoNombre} · ` : ''}{p.concepto}</span>
                           <span className="shrink-0">· {formatoCOP(p.monto)}</span>
@@ -827,7 +827,7 @@ function Dashboard() {
               <div className="mt-3 flex items-center gap-3 rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--accent)_18%,transparent)] px-3 py-3" style={{ background: 'linear-gradient(120deg, color-mix(in oklab, var(--accent) 12%, var(--surface)), var(--surface))' }}>
                 <IconoCirculo icon={ShieldCheck} size={18} />
                 <div className="min-w-0 flex-1">
-                  <p className="text-[13px] font-extrabold text-[var(--text-primary)]">Tu expediente, listo para mostrar</p>
+                  <p className="text-[14px] font-extrabold text-[var(--text-primary)]">Tu expediente, listo para mostrar</p>
                   <p className="text-[12px] text-[var(--text-secondary)]">
                     {pagos.length} {pagos.length === 1 ? 'comprobante' : 'comprobantes'} con Sello
                     {gastosExtraMes.length > 0 ? ` · ${formatoCOP(totalExtraMes)} en gastos extra este mes` : ' · PDF disponible'}

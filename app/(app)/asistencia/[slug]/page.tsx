@@ -18,17 +18,17 @@ export default async function ArticuloAsistencia({ params }: { params: Promise<{
       <ContenedorApp sinTope>
         <Link
           href="/asistencia"
-          className="inline-flex items-center gap-1 text-[13px] font-bold text-[var(--accent-ink,var(--accent))] [touch-action:manipulation]"
+          className="inline-flex items-center gap-1 text-[14px] font-bold text-[var(--accent-ink,var(--accent))] [touch-action:manipulation]"
         >
           <ChevronLeft size={16} aria-hidden="true" />
           Especialistas
         </Link>
 
-        <h1 className="mt-3 text-[22px] font-bold leading-[1.2] text-[var(--text-primary)] [font-family:var(--font-display)]">{articulo.titulo}</h1>
+        <h1 className="mt-3 text-[24px] font-bold leading-[1.2] text-[var(--text-primary)] [font-family:var(--font-display)]">{articulo.titulo}</h1>
 
         <div className="mt-5 flex flex-col gap-4">
           {articulo.cuerpo.map((parrafo, i) => (
-            <p key={i} className="text-[15px] leading-[1.7] text-[var(--text-secondary)]">
+            <p key={i} className="text-[16px] leading-[1.7] text-[var(--text-secondary)]">
               {parrafo}
             </p>
           ))}

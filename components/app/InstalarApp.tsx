@@ -103,11 +103,11 @@ export function HojaPasosInstalarIOS({ abierta, onCerrar }: { abierta: boolean; 
           >
             <div className="sticky -top-5 z-10 -mx-5 -mt-5 flex items-center justify-between bg-[var(--surface)] px-5 pt-5 pb-3">
               <h2 className="text-[18px] font-bold text-[var(--text-primary)] [font-family:var(--font-display)]">Instalar en tu iPhone</h2>
-              <button type="button" onClick={onCerrar} aria-label="Cerrar" className="flex size-9 items-center justify-center text-[var(--text-secondary)]">
+              <button type="button" onClick={onCerrar} aria-label="Cerrar" className="flex size-11 items-center justify-center text-[var(--text-secondary)]">
                 <X size={20} aria-hidden="true" />
               </button>
             </div>
-            <p className="mt-1 text-[13px] text-[var(--text-secondary)]">
+            <p className="mt-1 text-[14px] text-[var(--text-secondary)]">
               Apple no deja que ninguna página lo haga con un solo toque — son 3 pasos, una sola vez.
             </p>
             <ol className="mt-5 flex flex-col gap-4">
@@ -117,7 +117,7 @@ export function HojaPasosInstalarIOS({ abierta, onCerrar }: { abierta: boolean; 
                 { texto: <>Toca <b>&quot;Agregar&quot;</b> arriba a la derecha. Listo: el ícono ya está en tu pantalla.</> },
               ].map((paso, i) => (
                 <li key={i} className="flex items-start gap-3">
-                  <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[color-mix(in_oklab,var(--accent)_12%,transparent)] text-[13px] font-bold text-[var(--accent-ink,var(--accent))]">
+                  <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[color-mix(in_oklab,var(--accent)_12%,transparent)] text-[14px] font-bold text-[var(--accent-ink,var(--accent))]">
                     {i + 1}
                   </span>
                   <span className="pt-1.5 text-[14px] leading-[1.5] text-[var(--text-primary)]">{paso.texto}</span>
@@ -192,13 +192,13 @@ export function BannerInstalar() {
               <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[color-mix(in_oklab,var(--accent)_16%,transparent)]">
                 <Smartphone size={17} color="var(--accent-ink,var(--accent))" aria-hidden="true" />
               </span>
-              <p className="min-w-0 flex-1 text-[13px] leading-[1.4] text-[var(--text-primary)]">
+              <p className="min-w-0 flex-1 text-[14px] leading-[1.4] text-[var(--text-primary)]">
                 <span className="font-bold">Instálala en tu teléfono</span> — sin pasar por el navegador
               </p>
               <button
                 type="button"
                 onClick={ios ? () => setMostrarPasos(true) : instalar}
-                className="shrink-0 rounded-[var(--radius-button)] bg-[var(--accent)] px-3.5 py-2 text-[13px] font-semibold text-[var(--on-accent)] transition-transform duration-100 active:scale-95 [touch-action:manipulation]"
+                className="shrink-0 rounded-[var(--radius-button)] bg-[var(--accent)] px-3.5 py-2 text-[14px] font-semibold text-[var(--on-accent)] transition-transform duration-100 active:scale-95 [touch-action:manipulation]"
               >
                 Instalar
               </button>

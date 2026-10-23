@@ -57,7 +57,7 @@ export function AbogadoDestacado({ abogado = ABOGADO_ACTUAL }: { abogado?: Aboga
             <p className="text-[14px] font-medium text-[var(--text-primary)]">
               ¿Necesitas que un abogado revise tu expediente?
             </p>
-            <p className="mt-1 text-[13px] leading-[1.5] text-[var(--text-secondary)]">
+            <p className="mt-1 text-[14px] leading-[1.5] text-[var(--text-secondary)]">
               Pronto verás aquí abogados de familia de tu ciudad, listos para acompañarte con lo que
               ya tienes documentado.
             </p>
@@ -75,7 +75,7 @@ export function AbogadoDestacado({ abogado = ABOGADO_ACTUAL }: { abogado?: Aboga
 
   return (
     <Tarjeta destacada className="mt-6">
-      <p className="text-[11px] font-semibold uppercase tracking-[0.06em] text-[var(--text-tertiary)]">
+      <p className="text-[12px] font-semibold uppercase tracking-[0.06em] text-[var(--text-tertiary)]">
         Abogado de familia · Patrocinado
       </p>
 
@@ -110,10 +110,10 @@ export function AbogadoDestacado({ abogado = ABOGADO_ACTUAL }: { abogado?: Aboga
             <IconoCirculo icon={Briefcase} size={22} />
           )}
           <div className="min-w-0 flex-1">
-            <p className="truncate text-[15px] font-semibold text-[var(--text-primary)]">{abogado.nombre}</p>
+            <p className="truncate text-[16px] font-semibold text-[var(--text-primary)]">{abogado.nombre}</p>
             {/* Especialidad y ciudad en líneas separadas: juntas con " · " la ciudad se cortaba en
                 móvil cuando la especialidad es larga. */}
-            <p className="truncate text-[13px] text-[var(--text-secondary)]">{abogado.especialidad}</p>
+            <p className="truncate text-[14px] text-[var(--text-secondary)]">{abogado.especialidad}</p>
             {abogado.ciudad && <p className="truncate text-[12px] text-[var(--text-tertiary)]">{abogado.ciudad}</p>}
           </div>
         </div>
@@ -126,13 +126,13 @@ export function AbogadoDestacado({ abogado = ABOGADO_ACTUAL }: { abogado?: Aboga
           href={abogado.contactoUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-4 flex h-11 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--accent)_40%,transparent)] text-[13.5px] font-semibold text-[var(--accent)] [touch-action:manipulation]"
+          className="mt-4 flex h-11 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--accent)_40%,transparent)] text-[14px] font-semibold text-[var(--accent)] [touch-action:manipulation]"
         >
           Escribir a {abogado.nombre.split(' ')[0]}
           <ExternalLink size={15} aria-hidden="true" />
         </a>
       )}
-      <p className="mt-2 text-[11px] leading-[1.5] text-[var(--text-tertiary)]">
+      <p className="mt-2 text-[12px] leading-[1.5] text-[var(--text-tertiary)]">
         Espacio publicitario. Coparentia no presta servicios legales ni responde por la asesoría de
         terceros.
       </p>

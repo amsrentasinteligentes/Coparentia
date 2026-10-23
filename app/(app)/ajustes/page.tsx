@@ -70,7 +70,7 @@ function FilaNovedades() {
           aria-label="Recibir novedades y promociones"
           disabled={guardando}
           onClick={cambiar}
-          className={`relative h-7 w-12 shrink-0 rounded-full transition-colors duration-200 [touch-action:manipulation] ${valor ? 'bg-[var(--accent)]' : 'bg-[color-mix(in_oklab,var(--text-tertiary)_35%,transparent)]'}`}
+          className={`relative h-7 w-12 shrink-0 rounded-full transition-colors duration-200 before:absolute before:-inset-x-0 before:-inset-y-2 before:content-[''] [touch-action:manipulation] ${valor ? 'bg-[var(--accent)]' : 'bg-[color-mix(in_oklab,var(--text-tertiary)_35%,transparent)]'}`}
         >
           {/* `left-1` explícito — sin él, la bolita se posiciona en el borde derecho por defecto
               (un absolute sin left/right, dentro de un <button> que centra su contenido, termina
@@ -106,6 +106,8 @@ function EditorCuota() {
   const [rolPago, setRolPago] = useState<'paga' | 'recibe' | ''>('');
   const [guardando, setGuardando] = useState(false);
   const [guardado, setGuardado] = useState(false);
+  // "Guardar cambios" ya no se ve apagado (un botón al 40 % parece roto): siempre se ve activo y, si falta algo o no hay cambios, dice qué pasa al tocarlo.
+  const [avisoSinCambios, setAvisoSinCambios] = useState(false);
   const [errorGuardar, setErrorGuardar] = useState<string | null>(null);
 
   useEffect(() => {
@@ -188,11 +190,11 @@ function EditorCuota() {
   }
 
   const claseCampo =
-    'mt-2 h-12 w-full rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--bg)] px-4 text-[15px] text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)]';
+    'mt-2 h-12 w-full rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--bg)] px-4 text-[16px] text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)]';
 
   return (
     <Tarjeta className="mt-3">
-      <label htmlFor="cuota-monto" className="text-[13px] font-medium text-[var(--text-secondary)]">
+      <label htmlFor="cuota-monto" className="text-[14px] font-medium text-[var(--text-secondary)]">
         Monto mensual (COP)
       </label>
       <input
@@ -207,7 +209,7 @@ function EditorCuota() {
         className={`${claseCampo} tabular-nums`}
       />
 
-      <label htmlFor="cuota-dia" className="mt-4 block text-[13px] font-medium text-[var(--text-secondary)]">
+      <label htmlFor="cuota-dia" className="mt-4 block text-[14px] font-medium text-[var(--text-secondary)]">
         Día de pago de cada mes
       </label>
       <input
@@ -224,7 +226,7 @@ function EditorCuota() {
         className={`${claseCampo} tabular-nums`}
       />
 
-      <label htmlFor="cuota-reajuste" className="mt-4 block text-[13px] font-medium text-[var(--text-secondary)]">
+      <label htmlFor="cuota-reajuste" className="mt-4 block text-[14px] font-medium text-[var(--text-secondary)]">
         Reajuste anual
       </label>
       <select
@@ -236,12 +238,16 @@ function EditorCuota() {
         }}
         className={claseCampo}
       >
+        {/* El VALOR guardado sigue siendo el texto completo; solo se acorta lo que se VE, para que a 16 px (el mínimo que no hace
+            zoom en iPhone) entre en el campo sin cortarse. */}
         {OPCIONES_REAJUSTE.map((o) => (
-          <option key={o}>{o}</option>
+          <option key={o} value={o}>
+            {o === OPCIONES_REAJUSTE[0] ? 'IPC (índice de precios)' : o}
+          </option>
         ))}
       </select>
 
-      <label className="mt-4 block text-[13px] font-medium text-[var(--text-secondary)]">Tu rol en esta cuota</label>
+      <label className="mt-4 block text-[14px] font-medium text-[var(--text-secondary)]">Tu rol en esta cuota</label>
       <div className="mt-2 grid grid-cols-2 gap-3">
         {(
           [
@@ -252,6 +258,7 @@ function EditorCuota() {
           <button
             key={valor}
             type="button"
+            data-rol={valor}
             onClick={() => {
               setRolPago(valor);
               setGuardado(false);
@@ -270,29 +277,47 @@ function EditorCuota() {
 
       {/* Sin rol elegido es una indicación, no un error: se ve neutra. El rojo queda para datos mal escritos (2026-10-22, certificación). */}
       {!valido && (
-        <p className={`mt-3 text-[12.5px] ${rolPago === '' ? 'text-[var(--text-secondary)]' : 'text-[var(--status-error)]'}`}>
+        <p className={`mt-3 text-[12px] ${rolPago === '' ? 'text-[var(--text-secondary)]' : 'text-[var(--status-error)]'}`}>
           {rolPago === ''
             ? 'Elige tu rol (pagas o recibes) para poder guardar.'
             : 'Revisa los datos: el monto debe ser mayor que cero y el día, entre 1 y 31.'}
         </p>
       )}
       {errorGuardar && (
-        <p role="alert" className="mt-3 text-[12.5px] leading-[1.5] text-[var(--status-error)]">
+        <p role="alert" className="mt-3 text-[12px] leading-[1.5] text-[var(--status-error)]">
           {errorGuardar}
         </p>
       )}
 
       <motion.button
         type="button"
-        onClick={guardar}
-        disabled={guardando || !valido || !hayCambios}
+        onClick={() => {
+          if (guardando) return;
+          if (!valido) {
+            // Lleva el foco a lo que falta (el mensaje de arriba ya dice qué es).
+            (document.querySelector('[data-rol]') as HTMLElement | null)?.focus();
+            return;
+          }
+          if (!hayCambios) {
+            setAvisoSinCambios(true);
+            return;
+          }
+          setAvisoSinCambios(false);
+          guardar();
+        }}
+        disabled={guardando}
         whileTap={{ scale: 0.98 }}
-        className="mt-4 flex h-12 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] bg-[var(--accent)] text-[15px] font-semibold text-[var(--on-accent,var(--bg))] transition-opacity disabled:opacity-40 [touch-action:manipulation]"
+        className="mt-4 flex h-12 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] bg-[var(--accent)] text-[16px] font-semibold text-[var(--on-accent,var(--bg))] transition-opacity disabled:opacity-80 [touch-action:manipulation]"
       >
         {guardando ? 'Guardando…' : guardado && !hayCambios ? 'Guardado' : 'Guardar cambios'}
       </motion.button>
+      {avisoSinCambios && !hayCambios && valido && (
+        <p role="status" className="mt-3 text-center text-[14px] text-[var(--text-secondary)]">
+          No hay cambios por guardar.
+        </p>
+      )}
 
-      <p className="mt-3 text-[12.5px] leading-[1.5] text-[var(--text-tertiary)]">
+      <p className="mt-3 text-[12px] leading-[1.5] text-[var(--text-tertiary)]">
         Cambiar esto no altera los comprobantes que ya registraste: solo actualiza el título de tu
         expediente de aquí en adelante.
       </p>
@@ -401,10 +426,10 @@ export default function Ajustes() {
         <TituloSeccion titulo="Cuota y cuenta" subtitulo="Tu cuota alimentaria, tu suscripción y el control de tu cuenta." icon={UserRound} />
 
         {/* EDICIÓN DE LA CUOTA — el dato del producto va primero (misma lógica de siempre). */}
-        <h2 className="mt-6 text-[15px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">Tu cuota alimentaria</h2>
+        <h2 className="mt-6 text-[16px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">Tu cuota alimentaria</h2>
         <EditorCuota />
 
-        <h2 className="mt-6 text-[15px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">Tu suscripción</h2>
+        <h2 className="mt-6 text-[16px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">Tu suscripción</h2>
         <Tarjeta className="mt-3 py-1">
           <FilaInstalar />
           <FilaNovedades />
@@ -435,7 +460,7 @@ export default function Ajustes() {
           </span>
           <div className="min-w-0 flex-1">
             <p className="text-[14px] font-medium text-[var(--text-primary)]">Eliminar mi cuenta</p>
-            <p className="text-[12.5px] text-[var(--text-tertiary)]">
+            <p className="text-[12px] text-[var(--text-tertiary)]">
               Borra tu cuenta y TODOS tus datos (comprobantes, eventos, expediente) para siempre. No se puede deshacer.
             </p>
           </div>
@@ -445,33 +470,33 @@ export default function Ajustes() {
             — Coparentia y Hotmart son sistemas separados. Sin este aviso, alguien podría borrar
             su cuenta pensando que con eso ya dejó de pagar, y Hotmart le seguiría cobrando. */}
         <div className="mt-3 rounded-[var(--radius-button)] border border-dashed border-[color-mix(in_oklab,var(--status-warning)_35%,transparent)] px-3.5 py-3">
-          <p className="text-[12.5px] leading-[1.5] text-[var(--text-secondary)]">
+          <p className="text-[12px] leading-[1.5] text-[var(--text-secondary)]">
             <strong className="text-[var(--text-primary)]">Esto NO cancela tu suscripción de Hotmart.</strong>{' '}
             Si tienes un plan activo, Hotmart te seguirá cobrando aunque borres tu cuenta aquí — cancela
             primero desde el portal de Hotmart (arriba) si no quieres que te sigan cobrando.
           </p>
         </div>
 
-        {error && <p className="mt-3 text-[12.5px] text-[var(--status-error)]">{error}</p>}
+        {error && <p className="mt-3 text-[12px] text-[var(--status-error)]">{error}</p>}
 
         {!confirmandoBorrado ? (
           <button
             type="button"
             onClick={() => setConfirmandoBorrado(true)}
-            className="mt-3 flex h-11 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--status-error)_35%,transparent)] text-[13.5px] font-semibold text-[var(--status-error)] [touch-action:manipulation]"
+            className="mt-3 flex h-11 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--status-error)_35%,transparent)] text-[14px] font-semibold text-[var(--status-error)] [touch-action:manipulation]"
           >
             <Trash2 size={15} aria-hidden="true" />
             Eliminar mi cuenta
           </button>
         ) : (
           <div className="mt-3 flex flex-col gap-2">
-            <p className="text-[12.5px] font-medium text-[var(--text-primary)]">¿Seguro? Esto no se puede deshacer.</p>
+            <p className="text-[12px] font-medium text-[var(--text-primary)]">¿Seguro? Esto no se puede deshacer.</p>
             <div className="flex gap-2">
               <button
                 type="button"
                 onClick={() => setConfirmandoBorrado(false)}
                 disabled={borrando}
-                className="flex h-11 flex-1 items-center justify-center rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] text-[13.5px] font-medium text-[var(--text-secondary)] [touch-action:manipulation]"
+                className="flex h-11 flex-1 items-center justify-center rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] text-[14px] font-medium text-[var(--text-secondary)] [touch-action:manipulation]"
               >
                 No, cancelar
               </button>
@@ -479,7 +504,7 @@ export default function Ajustes() {
                 type="button"
                 onClick={eliminarCuenta}
                 disabled={borrando}
-                className="flex h-11 flex-1 items-center justify-center rounded-[var(--radius-button)] bg-[var(--status-error)] text-[13.5px] font-semibold text-white transition-opacity disabled:opacity-60 [touch-action:manipulation]"
+                className="flex h-11 flex-1 items-center justify-center rounded-[var(--radius-button)] bg-[var(--status-error)] text-[14px] font-semibold text-white transition-opacity disabled:opacity-60 [touch-action:manipulation]"
               >
                 {borrando ? 'Eliminando…' : 'Sí, eliminar todo'}
               </button>
@@ -488,9 +513,9 @@ export default function Ajustes() {
         )}
       </Tarjeta>
 
-      <p className="mt-6 text-[12.5px] leading-[1.5] text-[var(--text-tertiary)]">
+      <p className="mt-6 text-[12px] leading-[1.5] text-[var(--text-tertiary)]">
         ¿Dudas? Escríbenos a{' '}
-        <a href="mailto:soporte@coparentia.co" className="text-[var(--accent)] underline">
+        <a href="mailto:soporte@coparentia.co" className="inline-flex min-h-11 items-center text-[var(--accent)] underline">
           soporte@coparentia.co
         </a>
         .
@@ -517,7 +542,7 @@ export default function Ajustes() {
               href={e.href}
               target={e.externo ? '_blank' : undefined}
               rel={e.externo ? 'noopener noreferrer' : undefined}
-              className="py-1 text-[12.5px] text-[var(--text-tertiary)] underline-offset-2 hover:text-[var(--accent-ink,var(--accent))] hover:underline"
+              className="inline-flex min-h-11 items-center text-[12px] text-[var(--text-tertiary)] underline-offset-2 hover:text-[var(--accent-ink,var(--accent))] hover:underline"
             >
               {e.label}
             </a>

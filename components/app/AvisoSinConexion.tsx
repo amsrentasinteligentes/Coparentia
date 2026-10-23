@@ -41,7 +41,7 @@ export function AvisoSinConexion() {
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: -40, opacity: 0 }}
           transition={{ duration: 0.28, ease: [0.22, 0.61, 0.36, 1] }}
-          className="fixed inset-x-0 top-0 z-30 flex items-center justify-center gap-2 bg-[color-mix(in_oklab,var(--status-warning)_18%,var(--surface))] px-4 py-2 text-[12.5px] font-medium text-[var(--text-primary)] [padding-top:max(8px,env(safe-area-inset-top))]"
+          className="fixed inset-x-0 top-0 z-30 flex items-center justify-center gap-2 bg-[color-mix(in_oklab,var(--status-warning)_18%,var(--surface))] px-4 py-2 text-[12px] font-medium text-[var(--text-primary)] [padding-top:max(8px,env(safe-area-inset-top))]"
         >
           <CloudOff size={14} color="var(--status-warning)" aria-hidden="true" />
           Sin conexión — puedes seguir viendo lo guardado, pero no registrar nada nuevo.

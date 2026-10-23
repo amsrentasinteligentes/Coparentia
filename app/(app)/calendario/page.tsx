@@ -165,7 +165,7 @@ export default function Calendario() {
             {!falloCarga && (
               <Tarjeta indice={1} destacada>
                 <div className="flex items-center justify-between">
-                  <h2 className="text-[15px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">{tituloAgenda}</h2>
+                  <h2 className="text-[16px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">{tituloAgenda}</h2>
                   <span className="text-[12px] text-[var(--text-secondary)]">{delMes.length} este mes</span>
                 </div>
                 {cargando ? (
@@ -183,7 +183,7 @@ export default function Calendario() {
                   <div className="flex flex-col items-center py-6 text-center">
                     <IconoCirculo icon={CalendarDays} size={22} />
                     <p className="mt-3 text-[14px] font-bold text-[var(--text-primary)]">Sin eventos este mes</p>
-                    <p className="mt-1 max-w-[30ch] text-[13px] text-[var(--text-secondary)]">Toca un día del calendario o el botón &quot;Nuevo evento&quot; para registrar una visita, una cita o una llamada.</p>
+                    <p className="mt-1 max-w-[30ch] text-[14px] text-[var(--text-secondary)]">Toca un día del calendario o el botón &quot;Nuevo evento&quot; para registrar una visita, una cita o una llamada.</p>
                   </div>
                 ) : (
                   <ul className="mt-1 flex flex-col">
@@ -381,11 +381,11 @@ function CalendarioMes({
   return (
     <Tarjeta className="p-4">
       <div className="mb-3 flex items-center justify-between">
-        <button type="button" onClick={onMesAnterior} aria-label="Mes anterior" className="flex size-10 items-center justify-center rounded-full text-[var(--accent-ink,var(--accent))] [touch-action:manipulation]">
+        <button type="button" onClick={onMesAnterior} aria-label="Mes anterior" className="flex size-11 items-center justify-center rounded-full text-[var(--accent-ink,var(--accent))] [touch-action:manipulation]">
           <ChevronLeft size={20} aria-hidden="true" />
         </button>
-        <p className="text-[15px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">{nombreMes(mesActual)}</p>
-        <button type="button" onClick={onMesSiguiente} aria-label="Mes siguiente" className="flex size-10 items-center justify-center rounded-full text-[var(--accent-ink,var(--accent))] [touch-action:manipulation]">
+        <p className="text-[16px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">{nombreMes(mesActual)}</p>
+        <button type="button" onClick={onMesSiguiente} aria-label="Mes siguiente" className="flex size-11 items-center justify-center rounded-full text-[var(--accent-ink,var(--accent))] [touch-action:manipulation]">
           <ChevronRight size={20} aria-hidden="true" />
         </button>
       </div>
@@ -556,7 +556,7 @@ function ModalEvento({
       >
         <div className="sticky -top-5 z-10 -mx-5 -mt-5 flex items-center justify-between border-b border-[color-mix(in_oklab,var(--text-tertiary)_16%,transparent)] bg-[var(--surface)] px-5 pt-5 pb-3">
           <h2 className="text-[18px] font-bold text-[var(--text-primary)] [font-family:var(--font-display)]">{contacto ? `Registrar ${LABEL[tipo].toLowerCase()}` : 'Nuevo evento'}</h2>
-          <button type="button" onClick={onCerrar} aria-label="Cerrar" className="flex size-9 items-center justify-center text-[var(--text-secondary)]">
+          <button type="button" onClick={onCerrar} aria-label="Cerrar" className="flex size-11 items-center justify-center text-[var(--text-secondary)]">
             <X size={20} aria-hidden="true" />
           </button>
         </div>
@@ -603,31 +603,31 @@ function ModalEvento({
 
         {!contacto && (
         <>
-        <label className="mt-4 block text-[13px] font-medium text-[var(--text-secondary)]">Título</label>
+        <label className="mt-4 block text-[14px] font-medium text-[var(--text-secondary)]">Título</label>
         <input
           type="text"
           value={titulo}
           onChange={(e) => setTitulo(e.target.value)}
           placeholder="Ej. Cita con el pediatra"
-          className="mt-2 h-12 w-full rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--bg)] px-4 text-[15px] text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)]"
+          className="mt-2 h-12 w-full rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--bg)] px-4 text-[16px] text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)]"
         />
         </>
         )}
 
         <div className={contacto ? 'mt-4 grid grid-cols-2 gap-3' : 'mt-4'}>
           <div>
-            <label className="block text-[13px] font-medium text-[var(--text-secondary)]">Fecha</label>
+            <label className="block text-[14px] font-medium text-[var(--text-secondary)]">Fecha</label>
             <input
               type="date"
               value={fecha}
               max={contacto ? hoyEnColombia() : undefined}
               onChange={(e) => setFecha(e.target.value)}
-              className="mt-2 h-12 w-full rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--bg)] px-4 text-[15px] text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)]"
+              className="mt-2 h-12 w-full rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--bg)] px-4 text-[16px] text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)]"
             />
           </div>
           {contacto && (
             <div>
-              <label className="block text-[13px] font-medium text-[var(--text-secondary)]">Hora</label>
+              <label className="block text-[14px] font-medium text-[var(--text-secondary)]">Hora</label>
               <input
                 type="time"
                 max={fecha === hoyEnColombia() ? horaAhora : undefined}
@@ -636,7 +636,7 @@ function ModalEvento({
                   setHora(e.target.value);
                   setFaltante(fecha === hoyEnColombia() && e.target.value > horaAhora ? 'La hora no puede ser futura: es un registro de algo que ya pasó.' : null);
                 }}
-                className="mt-2 h-12 w-full rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--bg)] px-4 text-[15px] tabular-nums text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)]"
+                className="mt-2 h-12 w-full rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--bg)] px-4 text-[16px] tabular-nums text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)]"
               />
             </div>
           )}
@@ -644,7 +644,7 @@ function ModalEvento({
 
         {contacto && (
           <>
-            <p className="mt-4 text-[13px] font-medium text-[var(--text-secondary)]">¿Contestaron?</p>
+            <p className="mt-4 text-[14px] font-medium text-[var(--text-secondary)]">¿Contestaron?</p>
             <div role="radiogroup" aria-label="Resultado" className="mt-2 grid grid-cols-3 gap-2">
               {RESULTADOS.map(({ valor, label, icon: Icon }) => (
                 <button
@@ -665,7 +665,7 @@ function ModalEvento({
 
             <div className="mt-4">
               <div>
-                <label className="block text-[13px] font-medium text-[var(--text-secondary)]">Duración (min)</label>
+                <label className="block text-[14px] font-medium text-[var(--text-secondary)]">Duración (min)</label>
                 <input
                   type="number"
                   inputMode="numeric"
@@ -675,11 +675,11 @@ function ModalEvento({
                   disabled={resultado !== null && resultado !== 'contestada'}
                   onChange={(e) => { setDuracion(e.target.value); setFaltante(null); }}
                   placeholder={resultado && resultado !== 'contestada' ? '—' : 'Ej. 15'}
-                  className="mt-2 h-12 w-full rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--bg)] px-4 text-[15px] tabular-nums text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)] disabled:opacity-50"
+                  className="mt-2 h-12 w-full rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--bg)] px-4 text-[16px] tabular-nums text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)] disabled:opacity-50"
                 />
               </div>
             </div>
-            <p className="mt-4 text-[13px] font-medium text-[var(--text-secondary)]">Por dónde</p>
+            <p className="mt-4 text-[14px] font-medium text-[var(--text-secondary)]">Por dónde</p>
             <div role="radiogroup" aria-label="Medio" className="mt-2 flex flex-wrap gap-2">
               {MEDIOS.filter((m) => !m.soloEn || m.soloEn === tipo).map((m) => (
                 <button
@@ -688,7 +688,7 @@ function ModalEvento({
                   role="radio"
                   aria-checked={medio === m.valor}
                   onClick={() => setMedio(medio === m.valor ? null : m.valor)}
-                  className={`h-11 rounded-[var(--radius-button)] border px-3.5 text-[13px] font-semibold transition-[background-color,transform] duration-100 active:scale-[0.97] [touch-action:manipulation] ${
+                  className={`h-11 rounded-[var(--radius-button)] border px-3.5 text-[14px] font-semibold transition-[background-color,transform] duration-100 active:scale-[0.97] [touch-action:manipulation] ${
                     medio === m.valor ? 'border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_10%,transparent)] text-[var(--accent-ink,var(--accent))]' : 'border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] text-[var(--text-secondary)]'
                   }`}
                 >
@@ -699,7 +699,7 @@ function ModalEvento({
           </>
         )}
 
-        <label className="mt-4 block text-[13px] font-medium text-[var(--text-secondary)]">{LABEL_ADJUNTO[tipo]}</label>
+        <label className="mt-4 block text-[14px] font-medium text-[var(--text-secondary)]">{LABEL_ADJUNTO[tipo]}</label>
         <input
           ref={inputDocRef}
           type="file"
@@ -741,13 +741,13 @@ function ModalEvento({
         )}
         {confirmando && contacto && (
           <div role="status" className="mt-4 rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--accent)_30%,transparent)] bg-[color-mix(in_oklab,var(--accent)_8%,transparent)] p-4">
-            <p className="text-[13px] font-bold text-[var(--text-primary)]">Revisa antes de sellar — no se podrá corregir</p>
-            <ul className="mt-2 flex flex-col gap-1 text-[13px] leading-[1.5] text-[var(--text-primary)]">
+            <p className="text-[14px] font-bold text-[var(--text-primary)]">Revisa antes de sellar — no se podrá corregir</p>
+            <ul className="mt-2 flex flex-col gap-1 text-[14px] leading-[1.5] text-[var(--text-primary)]">
               <li className="font-semibold">{titulo.trim() || tituloContacto}</li>
               <li>{formatoFechaLarga(fecha)}{hora ? ` · ${horaHumana(hora)}` : ''}{resultado === 'contestada' && duracion ? ` · ${duracion} min` : ''}</li>
               <li>{[medio ? LABEL_MEDIO[medio] : null, resultado ? LABEL_RESULTADO[resultado] : null, documento ? 'con captura' : 'sin captura'].filter(Boolean).join(' · ')}</li>
             </ul>
-            <button type="button" onClick={() => setConfirmando(false)} className="mt-2 py-1 text-[13px] font-bold text-[var(--accent-ink,var(--accent))] underline-offset-2 hover:underline [touch-action:manipulation]">
+            <button type="button" onClick={() => setConfirmando(false)} className="mt-2 py-1 text-[14px] font-bold text-[var(--accent-ink,var(--accent))] underline-offset-2 hover:underline [touch-action:manipulation]">
               Corregir algo
             </button>
           </div>

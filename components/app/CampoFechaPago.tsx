@@ -21,7 +21,7 @@ export function CampoFechaPago({
 }) {
   return (
     <div className={className}>
-      <label htmlFor={id} className="block text-[13px] font-medium text-[var(--text-secondary)]">
+      <label htmlFor={id} className="block text-[14px] font-medium text-[var(--text-secondary)]">
         Fecha del pago
       </label>
       <input
@@ -30,7 +30,7 @@ export function CampoFechaPago({
         value={valor}
         max={hoyEnColombia()}
         onChange={(e) => onCambio(e.target.value)}
-        className="mt-2 h-12 w-full rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--bg)] px-4 text-[15px] tabular-nums text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)]"
+        className="mt-2 h-12 w-full rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--bg)] px-4 text-[16px] tabular-nums text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)]"
       />
       <p className="mt-1.5 text-[12px] text-[var(--text-tertiary)]">
         Si pagaste antes, elige ese día. El sistema anota aparte cuándo lo subes.

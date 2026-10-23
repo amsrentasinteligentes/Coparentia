@@ -74,7 +74,7 @@ export default function Asistencia() {
             La recibimos y una abogada del equipo la va a leer con calma. Te respondemos en el menor tiempo posible a{' '}
             <span className="font-bold text-[var(--text-primary)]">{correoFinal || 'tu correo'}</span> — no tienes que hacer nada más.
           </p>
-          <p className="mt-3 text-[13px] font-bold text-[var(--accent-ink,var(--accent))]">Equipo Coparentia</p>
+          <p className="mt-3 text-[14px] font-bold text-[var(--accent-ink,var(--accent))]">Equipo Coparentia</p>
           <button
             type="button"
             onClick={() => setEstado('idle')}
@@ -87,7 +87,7 @@ export default function Asistencia() {
       <Tarjeta className="mt-4">
         <div className="flex items-center gap-3">
           <IconoCirculo icon={MessageCircle} size={18} />
-          <p className="text-[15px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">¿Qué necesitas resolver?</p>
+          <p className="text-[16px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">¿Qué necesitas resolver?</p>
         </div>
 
         <textarea
@@ -98,13 +98,13 @@ export default function Asistencia() {
           }}
           placeholder="Ej.: mi expareja lleva 2 meses sin pagar la cuota, ¿qué puedo hacer?"
           rows={3}
-          className="mt-3 w-full resize-none rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--surface-2)] p-4 text-[15px] leading-relaxed text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)]"
+          className="mt-3 w-full resize-none rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--surface-2)] p-4 text-[16px] leading-relaxed text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)]"
         />
 
         {/* A dónde llega la respuesta: visible siempre; la casilla solo aparece si toca "Cambiar". */}
         {cambiandoCorreo ? (
           <div className="mt-3">
-            <label htmlFor="correo-respuesta" className="block text-[13px] font-medium text-[var(--text-secondary)]">Correo para la respuesta</label>
+            <label htmlFor="correo-respuesta" className="block text-[14px] font-medium text-[var(--text-secondary)]">Correo para la respuesta</label>
             <div className="mt-2 flex flex-col items-start gap-1">
               <input
                 id="correo-respuesta"
@@ -114,24 +114,24 @@ export default function Asistencia() {
                 value={correoRespuesta}
                 onChange={(e) => setCorreoRespuesta(e.target.value)}
                 placeholder={correoCuenta || 'tu@correo.com'}
-                className="h-12 w-full rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--surface-2)] px-4 text-[15px] text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)]"
+                className="h-12 w-full rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--surface-2)] px-4 text-[16px] text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)]"
               />
               <button
                 type="button"
                 onClick={() => { setCambiandoCorreo(false); setCorreoRespuesta(''); }}
-                className="py-2 text-[13px] font-bold text-[var(--accent-ink,var(--accent))] underline-offset-2 hover:underline [touch-action:manipulation]"
+                className="py-2 text-[14px] font-bold text-[var(--accent-ink,var(--accent))] underline-offset-2 hover:underline [touch-action:manipulation]"
               >
                 Usar el de mi cuenta
               </button>
             </div>
           </div>
         ) : (
-          <p className="mt-3 text-[13px] text-[var(--text-secondary)]">
+          <p className="mt-3 text-[14px] text-[var(--text-secondary)]">
             Te respondemos a <span className="font-bold text-[var(--text-primary)]">{correoCuenta || 'tu correo'}</span>
             {correoCuenta && (
               <>
                 {' · '}
-                <button type="button" onClick={() => setCambiandoCorreo(true)} className="py-1 font-bold text-[var(--accent-ink,var(--accent))] underline-offset-2 hover:underline [touch-action:manipulation]">
+                <button type="button" onClick={() => setCambiandoCorreo(true)} className="inline-flex min-h-11 items-center font-bold text-[var(--accent-ink,var(--accent))] underline-offset-2 hover:underline [touch-action:manipulation]">
                   Cambiar
                 </button>
               </>
@@ -160,7 +160,7 @@ export default function Asistencia() {
         </a>
 
         {aviso && estado === 'error' && (
-          <p role="alert" className="mt-2 text-[13px] leading-[1.5] text-[var(--status-error)]">
+          <p role="alert" className="mt-2 text-[14px] leading-[1.5] text-[var(--status-error)]">
             {aviso}
           </p>
         )}

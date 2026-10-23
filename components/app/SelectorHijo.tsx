@@ -52,7 +52,7 @@ export function SelectorHijo({
     return (
       <Link
         href="/perfil"
-        className="mt-4 flex items-center gap-2.5 rounded-[var(--radius-button)] bg-[var(--surface-2)] px-3.5 py-3 text-[12.5px] text-[var(--text-secondary)] [touch-action:manipulation]"
+        className="mt-4 flex items-center gap-2.5 rounded-[var(--radius-button)] bg-[var(--surface-2)] px-3.5 py-3 text-[12px] text-[var(--text-secondary)] [touch-action:manipulation]"
       >
         <UserRoundPlus size={16} className="shrink-0 text-[var(--accent-ink,var(--accent))]" aria-hidden="true" />
         <span>
@@ -62,13 +62,13 @@ export function SelectorHijo({
     );
   }
 
-  const chipBase = 'flex h-10 items-center gap-2 rounded-[var(--radius-chip,999px)] border pl-1 pr-3 text-[13px] font-semibold transition-colors duration-150 [touch-action:manipulation]';
+  const chipBase = 'flex h-10 items-center gap-2 rounded-[var(--radius-chip,999px)] border pl-1 pr-3 text-[14px] font-semibold transition-colors duration-150 [touch-action:manipulation]';
   const activo = 'border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_10%,transparent)] text-[var(--accent-ink,var(--accent))]';
   const inactivo = 'border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] text-[var(--text-secondary)]';
 
   return (
     <div className="mt-4">
-      <p className="text-[13px] font-medium text-[var(--text-secondary)]">{etiqueta}</p>
+      <p className="text-[14px] font-medium text-[var(--text-secondary)]">{etiqueta}</p>
       <div role="radiogroup" aria-label={etiqueta} className="mt-2 flex flex-wrap gap-2">
         {hijos.map((h) => {
           const sel = valor === h.id;
