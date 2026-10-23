@@ -6,8 +6,8 @@
 
 import { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
-import { Download, FileCheck2, Scale, FolderOpen } from 'lucide-react';
-import { ContenedorApp, Tarjeta, IconoCirculo, Pildora, ErrorDeCarga, CabeceraApp, TituloSeccion } from '@/components/app/ui';
+import { Download, FileCheck2, Scale } from 'lucide-react';
+import { ContenedorApp, Tarjeta, IconoCirculo, Pildora, ErrorDeCarga, CabeceraApp, TituloSeccion, Halo } from '@/components/app/ui';
 import { AyudaContextual } from '@/components/app/AyudaContextual';
 import { exportarExpedientePdf } from '@/lib/exportar-expediente';
 import { AcuerdoCuota } from '@/components/app/AcuerdoCuota';
@@ -97,15 +97,16 @@ export default function Expediente() {
             <AyudaContextual titulo="Expediente">
               <p>Aquí queda organizado todo lo que puedes necesitar como prueba: pagos, autorizaciones y el acuerdo o sentencia que fija tu cuota.</p>
               <p>El botón <strong className="text-[var(--text-primary)]">Exportar expediente</strong> arma un PDF real, foliado, con la foto de cada comprobante adentro — listo para entregar a tu abogado o conciliador.</p>
-              <p>No necesitas hacer nada más para que esto funcione: cada pago o autorización que registras en la app queda aquí automáticamente.</p>
+              <p>No necesitas hacer nada más para que esto funcione: cada pago que registras en la app queda aquí automáticamente.</p>
             </AyudaContextual>
-            <IconoCirculo icon={FolderOpen} size={22} grande />
           </div>
         }
       />
 
       {/* TARJETA DEL PDF — el "sector azul" de la referencia dentro de la app: degradé de marca */}
-      <Tarjeta className="mt-4 items-center text-center" style={{ background: 'linear-gradient(150deg, var(--accent), var(--accent-deep, var(--accent)))', color: 'var(--on-accent, var(--bg))' }}>
+      <div className="relative isolate mt-4">
+      <Halo />
+      <Tarjeta className="items-center text-center" style={{ background: 'linear-gradient(150deg, var(--accent), var(--accent-deep, var(--accent)))', color: 'var(--on-accent, var(--bg))' }}>
         <span className="mx-auto flex size-12 items-center justify-center rounded-[var(--radius-chip,999px)] bg-white/15"><FileCheck2 size={24} aria-hidden="true" /></span>
         <p className="mt-3 text-[16px] font-extrabold [font-family:var(--font-display)]">Tu expediente en PDF, en 1 toque</p>
         <p className="mt-1 text-[14px] opacity-90">
@@ -140,6 +141,7 @@ export default function Expediente() {
           </p>
         )}
       </Tarjeta>
+      </div>
 
       {/* Documento base que fija la cuota (acta de conciliación o sentencia) — se guarda aquí,
           donde el usuario piensa "¿y el papel que dice cuánto me toca?". */}
@@ -148,22 +150,15 @@ export default function Expediente() {
       {/* Constancia a la otra parte: informar es parte del expediente, no un extra. */}
       <ConstanciaOtraParte />
 
+      {/* La sección solo aparece cuando hay algo que mostrar: hoy no existe en la app un formulario
+          para pedir autorizaciones, y un estado vacío sin salida era un callejón (revisor 2026-10-23). */}
+      {(falloCarga || autorizaciones.length > 0) && (
+      <>
       <div className="mt-6 flex items-center justify-between">
         <h2 className="text-[16px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">Autorizaciones y controversias</h2>
       </div>
       <div className="mt-3 flex flex-col gap-3">
         {falloCarga && <ErrorDeCarga onReintentar={() => setIntento((n) => n + 1)} />}
-
-        {/* Sin estado vacío, el título quedaba colgando sobre la nada cuando no hay ninguna. */}
-        {!falloCarga && autorizaciones.length === 0 && (
-          <Tarjeta className="flex flex-col items-center py-8 text-center">
-            <IconoCirculo icon={Scale} size={22} />
-            <p className="mt-3 text-[14px] font-medium text-[var(--text-primary)]">Sin autorizaciones registradas</p>
-            <p className="mt-1 max-w-[32ch] text-[14px] text-[var(--text-secondary)]">
-              Aquí quedan los gastos extraordinarios que pediste autorizar y la respuesta que recibiste.
-            </p>
-          </Tarjeta>
-        )}
 
         {!falloCarga &&
           autorizaciones.map((a, i) => (
@@ -182,6 +177,8 @@ export default function Expediente() {
             </Tarjeta>
           ))}
       </div>
+      </>
+      )}
       </ContenedorApp>
     </>
   );

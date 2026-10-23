@@ -442,6 +442,19 @@ export async function agregarEvento(
   return mapEvento(data);
 }
 
+// Borra un evento del calendario (y su documento adjunto). Los registros de contacto (llamadas y
+// videollamadas) son PRUEBA y no se borran desde la app: la pantalla ni siquiera ofrece el botón.
+export async function eliminarEvento(evento: Evento): Promise<void> {
+  if (esContacto(evento.tipo)) throw new Error('Un registro de contacto no se puede borrar.');
+  const { supabase, userId } = await usuarioActual();
+  if (evento.documentoAdjuntoPath) {
+    await supabase.storage.from('comprobantes').remove([evento.documentoAdjuntoPath]);
+  }
+  const { error } = await supabase.from('eventos').delete().eq('id', evento.id).eq('user_id', userId);
+  if (error) throw error;
+  registrarEvento(supabase, userId, 'evento_eliminado');
+}
+
 export function formatoCOP(valor: number): string {
   return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(valor);
 }

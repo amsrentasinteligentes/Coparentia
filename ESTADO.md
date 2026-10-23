@@ -3365,6 +3365,11 @@ FICHA-ARTE.md que la landing.
 
 ## Problemas conocidos
 
+- **veredicto:landing**, **veredicto:onboarding**, **veredicto:paywall** (2026-10-23): el gate los marca "caducado" porque esta sesión
+  tocó `.tsx` de la app interna (`app/(app)/**`, `components/app/**`). Falso positivo: `git diff rediseno-publicado-7cc1e98 HEAD -- app/page.tsx
+  "app/(funnel)" components/landing components/funnel lib` está VACÍO. Siguen vigentes LISTA 38/16/17 (landing), 37/16/16 (onboarding) y
+  38/16/16 (planes). No se re-lanzan: no cambió ninguna de esas tres pantallas.
+
 - **veredicto:onboarding** (2026-10-22, noche): el gate lo marca "caducado" por la fecha de `app/(funnel)/paywall/page.tsx`, que es OTRA
   pantalla. Falso positivo: `git diff 28aa602 HEAD -- "app/(funnel)/onboarding" components/funnel components/landing app/page.tsx lib` está
   VACÍO. Veredicto vigente del recorrido: LISTA 37/40 · 16/20 · 16/20 sobre el commit `28aa602` (craft justo en el límite). Pendiente

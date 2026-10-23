@@ -13,7 +13,7 @@ import { CampoFechaPago } from '@/components/app/CampoFechaPago';
 import { BarraAtras, Halo } from '@/components/funnel/ui';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ContenedorApp, PageHeader, Tarjeta, IconoCirculo, Pildora, TarjetaSkeleton, NumeroContado, ErrorDeCarga, BotonFlotante, CabeceraApp, SaludoApp, AccesosRapidos } from '@/components/app/ui';
+import { ContenedorApp, PageHeader, Tarjeta, IconoCirculo, Pildora, TarjetaSkeleton, NumeroContado, ErrorDeCarga, BotonFlotante, CabeceraApp, SaludoApp, AccesosRapidos, Halo as HaloApp } from '@/components/app/ui';
 import {
   type Titulo,
   type Pago,
@@ -638,6 +638,8 @@ function Dashboard() {
         ? 'La cuota de este mes aún no tiene comprobante.'
         : `Recuerda registrar la cuota antes del día ${titulo?.diaPago ?? '—'}.`;
 
+  const nombreMesLargo = new Intl.DateTimeFormat('es-CO', { month: 'long', timeZone: 'America/Bogota' }).format(new Date());
+  const nombreMesCorto = new Intl.DateTimeFormat('es-CO', { month: 'short', timeZone: 'America/Bogota' }).format(new Date()).replace('.', '');
   const gastosExtraMes = pagos.filter((p) => p.tipo !== 'cuota' && p.fecha.slice(0, 7) === mesActual);
   const totalExtraMes = gastosExtraMes.reduce((acc, p) => acc + p.monto, 0);
 
@@ -706,86 +708,99 @@ function Dashboard() {
               </div>
             ))}
 
-            {/* PRÓXIMO EVENTO — la tarjeta más alta de la referencia. Sin evento, invita al calendario. */}
-            <Link href="/calendario" className="block transition-transform duration-100 active:scale-[0.99] [touch-action:manipulation]">
-              <Tarjeta className="flex items-center gap-3">
-                <IconoCirculo icon={proximoEvento ? ICONO_EVENTO[proximoEvento.tipo] : CalendarClock} size={22} grande />
+            {/* LA CUOTA DEL MES — lo primero que se ve: cifra héroe, estado honesto (si ya venció lo dice)
+                y la acción para resolverlo ahí mismo. */}
+            <div className="relative isolate">
+              {estadoDelMes.tono !== 'exito' && <HaloApp />}
+              <Tarjeta destacada>
+                <Link href="/pagos" className="flex items-start gap-3 [touch-action:manipulation]">
+                  <IconoCirculo icon={ShieldCheck} size={22} grande tono={estadoDelMes.tono === 'exito' ? 'exito' : estadoDelMes.tono === 'alerta' ? 'alerta' : 'accent'} />
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[16px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">Cuota de {nombreMesLargo}</p>
+                    <div className="mt-1"><Pildora texto={estadoDelMes.texto} tono={estadoDelMes.tono} /></div>
+                  </div>
+                  <ChevronRight size={18} className="mt-1 shrink-0 text-[var(--text-tertiary)]" aria-hidden="true" />
+                </Link>
+                <p className="mt-3 text-[28px] font-extrabold leading-tight tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
+                  {titulo ? <NumeroContado valor={titulo.montoMensual} formato={formatoCOP} /> : '—'}
+                </p>
+                <p className="mt-0.5 text-[14px] text-[var(--text-secondary)]">
+                  {!titulo
+                    ? 'Define tu cuota en Ajustes'
+                    : cuotaDelMesRegistrada
+                      ? 'Ya quedó registrada este mes'
+                      : yaVencio
+                        ? `Venció el ${titulo.diaPago} de ${nombreMesCorto}`
+                        : `Vence el día ${titulo.diaPago}`}
+                </p>
+                {titulo && !cuotaDelMesRegistrada && (
+                  <button
+                    type="button"
+                    onClick={() => router.push('/pagos?registrar=1')}
+                    className="mt-3 flex h-12 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] bg-[var(--accent)] text-[16px] font-bold text-[var(--on-accent,var(--bg))] [touch-action:manipulation]"
+                  >
+                    <Upload size={16} aria-hidden="true" />
+                    Registrar cuota de {nombreMesLargo}
+                  </button>
+                )}
+              </Tarjeta>
+            </div>
+
+            {/* PRÓXIMO EVENTO — una fila compacta (vacía no merece una tarjeta alta). */}
+            <Link href="/calendario" className="mt-3 block transition-transform duration-100 active:scale-[0.99] [touch-action:manipulation]">
+              <Tarjeta indice={1} className="flex items-center gap-3">
+                <IconoCirculo icon={proximoEvento ? ICONO_EVENTO[proximoEvento.tipo] : CalendarClock} size={20} />
                 <div className="min-w-0 flex-1">
-                  <p className="text-[16px] font-bold text-[var(--text-primary)] [font-family:var(--font-display)]">Próximo evento</p>
+                  <p className="text-[14px] font-bold text-[var(--text-primary)]">Próximo evento</p>
                   {proximoEvento ? (
-                    <>
-                      <p className="truncate text-[14px] text-[var(--text-secondary)]">{proximoEvento.titulo}</p>
-                      <p className="mt-0.5 text-[14px] font-bold text-[var(--accent-ink,var(--accent))]">
-                        {formatoFechaCorta(proximoEvento.fecha)}
-                        <span className="ml-2 font-normal text-[var(--text-secondary)]">{LABEL_EVENTO[proximoEvento.tipo]}{proximoEvento.hijoNombre ? ` · ${proximoEvento.hijoNombre}` : ''}</span>
-                      </p>
-                    </>
+                    <p className="truncate text-[14px] text-[var(--text-secondary)]">
+                      <span className="font-bold text-[var(--accent-ink,var(--accent))]">{formatoFechaCorta(proximoEvento.fecha)}</span> · {proximoEvento.titulo}
+                    </p>
                   ) : (
-                    <p className="text-[14px] text-[var(--text-secondary)]">Sin eventos próximos · agenda una visita o una cita</p>
+                    <p className="text-[14px] text-[var(--text-secondary)]">Nada agendado · toca para agendar</p>
                   )}
                 </div>
                 <ChevronRight size={18} className="shrink-0 text-[var(--text-tertiary)]" aria-hidden="true" />
               </Tarjeta>
             </Link>
 
-            {/* DOS CIFRAS — la cuota del mes con su estado y los meses probados. */}
-            <div className="mt-3 grid grid-cols-2 gap-3">
-              <Link href="/pagos" className="block transition-transform duration-100 active:scale-[0.99] [touch-action:manipulation]">
-                <Tarjeta indice={1} className="h-full">
-                  <div className="flex items-start justify-between">
-                    <IconoCirculo icon={ShieldCheck} tono={estadoDelMes.tono === 'exito' ? 'exito' : estadoDelMes.tono === 'alerta' ? 'pendiente' : 'accent'} />
-                    <ChevronRight size={16} className="text-[var(--text-tertiary)]" aria-hidden="true" />
+            {/* MESES CON REGISTRO — el avance del expediente, en una fila. */}
+            <Link href="/expediente" className="mt-3 block transition-transform duration-100 active:scale-[0.99] [touch-action:manipulation]">
+              <Tarjeta indice={2}>
+                <div className="flex items-center gap-3">
+                  <span className="relative flex shrink-0">
+                    {celebrar && !reduce && (
+                      <motion.span
+                        aria-hidden="true"
+                        initial={{ scale: 0.8, opacity: 0.6 }}
+                        animate={{ scale: 1.7, opacity: 0 }}
+                        transition={{ duration: 1.2, ease: [0.22, 0.61, 0.36, 1] }}
+                        className="absolute inset-0 rounded-[var(--radius-chip,999px)] border-2 border-[var(--accent)]"
+                      />
+                    )}
+                    <IconoCirculo icon={FileCheck2} size={20} />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[14px] font-bold text-[var(--text-primary)]">Meses con registro</p>
+                    <p className="text-[14px] text-[var(--text-secondary)]">
+                      {metaMeses === 1 ? 'Tu primer mes ya quedó registrado' : `${formatoCOP(totalRegistrado)} registrados`}
+                    </p>
                   </div>
-                  <p className="mt-3 text-[12px] font-bold text-[var(--text-primary)]">Cuota alimentaria</p>
-                  <div className="mt-1.5"><Pildora texto={estadoDelMes.texto} tono={estadoDelMes.tono} /></div>
-                  <p className="mt-2 text-[24px] font-extrabold leading-tight tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
-                    {titulo ? <NumeroContado valor={titulo.montoMensual} formato={formatoCOP} /> : '—'}
-                  </p>
-                  <p className="mt-0.5 text-[12px] text-[var(--text-secondary)]">
-                    {titulo ? `Mes actual · día ${titulo.diaPago}` : 'Cuota sin definir'}
-                  </p>
-                </Tarjeta>
-              </Link>
-              <Link href="/expediente" className="block transition-transform duration-100 active:scale-[0.99] [touch-action:manipulation]">
-                <Tarjeta indice={2} className="h-full">
-                  <div className="flex items-start justify-between">
-                    <span className="relative flex shrink-0">
-                      {celebrar && !reduce && (
-                        <motion.span
-                          aria-hidden="true"
-                          initial={{ scale: 0.8, opacity: 0.6 }}
-                          animate={{ scale: 1.7, opacity: 0 }}
-                          transition={{ duration: 1.2, ease: [0.22, 0.61, 0.36, 1] }}
-                          className="absolute inset-0 rounded-[var(--radius-chip,999px)] border-2 border-[var(--accent)]"
-                        />
-                      )}
-                      <IconoCirculo icon={FileCheck2} />
-                    </span>
-                    <ChevronRight size={16} className="text-[var(--text-tertiary)]" aria-hidden="true" />
-                  </div>
-                  <p className="mt-3 text-[12px] font-bold text-[var(--text-primary)]">Meses con registro</p>
-                  <p className="mt-2 text-[16px] font-extrabold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
+                  <p className="shrink-0 text-[24px] font-extrabold leading-none tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
                     <NumeroContado valor={Math.min(mesesConRegistro, metaMeses)} />
-                    <span className="ml-1 text-[12px] font-bold text-[var(--text-secondary)]">de {metaMeses}</span>
+                    <span className="ml-1 text-[14px] font-bold text-[var(--text-secondary)]">de {metaMeses}</span>
                   </p>
-                  {/* Barra de avance de la referencia (en vez del anillo del tema oscuro). */}
-                  <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-[color-mix(in_oklab,var(--accent)_16%,transparent)]" role="progressbar" aria-valuenow={progreso} aria-valuemin={0} aria-valuemax={100}>
-                    <motion.span
-                      className="block h-full rounded-full bg-[var(--accent)]"
-                      initial={reduce ? false : { width: 0 }}
-                      animate={{ width: `${progreso}%` }}
-                      transition={{ duration: reduce ? 0 : 0.7, ease: [0.22, 0.61, 0.36, 1] }}
-                    />
-                  </div>
-                  {/* El primer mes "1 de 1" con barra llena no dice nada: se nombra el hito en su lugar. */}
-                  <p className="mt-1 text-[12px] text-[var(--text-secondary)]">
-                    {metaMeses === 1 ? 'Primer mes registrado' : metaMeses === 12 ? 'de los últimos 12 meses' : 'meses que lleva tu expediente'}
-                  </p>
-                  {/* El total en pesos va en su propia línea: antes se mezclaba con el conteo y la barra (revisor, 2026-10-22). */}
-                  <p className="mt-0.5 text-[12px] font-semibold tabular-nums text-[var(--text-primary)]">{formatoCOP(totalRegistrado)} registrados</p>
-                </Tarjeta>
-              </Link>
-            </div>
+                </div>
+                <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-[color-mix(in_oklab,var(--accent)_16%,transparent)]" role="progressbar" aria-label="Meses con registro" aria-valuenow={progreso} aria-valuemin={0} aria-valuemax={100}>
+                  <motion.span
+                    className="block h-full rounded-full bg-[var(--accent)]"
+                    initial={reduce ? false : { width: 0 }}
+                    animate={{ width: `${progreso}%` }}
+                    transition={{ duration: reduce ? 0 : 0.7, ease: [0.22, 0.61, 0.36, 1] }}
+                  />
+                </div>
+              </Tarjeta>
+            </Link>
 
             <AccesosRapidos items={ACCESOS} />
 
@@ -793,7 +808,7 @@ function Dashboard() {
             <Tarjeta indice={3} className="mt-3">
               <div className="flex items-center justify-between">
                 <h2 className="text-[16px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">Actividad reciente</h2>
-                <Link href="/pagos" className="inline-flex min-h-11 items-center gap-0.5 text-[12px] font-bold text-[var(--accent-ink,var(--accent))] [touch-action:manipulation]">Ver todo<ChevronRight size={14} aria-hidden="true" /></Link>
+                <Link href="/pagos" className="inline-flex min-h-11 items-center gap-0.5 text-[14px] font-bold text-[var(--accent-ink,var(--accent))] [touch-action:manipulation]">Ver todo<ChevronRight size={14} aria-hidden="true" /></Link>
               </div>
               {ultimosPagos.length === 0 ? (
                 <div className="flex flex-col items-center py-6 text-center">
@@ -809,13 +824,15 @@ function Dashboard() {
                     <li key={p.id} className={`flex items-center gap-3 py-2.5 ${i > 0 ? 'border-t border-[color-mix(in_oklab,var(--text-tertiary)_16%,transparent)]' : ''}`}>
                       <IconoCirculo icon={p.tipo === 'cuota' ? Check : ReceiptText} size={16} tono={p.tipo === 'cuota' ? 'exito' : 'info'} />
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-[14px] font-bold text-[var(--text-primary)]">{p.tipo === 'cuota' ? 'Cuota con Sello de Confianza' : 'Gasto extra registrado'}</p>
-                        <p className="flex items-baseline gap-1 text-[12px] text-[var(--text-secondary)]">
-                          <span className="truncate">{p.hijoNombre ? `${p.hijoNombre} · ` : ''}{p.concepto}</span>
-                          <span className="shrink-0">· {formatoCOP(p.monto)}</span>
+                        <p className="line-clamp-2 text-[14px] font-bold text-[var(--text-primary)]">{p.concepto}</p>
+                        <p className="text-[12px] text-[var(--text-secondary)]">
+                          {p.hijoNombre ? `${p.hijoNombre} · ` : ''}{p.tipo === 'cuota' ? 'Cuota con Sello' : 'Gasto extra'}
                         </p>
                       </div>
-                      <time className="shrink-0 text-right text-[12px] leading-tight text-[var(--text-secondary)]">{formatoFechaCorta(p.fecha)}</time>
+                      <div className="shrink-0 text-right">
+                        <p className="text-[14px] font-extrabold tabular-nums text-[var(--text-primary)]">{formatoCOP(p.monto)}</p>
+                        <time className="text-[12px] text-[var(--text-secondary)]">{formatoFechaCorta(p.fecha)}</time>
+                      </div>
                     </li>
                   ))}
                 </ul>
@@ -827,10 +844,9 @@ function Dashboard() {
               <div className="mt-3 flex items-center gap-3 rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--accent)_18%,transparent)] px-3 py-3" style={{ background: 'linear-gradient(120deg, color-mix(in oklab, var(--accent) 12%, var(--surface)), var(--surface))' }}>
                 <IconoCirculo icon={ShieldCheck} size={18} />
                 <div className="min-w-0 flex-1">
-                  <p className="text-[14px] font-extrabold text-[var(--text-primary)]">Tu expediente, listo para mostrar</p>
-                  <p className="text-[12px] text-[var(--text-secondary)]">
-                    {pagos.length} {pagos.length === 1 ? 'comprobante' : 'comprobantes'} con Sello
-                    {gastosExtraMes.length > 0 ? ` · ${formatoCOP(totalExtraMes)} en gastos extra este mes` : ' · PDF disponible'}
+                  <p className="text-[14px] font-extrabold text-[var(--text-primary)]">Tu expediente en PDF</p>
+                  <p className="text-[14px] text-[var(--text-secondary)]">
+                    {pagos.length} {pagos.length === 1 ? 'comprobante' : 'comprobantes'} con Sello, listo para tu abogado
                   </p>
                 </div>
                 <ChevronRight size={16} className="shrink-0 text-[var(--text-tertiary)]" aria-hidden="true" />
@@ -839,7 +855,9 @@ function Dashboard() {
           </>
         )}
 
-        {!falloCarga && !cargando && (
+        {/* Con la cuota del mes pendiente, el botón principal es el de la tarjeta de la cuota: dos
+            "Registrar" a la vez competían entre sí. */}
+        {!falloCarga && !cargando && (cuotaDelMesRegistrada || !titulo) && (
           <BotonFlotante onClick={() => router.push('/pagos?registrar=1')}>
             <Upload size={18} aria-hidden="true" />
             Registrar

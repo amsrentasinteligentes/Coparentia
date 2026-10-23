@@ -127,11 +127,11 @@ export function AcuerdoCuota() {
   };
 
   return (
-    <Tarjeta className="mt-6">
+    <Tarjeta className="mt-3" indice={1}>
       <div className="flex items-start gap-3">
-        <IconoCirculo icon={Gavel} />
+        <IconoCirculo icon={Gavel} size={20} grande />
         <div className="min-w-0 flex-1">
-          <p className="text-[14px] font-medium text-[var(--text-primary)]">Consultar acuerdo</p>
+          <p className="text-[16px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">Acuerdo de la cuota</p>
           <p className="mt-1 text-[14px] leading-[1.5] text-[var(--text-secondary)]">
             {estado.fase === 'guardado'
               ? 'El acta de conciliación o la sentencia que fija tu cuota, guardada y lista para consultar.'
@@ -177,7 +177,7 @@ export function AcuerdoCuota() {
                 whileTap={{ scale: 0.98 }}
                 onClick={guardar}
                 disabled={guardando}
-                className="flex h-11 flex-1 items-center justify-center gap-2 rounded-[var(--radius-button)] bg-[var(--accent)] text-[14px] font-semibold text-[var(--on-accent,var(--bg))] transition-opacity disabled:opacity-60 [touch-action:manipulation]"
+                className="flex h-12 flex-1 items-center justify-center gap-2 rounded-[var(--radius-button)] bg-[var(--accent)] text-[14px] font-bold text-[var(--on-accent,var(--bg))] transition-opacity disabled:opacity-60 [touch-action:manipulation]"
               >
                 {guardando ? 'Guardando…' : 'Guardar acuerdo'}
               </motion.button>
@@ -198,7 +198,7 @@ export function AcuerdoCuota() {
               type="button"
               whileTap={{ scale: 0.98 }}
               onClick={() => inputRef.current?.click()}
-              className="flex h-11 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--accent)_40%,transparent)] text-[14px] font-semibold text-[var(--accent)] [touch-action:manipulation]"
+              className="flex h-12 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--accent)_35%,transparent)] text-[14px] font-bold text-[var(--accent-ink,var(--accent))] [touch-action:manipulation]"
             >
               <FileText size={16} aria-hidden="true" />
               Guardar acuerdo
@@ -235,7 +235,7 @@ export function AcuerdoCuota() {
                   whileTap={{ scale: 0.98 }}
                   onClick={guardar}
                   disabled={guardando}
-                  className="flex h-11 flex-1 items-center justify-center gap-2 rounded-[var(--radius-button)] bg-[var(--accent)] text-[14px] font-semibold text-[var(--on-accent,var(--bg))] transition-opacity disabled:opacity-60 [touch-action:manipulation]"
+                  className="flex h-12 flex-1 items-center justify-center gap-2 rounded-[var(--radius-button)] bg-[var(--accent)] text-[14px] font-bold text-[var(--on-accent,var(--bg))] transition-opacity disabled:opacity-60 [touch-action:manipulation]"
                 >
                   {guardando ? 'Guardando…' : 'Reemplazar acuerdo'}
                 </motion.button>
@@ -269,7 +269,7 @@ export function AcuerdoCuota() {
                 whileTap={{ scale: 0.98 }}
                 onClick={() => consultar(estado.ruta, estado.nombre)}
                 disabled={abriendo}
-                className="mt-3 flex h-11 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--accent)_40%,transparent)] text-[14px] font-semibold text-[var(--accent)] transition-opacity disabled:opacity-60 [touch-action:manipulation]"
+                className="mt-3 flex h-12 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--accent)_35%,transparent)] text-[14px] font-bold text-[var(--accent-ink,var(--accent))] transition-opacity disabled:opacity-60 [touch-action:manipulation]"
               >
                 <Eye size={16} aria-hidden="true" />
                 {abriendo ? 'Abriendo…' : 'Consultar acuerdo'}
@@ -279,7 +279,7 @@ export function AcuerdoCuota() {
                 <button
                   type="button"
                   onClick={() => inputRef.current?.click()}
-                  className="flex items-center gap-1.5 text-[12px] text-[var(--text-tertiary)] underline-offset-2 hover:underline [touch-action:manipulation]"
+                  className="flex min-h-11 items-center gap-1.5 text-[12px] text-[var(--text-tertiary)] underline-offset-2 hover:underline [touch-action:manipulation]"
                 >
                   <RefreshCw size={13} aria-hidden="true" />
                   Reemplazar
@@ -290,7 +290,7 @@ export function AcuerdoCuota() {
                       type="button"
                       onClick={quitar}
                       disabled={quitando}
-                      className="text-[12px] font-semibold text-[var(--status-error)] disabled:opacity-60 [touch-action:manipulation]"
+                      className="min-h-11 text-[12px] font-semibold text-[var(--status-error)] disabled:opacity-60 [touch-action:manipulation]"
                     >
                       {quitando ? 'Quitando…' : 'Sí, quitar'}
                     </button>
@@ -298,7 +298,7 @@ export function AcuerdoCuota() {
                       type="button"
                       onClick={() => setConfirmandoQuitar(false)}
                       disabled={quitando}
-                      className="text-[12px] text-[var(--text-tertiary)] disabled:opacity-60 [touch-action:manipulation]"
+                      className="min-h-11 text-[12px] text-[var(--text-tertiary)] disabled:opacity-60 [touch-action:manipulation]"
                     >
                       Cancelar
                     </button>
@@ -310,7 +310,7 @@ export function AcuerdoCuota() {
                       setConfirmandoQuitar(true);
                       setErrorAccion(null);
                     }}
-                    className="flex items-center gap-1.5 text-[12px] text-[var(--text-tertiary)] underline-offset-2 hover:underline [touch-action:manipulation]"
+                    className="flex min-h-11 items-center gap-1.5 text-[12px] text-[var(--text-tertiary)] underline-offset-2 hover:underline [touch-action:manipulation]"
                   >
                     <Trash2 size={13} aria-hidden="true" />
                     Quitar

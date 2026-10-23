@@ -7,8 +7,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'motion/react';
-import { Upload, ShieldCheck, FileCheck2, X, ChevronRight, ChevronLeft, Sparkles, CalendarDays, CreditCard, ReceiptText, Wallet, Users } from 'lucide-react';
-import { ContenedorApp, Tarjeta, IconoCirculo, BotonFlotante, ErrorDeCarga, CabeceraApp, Pildora, TituloSeccion } from '@/components/app/ui';
+import { Upload, ShieldCheck, FileCheck2, X, ChevronRight, ChevronLeft, Sparkles, CalendarDays, CreditCard, ReceiptText, Users } from 'lucide-react';
+import { ContenedorApp, Tarjeta, TarjetaSkeleton, IconoCirculo, BotonFlotante, ErrorDeCarga, CabeceraApp, Pildora, TituloSeccion, Halo, NumeroContado } from '@/components/app/ui';
 import { AyudaContextual } from '@/components/app/AyudaContextual';
 import { VisorImagen } from '@/components/app/VisorImagen';
 import { Portal } from '@/components/app/Portal';
@@ -62,6 +62,7 @@ export default function Pagos() {
   const [urlVisor, setUrlVisor] = useState<string | null>(null);
   const [selloDe, setSelloDe] = useState<string | null>(null);
   const [falloCarga, setFalloCarga] = useState(false);
+  const [cargado, setCargado] = useState(false);
   const [intento, setIntento] = useState(0);
   const [confirmandoBorrado, setConfirmandoBorrado] = useState<string | null>(null);
   const [borrando, setBorrando] = useState<string | null>(null);
@@ -91,7 +92,7 @@ export default function Pagos() {
     let vigente = true;
     setFalloCarga(false);
     Promise.all([obtenerPagos(), obtenerTitulo()])
-      .then(([r, t]) => { if (vigente) { setPagos(r); setTitulo(t); } })
+      .then(([r, t]) => { if (vigente) { setPagos(r); setTitulo(t); setCargado(true); } })
       .catch(() => { if (vigente) setFalloCarga(true); });
     return () => { vigente = false; };
   }, [intento]);
@@ -144,7 +145,6 @@ export default function Pagos() {
     setVerTodosLosMeses(true); // "por hijo" es del año completo, no de un mes suelto
   };
 
-  const totalVisible = visibles.reduce((acc, p) => acc + p.monto, 0);
 
   // ── Datos del resumen (composición de la referencia del usuario, Ref 4) ──
   const mesActual = mesEnColombia();
@@ -161,6 +161,8 @@ export default function Pagos() {
 
 
   const nombreMesRaw = new Intl.DateTimeFormat('es-CO', { month: 'long', year: 'numeric', timeZone: 'America/Bogota' }).format(new Date());
+  const nombreMesLargo = new Intl.DateTimeFormat('es-CO', { month: 'long', timeZone: 'America/Bogota' }).format(new Date());
+  const nombreMesCorto = new Intl.DateTimeFormat('es-CO', { month: 'short', timeZone: 'America/Bogota' }).format(new Date()).replace('.', '');
   // Próximo vencimiento: el día de pago de este mes si no ha pasado; si ya pasó, el del mes siguiente.
   const proximoVencimiento = (() => {
     if (!titulo) return null;
@@ -184,53 +186,77 @@ export default function Pagos() {
                 <p>Cuando subes una foto del comprobante, la app lee el monto por ti — revísalo antes de guardar, siempre puedes corregirlo.</p>
                 <p>Al guardar, el registro recibe un <strong className="text-[var(--text-primary)]">Sello de Confianza</strong>: queda fechado de forma que sirve como prueba si algún día lo necesitas.</p>
               </AyudaContextual>
-              <IconoCirculo icon={Wallet} size={22} grande />
             </div>
           }
         />
 
         {falloCarga ? (
           <ErrorDeCarga onReintentar={() => setIntento((n) => n + 1)} />
+        ) : !cargado ? (
+          <div className="mt-4"><TarjetaSkeleton filas={4} /></div>
         ) : (
           <>
-            {/* RESUMEN — la tarjeta ancha de la referencia: cuota del mes con estado | próximo vencimiento */}
-            <Tarjeta className="mt-4 flex flex-col gap-3">
-              <div className="flex min-w-0 flex-1 items-start gap-3">
-                <IconoCirculo icon={CreditCard} size={22} tono={estadoCuota.tono === 'exito' ? 'exito' : estadoCuota.tono === 'alerta' ? 'pendiente' : 'accent'} grande />
-                <div className="min-w-0">
-                  <p className="text-[14px] font-bold text-[var(--text-primary)] [font-family:var(--font-display)]">Cuota de {nombreMesRaw}</p>
-                  <div className="mt-1"><Pildora texto={estadoCuota.texto} tono={estadoCuota.tono} /></div>
-                  <p className="mt-1.5 text-[28px] font-extrabold leading-tight tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
-                    {titulo ? formatoCOP(cuotaDelMes?.monto ?? titulo.montoMensual) : '—'}
-                  </p>
-                  <p className="text-[12px] text-[var(--text-secondary)]">
-                    {cuotaDelMes ? `Pagada el ${formatoFechaLarga(cuotaDelMes.fecha)}` : titulo ? `Vence el día ${titulo.diaPago}` : 'Define tu cuota en Ajustes'}
-                  </p>
-                </div>
-              </div>
-              {proximoVencimiento && (
-                <div className="flex items-center gap-2 border-t border-[color-mix(in_oklab,var(--text-tertiary)_16%,transparent)] pt-3">
-                  <IconoCirculo icon={CalendarDays} size={16} />
+            {/* RESUMEN — la cuota del mes es el protagonista: cifra héroe, estado honesto (si ya venció lo dice)
+                y la acción para resolverlo ahí mismo. */}
+            <div className="relative isolate mt-4">
+              {estadoCuota.tono !== 'exito' && <Halo />}
+              <Tarjeta destacada className="flex flex-col gap-3">
+                <div className="flex min-w-0 flex-1 items-start gap-3">
+                  <IconoCirculo icon={CreditCard} size={22} tono={estadoCuota.tono === 'exito' ? 'exito' : estadoCuota.tono === 'alerta' ? 'alerta' : 'accent'} grande />
                   <div className="min-w-0">
-                    <p className="text-[12px] text-[var(--text-secondary)]">Próximo vencimiento</p>
-                    <p className="text-[14px] font-bold text-[var(--text-primary)]">{proximoVencimiento}</p>
+                    <p className="text-[16px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">Cuota de {nombreMesRaw}</p>
+                    <div className="mt-1"><Pildora texto={estadoCuota.texto} tono={estadoCuota.tono} /></div>
                   </div>
-                  <ChevronRight size={16} className="ml-auto shrink-0 text-[var(--text-tertiary)]" aria-hidden="true" />
                 </div>
-              )}
-            </Tarjeta>
+                <div>
+                  <p className="text-[28px] font-extrabold leading-tight tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
+                    {titulo ? <NumeroContado valor={cuotaDelMes?.monto ?? titulo.montoMensual} formato={formatoCOP} /> : '—'}
+                  </p>
+                  <p className="mt-0.5 text-[14px] text-[var(--text-secondary)]">
+                    {cuotaDelMes
+                      ? `Pagada el ${formatoFechaLarga(cuotaDelMes.fecha)}`
+                      : titulo
+                        ? vencida
+                          ? `Venció el ${titulo.diaPago} de ${nombreMesCorto}`
+                          : `Vence el día ${titulo.diaPago}`
+                        : 'Define tu cuota en Ajustes'}
+                  </p>
+                </div>
+                {!cuotaDelMes && titulo && (
+                  <button
+                    type="button"
+                    onClick={() => setModalAbierto(true)}
+                    className="flex h-12 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] bg-[var(--accent)] text-[16px] font-bold text-[var(--on-accent,var(--bg))] [touch-action:manipulation]"
+                  >
+                    <Upload size={16} aria-hidden="true" />
+                    Registrar cuota de {nombreMesLargo}
+                  </button>
+                )}
+                {proximoVencimiento && (
+                  <div className="flex items-center gap-2 border-t border-[color-mix(in_oklab,var(--text-tertiary)_16%,transparent)] pt-3">
+                    <IconoCirculo icon={CalendarDays} size={16} />
+                    <div className="min-w-0">
+                      <p className="text-[12px] text-[var(--text-secondary)]">Próximo vencimiento</p>
+                      <p className="text-[14px] font-bold text-[var(--text-primary)]">{proximoVencimiento}</p>
+                    </div>
+                  </div>
+                )}
+              </Tarjeta>
+            </div>
 
             {/* GASTOS EXTRA DEL MES — una sola fila. El "saldo pendiente" repetía la cuota de arriba. */}
+            {extrasDelMes.length > 0 && (
             <Tarjeta indice={1} className="mt-3 flex items-center gap-3">
               <IconoCirculo icon={ReceiptText} tono="info" />
               <div className="min-w-0 flex-1">
-                <p className="text-[12px] font-bold text-[var(--text-primary)]">Gastos extra de este mes</p>
+                <p className="text-[14px] font-bold text-[var(--text-primary)]">Gastos extra de este mes</p>
                 <p className="text-[12px] text-[var(--text-secondary)]">
-                  {extrasDelMes.length === 0 ? 'Ninguno todavía' : extrasDelMes.length === 1 ? '1 gasto registrado' : `${extrasDelMes.length} gastos registrados`}
+                  {extrasDelMes.length === 1 ? '1 gasto registrado' : `${extrasDelMes.length} gastos registrados`}
                 </p>
               </div>
               <p className="shrink-0 text-[18px] font-extrabold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">{formatoCOP(totalExtrasMes)}</p>
             </Tarjeta>
+            )}
 
             {/* GASTOS POR HIJO — con 2 o más hijos, cada uno con su cuenta del año (pedido del usuario).
                 Tocar una fila filtra la lista de abajo a los gastos de ese hijo. */}
@@ -320,9 +346,9 @@ export default function Pagos() {
                 <button
                   type="button"
                   onClick={() => setVerTodosLosMeses(false)}
-                  className="text-[12px] font-semibold text-[var(--accent-ink,var(--accent))] underline-offset-2 hover:underline [touch-action:manipulation]"
+                  className="inline-flex min-h-11 items-center rounded-[var(--radius-chip,999px)] border border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_10%,transparent)] px-4 text-[14px] font-semibold text-[var(--accent-ink,var(--accent))] [touch-action:manipulation]"
                 >
-                  Viendo todos los meses · volver al mes actual
+                  Todos los meses · volver a este mes
                 </button>
               ) : (
                 <>
@@ -356,7 +382,7 @@ export default function Pagos() {
                     <span className="font-semibold text-[var(--accent-ink,var(--accent))]"> · {filtroHijo === 'sin' ? 'sin asignar' : hijos.find((h) => h.id === filtroHijo)?.nombre}</span>
                   )}
                 </h2>
-                <p className="text-[12px] text-[var(--text-secondary)]">{visibles.length} · {formatoCOP(totalVisible)}</p>
+                <p className="text-[12px] text-[var(--text-secondary)]">{visibles.length === 1 ? '1 registro' : `${visibles.length} registros`}</p>
               </div>
               {visibles.length === 0 ? (
                 <div className="flex flex-col items-center py-6 text-center">
@@ -395,7 +421,7 @@ export default function Pagos() {
                         </div>
                         <div className="flex shrink-0 flex-col items-end gap-1">
                           <p className="text-[14px] font-extrabold tabular-nums text-[var(--text-primary)]">{formatoCOP(p.monto)}</p>
-                          <Pildora texto={esCuota ? 'Sello' : 'Extra'} tono={esCuota ? 'exito' : 'neutro'} />
+                          <Pildora texto={esCuota ? 'Cuota' : 'Extra'} tono={esCuota ? 'exito' : 'neutro'} />
                         </div>
                         {p.comprobantePath && <ChevronRight size={16} className="shrink-0 text-[var(--text-tertiary)]" aria-hidden="true" />}
                       </>
@@ -418,7 +444,7 @@ export default function Pagos() {
                             </button>
                           </div>
                         ) : (
-                          <button type="button" onClick={() => setConfirmandoBorrado(p.id)} aria-label={`Borrar ${p.concepto}`} className="self-end py-1 text-[12px] text-[var(--text-tertiary)] underline-offset-2 hover:underline [touch-action:manipulation]">Borrar</button>
+                          <button type="button" onClick={() => setConfirmandoBorrado(p.id)} aria-label={`Borrar ${p.concepto}`} className="inline-flex min-h-11 items-center self-end px-2 text-[12px] text-[var(--text-tertiary)] underline-offset-2 hover:underline [touch-action:manipulation]">Borrar</button>
                         )}
                         {errorFila?.id === p.id && (
                           <p role="alert" className="text-[12px] leading-[1.5] text-[var(--status-error)]">{errorFila.mensaje}</p>

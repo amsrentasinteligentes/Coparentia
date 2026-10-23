@@ -10,15 +10,15 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
-import { ChevronLeft, ChevronRight, Plus, X, Users, HeartPulse, Plane, Trophy, Globe, Paperclip, CalendarDays, Phone, Video, ShieldCheck, PhoneOff, PhoneMissed, Clock, Loader2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Plus, X, Users, HeartPulse, Plane, Trophy, Globe, Paperclip, CalendarDays, Phone, Video, ShieldCheck, PhoneOff, PhoneMissed, Loader2 } from 'lucide-react';
 import { SelloConfianza } from '@/components/app/SelloConfianza';
-import { ContenedorApp, Tarjeta, IconoCirculo, BotonFlotante, ErrorDeCarga, CabeceraApp, TituloSeccion, NumeroContado } from '@/components/app/ui';
+import { ContenedorApp, Tarjeta, IconoCirculo, BotonFlotante, ErrorDeCarga, CabeceraApp, TituloSeccion, Pildora } from '@/components/app/ui';
 import { AyudaContextual } from '@/components/app/AyudaContextual';
 import { VisorImagen } from '@/components/app/VisorImagen';
 import { Portal } from '@/components/app/Portal';
 import { SelectorHijo, useHijos, type ValorHijo } from '@/components/app/SelectorHijo';
 import { type Hijo } from '@/lib/perfil';
-import { type Evento, type TipoEvento, type MedioContacto, type ResultadoContacto, esContacto, obtenerEventos, agregarEvento, obtenerUrlArchivo, formatoFechaLarga, formatoFechaCorta, validarArchivoAdjunto } from '@/lib/datos';
+import { type Evento, type TipoEvento, type MedioContacto, type ResultadoContacto, esContacto, obtenerEventos, agregarEvento, eliminarEvento, obtenerUrlArchivo, formatoFechaLarga, formatoFechaCorta, validarArchivoAdjunto } from '@/lib/datos';
 import { hoyEnColombia, claveMes, nombreMes } from '@/lib/fecha';
 
 // CONTACTO CON LOS HIJOS (2026-09-21): dos tipos nuevos —llamada y videollamada— que registran el
@@ -59,15 +59,6 @@ const COLOR: Record<TipoEvento, { fg: string; bg: string }> = {
   llamada: { fg: 'var(--cat-llamada)', bg: 'var(--cat-llamada-bg)' },
   videollamada: { fg: 'var(--cat-video)', bg: 'var(--cat-video-bg)' },
 };
-const LABEL_CONTEO: Record<TipoEvento, (n: number) => string> = {
-  visita: (n) => (n === 1 ? '1 visita' : `${n} visitas`),
-  medica: (n) => (n === 1 ? '1 cita médica' : `${n} citas médicas`),
-  vacaciones: (n) => (n === 1 ? '1 período de vacaciones' : `${n} períodos de vacaciones`),
-  extracurricular: (n) => (n === 1 ? '1 actividad' : `${n} actividades`),
-  salida_pais: (n) => (n === 1 ? '1 salida del país' : `${n} salidas del país`),
-  llamada: (n) => (n === 1 ? '1 llamada' : `${n} llamadas`),
-  videollamada: (n) => (n === 1 ? '1 videollamada' : `${n} videollamadas`),
-};
 
 function horaHumana(hhmm: string): string {
   const [h, m] = hhmm.split(':').map(Number);
@@ -84,6 +75,8 @@ export default function Calendario() {
   const [modalAbierto, setModalAbierto] = useState(false);
   const [fechaModal, setFechaModal] = useState<string | undefined>(undefined);
   const [selloDe, setSelloDe] = useState<string | null>(null);
+  // Día tocado en la rejilla (si tiene eventos, la lista muestra solo los de ese día).
+  const [diaElegido, setDiaElegido] = useState<string | null>(null);
   // Hijos del perfil: cada evento puede quedar a nombre de uno ("Cita médica · Sofía").
   const { hijos } = useHijos();
 
@@ -120,14 +113,22 @@ export default function Calendario() {
     setFechaModal(fecha);
     setModalAbierto(true);
   };
+  // Tocar un día CON eventos los muestra; un día vacío abre directo el formulario con esa fecha.
+  const tocarDia = (fecha: string): void => {
+    if (eventos.some((e) => e.fecha === fecha)) setDiaElegido((d) => (d === fecha ? null : fecha));
+    else abrirModalEnFecha(fecha);
+  };
+  const borrarEvento = async (e: Evento): Promise<void> => {
+    await eliminarEvento(e);
+    setEventos((prev) => prev.filter((x) => x.id !== e.id));
+  };
 
   const hoyISO = hoyEnColombia();
   const deHoy = delMes.filter((e) => e.fecha === hoyISO);
   const proximos = delMes.filter((e) => e.fecha >= hoyISO).sort((a, b) => a.fecha.localeCompare(b.fecha));
-  const listaAgenda = proximos.length > 0 ? proximos : delMes;
-  const tituloAgenda = deHoy.length > 0 ? (proximos.length > deHoy.length ? 'Hoy y próximos' : `Hoy · ${formatoFechaCorta(hoyISO)}`) : proximos.length > 0 ? 'Próximos este mes' : `Eventos de ${nombreMes(mesActual)}`;
-  const conteo = new Map<TipoEvento, number>();
-  for (const e of delMes) conteo.set(e.tipo, (conteo.get(e.tipo) ?? 0) + 1);
+  const delDia = diaElegido ? eventos.filter((e) => e.fecha === diaElegido) : [];
+  const listaAgenda = diaElegido && delDia.length > 0 ? delDia : proximos.length > 0 ? proximos : delMes;
+  const tituloAgenda = diaElegido && delDia.length > 0 ? `Eventos del ${formatoFechaCorta(diaElegido)}` : deHoy.length > 0 ? (proximos.length > deHoy.length ? 'Hoy y próximos' : `Hoy · ${formatoFechaCorta(hoyISO)}`) : proximos.length > 0 ? 'Próximos este mes' : `Eventos de ${nombreMes(mesActual)}`;
 
   return (
     <>
@@ -143,7 +144,6 @@ export default function Calendario() {
                 <p>No necesitas que la otra parte confirme nada: cada evento que registras queda guardado como parte de tu historial, con la fecha y la hora reales.</p>
                 <p>Las llamadas y videollamadas también sirven como <strong className="text-[var(--text-primary)]">prueba de contacto</strong> — útil si alguna vez necesitas mostrar que mantienes comunicación con tus hijos.</p>
               </AyudaContextual>
-              <IconoCirculo icon={CalendarDays} size={22} grande />
             </div>
           }
         />
@@ -154,9 +154,11 @@ export default function Calendario() {
             <CalendarioMes
               mesActual={mesActual}
               eventos={eventos}
-              onDiaClick={abrirModalEnFecha}
-              onMesAnterior={() => setMesActual((d) => new Date(d.getFullYear(), d.getMonth() - 1, 1))}
-              onMesSiguiente={() => setMesActual((d) => new Date(d.getFullYear(), d.getMonth() + 1, 1))}
+              diaElegido={diaElegido}
+              onDiaClick={tocarDia}
+              onHoy={() => { setMesActual(new Date()); setDiaElegido(null); }}
+              onMesAnterior={() => { setDiaElegido(null); setMesActual((d) => new Date(d.getFullYear(), d.getMonth() - 1, 1)); }}
+              onMesSiguiente={() => { setDiaElegido(null); setMesActual((d) => new Date(d.getFullYear(), d.getMonth() + 1, 1)); }}
             />
           </div>
 
@@ -166,7 +168,7 @@ export default function Calendario() {
               <Tarjeta indice={1} destacada>
                 <div className="flex items-center justify-between">
                   <h2 className="text-[16px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">{tituloAgenda}</h2>
-                  <span className="text-[12px] text-[var(--text-secondary)]">{delMes.length} este mes</span>
+                  <span className="text-[12px] text-[var(--text-secondary)]">{diaElegido && delDia.length > 0 ? `${delDia.length} ese día` : `${delMes.length} este mes`}</span>
                 </div>
                 {cargando ? (
                   // Esqueleto con la forma de dos filas: el vacío "Sin eventos" solo cuando ya se sabe.
@@ -189,33 +191,25 @@ export default function Calendario() {
                   <ul className="mt-1 flex flex-col">
                     {listaAgenda.map((e, i) => (
                       <li key={e.id} className={i > 0 ? 'border-t border-[color-mix(in_oklab,var(--text-tertiary)_16%,transparent)]' : ''}>
-                        <TarjetaEvento evento={e} />
+                        <TarjetaEvento evento={e} onBorrar={borrarEvento} />
                       </li>
                     ))}
                   </ul>
                 )}
+                {diaElegido && delDia.length > 0 && (
+                  <div className="mt-1 flex flex-wrap gap-2 border-t border-[color-mix(in_oklab,var(--text-tertiary)_16%,transparent)] pt-2">
+                    <button type="button" onClick={() => abrirModalEnFecha(diaElegido)} className="inline-flex min-h-11 items-center gap-1.5 rounded-[var(--radius-chip,999px)] border border-[var(--accent)] px-4 text-[14px] font-semibold text-[var(--accent-ink,var(--accent))] [touch-action:manipulation]">
+                      <Plus size={16} aria-hidden="true" />
+                      Agregar otro este día
+                    </button>
+                    <button type="button" onClick={() => setDiaElegido(null)} className="inline-flex min-h-11 items-center px-3 text-[14px] font-semibold text-[var(--text-secondary)] [touch-action:manipulation]">
+                      Ver todo el mes
+                    </button>
+                  </div>
+                )}
               </Tarjeta>
             )}
 
-            {/* Cifras del mes por categoría (las tres tarjetitas de la referencia) */}
-            {conteo.size > 0 && (
-              <div className={`grid gap-2 ${conteo.size > 3 ? 'grid-cols-2' : 'grid-cols-3'}`}>
-                {Array.from(conteo.entries()).map(([tipo, n], i) => {
-                  const Icon = ICONO[tipo];
-                  return (
-                    <Tarjeta key={tipo} indice={2 + i} className="flex items-center gap-3 p-3">
-                      <span className="flex size-9 shrink-0 items-center justify-center rounded-[var(--radius-button)]" style={{ background: COLOR[tipo].bg, color: COLOR[tipo].fg }}>
-                        <Icon size={18} aria-hidden="true" />
-                      </span>
-                      <div className="min-w-0">
-                        <p className="text-[28px] font-extrabold leading-none tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]"><NumeroContado valor={n} /></p>
-                        <p className="mt-1 truncate text-[12px] leading-tight text-[var(--text-secondary)]">{LABEL_CONTEO[tipo](n).replace(/^\d+ /, '')}</p>
-                      </div>
-                    </Tarjeta>
-                  );
-                })}
-              </div>
-            )}
           </div>
         </div>
 
@@ -259,8 +253,23 @@ export default function Calendario() {
 
 /* ── <TarjetaEvento> — fila de la lista; si tiene documento real adjunto, se puede tocar para
    abrirlo (URL firmada y temporal, el bucket es privado). ── */
-function TarjetaEvento({ evento: e }: { evento: Evento }) {
+function TarjetaEvento({ evento: e, onBorrar }: { evento: Evento; onBorrar: (e: Evento) => Promise<void> }) {
   const [abriendo, setAbriendo] = useState(false);
+  const [confirmando, setConfirmando] = useState(false);
+  const [borrando, setBorrando] = useState(false);
+  const [errorBorrar, setErrorBorrar] = useState(false);
+  const puedeBorrar = !esContacto(e.tipo);
+  const borrar = async (): Promise<void> => {
+    if (borrando) return;
+    setBorrando(true);
+    setErrorBorrar(false);
+    try {
+      await onBorrar(e);
+    } catch {
+      setErrorBorrar(true);
+      setBorrando(false);
+    }
+  };
   const [urlVisor, setUrlVisor] = useState<string | null>(null);
   const Icon = ICONO[e.tipo];
   const d = new Date(e.fecha + 'T00:00:00');
@@ -290,7 +299,7 @@ function TarjetaEvento({ evento: e }: { evento: Evento }) {
         <Icon size={18} aria-hidden="true" />
       </span>
       <div className="min-w-0 flex-1">
-        <p className={esContacto(e.tipo) ? 'truncate text-[14px] font-medium text-[var(--text-primary)]' : 'truncate text-[12px] text-[var(--text-secondary)]'}>
+        <p className="truncate text-[12px] text-[var(--text-secondary)]">
           {LABEL[e.tipo]}
           {e.hijoNombre && <span className="font-semibold text-[var(--accent-ink,var(--accent))]"> · {e.hijoNombre}</span>}
         </p>
@@ -300,16 +309,12 @@ function TarjetaEvento({ evento: e }: { evento: Evento }) {
           <p className="truncate text-[14px] font-medium text-[var(--text-primary)]">{e.titulo}</p>
         )}
         {esContacto(e.tipo) && (
-          <p className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[12px] text-[var(--text-secondary)]">
-            {e.hora && <span className="flex items-center gap-1"><Clock size={11} aria-hidden="true" />{horaHumana(e.hora)}</span>}
-            {typeof e.duracionMin === 'number' && e.duracionMin > 0 && <span>· {e.duracionMin} min</span>}
-            {e.medio && <span>· {LABEL_MEDIO[e.medio]}</span>}
-            {e.resultado && (
-              <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[12px] font-bold ${e.resultado === 'contestada' ? 'bg-[var(--status-success-bg,color-mix(in_oklab,var(--status-success)_14%,transparent))] text-[var(--status-success)]' : 'bg-[var(--status-warning-bg,color-mix(in_oklab,var(--status-warning)_14%,transparent))] text-[var(--status-warning)]'}`}>
-                <ShieldCheck size={12} aria-hidden="true" />
-                {LABEL_RESULTADO[e.resultado]}
-              </span>
-            )}
+          <p className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-[12px] text-[var(--text-secondary)]">
+            {[
+              e.hora ? horaHumana(e.hora) : null,
+              typeof e.duracionMin === 'number' && e.duracionMin > 0 ? `${e.duracionMin} min` : null,
+            ].filter(Boolean).join(' · ')}
+            {e.resultado && <Pildora texto={LABEL_RESULTADO[e.resultado]} tono={e.resultado === 'contestada' ? 'exito' : 'pendiente'} />}
           </p>
         )}
         {e.documentoAdjunto && (
@@ -323,14 +328,35 @@ function TarjetaEvento({ evento: e }: { evento: Evento }) {
     </>
   );
 
+  const pieBorrar = puedeBorrar && (
+    <div className="pb-1">
+      {confirmando ? (
+        <div className="flex items-center gap-2">
+          <p className="flex-1 text-[12px] text-[var(--text-secondary)]">¿Borrar este evento?</p>
+          <button type="button" onClick={() => { setConfirmando(false); setErrorBorrar(false); }} disabled={borrando} className="h-11 rounded-[var(--radius-button)] px-3 text-[12px] font-medium text-[var(--text-secondary)] [touch-action:manipulation]">No</button>
+          <button type="button" onClick={borrar} disabled={borrando} className="h-11 rounded-[var(--radius-button)] bg-[var(--status-error)] px-3 text-[12px] font-semibold text-white disabled:opacity-60 [touch-action:manipulation]">{borrando ? 'Borrando…' : 'Sí, borrar'}</button>
+        </div>
+      ) : (
+        <button type="button" onClick={() => setConfirmando(true)} aria-label={`Borrar ${e.titulo}`} className="ml-auto flex min-h-11 items-center px-2 text-[12px] text-[var(--text-tertiary)] underline-offset-2 hover:underline [touch-action:manipulation]">Borrar</button>
+      )}
+      {errorBorrar && <p role="alert" className="text-[12px] text-[var(--status-error)]">No pudimos borrar el evento. Revisa tu conexión e inténtalo de nuevo.</p>}
+    </div>
+  );
+
   if (!e.documentoAdjuntoPath) {
-    return <div className="flex items-center gap-3 py-2.5">{contenido}</div>;
+    return (
+      <>
+        <div className="flex items-center gap-3 py-2.5">{contenido}</div>
+        {pieBorrar}
+      </>
+    );
   }
   return (
     <>
       <button type="button" onClick={abrirDocumento} disabled={abriendo} aria-busy={abriendo} aria-label={`Ver ${e.documentoAdjunto}`} className={`w-full text-left transition-[transform,opacity] duration-100 active:scale-[0.99] [touch-action:manipulation] ${abriendo ? 'opacity-60' : ''}`}>
         <div className="flex items-center gap-3 py-2.5">{contenido}</div>
       </button>
+      {pieBorrar}
       <Portal>
         <VisorImagen url={urlVisor} onCerrar={() => setUrlVisor(null)} />
       </Portal>
@@ -346,12 +372,16 @@ function TarjetaEvento({ evento: e }: { evento: Evento }) {
 function CalendarioMes({
   mesActual,
   eventos,
+  diaElegido,
   onDiaClick,
+  onHoy,
   onMesAnterior,
   onMesSiguiente,
 }: {
   mesActual: Date;
   eventos: Evento[];
+  diaElegido: string | null;
+  onHoy: () => void;
   onDiaClick: (fecha: string) => void;
   onMesAnterior: () => void;
   onMesSiguiente: () => void;
@@ -384,7 +414,12 @@ function CalendarioMes({
         <button type="button" onClick={onMesAnterior} aria-label="Mes anterior" className="flex size-11 items-center justify-center rounded-full text-[var(--accent-ink,var(--accent))] [touch-action:manipulation]">
           <ChevronLeft size={20} aria-hidden="true" />
         </button>
-        <p className="text-[16px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">{nombreMes(mesActual)}</p>
+        <div className="flex flex-col items-center">
+          <p className="text-[16px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">{nombreMes(mesActual)}</p>
+          {claveMes(mesActual) !== hoyISO.slice(0, 7) && (
+            <button type="button" onClick={onHoy} className="-mb-2 inline-flex min-h-11 items-center px-3 text-[14px] font-semibold text-[var(--accent-ink,var(--accent))] [touch-action:manipulation]">Ir a hoy</button>
+          )}
+        </div>
         <button type="button" onClick={onMesSiguiente} aria-label="Mes siguiente" className="flex size-11 items-center justify-center rounded-full text-[var(--accent-ink,var(--accent))] [touch-action:manipulation]">
           <ChevronRight size={20} aria-hidden="true" />
         </button>
@@ -399,6 +434,7 @@ function CalendarioMes({
           if (dia === null) return <div key={`vacio-${i}`} />;
           const fecha = fechaISO(new Date(año, mes, dia));
           const esHoy = fecha === hoyISO;
+          const esElegido = fecha === diaElegido;
           const tiposDelDia = eventosPorDia.get(dia) ?? [];
           return (
             <button
@@ -408,7 +444,9 @@ function CalendarioMes({
               className={`flex aspect-square flex-col items-center justify-center gap-0.5 rounded-full text-[14px] font-bold transition-transform duration-100 active:scale-95 [touch-action:manipulation] ${
                 esHoy
                   ? 'bg-[var(--accent)] text-[var(--on-accent,var(--bg))] shadow-[var(--shadow-1)]'
-                  : 'text-[var(--text-primary)] hover:bg-[color-mix(in_oklab,var(--text-tertiary)_10%,transparent)]'
+                  : esElegido
+                    ? 'bg-[color-mix(in_oklab,var(--accent)_14%,transparent)] text-[var(--accent-ink,var(--accent))] ring-2 ring-[var(--accent)]'
+                    : 'text-[var(--text-primary)] hover:bg-[color-mix(in_oklab,var(--text-tertiary)_10%,transparent)]'
               }`}
             >
               <span className="tabular-nums">{dia}</span>
@@ -427,10 +465,10 @@ function CalendarioMes({
       </div>
       {/* Leyenda de categorías presentes en el mes (chips de la referencia) */}
       {tiposPresentes.length > 0 && (
-        <div className="mt-3 flex flex-wrap gap-1.5">
+        <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1">
           {tiposPresentes.map((t) => (
-            <span key={t} className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[12px] font-bold" style={{ background: COLOR[t].bg, color: COLOR[t].fg }}>
-              <span className="size-1.5 rounded-full" style={{ background: COLOR[t].fg }} aria-hidden="true" />
+            <span key={t} className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-[var(--text-secondary)]">
+              <span className="size-2 rounded-full" style={{ background: COLOR[t].fg }} aria-hidden="true" />
               {LABEL[t]}
             </span>
           ))}
@@ -541,7 +579,8 @@ function ModalEvento({
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       className="fixed inset-0 z-30 flex items-end bg-[color-mix(in_oklab,black_55%,transparent)]"
-      onClick={onCerrar}
+      // Un toque en el fondo NO descarta lo ya escrito: solo cierra si el formulario sigue limpio.
+      onClick={() => { if (titulo.trim() === '' && !documento && duracion === '') onCerrar(); }}
     >
       <motion.div
         initial={reduce ? { opacity: 0 } : { y: '100%' }}

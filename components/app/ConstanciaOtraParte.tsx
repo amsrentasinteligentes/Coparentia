@@ -48,6 +48,7 @@ export function ConstanciaOtraParte() {
   const [correoOtraParte, setCorreoOtraParte] = useState<string | null>(null);
   const [enviadas, setEnviadas] = useState<FilaConstancia[]>([]);
   const [enviando, setEnviando] = useState(false);
+  const [confirmando, setConfirmando] = useState(false);
   const [aviso, setAviso] = useState<{ ok: boolean; texto: string } | null>(null);
   const [cargando, setCargando] = useState(true);
 
@@ -75,6 +76,7 @@ export function ConstanciaOtraParte() {
 
   const enviar = async (): Promise<void> => {
     if (enviando) return;
+    setConfirmando(false);
     setEnviando(true);
     setAviso(null);
     const r = await enviarConstanciaAhora();
@@ -86,7 +88,7 @@ export function ConstanciaOtraParte() {
   if (cargando) return null;
 
   return (
-    <Tarjeta className="mt-3">
+    <Tarjeta className="mt-3" indice={2}>
       <div className="flex items-start gap-3">
         <IconoCirculo icon={MailCheck} size={20} tono="info" grande />
         <div className="min-w-0 flex-1">
@@ -104,17 +106,44 @@ export function ConstanciaOtraParte() {
           <p className="mt-3 truncate text-[12px] text-[var(--text-secondary)]">
             Se enviará a <strong className="text-[var(--text-primary)]">{correoOtraParte}</strong>
           </p>
-          <motion.button
-            type="button"
-            onClick={enviar}
-            disabled={enviando}
-            whileTap={{ scale: 0.98 }}
-            aria-busy={enviando}
-            className="mt-3 flex h-12 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--accent)_35%,transparent)] text-[14px] font-bold text-[var(--accent-ink,var(--accent))] transition-opacity disabled:opacity-70 [touch-action:manipulation]"
-          >
-            <Send size={16} aria-hidden="true" />
-            {enviando ? 'Enviando la constancia…' : 'Enviar constancia ahora'}
-          </motion.button>
+          {confirmando ? (
+            <div role="group" aria-label="Confirmar el envío" className="mt-3 rounded-[var(--radius-button)] bg-[color-mix(in_oklab,var(--accent)_8%,transparent)] p-3">
+              <p className="text-[14px] font-bold text-[var(--text-primary)]">¿Enviar la constancia ahora?</p>
+              <p className="mt-1 text-[12px] leading-[1.5] text-[var(--text-secondary)]">
+                Le llega un correo a esa persona y no se puede deshacer. Queda anotado en tu PDF.
+              </p>
+              <div className="mt-3 flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setConfirmando(false)}
+                  className="h-12 flex-1 rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] text-[14px] font-bold text-[var(--text-secondary)] [touch-action:manipulation]"
+                >
+                  Cancelar
+                </button>
+                <motion.button
+                  type="button"
+                  onClick={enviar}
+                  whileTap={{ scale: 0.98 }}
+                  className="flex h-12 flex-1 items-center justify-center gap-2 rounded-[var(--radius-button)] bg-[var(--accent)] text-[14px] font-bold text-[var(--on-accent,var(--bg))] [touch-action:manipulation]"
+                >
+                  <Send size={16} aria-hidden="true" />
+                  Sí, enviar
+                </motion.button>
+              </div>
+            </div>
+          ) : (
+            <motion.button
+              type="button"
+              onClick={() => { setAviso(null); setConfirmando(true); }}
+              disabled={enviando}
+              whileTap={{ scale: 0.98 }}
+              aria-busy={enviando}
+              className="mt-3 flex h-12 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--accent)_35%,transparent)] text-[14px] font-bold text-[var(--accent-ink,var(--accent))] transition-opacity disabled:opacity-70 [touch-action:manipulation]"
+            >
+              <Send size={16} aria-hidden="true" />
+              {enviando ? 'Enviando la constancia…' : 'Enviar constancia ahora'}
+            </motion.button>
+          )}
         </>
       ) : (
         <Link

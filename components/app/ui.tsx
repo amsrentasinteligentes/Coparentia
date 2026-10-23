@@ -7,7 +7,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion, useReducedMotion } from 'motion/react';
-import { Home, Wallet, CalendarDays, FolderOpen, Scale, CloudOff, Check, Bell, ChevronDown, UserRound, type LucideIcon } from 'lucide-react';
+import { Home, Wallet, CalendarDays, FolderOpen, Scale, CloudOff, Check, UserRound, type LucideIcon } from 'lucide-react';
 import { obtenerPerfil, urlFoto, nombreCorto } from '@/lib/perfil';
 import { crearClienteSupabase } from '@/lib/supabase/client';
 import React, { useEffect, useState, type ReactNode } from 'react';
@@ -311,12 +311,13 @@ export function Pildora({ texto, tono }: { texto: string; tono: TonoPildora }) {
 }
 
 /* ── <IconoCirculo> — chip de ícono premium (fondo acento 10-14%), nunca emoji ── */
-type TonoChip = 'accent' | 'exito' | 'info' | 'pendiente';
+type TonoChip = 'accent' | 'exito' | 'info' | 'pendiente' | 'alerta';
 const TONOS_CHIP: Record<TonoChip, { bg: string; color: string }> = {
   accent: { bg: 'var(--chip-bg)', color: 'var(--accent)' },
   exito: { bg: 'var(--status-success-bg, color-mix(in oklab, var(--status-success) 16%, transparent))', color: 'var(--status-success)' },
   info: { bg: 'var(--status-info-bg, color-mix(in oklab, var(--accent) 12%, transparent))', color: 'var(--status-info, var(--accent))' },
   pendiente: { bg: 'var(--status-warning-bg, color-mix(in oklab, var(--status-warning) 16%, transparent))', color: 'var(--status-warning)' },
+  alerta: { bg: 'var(--status-error-bg, color-mix(in oklab, var(--status-error) 14%, transparent))', color: 'var(--status-error)' },
 };
 export function IconoCirculo({ icon: Icon, size = 20, tono = 'accent', grande = false }: { icon: LucideIcon; size?: number; tono?: TonoChip; grande?: boolean }) {
   const t = TONOS_CHIP[tono];
@@ -448,7 +449,7 @@ export function CabeceraApp({ aviso = false }: { aviso?: boolean }) {
       </Link>
       <div className="flex items-center gap-2">
         <Link href="/calendario" aria-label="Próximos eventos" className="relative flex size-11 items-center justify-center rounded-full text-[var(--text-primary)] [touch-action:manipulation]">
-          <Bell size={20} aria-hidden="true" />
+          <CalendarDays size={20} aria-hidden="true" />
           {aviso && <span aria-hidden="true" className="absolute right-2 top-2 size-2 rounded-full bg-[var(--accent)] ring-2 ring-[var(--surface)]" />}
         </Link>
         <Link href="/perfil" aria-label="Tu perfil" className="flex min-h-11 items-center gap-1 rounded-full bg-[var(--surface-2)] py-1 pl-1 pr-2 [touch-action:manipulation]">
@@ -457,7 +458,6 @@ export function CabeceraApp({ aviso = false }: { aviso?: boolean }) {
           ) : (
             <span className="flex size-7 items-center justify-center rounded-full bg-[var(--accent)] text-[12px] font-bold text-[var(--on-accent)]">{iniciales || '·'}</span>
           )}
-          <ChevronDown size={14} className="text-[var(--accent-ink,var(--accent))]" aria-hidden="true" />
         </Link>
       </div>
     </header>

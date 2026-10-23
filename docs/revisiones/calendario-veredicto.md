@@ -1,0 +1,9 @@
+# VEREDICTO revisor-visual — calendario
+Fecha: 2026-10-23 12:00
+Screenshot: docs/revisiones/calendario-375.png
+Usabilidad: 27/40
+Craft: 12/20
+Copy (si vende): N-A
+Fidelidad (si hubo referencia): N-A
+Veredicto: NO LISTA
+Top defectos: 1) [ALTO] Tarjetas de cifras por categoria (septiembre, bajo la agenda): etiquetas truncadas "lla..." y "vid..." a 375px, y duplican la leyenda de chips y la lista -> pasar a una sola linea de resumen o 2 columnas con etiqueta completa, o eliminarlas. 2) [ALTO] Eventos no contacto (visita, cita medica, vacaciones, actividad) sin editar ni borrar ni deshacer (no existe funcion en lib/datos) y el modal se cierra al tocar el fondo perdiendo lo escrito -> agregar editar/eliminar con confirmacion + deshacer, y confirmar el descarte del formulario con datos. 3) [MEDIO] Filas de la agenda inconsistentes: "No contestó" lleva ShieldCheck (check en un fallo), la pildora esta hecha a mano en vez de usar <Pildora>, la linea de tipo mide 14px en contactos y 12px en visitas, el medio repite el tipo ("Videollamada · Martin" + "· videollamada") y el separador "·" queda huerfano al inicio de linea -> unificar con <Pildora>, un solo tamano de linea de tipo, quitar el medio redundante y poner separadores solo entre items. Otros: chip decorativo de calendario junto al "?" parece boton y no hace nada; chips de leyenda parecen filtros y no filtran; tocar un dia con evento abre "Nuevo evento" en vez de mostrar los de ese dia; sin boton "Hoy" para volver al mes actual; contraste 12px bajo AA (ambar #b9731a sobre #fdf1dc ~4.0:1, text-tertiary #6b7a93 sobre --bg 4.1:1); 5 tamanos de letra (28/24/16/14/12) con las cifras de 28px superando al titulo de 24px; ficha de arte pide halo+marcador como dispositivo ownable y no aparece en esta pantalla; chevrones de mes sin feedback de tap y sin transicion al cambiar de mes; en octubre ~1000px de vacio muerto bajo el boton (verificar si es artefacto de captura).
