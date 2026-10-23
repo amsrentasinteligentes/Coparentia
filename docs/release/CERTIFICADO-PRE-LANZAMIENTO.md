@@ -2,6 +2,30 @@
 
 **Producción auditada (mañana):** coparentia.co, commit `6fe327a`. **Producción actual (noche):** commit `e0afb60`.
 
+## ACTUALIZACIÓN DEL 23/10/2026 (mañana) — ❌ NO APTO todavía — 69 / 100 (antes 62; el 22/10 por la mañana, 57)
+
+Producción actual: commit `94b4ec3` (rediseño publicado en `7cc1e98`). Sigue en NO APTO: 69 es menor que 80 y falta el bloqueante de dinero
+(cobro y reembolso reales). Los puntos de Venta y Recorrido salen de veredictos del revisor visual independiente; los demás son **estimación mía**
+con la evidencia citada.
+
+| Pilar | 22/10 noche | Ahora | Evidencia |
+|---|---|---|---|
+| VENTA (página principal) | 16 | **18** | Revisor, ronda 4: 38/40 usabilidad · 16/20 diseño · 17/20 texto, **LISTA** (antes 30 · 15 · 15). Diseño justo en el mínimo. |
+| FUNNEL (recorrido y planes) | 13 | **16** | Onboarding 37/40 · 16/20 · 16/20 **LISTA** y planes 38/40 · 16/20 · 16/20 **LISTA** (antes 30 · 14 · 14 y 30 · 14 · 15). Falta confirmar el puente de la prueba (aviso del día 5 y primer cobro reales). |
+| PRODUCTO (dentro de la app) | 7 | 7 | Sin cambios: Inicio 29/40 · 12/20 NO LISTA; Pagos, Calendario, Expediente, Especialistas, Perfil y Ajustes sin puntuar. **Es el pilar más flojo.** |
+| CONFIANZA | 13 | 13 | Sin cambios: falta cobro y reembolso reales, CSP activo, Supabase Free (riesgo aceptado). |
+| VELOCIDAD | 4 | **6** | Lighthouse móvil sobre coparentia.co (23/10): rendimiento **83** (antes 75), LCP **4,0 s** (antes 6,2 s; meta ≤2,5 s), CLS 0, TBT 100 ms, accesibilidad 98, buenas prácticas 100, SEO 92. |
+| RETENCIÓN | 9 | 9 | Sin cambios hasta confirmar los latidos de pre-cobro y pagos fallidos (primer día real: 23/10) y el aviso de cobro (26–27/10). |
+| **TOTAL** | **62** | **69** | NO APTO (<80 y con bloqueante de dinero). |
+
+**Qué falta para llegar a 80 o más (en orden de peso):**
+1. **PRODUCTO (+6 a +10):** puntuar con el revisor las pantallas internas (Inicio, Pagos, Calendario, Expediente, Especialistas, Perfil, Ajustes) y subir las que queden bajo 36/40.
+2. **Cobro y reembolso reales (29/10 al 6/11):** quita el bloqueante de dinero y sube Confianza (+2).
+3. **Retención (+2 a +3):** confirmar latidos de las tareas del dinero y el aviso de cobro del 26–27/10.
+4. **Velocidad (+2):** bajar el LCP de 4,0 s a ≤2,5 s (aligerar el JavaScript del inicio y la foto del hero).
+
+---
+
 ## ACTUALIZACIÓN DE LA NOCHE (2026-10-22) — ❌ NO APTO todavía — 62 / 100 (antes 57)
 
 El veredicto sigue en NO APTO: hay un bloqueante de dinero abierto (reembolso y primer cobro reales sin probar) y 62 es menor que 80. Los puntajes de los pilares sin pantallas son **estimación mía** con la evidencia de abajo; los de VENTA, FUNNEL y PRODUCTO dependen del revisor visual y **no se volvieron a medir** (no lo lanzamos por orden del dueño).
