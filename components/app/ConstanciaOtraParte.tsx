@@ -85,10 +85,20 @@ export function ConstanciaOtraParte() {
     if (r.ok) void cargar();
   };
 
-  if (cargando) return null;
+  if (cargando) {
+    return (
+      <Tarjeta className="mt-3" indice={3}>
+        <div aria-busy="true" className="flex items-start gap-3 motion-safe:animate-pulse">
+          <span className="size-12 shrink-0 rounded-[var(--radius-chip,999px)] bg-[var(--surface-2)]" />
+          <span className="flex flex-1 flex-col gap-2"><span className="h-4 w-2/3 rounded-full bg-[var(--surface-2)]" /><span className="h-3 w-full rounded-full bg-[var(--surface-2)]" /><span className="h-3 w-4/5 rounded-full bg-[var(--surface-2)]" /></span>
+        </div>
+        <span className="mt-3 block h-12 w-full rounded-[var(--radius-button)] bg-[var(--surface-2)] motion-safe:animate-pulse" />
+      </Tarjeta>
+    );
+  }
 
   return (
-    <Tarjeta className="mt-3" indice={2}>
+    <Tarjeta className="mt-3" indice={3}>
       <div className="flex items-start gap-3">
         <IconoCirculo icon={MailCheck} size={20} tono="info" grande />
         <div className="min-w-0 flex-1">
@@ -107,7 +117,7 @@ export function ConstanciaOtraParte() {
             Se enviará a <strong className="text-[var(--text-primary)]">{correoOtraParte}</strong>
           </p>
           {confirmando ? (
-            <div role="group" aria-label="Confirmar el envío" className="mt-3 rounded-[var(--radius-button)] bg-[color-mix(in_oklab,var(--accent)_8%,transparent)] p-3">
+            <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2 }} role="group" aria-label="Confirmar el envío" className="mt-3 rounded-[var(--radius-button)] bg-[color-mix(in_oklab,var(--accent)_8%,transparent)] p-3">
               <p className="text-[14px] font-bold text-[var(--text-primary)]">¿Enviar la constancia ahora?</p>
               <p className="mt-1 text-[12px] leading-[1.5] text-[var(--text-secondary)]">
                 Le llega un correo a esa persona y no se puede deshacer. Queda anotado en tu PDF.
@@ -130,7 +140,7 @@ export function ConstanciaOtraParte() {
                   Sí, enviar
                 </motion.button>
               </div>
-            </div>
+            </motion.div>
           ) : (
             <motion.button
               type="button"

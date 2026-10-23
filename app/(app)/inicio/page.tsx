@@ -506,6 +506,7 @@ function Dashboard() {
   // que su expediente está vacío, que es exactamente su miedo.
   const [cargando, setCargando] = useState(true);
   const [celebrar, setCelebrar] = useState(false);
+  const [abriendoRegistro, setAbriendoRegistro] = useState(false);
   const reduce = useReducedMotion();
 
   // `falloCarga` distingue "no tienes nada" de "no pudimos traer lo que tienes". Sin esa
@@ -565,6 +566,7 @@ function Dashboard() {
   };
 
   const totalRegistrado = pagos.reduce((acc, p) => acc + p.monto, 0);
+  const totalCuotas = pagos.filter((p) => p.tipo === 'cuota').reduce((acc, p) => acc + p.monto, 0);
   const mesesConRegistro = new Set(pagos.filter((p) => p.tipo === 'cuota').map((p) => p.fecha.slice(0, 7))).size;
   // `metaMeses` era un 6 escrito a mano, sin rótulo ni relación con el caso: "3 de 6" no
   // significaba nada. Ahora es cuántos meses lleva rigiendo el título, así que la cifra responde
@@ -635,7 +637,7 @@ function Dashboard() {
     : cuotaDelMesRegistrada
       ? 'Tu expediente está al día. Nada pendiente hoy.'
       : yaVencio
-        ? 'La cuota de este mes aún no tiene comprobante.'
+        ? `Tu cuota lleva ${diaHoy - (titulo?.diaPago ?? diaHoy)} ${diaHoy - (titulo?.diaPago ?? diaHoy) === 1 ? 'día' : 'días'} sin registro.`
         : `Recuerda registrar la cuota antes del día ${titulo?.diaPago ?? '—'}.`;
 
   const nombreMesLargo = new Intl.DateTimeFormat('es-CO', { month: 'long', timeZone: 'America/Bogota' }).format(new Date());
@@ -714,7 +716,7 @@ function Dashboard() {
               {estadoDelMes.tono !== 'exito' && <HaloApp />}
               <Tarjeta destacada>
                 <Link href="/pagos" className="flex items-start gap-3 [touch-action:manipulation]">
-                  <IconoCirculo icon={ShieldCheck} size={22} grande tono={estadoDelMes.tono === 'exito' ? 'exito' : estadoDelMes.tono === 'alerta' ? 'alerta' : 'accent'} />
+                  <IconoCirculo icon={estadoDelMes.tono === 'exito' ? ShieldCheck : CalendarClock} size={22} grande tono={estadoDelMes.tono === 'exito' ? 'exito' : estadoDelMes.tono === 'alerta' ? 'alerta' : 'accent'} />
                   <div className="min-w-0 flex-1">
                     <p className="text-[16px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">Cuota de {nombreMesLargo}</p>
                     <div className="mt-1"><Pildora texto={estadoDelMes.texto} tono={estadoDelMes.tono} /></div>
@@ -734,14 +736,16 @@ function Dashboard() {
                         : `Vence el día ${titulo.diaPago}`}
                 </p>
                 {titulo && !cuotaDelMesRegistrada && (
-                  <button
+                  <motion.button
                     type="button"
-                    onClick={() => router.push('/pagos?registrar=1')}
+                    whileTap={{ scale: 0.97 }}
+                    disabled={abriendoRegistro}
+                    onClick={() => { setAbriendoRegistro(true); router.push('/pagos?registrar=1'); }}
                     className="mt-3 flex h-12 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] bg-[var(--accent)] text-[16px] font-bold text-[var(--on-accent,var(--bg))] [touch-action:manipulation]"
                   >
                     <Upload size={16} aria-hidden="true" />
-                    Registrar cuota de {nombreMesLargo}
-                  </button>
+                    {abriendoRegistro ? 'Abriendo…' : `Registrar cuota de ${nombreMesLargo}`}
+                  </motion.button>
                 )}
               </Tarjeta>
             </div>
@@ -781,17 +785,18 @@ function Dashboard() {
                     <IconoCirculo icon={FileCheck2} size={20} />
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="text-[14px] font-bold text-[var(--text-primary)]">Meses con registro</p>
+                    <p className="text-[14px] font-bold text-[var(--text-primary)]">Cuotas con registro</p>
                     <p className="text-[14px] text-[var(--text-secondary)]">
-                      {metaMeses === 1 ? 'Tu primer mes ya quedó registrado' : `${formatoCOP(totalRegistrado)} registrados`}
+                      {metaMeses === 1 ? 'Tu primer mes ya quedó registrado' : `${formatoCOP(totalCuotas)} en cuotas`}
                     </p>
                   </div>
                   <p className="shrink-0 text-[24px] font-extrabold leading-none tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
                     <NumeroContado valor={Math.min(mesesConRegistro, metaMeses)} />
-                    <span className="ml-1 text-[14px] font-bold text-[var(--text-secondary)]">de {metaMeses}</span>
+                    <span className="ml-1 text-[14px] font-bold text-[var(--text-secondary)]">de {metaMeses} {metaMeses === 1 ? 'mes' : 'meses'}</span>
                   </p>
+                  <ChevronRight size={18} className="shrink-0 text-[var(--text-tertiary)]" aria-hidden="true" />
                 </div>
-                <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-[color-mix(in_oklab,var(--accent)_16%,transparent)]" role="progressbar" aria-label="Meses con registro" aria-valuenow={progreso} aria-valuemin={0} aria-valuemax={100}>
+                <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-[color-mix(in_oklab,var(--accent)_16%,transparent)]" role="progressbar" aria-label="Cuotas con registro" aria-valuenow={progreso} aria-valuemin={0} aria-valuemax={100}>
                   <motion.span
                     className="block h-full rounded-full bg-[var(--accent)]"
                     initial={reduce ? false : { width: 0 }}
@@ -826,7 +831,7 @@ function Dashboard() {
                       <div className="min-w-0 flex-1">
                         <p className="line-clamp-2 text-[14px] font-bold text-[var(--text-primary)]">{p.concepto}</p>
                         <p className="text-[12px] text-[var(--text-secondary)]">
-                          {p.hijoNombre ? `${p.hijoNombre} · ` : ''}{p.tipo === 'cuota' ? 'Cuota con Sello' : 'Gasto extra'}
+                          {p.hijoNombre ? `${p.hijoNombre} · ` : ''}{p.tipo === 'cuota' ? 'Cuota' : 'Gasto extra'} · con Sello
                         </p>
                       </div>
                       <div className="shrink-0 text-right">
@@ -846,7 +851,7 @@ function Dashboard() {
                 <div className="min-w-0 flex-1">
                   <p className="text-[14px] font-extrabold text-[var(--text-primary)]">Tu expediente en PDF</p>
                   <p className="text-[14px] text-[var(--text-secondary)]">
-                    {pagos.length} {pagos.length === 1 ? 'comprobante' : 'comprobantes'} con Sello, listo para tu abogado
+                    {pagos.length} {pagos.length === 1 ? 'registro fechado' : 'registros fechados'} con Sello, listos para tu abogado
                   </p>
                 </div>
                 <ChevronRight size={16} className="shrink-0 text-[var(--text-tertiary)]" aria-hidden="true" />

@@ -10,7 +10,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
-import { ChevronLeft, ChevronRight, Plus, X, Users, HeartPulse, Plane, Trophy, Globe, Paperclip, CalendarDays, Phone, Video, ShieldCheck, PhoneOff, PhoneMissed, Loader2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Plus, X, Users, HeartPulse, Plane, Trophy, Globe, Paperclip, CalendarDays, Lock, Phone, Video, ShieldCheck, PhoneOff, PhoneMissed, Loader2 } from 'lucide-react';
 import { SelloConfianza } from '@/components/app/SelloConfianza';
 import { ContenedorApp, Tarjeta, IconoCirculo, BotonFlotante, ErrorDeCarga, CabeceraApp, TituloSeccion, Pildora } from '@/components/app/ui';
 import { AyudaContextual } from '@/components/app/AyudaContextual';
@@ -48,7 +48,7 @@ const RESULTADOS: { valor: ResultadoContacto; label: string; icon: typeof Phone 
 ];
 const LABEL_RESULTADO: Record<ResultadoContacto, string> = { contestada: 'Contestó', no_contestada: 'No contestó', no_posible: 'No fue posible' };
 const LABEL_MEDIO: Record<MedioContacto, string> = { llamada: 'llamada normal', whatsapp: 'WhatsApp', videollamada: 'videollamada', otro: 'otro medio' };
-const DIAS_SEMANA = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
+const DIAS_SEMANA = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
 // Un color por tipo de evento (referencia del usuario: puntos y chips de colores por categoría).
 const COLOR: Record<TipoEvento, { fg: string; bg: string }> = {
   visita: { fg: 'var(--cat-visita)', bg: 'var(--cat-visita-bg)' },
@@ -168,7 +168,7 @@ export default function Calendario() {
               <Tarjeta indice={1} destacada>
                 <div className="flex items-center justify-between">
                   <h2 className="text-[16px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">{tituloAgenda}</h2>
-                  <span className="text-[12px] text-[var(--text-secondary)]">{diaElegido && delDia.length > 0 ? `${delDia.length} ese día` : `${delMes.length} este mes`}</span>
+                  {(delMes.length > 0 || (diaElegido && delDia.length > 0)) && <span className="text-[12px] text-[var(--text-secondary)]">{diaElegido && delDia.length > 0 ? `${delDia.length} ese día` : `${delMes.length} este mes`}</span>}
                 </div>
                 {cargando ? (
                   // Esqueleto con la forma de dos filas: el vacío "Sin eventos" solo cuando ya se sabe.
@@ -213,6 +213,7 @@ export default function Calendario() {
           </div>
         </div>
 
+      {!(diaElegido && delDia.length > 0) && (
       <BotonFlotante
         onClick={() => {
           setFechaModal(undefined);
@@ -222,6 +223,7 @@ export default function Calendario() {
         <Plus size={18} aria-hidden="true" />
         Nuevo evento
       </BotonFlotante>
+      )}
 
       <Portal>
       <AnimatePresence>
@@ -328,6 +330,12 @@ function TarjetaEvento({ evento: e, onBorrar }: { evento: Evento; onBorrar: (e: 
     </>
   );
 
+  const pieSellado = !puedeBorrar && (
+    <p className="flex items-center gap-1.5 pb-2 pl-[88px] text-[12px] text-[var(--text-tertiary)]">
+      <Lock size={12} aria-hidden="true" />
+      Sellado como prueba
+    </p>
+  );
   const pieBorrar = puedeBorrar && (
     <div className="pb-1">
       {confirmando ? (
@@ -348,6 +356,7 @@ function TarjetaEvento({ evento: e, onBorrar }: { evento: Evento; onBorrar: (e: 
       <>
         <div className="flex items-center gap-3 py-2.5">{contenido}</div>
         {pieBorrar}
+        {pieSellado}
       </>
     );
   }
@@ -357,6 +366,7 @@ function TarjetaEvento({ evento: e, onBorrar }: { evento: Evento; onBorrar: (e: 
         <div className="flex items-center gap-3 py-2.5">{contenido}</div>
       </button>
       {pieBorrar}
+      {pieSellado}
       <Portal>
         <VisorImagen url={urlVisor} onCerrar={() => setUrlVisor(null)} />
       </Portal>
@@ -416,9 +426,16 @@ function CalendarioMes({
         </button>
         <div className="flex flex-col items-center">
           <p className="text-[16px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">{nombreMes(mesActual)}</p>
-          {claveMes(mesActual) !== hoyISO.slice(0, 7) && (
-            <button type="button" onClick={onHoy} className="-mb-2 inline-flex min-h-11 items-center px-3 text-[14px] font-semibold text-[var(--accent-ink,var(--accent))] [touch-action:manipulation]">Ir a hoy</button>
-          )}
+          <button
+            type="button"
+            onClick={onHoy}
+            disabled={claveMes(mesActual) === hoyISO.slice(0, 7)}
+            aria-hidden={claveMes(mesActual) === hoyISO.slice(0, 7)}
+            tabIndex={claveMes(mesActual) === hoyISO.slice(0, 7) ? -1 : 0}
+            className={`-my-2 inline-flex min-h-11 items-center px-3 text-[14px] font-semibold text-[var(--accent-ink,var(--accent))] [touch-action:manipulation] ${claveMes(mesActual) === hoyISO.slice(0, 7) ? 'invisible' : ''}`}
+          >
+            Ir a hoy
+          </button>
         </div>
         <button type="button" onClick={onMesSiguiente} aria-label="Mes siguiente" className="flex size-11 items-center justify-center rounded-full text-[var(--accent-ink,var(--accent))] [touch-action:manipulation]">
           <ChevronRight size={20} aria-hidden="true" />
@@ -441,13 +458,14 @@ function CalendarioMes({
               key={fecha}
               type="button"
               onClick={() => onDiaClick(fecha)}
-              className={`flex aspect-square flex-col items-center justify-center gap-0.5 rounded-full text-[14px] font-bold transition-transform duration-100 active:scale-95 [touch-action:manipulation] ${
+              className={`flex aspect-square flex-col items-center justify-center gap-0.5 rounded-full text-[14px] ${tiposDelDia.length > 0 ? 'font-extrabold' : 'font-medium'} transition-transform duration-100 active:scale-95 [touch-action:manipulation] ${
                 esHoy
                   ? 'bg-[var(--accent)] text-[var(--on-accent,var(--bg))] shadow-[var(--shadow-1)]'
                   : esElegido
                     ? 'bg-[color-mix(in_oklab,var(--accent)_14%,transparent)] text-[var(--accent-ink,var(--accent))] ring-2 ring-[var(--accent)]'
                     : 'text-[var(--text-primary)] hover:bg-[color-mix(in_oklab,var(--text-tertiary)_10%,transparent)]'
               }`}
+              style={!esHoy && !esElegido && tiposDelDia.length > 0 ? { backgroundColor: COLOR[tiposDelDia[0]].bg } : undefined}
             >
               <span className="tabular-nums">{dia}</span>
               <span className="flex h-1.5 items-center gap-0.5" aria-hidden="true">

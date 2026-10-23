@@ -7,15 +7,17 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
 import { Download, FileCheck2, Scale } from 'lucide-react';
-import { ContenedorApp, Tarjeta, IconoCirculo, Pildora, ErrorDeCarga, CabeceraApp, TituloSeccion, Halo } from '@/components/app/ui';
+import { ContenedorApp, Tarjeta, IconoCirculo, Pildora, ErrorDeCarga, CabeceraApp, TituloSeccion, Halo, NumeroContado } from '@/components/app/ui';
 import { AyudaContextual } from '@/components/app/AyudaContextual';
 import { exportarExpedientePdf } from '@/lib/exportar-expediente';
+import { crearClienteSupabase } from '@/lib/supabase/client';
 import { AcuerdoCuota } from '@/components/app/AcuerdoCuota';
 import { ConstanciaOtraParte } from '@/components/app/ConstanciaOtraParte';
 import {
   type Autorizacion,
   type EstadoAutorizacion,
   obtenerAutorizaciones,
+  obtenerPagos,
   formatoCOP,
   formatoFechaLarga,
 } from '@/lib/datos';
@@ -28,6 +30,8 @@ const PILDORA: Record<EstadoAutorizacion, { texto: string; tono: 'exito' | 'pend
 
 export default function Expediente() {
   const [autorizaciones, setAutorizaciones] = useState<Autorizacion[]>([]);
+  // Qué lleva el PDF: sin esto la pantalla "Expediente" no mostraba nada del expediente.
+  const [resumen, setResumen] = useState<{ pagos: number; conFoto: number; constancias: number } | null>(null);
   const [generando, setGenerando] = useState(false);
   const [progreso, setProgreso] = useState<string>('');
   const [resultado, setResultado] = useState<{ ok: boolean; mensaje: string } | null>(null);
@@ -44,6 +48,24 @@ export default function Expediente() {
       .catch(() => {
         if (vigente) setFalloCarga(true);
       });
+    return () => {
+      vigente = false;
+    };
+  }, [intento]);
+
+  // Cifras de lo que lleva el PDF. Si no se pueden leer, la tarjeta simplemente no aparece
+  // (exportar sigue funcionando): nunca se inventa un número.
+  useEffect(() => {
+    let vigente = true;
+    Promise.all([
+      obtenerPagos(),
+      crearClienteSupabase().from('constancias').select('id', { count: 'exact', head: true }).eq('estado', 'enviada'),
+    ])
+      .then(([pagos, c]) => {
+        if (!vigente) return;
+        setResumen({ pagos: pagos.length, conFoto: pagos.filter((p) => p.comprobantePath).length, constancias: c.count ?? 0 });
+      })
+      .catch(() => {});
     return () => {
       vigente = false;
     };
@@ -142,6 +164,32 @@ export default function Expediente() {
         )}
       </Tarjeta>
       </div>
+
+      {/* LO QUE LLEVA TU PDF — tres cifras reales y lo que falta, para exportar sabiendo qué sale. */}
+      {resumen && (
+        <Tarjeta indice={1} className="mt-3">
+          <h2 className="text-[16px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">Lo que lleva tu PDF</h2>
+          <dl className="mt-3 grid grid-cols-3 gap-2 text-center">
+            {[
+              { n: resumen.pagos, l: resumen.pagos === 1 ? 'pago' : 'pagos' },
+              { n: resumen.conFoto, l: 'con foto' },
+              { n: resumen.constancias, l: resumen.constancias === 1 ? 'constancia' : 'constancias' },
+            ].map((c) => (
+              <div key={c.l} className="rounded-[var(--radius-button)] bg-[var(--surface-2)] px-1 py-3">
+                <dd className="text-[24px] font-extrabold leading-none tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]"><NumeroContado valor={c.n} /></dd>
+                <dt className="mt-1 text-[12px] text-[var(--text-secondary)]">{c.l}</dt>
+              </div>
+            ))}
+          </dl>
+          <p className="mt-3 text-[14px] text-[var(--text-secondary)]">
+            {resumen.pagos === 0
+              ? 'Aún no hay pagos registrados: el PDF saldría vacío.'
+              : resumen.conFoto < resumen.pagos
+                ? `${resumen.pagos - resumen.conFoto} ${resumen.pagos - resumen.conFoto === 1 ? 'pago no tiene' : 'pagos no tienen'} foto del comprobante.`
+                : 'Todos tus pagos llevan la foto del comprobante.'}
+          </p>
+        </Tarjeta>
+      )}
 
       {/* Documento base que fija la cuota (acta de conciliación o sentencia) — se guarda aquí,
           donde el usuario piensa "¿y el papel que dice cuánto me toca?". */}

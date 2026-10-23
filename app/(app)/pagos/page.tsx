@@ -6,7 +6,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
 import { Upload, ShieldCheck, FileCheck2, X, ChevronRight, ChevronLeft, Sparkles, CalendarDays, CreditCard, ReceiptText, Users } from 'lucide-react';
 import { ContenedorApp, Tarjeta, TarjetaSkeleton, IconoCirculo, BotonFlotante, ErrorDeCarga, CabeceraApp, Pildora, TituloSeccion, Halo, NumeroContado } from '@/components/app/ui';
 import { AyudaContextual } from '@/components/app/AyudaContextual';
@@ -58,6 +58,8 @@ export default function Pagos() {
   // Se abre solo cuando se llega desde el boton de Inicio, para no cobrar dos toques por una
   // sola intencion.
   const [modalAbierto, setModalAbierto] = useState(parametros.get('registrar') === '1');
+  const [conceptoSugerido, setConceptoSugerido] = useState('');
+  const listaRef = useRef<HTMLDivElement>(null);
   const [abriendo, setAbriendo] = useState<string | null>(null);
   const [urlVisor, setUrlVisor] = useState<string | null>(null);
   const [selloDe, setSelloDe] = useState<string | null>(null);
@@ -143,6 +145,8 @@ export default function Pagos() {
     setFiltro('gasto_extra');
     setFiltroHijo(v);
     setVerTodosLosMeses(true); // "por hijo" es del año completo, no de un mes suelto
+    // La lista queda más abajo: sin llevar la vista hasta ella, el toque parecía no hacer nada.
+    setTimeout(() => listaRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 80);
   };
 
 
@@ -223,14 +227,15 @@ export default function Pagos() {
                   </p>
                 </div>
                 {!cuotaDelMes && titulo && (
-                  <button
+                  <motion.button
                     type="button"
-                    onClick={() => setModalAbierto(true)}
+                    whileTap={{ scale: 0.97 }}
+                    onClick={() => { setConceptoSugerido(`Cuota de ${nombreMesLargo}`); setModalAbierto(true); }}
                     className="flex h-12 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] bg-[var(--accent)] text-[16px] font-bold text-[var(--on-accent,var(--bg))] [touch-action:manipulation]"
                   >
                     <Upload size={16} aria-hidden="true" />
                     Registrar cuota de {nombreMesLargo}
-                  </button>
+                  </motion.button>
                 )}
                 {proximoVencimiento && (
                   <div className="flex items-center gap-2 border-t border-[color-mix(in_oklab,var(--text-tertiary)_16%,transparent)] pt-3">
@@ -302,7 +307,7 @@ export default function Pagos() {
               {([
                 { valor: 'cuota' as const, label: 'Cuotas' },
                 { valor: 'gasto_extra' as const, label: 'Gastos' },
-                { valor: 'todos' as const, label: 'Historial' },
+                { valor: 'todos' as const, label: 'Todo' },
               ]).map(({ valor, label }) => (
                 <button
                   key={valor}
@@ -374,10 +379,11 @@ export default function Pagos() {
             </div>
 
             {/* LISTA — dentro de una tarjeta, filas con chip, mes/fecha, monto y estado */}
+            <div ref={listaRef} className="scroll-mt-4">
             <Tarjeta indice={4} className="mt-2">
               <div className="flex items-center justify-between">
                 <h2 className="truncate text-[16px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">
-                  {filtro === 'cuota' ? 'Detalle de cuotas' : filtro === 'gasto_extra' ? 'Gastos extra' : 'Historial'}
+                  {filtro === 'cuota' ? 'Detalle de cuotas' : filtro === 'gasto_extra' ? 'Gastos extra' : 'Todos los registros'}
                   {filtroHijo !== 'todos' && (
                     <span className="font-semibold text-[var(--accent-ink,var(--accent))]"> · {filtroHijo === 'sin' ? 'sin asignar' : hijos.find((h) => h.id === filtroHijo)?.nombre}</span>
                   )}
@@ -455,19 +461,23 @@ export default function Pagos() {
                 </ul>
               )}
             </Tarjeta>
+            </div>
 
           </>
         )}
 
-      <BotonFlotante onClick={() => setModalAbierto(true)}>
+      {/* Con la cuota del mes pendiente el botón principal es el de la tarjeta de la cuota. */}
+      {cargado && !falloCarga && (cuotaDelMes || !titulo) && (
+      <BotonFlotante onClick={() => { setConceptoSugerido(''); setModalAbierto(true); }}>
         <Upload size={18} aria-hidden="true" />
         Registrar
       </BotonFlotante>
+      )}
 
       <Portal>
       <AnimatePresence>
         {modalAbierto && (
-          <ModalRegistro
+          <ModalRegistro conceptoInicial={conceptoSugerido}
             hijos={hijos}
             onCerrar={() => setModalAbierto(false)}
             onGuardado={(nuevo) => {
@@ -496,14 +506,15 @@ export default function Pagos() {
   );
 }
 
-function ModalRegistro({ hijos, onCerrar, onGuardado }: { hijos: Hijo[]; onCerrar: () => void; onGuardado: (p: Pago) => void }) {
+function ModalRegistro({ hijos, conceptoInicial, onCerrar, onGuardado }: { hijos: Hijo[]; conceptoInicial: string; onCerrar: () => void; onGuardado: (p: Pago) => void }) {
+  const reduce = useReducedMotion();
   const [tipo, setTipo] = useState<TipoMovimiento>('cuota');
   // Con un solo hijo, un gasto extra se le asigna solo (cero toques); la cuota es de todos.
   // Mientras la persona no toque el selector, el valor se DERIVA del tipo (sin efectos).
   const [hijoElegido, setHijoElegido] = useState<ValorHijo | undefined>(undefined);
   const hijoId: ValorHijo = hijoElegido !== undefined ? hijoElegido : tipo === 'gasto_extra' && hijos.length === 1 ? hijos[0].id : null;
   const [monto, setMonto] = useState('');
-  const [concepto, setConcepto] = useState('');
+  const [concepto, setConcepto] = useState(conceptoInicial);
   const [fechaPago, setFechaPago] = useState(hoyEnColombia);
   const [archivo, setArchivo] = useState<File | null>(null);
   const [procesando, setProcesando] = useState(false);
@@ -607,13 +618,14 @@ function ModalRegistro({ hijos, onCerrar, onGuardado }: { hijos: Hijo[]; onCerra
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       className="fixed inset-0 z-30 flex items-end bg-[color-mix(in_oklab,black_55%,transparent)]"
-      onClick={onCerrar}
+      // Un toque en el fondo NO descarta lo ya escrito: solo cierra si el formulario sigue limpio.
+      onClick={() => { if (monto === '' && !archivo && (concepto === '' || concepto === conceptoInicial)) onCerrar(); }}
     >
       <motion.div
-        initial={{ y: '100%' }}
-        animate={{ y: 0 }}
-        exit={{ y: '100%' }}
-        transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+        initial={reduce ? { opacity: 0 } : { y: '100%' }}
+        animate={reduce ? { opacity: 1 } : { y: 0 }}
+        exit={reduce ? { opacity: 0 } : { y: '100%' }}
+        transition={{ duration: reduce ? 0.12 : 0.28, ease: [0.16, 1, 0.3, 1] }}
         className="mx-auto max-h-[92dvh] w-full max-w-[520px] overflow-y-auto rounded-t-[var(--radius-card)] bg-[var(--surface)] p-5 pb-[max(24px,env(safe-area-inset-bottom))]"
         onClick={(e) => e.stopPropagation()}
       >

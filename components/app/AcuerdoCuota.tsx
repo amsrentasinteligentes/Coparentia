@@ -127,7 +127,7 @@ export function AcuerdoCuota() {
   };
 
   return (
-    <Tarjeta className="mt-3" indice={1}>
+    <Tarjeta className="mt-3" indice={2}>
       <div className="flex items-start gap-3">
         <IconoCirculo icon={Gavel} size={20} grande />
         <div className="min-w-0 flex-1">
@@ -201,7 +201,7 @@ export function AcuerdoCuota() {
               className="flex h-12 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--accent)_35%,transparent)] text-[14px] font-bold text-[var(--accent-ink,var(--accent))] [touch-action:manipulation]"
             >
               <FileText size={16} aria-hidden="true" />
-              Guardar acuerdo
+              Elegir el archivo del acuerdo
             </motion.button>
           )}
 

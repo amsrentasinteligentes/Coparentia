@@ -72,7 +72,7 @@ export function Halo({ className = '' }: { className?: string }) {
       style={{
         // Sin radios en px y dimensionado por su propia caja: así el degradado SIEMPRE termina de
         // desvanecerse dentro y nunca deja el borde recto que el revisor detectó en el paywall.
-        background: 'radial-gradient(ellipse at 22% 34%, color-mix(in oklab, var(--accent) 26%, transparent) 0%, transparent 62%)',
+        background: 'radial-gradient(ellipse at 22% 34%, color-mix(in oklab, var(--accent) 38%, transparent) 0%, transparent 68%)',
       }}
     />
   );
@@ -247,10 +247,10 @@ export function Tarjeta({
       {destacada && (
         <span
           aria-hidden="true"
-          className="pointer-events-none absolute inset-x-4 top-0 h-px"
+          className="pointer-events-none absolute inset-x-6 top-0 h-[2px] rounded-full"
           style={{
             background:
-              'linear-gradient(to right, transparent, color-mix(in oklab, var(--accent) 55%, transparent), transparent)',
+              'linear-gradient(to right, transparent, color-mix(in oklab, var(--accent) 85%, transparent), transparent)',
           }}
         />
       )}
@@ -448,10 +448,6 @@ export function CabeceraApp({ aviso = false }: { aviso?: boolean }) {
         </span>
       </Link>
       <div className="flex items-center gap-2">
-        <Link href="/calendario" aria-label="Próximos eventos" className="relative flex size-11 items-center justify-center rounded-full text-[var(--text-primary)] [touch-action:manipulation]">
-          <CalendarDays size={20} aria-hidden="true" />
-          {aviso && <span aria-hidden="true" className="absolute right-2 top-2 size-2 rounded-full bg-[var(--accent)] ring-2 ring-[var(--surface)]" />}
-        </Link>
         <Link href="/perfil" aria-label="Tu perfil" className="flex min-h-11 items-center gap-1 rounded-full bg-[var(--surface-2)] py-1 pl-1 pr-2 [touch-action:manipulation]">
           {foto ? (
             <img src={foto} alt="" className="size-7 rounded-full object-cover" />
