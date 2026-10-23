@@ -21,6 +21,7 @@ import {
   CalendarClock,
   Pencil,
   ShieldCheck,
+  Stamp,
   Info,
   Sunrise,
   Sun,
@@ -30,7 +31,6 @@ import {
   Users,
   HelpCircle,
   Zap,
-  FileText,
 } from 'lucide-react';
 import {
   BarraAtras,
@@ -47,6 +47,22 @@ import { Blob } from '@/components/landing/ui';
 import { SelloMarca } from '@/components/landing/SelloMarca';
 import { trackMeta } from '@/lib/meta-pixel';
 import { guardarRolPrevio, borrarRolPrevio } from '@/lib/rol-previo';
+
+/* Sello del encabezado: cada vez que cambia el paso da un latido corto (escala 1,14 → 1, 300 ms): la marca "responde" a lo que la
+   persona acaba de contestar. Con "reducir movimiento" no se mueve. Vive aquí (no en components/landing) para no tocar la landing. */
+function SelloQueReacciona({ clave }: { clave: number }) {
+  const reduce = useReducedMotion();
+  return (
+    <motion.div
+      key={clave}
+      initial={reduce || clave === 0 ? false : { scale: 1.14 }}
+      animate={{ scale: 1 }}
+      transition={{ type: 'spring', bounce: 0.2, duration: 0.3 }}
+    >
+      <SelloMarca compacto animar={false} />
+    </motion.div>
+  );
+}
 
 /* Check de los reconocimientos sobre la FORMA ORGÁNICA de la variante clara (FICHA-ARTE: blobs
    en degradé azul — el dispositivo ownable que al funnel le faltaba, revisor claro r1). */
@@ -100,9 +116,9 @@ function manejarFlechasChips(e: KeyboardEvent<HTMLDivElement>): void {
 
 function InfoContextual({ children, anclar = true }: { children: ReactNode; anclar?: boolean }) {
   return (
-    <div className={`flex items-start gap-2.5 px-1 ${anclar ? 'mt-auto' : 'mt-4'}`}>
-      <Info size={16} className="mt-0.5 shrink-0 text-[var(--text-tertiary)]" aria-hidden="true" />
-      <p className="text-[13px] leading-[1.5] text-[var(--text-secondary)]">{children}</p>
+    <div className={`flex items-start gap-3 rounded-[var(--radius-card)] bg-[var(--surface-2)] p-4 ${anclar ? 'mt-auto' : 'mt-4'}`}>
+      <Info size={16} className="mt-0.5 shrink-0 text-[var(--text-secondary)]" aria-hidden="true" />
+      <p className="text-[14px] leading-[1.5] text-[var(--text-secondary)]">{children}</p>
     </div>
   );
 }
@@ -156,11 +172,9 @@ function PantallaChips({
 }) {
   return (
     <div className="relative isolate flex flex-1 flex-col">
-      {/* Mancha de marca (el dispositivo ownable de FICHA-ARTE): hasta hoy las preguntas no llevaban
-          ninguna y el revisor-visual las puntuó sin identidad (2026-10-20). Detrás del título, sin tocar el flujo. */}
-      <span aria-hidden="true" className="pointer-events-none absolute inset-x-0 -top-2 -z-10 h-28">
-        <Blob className="right-0 top-0 h-20 w-28" opacidad={0.16} />
-      </span>
+      {/* La mancha azul de las preguntas se quitó (2026-10-22): caía sobre el final del titular o sobre el contador y parecía un
+          manchón accidental (revisor-visual). El rasgo de marca de las preguntas es el halo del titular + el sello del encabezado;
+          la forma orgánica queda para las pantallas de celebración, donde sí enmarca algo. */}
       <h1 className="relative text-balance text-[28px] font-bold leading-[1.1] text-[var(--text-primary)] [font-family:var(--font-display)]">
         <Halo />
         {tituloAntes}
@@ -169,7 +183,7 @@ function PantallaChips({
       </h1>
       {/* El subtítulo (`subtitulo`) ya no se pinta: decía casi lo mismo que la caja "¿Por qué lo preguntamos?"
           de abajo (revisor-visual, 2026-10-20). La caja es la que explica el motivo. */}
-      <div className="mt-5 flex flex-col gap-2.5" onKeyDown={manejarFlechasChips}>
+      <div className="mt-6 flex flex-col gap-3" onKeyDown={manejarFlechasChips}>
         {children}
       </div>
       <InfoContextual anclar={false}>{porQue}</InfoContextual>
@@ -181,13 +195,22 @@ function PantallaChips({
 /* Pregunta 1: en vez de ~230 px de aire, lo que se va a llevar, con una página real del PDF (datos ficticios). */
 function LoQueArmas() {
   return (
-    <div className="mt-5 flex items-center gap-4 rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--text-tertiary)_22%,transparent)] bg-[var(--surface)] p-4 shadow-[var(--shadow-1)]">
-      <span aria-hidden="true" className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[color-mix(in_oklab,var(--accent)_12%,transparent)]">
-        <FileText size={22} strokeWidth={1.9} color="var(--accent)" />
-      </span>
+    <div className="mt-6 flex items-center gap-4 rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--text-tertiary)_22%,transparent)] bg-[var(--surface)] p-4 shadow-[var(--shadow-1)]">
+      {/* Página 1 del PDF real que genera la app, con datos ficticios (la misma de la página de ventas). 96 px de ancho: se
+          lee que es una hoja numerada y con fecha; al tocarla se abre ampliada (antes era un ícono que no probaba nada). */}
+      <a
+        href="/ejemplo-expediente-pagina.webp"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Ver ampliada una página de ejemplo del expediente (se abre en otra pestaña)"
+        className="block h-[124px] w-24 shrink-0 overflow-hidden rounded-[8px] border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] bg-white shadow-[var(--shadow-1)] [touch-action:manipulation]"
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/ejemplo-expediente-pagina.webp" alt="" width={96} height={124} loading="lazy" className="h-full w-full object-cover object-top" />
+      </a>
       <p className="text-[14px] leading-[1.5] text-[var(--text-secondary)]">
-        <span className="block text-[15px] font-semibold text-[var(--text-primary)]">Esto es lo que vas a armar</span>
-        Un expediente en PDF, con cada página numerada y con fecha.
+        <span className="block text-[16px] font-semibold text-[var(--text-primary)]">Esto es lo que vas a armar</span>
+        Un expediente en PDF, con cada página numerada y con fecha. Toca la hoja para verla.
       </p>
     </div>
   );
@@ -221,8 +244,8 @@ function filasExpediente(r: Respuestas): FilaExpediente[] {
     // Etiqueta completa: "Cómo está fijada" sola, fuera del contexto de su pregunta, no se
     // entendía dentro de la tarjeta (defecto del revisor-visual).
     { label: 'Lo que más te preocupa', valor: r.preocupacion || undefined },
-    { label: 'Meses a documentar', valor: r.metaMeses && r.momento ? `${r.metaMeses} ${r.metaMeses === 1 ? 'mes' : 'meses'}` : undefined },
-    { label: 'Cuándo registras', valor: r.momento || undefined },
+    { label: 'Meses por organizar', valor: r.metaMeses && r.momento ? `${r.metaMeses} ${r.metaMeses === 1 ? 'mes' : 'meses'}` : undefined },
+    { label: 'Cuándo revisas', valor: r.momento || undefined },
     { label: 'Cómo nos encontraste', valor: r.atribucion || undefined },
   ];
 }
@@ -372,7 +395,7 @@ export default function Onboarding() {
           <p className="text-[13px] font-semibold uppercase tracking-[0.08em] text-[var(--accent-ink,var(--accent))] lg:mt-3">
             Tu expediente se está armando
           </p>
-          <h2 className="mt-3 text-balance text-[21px] font-semibold leading-[1.25] text-[var(--text-primary)] [font-family:var(--font-display)]">
+          <h2 className="mt-3 text-balance text-[20px] font-semibold leading-[1.25] text-[var(--text-primary)] [font-family:var(--font-display)]">
             Cada respuesta le da forma a lo que vas a poder mostrar
           </h2>
           <p className="mt-3 text-[14px] leading-[1.6] text-[var(--text-secondary)]">
@@ -385,21 +408,21 @@ export default function Onboarding() {
         </>
       }
     >
-      <FunnelHeader sello={<SelloMarca compacto animar={false} />} />
+      <FunnelHeader sello={<SelloQueReacciona clave={paso} />} />
       {paso < PASO_LOADING && (
         <BarraAtras
           porcentaje={(PASOS_PREGUNTA.filter((p) => p <= paso).length / PASOS_PREGUNTA.length) * 100}
-          pasoActual={paso === 4 || paso === 8 ? undefined : PASOS_PREGUNTA.filter((p) => p <= paso).length}
-          pasoTotal={paso === 4 || paso === 8 ? undefined : PASOS_PREGUNTA.length}
+          pasoActual={PASOS_PREGUNTA.filter((p) => p <= paso).length}
+          pasoTotal={PASOS_PREGUNTA.length}
           palabra="Pregunta"
           onAtras={atrasLocal ?? (paso === 0 ? () => router.push('/') : atras)}
         />
       )}
 
       {noGuardado && (
-        <p role="status" className="mt-3 rounded-[var(--radius-button)] bg-[color-mix(in_oklab,var(--status-error)_10%,transparent)] px-3 py-2 text-[13px] leading-[1.45] text-[var(--text-secondary)]">
+        <motion.p initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }} role="status" className="mt-3 rounded-[var(--radius-button)] bg-[color-mix(in_oklab,var(--status-error)_10%,transparent)] px-3 py-2 text-[13px] leading-[1.45] text-[var(--text-secondary)]">
           No pudimos guardar tus respuestas en este navegador. Si cierras la pestaña, tendrás que empezar de nuevo.
-        </p>
+        </motion.p>
       )}
       {paraDeshacer && (
         <div
@@ -494,23 +517,31 @@ export default function Onboarding() {
           revisor ya aprobó varias rondas — un enlace nuevo por pantalla movería esa ancla. Aquí,
           antes de que la persona conteste nada, no hay CTA anclado que perturbar. */}
       {paso === 0 && (
-        <nav aria-label="Enlaces legales" className="mt-auto flex flex-wrap items-center justify-center gap-x-4 gap-y-0 pb-2 text-center lg:justify-start">
+        <nav aria-label="Enlaces legales" className="mt-auto flex flex-col items-center gap-0 pb-2 pt-6 lg:items-start">
           {[
-            { label: 'Privacidad', href: '/privacidad' },
-            { label: 'Términos y Condiciones', href: '/terminos' },
-            { label: 'Reembolsos', href: '/reembolsos' },
-            { label: 'Aviso de IA', href: '/aviso-ia' },
-            { label: 'SIC (Superintendencia)', href: 'https://www.sic.gov.co/', externo: true },
-          ].map((e) => (
-            <a
-              key={e.href}
-              href={e.href}
-              target={e.externo ? '_blank' : undefined}
-              rel={e.externo ? 'noopener noreferrer' : undefined}
-              className="whitespace-nowrap py-3 text-[13px] text-[var(--text-tertiary)] underline underline-offset-4 hover:text-[var(--text-secondary)]"
-            >
-              {e.label}
-            </a>
+            [
+              { label: 'Privacidad', href: '/privacidad' },
+              { label: 'Términos y Condiciones', href: '/terminos' },
+              { label: 'Reembolsos', href: '/reembolsos' },
+            ],
+            [
+              { label: 'Aviso de IA', href: '/aviso-ia' },
+              { label: 'SIC (Superintendencia)', href: 'https://www.sic.gov.co/', externo: true },
+            ],
+          ].map((fila, i) => (
+            <div key={i} className="flex flex-wrap items-center justify-center gap-x-4 lg:justify-start">
+              {fila.map((e) => (
+                <a
+                  key={e.href}
+                  href={e.href}
+                  target={'externo' in e && e.externo ? '_blank' : undefined}
+                  rel={'externo' in e && e.externo ? 'noopener noreferrer' : undefined}
+                  className="whitespace-nowrap py-3 text-[13px] text-[var(--text-tertiary)] underline decoration-[color-mix(in_oklab,var(--text-tertiary)_45%,transparent)] underline-offset-4 hover:text-[var(--text-secondary)]"
+                >
+                  {e.label}
+                </a>
+              ))}
+            </div>
           ))}
         </nav>
       )}
@@ -604,6 +635,7 @@ function PreguntaSituacion({
             e.preventDefault();
             if (!texto.trim()) {
               setFaltaTexto(true);
+              document.getElementById('situacion-otra')?.focus();
               return;
             }
             onElegir(texto.trim());
@@ -616,15 +648,28 @@ function PreguntaSituacion({
           type="text"
           maxLength={120}
           value={texto}
-          onChange={(e) => setTexto(e.target.value)}
-          placeholder="Ej. Pago, pero cada mes discutimos el monto"
-          className="mt-2 h-14 w-full rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--surface)] px-4 text-[16px] text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)]"
+          onChange={(e) => {
+            setTexto(e.target.value);
+            if (faltaTexto) setFaltaTexto(false);
+          }}
+          aria-invalid={faltaTexto && !texto.trim() ? true : undefined}
+          aria-describedby={faltaTexto && !texto.trim() ? 'situacion-otra-error' : undefined}
+          placeholder="Ej. Discutimos el monto cada mes"
+          className={`mt-2 h-14 w-full rounded-[var(--radius-button)] border bg-[var(--surface)] px-4 text-[16px] text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)] ${
+            faltaTexto && !texto.trim() ? 'border-[var(--status-error)] focus-visible:border-[var(--status-error)]' : 'border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)]'
+          }`}
         />
         {/* Helper pegado al input + la caja de contexto de sus hermanas (sustancia real en un
             paso que si no sería un campo perdido en negro). El CTA sí se ancla al fondo con
             `mt-auto`: este paso ES un formulario con envío, y ahí el CTA abajo es el patrón
             esperado (login, no una pregunta de quiz). */}
-        <p className="mt-2 text-[13px] text-[var(--text-tertiary)]">Escribe al menos unas palabras para continuar.</p>
+        {faltaTexto && !texto.trim() ? (
+          <p id="situacion-otra-error" role="alert" className="mt-2 text-[13px] text-[var(--status-error)]">
+            Escribe unas palabras sobre tu situación para continuar.
+          </p>
+        ) : (
+          <p className="mt-2 text-[13px] text-[var(--text-tertiary)]">Escribe al menos unas palabras para continuar.</p>
+        )}
         <InfoContextual anclar={false}>
           Tu situación decide qué evidencia prioriza tu expediente — nunca
           cambia tus derechos, solo el orden. Tus respuestas son privadas.
@@ -635,11 +680,6 @@ function PreguntaSituacion({
           <CtaFunnel type="submit">
             Seguir con mi expediente
           </CtaFunnel>
-          {faltaTexto && !texto.trim() && (
-            <p role="alert" className="mt-2 text-center text-[13px] text-[var(--status-error)]">
-              Escribe unas palabras sobre tu situación para continuar.
-            </p>
-          )}
         </div>
         </form>
       </div>
@@ -819,7 +859,7 @@ function PreguntaMeta({ valor, onFijar }: { valor: number; onFijar: (v: number) 
           onChange={(e) => setN(Number(e.target.value))}
           // Antes era el control nativo del navegador: el único elemento de todo el flujo fuera
           // del kit (sin radio, sin sombra tintada). Pista fina + pulgar de acento con anillo.
-          className="mt-8 h-6 w-full cursor-pointer appearance-none bg-transparent [touch-action:manipulation] [&::-moz-range-thumb]:size-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:bg-[var(--accent)] [&::-moz-range-thumb]:shadow-[0_0_0_6px_color-mix(in_oklab,var(--accent)_20%,transparent)] [&::-moz-range-track]:h-1 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] [&::-webkit-slider-runnable-track]:h-1 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] [&::-webkit-slider-thumb]:-mt-2.5 [&::-webkit-slider-thumb]:size-6 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[var(--accent)] [&::-webkit-slider-thumb]:shadow-[0_0_0_6px_color-mix(in_oklab,var(--accent)_20%,transparent)] focus-visible:outline-none focus-visible:[&::-webkit-slider-thumb]:shadow-[0_0_0_8px_color-mix(in_oklab,var(--accent)_35%,transparent)]"
+          className="mt-8 h-11 w-full cursor-pointer appearance-none bg-transparent [touch-action:manipulation] [&::-moz-range-thumb]:size-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:bg-[var(--accent)] [&::-moz-range-thumb]:shadow-[0_0_0_6px_color-mix(in_oklab,var(--accent)_20%,transparent)] [&::-moz-range-track]:h-1 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] [&::-webkit-slider-runnable-track]:h-1 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] [&::-webkit-slider-thumb]:-mt-2.5 [&::-webkit-slider-thumb]:size-6 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[var(--accent)] [&::-webkit-slider-thumb]:shadow-[0_0_0_6px_color-mix(in_oklab,var(--accent)_20%,transparent)] focus-visible:outline-none focus-visible:[&::-webkit-slider-thumb]:shadow-[0_0_0_8px_color-mix(in_oklab,var(--accent)_35%,transparent)]"
           aria-label="Meses de comprobantes a organizar"
         />
         <div className="mt-1 flex w-full justify-between text-[13px] tabular-nums text-[var(--text-tertiary)]">
@@ -834,6 +874,9 @@ function PreguntaMeta({ valor, onFijar }: { valor: number; onFijar: (v: number) 
           {feedback}
         </p>
       </div>
+      <InfoContextual anclar={false}>
+        Elige cuántos meses atrás quieres empezar a ordenar. Es la meta de tu primer expediente: no es un compromiso.
+      </InfoContextual>
       <div className="mt-auto pt-8">
         <CtaFunnel onClick={() => onFijar(n)}>Fijar mi meta</CtaFunnel>
       </div>
@@ -904,6 +947,22 @@ function PreguntaAtribucion({ valor, onElegir }: { valor: string; onElegir: (v: 
   );
 }
 
+/* Hito real del recorrido (celebración N3 de FICHA-ARTE: "sello de fecha, sin fanfarria"): el sello se estampa — entra un poco
+   grande y se asienta con un rebote suave. Con "reducir movimiento" aparece directamente, sin escala ni giro. */
+function SelloEstampado() {
+  const reduce = useReducedMotion();
+  return (
+    <motion.div
+      initial={reduce ? { opacity: 0 } : { opacity: 0, scale: 1.18, rotate: -4 }}
+      animate={reduce ? { opacity: 1 } : { opacity: 1, scale: 1, rotate: 0 }}
+      transition={reduce ? { duration: 0.2 } : { type: 'spring', bounce: 0.18, duration: 0.52 }}
+      className="w-[124px] drop-shadow-[0_12px_18px_rgba(18,40,92,0.26)]"
+    >
+      <SelloMarca />
+    </motion.div>
+  );
+}
+
 /* ── Reconocimiento final (A5, variante etiquetado positivo — regla b de LA ESCALERA).
    Nombra el mecanismo (regla del 02B: "el usuario debe poder decir el nombre de lo que
    acaba de configurar") — antes solo vivía en landing/paywall, nunca en el onboarding. ── */
@@ -911,9 +970,7 @@ function ReconocimientoFinal({ respuestas, onContinuar }: { respuestas: Respuest
   return (
     <div className="flex flex-1 flex-col text-center">
       <div className="flex flex-1 flex-col items-center justify-center lg:flex-none lg:justify-start">
-      <div className="w-[124px] drop-shadow-[0_12px_18px_rgba(18,40,92,0.26)]">
-        <SelloMarca />
-      </div>
+      <SelloEstampado />
       <h1 className="mt-6 text-balance text-[28px] font-bold leading-[1.12] text-[var(--text-primary)] [font-family:var(--font-display)]">
         Tus respuestas te describen
       </h1>
@@ -929,7 +986,7 @@ function ReconocimientoFinal({ respuestas, onContinuar }: { respuestas: Respuest
         Tu expediente se arma para que cada pago, visita y acuerdo quede con fecha y a mano.
       </p>
       <div className="mt-6 flex max-w-[38ch] items-start gap-3 rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--accent)_25%,transparent)] bg-[color-mix(in_oklab,var(--accent)_8%,transparent)] p-4 text-left">
-        <ShieldCheck size={20} className="mt-0.5 shrink-0 text-[var(--accent)]" aria-hidden="true" />
+        <Stamp size={20} className="mt-0.5 shrink-0 text-[var(--accent)]" aria-hidden="true" />
         <p className="text-[14px] leading-[1.5] text-[var(--text-secondary)]">
           Cada comprobante que subas llevará el <Marcador>Sello de Confianza</Marcador>: fecha y respaldo que nadie puede alterar en silencio.
         </p>
@@ -944,7 +1001,12 @@ function ReconocimientoFinal({ respuestas, onContinuar }: { respuestas: Respuest
         >
           Ver mi expediente y mi plan
         </CtaFunnel>
-        <p className="mt-2 text-center text-[13px] text-[var(--text-secondary)]">Garantía del Primer Expediente: si en 15 días no armas tu primer expediente, te devolvemos todo.</p>
+        <p className="mt-3 flex items-start justify-center gap-2 text-center text-[14px] leading-[1.45] text-[var(--text-secondary)]">
+          <ShieldCheck size={16} className="mt-0.5 shrink-0 text-[var(--accent)]" aria-hidden="true" />
+          <span>
+            <span className="font-semibold text-[var(--text-primary)]">Garantía del Primer Expediente · 15 días.</span> Si no armas el tuyo, te devolvemos todo.
+          </span>
+        </p>
       </div>
     </div>
   );
@@ -1032,7 +1094,7 @@ function LoadingPlan({ respuestas, onListo, onVolver }: { respuestas: Respuestas
           {pct}%
         </span>
       </div>
-      <h1 className="mt-6 text-center text-[26px] font-bold leading-[1.12] text-[var(--text-primary)] [font-family:var(--font-display)]">
+      <h1 className="mt-6 text-center text-[28px] font-bold leading-[1.12] text-[var(--text-primary)] [font-family:var(--font-display)]">
         Construyendo tu expediente…
       </h1>
       <ul className="mt-8 flex w-full flex-col gap-4">
@@ -1040,7 +1102,7 @@ function LoadingPlan({ respuestas, onListo, onVolver }: { respuestas: Respuestas
           const hecha = completadas.includes(i);
           const enCurso = activa === i && !hecha;
           return (
-            <li key={i} className={`flex items-start gap-3 ${hecha || enCurso ? 'opacity-100' : 'opacity-40'}`}>
+            <li key={i} className={`flex items-start gap-3 transition-opacity duration-300 ease-out ${hecha || enCurso ? 'opacity-100' : 'opacity-40'}`}>
               {hecha ? (
                 <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-[var(--accent)]">
                   <Check size={12} strokeWidth={3} color="var(--on-accent, var(--bg))" />
@@ -1052,18 +1114,28 @@ function LoadingPlan({ respuestas, onListo, onVolver }: { respuestas: Respuestas
                   }`}
                 />
               )}
-              <span className="text-[15px] leading-snug text-[var(--text-primary)]">{linea}</span>
+              <span className="text-[16px] leading-snug text-[var(--text-primary)]">{linea}</span>
             </li>
           );
         })}
       </ul>
-      <button
-        type="button"
-        onClick={onVolver}
-        className="mt-auto min-h-11 pt-6 text-[14px] font-medium text-[var(--text-secondary)] underline underline-offset-2 [touch-action:manipulation]"
-      >
-        Volver a mis respuestas
-      </button>
+      <div className="mt-auto flex flex-col items-center gap-1 pt-6">
+        {/* Atajo (heurística 7): quien ya sabe a dónde va no tiene por qué esperar los ~5 s de la animación. */}
+        <button
+          type="button"
+          onClick={onListo}
+          className="min-h-11 text-[14px] font-semibold text-[var(--accent-ink,var(--accent))] underline underline-offset-2 [touch-action:manipulation]"
+        >
+          Ver mi plan ahora
+        </button>
+        <button
+          type="button"
+          onClick={onVolver}
+          className="min-h-11 text-[14px] font-medium text-[var(--text-secondary)] underline underline-offset-2 [touch-action:manipulation]"
+        >
+          Volver a mis respuestas
+        </button>
+      </div>
     </div>
   );
 }

@@ -17,7 +17,7 @@ import {
   animate,
   type Variants,
 } from 'motion/react';
-import { Camera, Check, X } from 'lucide-react';
+import { Camera, Check, Loader2, X } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { rastrearClicCta } from '@/lib/meta-pixel';
 
@@ -103,9 +103,13 @@ export function Accent({ children }: { children: ReactNode }) {
 }
 
 /* ── <Kicker> — caps 12px/600 tracking +0.08em en acento (máx 1 por sección) ── */
-export function Kicker({ children }: { children: ReactNode }) {
+export function Kicker({ children, sobreMarino = false }: { children: ReactNode; sobreMarino?: boolean }) {
   return (
-    <p className="mb-3 text-[13px] font-semibold uppercase tracking-[0.08em] text-[var(--accent-ink)] lg:text-[14px]">
+    <p
+      className={`mb-3 text-[13px] font-semibold uppercase tracking-[0.08em] lg:text-[14px] ${
+        sobreMarino ? 'text-[var(--accent-on-marino)]' : 'text-[var(--accent-ink)]'
+      }`}
+    >
       {children}
     </p>
   );
@@ -239,7 +243,7 @@ export function SectionShell({
   children,
 }: {
   id?: string;
-  elevacion?: 'base' | 'elevada';
+  elevacion?: 'base' | 'elevada' | 'marino' | 'hundida';
   compacta?: boolean;
   flush?: 'none' | 'top' | 'bottom';
   ariaLabel?: string;
@@ -251,13 +255,24 @@ export function SectionShell({
   /* Degradé suave dentro de la misma familia de FICHA-ARTE (nunca un color nuevo):
      mesh radial del acento sobre la superficie base/elevada — rompe el fill plano
      sin tocar los hex aprobados (solo color-mix del token ya existente). */
+  /* Las secciones "flush" son UN movimiento visual: la de arriba no pinta su resplandor inferior y la de abajo no pinta el
+     superior, para que no haya costura de tono entre las dos (revisor, landing g3). */
+  const brilloArriba =
+    'radial-gradient(1100px 620px at 15% -10%, color-mix(in oklab, var(--accent) 16%, transparent) 0%, transparent 60%), ';
+  const brilloAbajo =
+    'radial-gradient(700px 500px at 105% 105%, color-mix(in oklab, var(--accent) 12%, transparent) 0%, transparent 55%), ';
   const mesh =
-    elevacion === 'elevada'
-      ? 'radial-gradient(1100px 620px at 15% -10%, color-mix(in oklab, var(--accent) 16%, transparent) 0%, transparent 60%), ' +
-        'radial-gradient(700px 500px at 105% 105%, color-mix(in oklab, var(--accent) 12%, transparent) 0%, transparent 55%), ' +
-        'var(--surface)'
-      : 'radial-gradient(900px 560px at 100% -5%, color-mix(in oklab, var(--accent) 13%, transparent) 0%, transparent 60%), ' +
-        'var(--bg)';
+    elevacion === 'marino'
+      ? 'radial-gradient(900px 520px at 85% -10%, color-mix(in oklab, var(--accent-on-marino) 22%, transparent) 0%, transparent 60%), ' +
+        'radial-gradient(700px 480px at -5% 110%, color-mix(in oklab, var(--accent-on-marino) 12%, transparent) 0%, transparent 60%), ' +
+        'linear-gradient(180deg, var(--marino-2), var(--marino))'
+      : elevacion === 'hundida'
+        ? // Tercer nivel de profundidad (hundida): un paso más azul que la base, con un resplandor suave arriba a la izquierda.
+          'radial-gradient(900px 520px at 0% 0%, color-mix(in oklab, var(--accent) 10%, transparent) 0%, transparent 60%), var(--surface-2)'
+        : elevacion === 'elevada'
+        ? (flush === 'top' ? '' : brilloArriba) + (flush === 'bottom' ? '' : brilloAbajo) + 'var(--surface)'
+        : 'radial-gradient(900px 560px at 100% -5%, color-mix(in oklab, var(--accent) 13%, transparent) 0%, transparent 60%), ' +
+          'var(--bg)';
   /* Hairline horizontal en el cambio base↔elevada (nunca entre secciones "flush",
      que son UN solo movimiento visual — 55 T1): ancla el ojo al límite exacto de
      cada bloque, el mismo problema que "Secciones adyacentes distinguibles". */
@@ -332,13 +347,22 @@ export function CtaButton({
       }}
       aria-busy={yendo || undefined}
       data-cta-pagina=""
-      className={`inline-flex items-center justify-center rounded-[var(--radius-button)] px-8 text-[17px] font-semibold transition-[colors,opacity] lg:px-10 lg:text-[18px] duration-150 [touch-action:manipulation] ${yendo ? 'opacity-80' : ''} ${
+      className={`inline-flex items-center justify-center rounded-[var(--radius-button)] px-8 text-[16px] font-semibold transition-[colors,opacity] lg:px-10 lg:text-[18px] duration-150 [touch-action:manipulation] ${yendo ? 'opacity-80' : ''} ${
         variant === 'outline'
           ? 'border border-[color-mix(in_oklab,var(--accent)_45%,transparent)] text-[var(--accent-ink)] hover:bg-[var(--chip-bg)]'
           : 'cta-solid bg-[var(--accent)] text-[var(--on-accent)] shadow-[0_8px_30px_color-mix(in_oklab,var(--accent)_25%,transparent)] hover:bg-[color-mix(in_oklab,var(--accent)_88%,var(--text-primary))]'
-      } ${alto === 56 ? 'h-14 lg:h-16' : 'h-[52px] lg:h-14'} ${fullMobile ? 'w-full sm:w-auto' : ''}`}
+      } h-[52px] lg:h-14 ${fullMobile ? 'w-full sm:w-auto' : ''}`}
     >
-      {children}
+      {/* Estado del sistema (heurística 1): al tocar, el botón lo dice ("Abriendo…" + giro), no solo se atenúa. `alto` se
+          conserva por compatibilidad, pero TODOS los botones sólidos miden lo mismo (52 px; 56 en pantallas grandes). */}
+      {yendo ? (
+        <span className="flex items-center gap-2" role="status">
+          <Loader2 size={18} className="motion-safe:animate-spin" aria-hidden="true" />
+          Abriendo…
+        </span>
+      ) : (
+        children
+      )}
     </motion.a>
   );
 }
@@ -369,6 +393,12 @@ export function StickyCtaMobile({
   // siempre: si el usuario sigue navegando, la barra vuelve a ofrecer ayuda cuando haga falta.
   const [descartada, setDescartada] = useState(false);
   const [ctaEnPantalla, setCtaEnPantalla] = useState(false);
+  const [yendo, setYendo] = useState(false);
+  useEffect(() => {
+    const limpiar = () => setYendo(false);
+    window.addEventListener('pageshow', limpiar);
+    return () => window.removeEventListener('pageshow', limpiar);
+  }, []);
   const ultimoHito = useRef({ heroVisible, ofertaVisible, finalVisible });
 
   useEffect(() => {
@@ -448,10 +478,21 @@ export function StickyCtaMobile({
           <motion.a
             whileTap={{ scale: 0.97 }}
             href={href}
-            onClick={() => rastrearClicCta(href, labelComercial)}
-            className="flex h-12 flex-1 items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-[16px] font-semibold text-[var(--on-accent)] [touch-action:manipulation] lg:text-[18px]"
+            onClick={() => {
+              setYendo(true);
+              rastrearClicCta(href, labelComercial);
+            }}
+            aria-busy={yendo || undefined}
+            className="flex h-[52px] flex-1 items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-[16px] font-semibold text-[var(--on-accent)] [touch-action:manipulation] lg:text-[18px]"
           >
-            {labelComercial}
+            {yendo ? (
+              <span className="flex items-center gap-2" role="status">
+                <Loader2 size={18} className="motion-safe:animate-spin" aria-hidden="true" />
+                Abriendo…
+              </span>
+            ) : (
+              labelComercial
+            )}
           </motion.a>
           <button
             type="button"

@@ -16,9 +16,10 @@ import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { X, Check, ShieldCheck, Lock, FileCheck2, HeartHandshake, Loader2, MapPin } from 'lucide-react';
 import { SelloMarca } from '@/components/landing/SelloMarca';
+import { Blob } from '@/components/landing/ui';
 import { BarraAtras, CtaFunnel, FunnelHeader, Halo, MarcoFunnel, Marcador, usePasoVariants } from '@/components/funnel/ui';
 import { PanelExpediente, type FilaExpediente } from '@/components/funnel/PanelExpediente';
-import { DIA_PRIMER_COBRO, FRASE_MONTO_HOTMART, NOMBRE_VENDEDOR_HOTMART, PRECIOS, TRIAL_DIAS, usd } from '@/lib/precios';
+import { DIA_PRIMER_COBRO, NOMBRE_VENDEDOR_HOTMART, PRECIOS, TRIAL_DIAS, usd } from '@/lib/precios';
 import { trackMeta } from '@/lib/meta-pixel';
 import { crearClienteSupabase } from '@/lib/supabase/client';
 
@@ -73,6 +74,15 @@ function CheckPlan({ activo }: { activo: boolean }) {
     </span>
   );
 }
+
+// Plan elegido: relleno tintado + borde en degradé de marca (acento → acento claro), visible a 375 px. Con "border: transparent" el
+// degradé del borde se pinta en la capa border-box y el relleno en la padding-box (mismo recurso que PanelExpediente).
+const BORDE_ELEGIDO = {
+  background:
+    'linear-gradient(color-mix(in oklab, var(--accent) 7%, var(--surface)), color-mix(in oklab, var(--accent) 7%, var(--surface))) padding-box, ' +
+    'linear-gradient(135deg, var(--accent), var(--accent-2) 60%, var(--accent-deep)) border-box',
+  borderWidth: '1.5px',
+} as const;
 
 type Respuestas = {
   // `rol` lo guarda el onboarding desde 2026-09-07 y aquí no se leía: hace falta para poder
@@ -139,6 +149,7 @@ function sugerirCorreo(valor: string): string | null {
 export default function Paywall() {
   const router = useRouter();
   const [paso, setPaso] = useState(0);
+  const [listo, setListo] = useState(false);
   const [r, setR] = useState<Respuestas | null>(null);
   const [plan, setPlan] = useState<'anual' | 'mensual'>('anual');
   const [yendo, setYendo] = useState(false);
@@ -146,6 +157,7 @@ export default function Paywall() {
   const [correo, setCorreo] = useState('');
   const [autoriza, setAutoriza] = useState(false);
   const [errorCorreo, setErrorCorreo] = useState<string | null>(null);
+  const [errorAutoriza, setErrorAutoriza] = useState<string | null>(null);
   const [sesionEmail, setSesionEmail] = useState<string | null>(null);
   const correoTocado = useRef(false);
   const temporizador = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -179,7 +191,10 @@ export default function Paywall() {
   useEffect(() => {
     try {
       const guardado = localStorage.getItem(CLAVE_CORREO);
-      if (guardado) setCorreo(guardado);
+      if (guardado) {
+        setCorreo(guardado);
+        setPaso(1);
+      }
       const raw = sessionStorage.getItem('coparentia_onboarding');
       if (raw) setR(JSON.parse(raw));
       // El plan que la persona ya había elegido se guardaba al salir al checkout, pero nunca se
@@ -188,7 +203,18 @@ export default function Paywall() {
       const planGuardado = sessionStorage.getItem('coparentia_plan_elegido');
       if (planGuardado === 'anual' || planGuardado === 'mensual') setPlan(planGuardado);
     } catch {}
+    setListo(true);
   }, []);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0 });
+  }, [paso]);
+
+  // h5: el correo se valida al salir del campo (antes solo al tocar el botón de pago).
+  const validarCorreoAlSalir = (): void => {
+    const v = correo.trim();
+    if (v && !FORMATO_CORREO.test(v.toLowerCase())) setErrorCorreo('Revisa tu correo: parece incompleto (falta algo como @ o .com).');
+  };
 
   const cerrar = (): void => router.push('/');
   // `yendo` bloquea el doble tap en la acción crítica del funnel y deja el botón en estado de
@@ -200,20 +226,18 @@ export default function Paywall() {
     // Sin correo válido y sin la autorización, el botón NO abre Hotmart: dice qué falta y lleva el
     // foco al campo para que se corrija sin buscar.
     if (!FORMATO_CORREO.test(limpio) || !autoriza) {
-      setErrorCorreo(
-        !limpio
-          ? 'Escribe tu correo para continuar.'
-          : !FORMATO_CORREO.test(limpio)
-            ? 'Revisa tu correo: parece incompleto (falta algo como @ o .com).'
-            : 'Marca la autorización de tus datos para continuar.'
-      );
       const correoMal = !limpio || !FORMATO_CORREO.test(limpio);
+      setErrorCorreo(
+        correoMal ? (!limpio ? 'Escribe tu correo para continuar.' : 'Revisa tu correo: parece incompleto (falta algo como @ o .com).') : null
+      );
+      setErrorAutoriza(!autoriza ? 'Marca la autorización de tus datos para continuar.' : null);
       const destino = document.getElementById(correoMal ? 'paywall-correo' : 'paywall-autoriza');
       destino?.scrollIntoView({ block: 'center', behavior: 'smooth' });
       destino?.focus({ preventScroll: true });
       return;
     }
     setErrorCorreo(null);
+    setErrorAutoriza(null);
     setFalloAlAbrir(false);
     setYendo(true);
     // Se guarda el plan elegido ANTES de salir de la app: útil el día que exista una pantalla de
@@ -261,8 +285,8 @@ export default function Paywall() {
         { label: 'Tu rol', valor: r.rol === 'paga' ? 'Pago la cuota' : r.rol === 'recibe' ? 'Recibo la cuota' : undefined },
         { label: 'Tu situación', valor: r.situacion === 'Otra cosa' && r.situacionOtra ? r.situacionOtra : r.situacion || undefined },
         { label: 'Lo que más te preocupa', valor: r.preocupacion || undefined },
-        { label: 'Meses a documentar', valor: r.metaMeses ? `${r.metaMeses} ${r.metaMeses === 1 ? 'mes' : 'meses'}` : undefined },
-        { label: 'Cuándo registras', valor: r.momento || undefined },
+        { label: 'Meses por organizar', valor: r.metaMeses ? `${r.metaMeses} ${r.metaMeses === 1 ? 'mes' : 'meses'}` : undefined },
+        { label: 'Cuándo revisas', valor: r.momento || undefined },
       ].filter((f) => f.valor)
     : [];
 
@@ -270,7 +294,7 @@ export default function Paywall() {
     <MarcoFunnel
       panel={
         <>
-          <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-[var(--accent-ink,var(--accent))]">
+          <p className="text-[13px] font-semibold uppercase tracking-[0.08em] text-[var(--accent-ink,var(--accent))]">
             {filasExpediente.length > 0 ? 'Tu expediente ya está armado' : 'Lo que vas a tener'}
           </p>
           <h2 className="mt-3 text-balance text-[28px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)]">
@@ -314,7 +338,7 @@ export default function Paywall() {
                     <Icon size={20} color="var(--accent)" aria-hidden="true" />
                   </span>
                   <div>
-                    <p className="text-[15px] font-semibold text-[var(--text-primary)]">{titulo}</p>
+                    <p className="text-[16px] font-semibold text-[var(--text-primary)]">{titulo}</p>
                     <p className="mt-1 text-[14px] leading-[1.6] text-[var(--text-secondary)]">{detalle}</p>
                   </div>
                 </li>
@@ -355,6 +379,7 @@ export default function Paywall() {
           el marco y estirarla reabriría el vacío que este rediseño cierra. */}
       <div className="relative mt-4 flex flex-1 flex-col lg:flex-none">
         <AnimatePresence mode="wait" initial={false}>
+          {listo && (
           <motion.div key={paso} variants={variants} initial="enter" animate="center" exit="exit" className="flex flex-1 flex-col">
             {paso === 0 && (
               <ValorYPrueba
@@ -377,6 +402,7 @@ export default function Paywall() {
                 yendo={yendo}
                 falloAlAbrir={falloAlAbrir}
                 correo={correo}
+                onCorreoBlur={validarCorreoAlSalir}
                 onCorreo={(v) => {
                   correoTocado.current = true;
                   setCorreo(v);
@@ -385,9 +411,10 @@ export default function Paywall() {
                 autoriza={autoriza}
                 onAutoriza={(v) => {
                   setAutoriza(v);
-                  setErrorCorreo(null);
+                  setErrorAutoriza(null);
                 }}
                 errorCorreo={errorCorreo}
+                errorAutoriza={errorAutoriza}
                 sesionEmail={sesionEmail}
                 onCerrarSesion={async () => {
                   await crearClienteSupabase().auth.signOut();
@@ -396,6 +423,7 @@ export default function Paywall() {
               />
             )}
           </motion.div>
+          )}
         </AnimatePresence>
       </div>
     </MarcoFunnel>
@@ -427,7 +455,7 @@ function ValorYPrueba({
     transition: { duration: 0.34, ease: [0.22, 0.61, 0.36, 1] as const, delay: reduce ? 0 : i * 0.05 },
   });
 
-  const incluye: { texto: string; detalle?: string; miniatura?: string }[] = [
+  const incluye: { texto: string; detalle?: string }[] = [
     { texto: 'El Sello de Confianza en cada comprobante', detalle: 'Con fecha y respaldo que nadie puede alterar.' },
     { texto: 'Expediente exportable en PDF foliado', detalle: 'Cada página numerada y con fecha.' },
     // La objeción nº 1 del avatar (FICHA-AVATAR) va aquí, a la vista, en vez de una promesa genérica de alertas.
@@ -446,10 +474,11 @@ function ValorYPrueba({
     <div className="flex flex-1 flex-col">
       <div className="relative">
         {/* Firma de marca junto al titular (compacto: escudo limpio con visto bueno; a este tamaño el logo y la palabra no se leen). */}
+        <Blob className="-right-5 -top-3 h-24 w-28" opacidad={0.16} />
         <div className="pointer-events-none absolute top-0 right-0 w-[56px] drop-shadow-[0_6px_10px_rgba(18,40,92,0.25)]">
           <SelloMarca compacto />
         </div>
-      <h1 className="relative text-balance pr-[68px] text-[28px] font-bold leading-[1.12] text-[var(--text-primary)] [font-family:var(--font-display)]">
+      <h1 className="relative text-balance pr-[68px] text-[24px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)]">
         <Halo />
         {/* Con respuestas guardadas el titular dice lo que es cierto: ya empezó a armarse (2026-10-20, elegido por el dueño);
             sin respuestas (entrada directa) se conserva el anterior, que no afirma nada de ellas. */}
@@ -496,13 +525,9 @@ function ValorYPrueba({
               <Check size={13} strokeWidth={2.8} color="var(--accent)" />
             </span>
             <span>
-              <span className="block text-[15px] leading-[1.35] text-[var(--text-primary)]">{f.texto}</span>
+              <span className="block text-[16px] leading-[1.35] text-[var(--text-primary)]">{f.texto}</span>
               {f.detalle && <span className="mt-0.5 block text-[13px] leading-[1.4] text-[var(--text-secondary)]">{f.detalle}</span>}
             </span>
-            {f.miniatura && (
-              // Página de ejemplo del PDF real (datos ficticios): la prueba concreta de lo que se lleva, sin testimonios.
-              <img src={f.miniatura} alt="Página de ejemplo del expediente en PDF, con datos ficticios" width={44} height={57} loading="lazy" className="ml-auto h-[57px] w-[44px] shrink-0 rounded-[6px] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-white object-cover object-top shadow-[var(--shadow-1)]" />
-            )}
           </motion.div>
         ))}
       </div>
@@ -523,7 +548,7 @@ function ValorYPrueba({
           dos pantallas seguidas (defecto del revisor). Además el calendario de cobros es lo que más
           se relee antes de decidir: merece su propio plano. */}
       <div className="relative rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--text-tertiary)_16%,transparent)] bg-[var(--surface)] p-4 shadow-[var(--shadow-1)]">
-        <h2 className="text-[19px] font-bold leading-[1.2] text-[var(--text-primary)] [font-family:var(--font-display)]">
+        <h2 className="text-[20px] font-bold leading-[1.2] text-[var(--text-primary)] [font-family:var(--font-display)]">
           {TRIAL_DIAS} días gratis, sin sorpresas
         </h2>
         <div className="mt-4 flex flex-col">
@@ -544,16 +569,13 @@ function ValorYPrueba({
                 />
               )}
             </div>
-              <div className="pb-4">
-                <p className="text-[15px] font-semibold text-[var(--text-primary)]">{nodo.titulo}</p>
+              <div className={i < nodos.length - 1 ? 'pb-4' : ''}>
+                <p className="text-[16px] font-semibold text-[var(--text-primary)]">{nodo.titulo}</p>
                 <p className="mt-0.5 text-[13px] text-[var(--text-secondary)]">{nodo.detalle}</p>
               </div>
             </motion.div>
           ))}
         </div>
-        <p className="text-[13px] leading-[1.5] text-[var(--text-tertiary)]">
-          El aviso del día 5 llega por correo.
-        </p>
       </div>
 
       {/* El botón del paso 1 también queda fijo al fondo en celular (igual que en el paso 2): con el sello y la
@@ -571,14 +593,22 @@ function ValorYPrueba({
         </span>
       </div>
 
-      <div className="sticky bottom-0 z-10 -mx-4 mt-auto bg-[var(--bg)] px-4 pb-[max(8px,env(safe-area-inset-bottom))] pt-3 lg:static lg:mx-0 lg:bg-transparent lg:px-0 lg:pb-0 lg:pt-4">
-        <div className="mb-2 flex items-center justify-center text-center text-[13px] font-medium text-[var(--text-secondary)]">
-          <span className="flex items-center gap-1.5">
+      <div className="sticky bottom-0 z-10 -mx-4 mt-auto px-4 lg:static lg:mx-0 lg:px-0">
+        <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-full h-4 lg:hidden" style={{ background: 'linear-gradient(to top, var(--bg), transparent)' }} />
+        <div className="bg-[var(--bg)] pb-[max(8px,env(safe-area-inset-bottom))] pt-3 lg:bg-transparent lg:pb-0 lg:pt-4">
+        <div className="mb-2 flex items-center justify-center text-center text-[13px] font-medium text-[var(--text-primary)]">
+          <a
+            href="/reembolsos"
+            target="_blank"
+            rel="noreferrer"
+            className="-my-1.5 flex min-h-11 items-center gap-2 underline decoration-[color-mix(in_oklab,var(--text-tertiary)_60%,transparent)] underline-offset-2 [touch-action:manipulation]"
+          >
             <span className="w-[18px] shrink-0"><SelloMarca compacto animar={false} /></span>
-            Garantía del Primer Expediente · 15 días
-          </span>
+            Garantía del Primer Expediente · 15 días: te devolvemos tu pago
+          </a>
         </div>
         <CtaFunnel onClick={onContinuar}>Ver mi plan y mi prueba gratis</CtaFunnel>
+        </div>
       </div>
     </div>
   );
@@ -594,9 +624,11 @@ function Precio({
   falloAlAbrir,
   correo,
   onCorreo,
+  onCorreoBlur,
   autoriza,
   onAutoriza,
   errorCorreo,
+  errorAutoriza,
   sesionEmail,
   onCerrarSesion,
 }: {
@@ -608,9 +640,11 @@ function Precio({
   falloAlAbrir: boolean;
   correo: string;
   onCorreo: (v: string) => void;
+  onCorreoBlur: () => void;
   autoriza: boolean;
   onAutoriza: (v: boolean) => void;
   errorCorreo: string | null;
+  errorAutoriza: string | null;
   sesionEmail: string | null;
   onCerrarSesion: () => void;
 }) {
@@ -628,12 +662,17 @@ function Precio({
     <div className="relative flex flex-1 flex-col">
       {/* FORMA ORGÁNICA de la variante clara (FICHA-ARTE: blobs en degradé azul) detrás del
           titular — el dispositivo ownable que al paywall le faltaba (revisor claro r1). */}
-      <h1 className="relative text-balance text-[24px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)]">
+      {/* Firma de marca junto al titular (la misma del paso 1): el Sello de Confianza como dispositivo propio de la decisión. */}
+      <Blob className="-right-5 -top-3 h-24 w-28" opacidad={0.16} />
+      <div className="pointer-events-none absolute right-0 top-0 w-[56px] drop-shadow-[0_6px_10px_rgba(18,40,92,0.25)]">
+        <SelloMarca compacto />
+      </div>
+      <h1 className="relative text-balance pr-[68px] text-[24px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)]">
         <Halo />
         {/* El <Marcador> envolvía "captura de WhatsApp": a 375px esa frase cruza tres renglones y
             el subrayado se partía en tres trazos sueltos que parecían marcar palabras al azar.
             Marcando UNA sola palabra —la memorable— el trazo siempre cae entero en un renglón. */}
-        Una captura de WhatsApp se pierde — tu expediente{' '}
+        Una captura de WhatsApp se pierde — tu expediente{' '}
         <span className="relative text-[var(--accent-ink,var(--accent))]">
           {/* La mancha ahora nace DETRÁS de las palabras que venden (ronda 10 del revisor): antes caía
               a la derecha del titular, detrás de "se pierde — tu", y se leía como un manchón suelto. */}
@@ -668,9 +707,10 @@ function Precio({
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: reduce ? 0 : 0.25, delay: reduce ? 0 : 0, ease: [0.16, 1, 0.3, 1] }}
+          style={plan === 'anual' ? BORDE_ELEGIDO : undefined}
           className={`flex flex-col rounded-[var(--radius-card)] border p-4 text-left transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--text-primary)] [touch-action:manipulation] ${
             plan === 'anual'
-              ? 'border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_7%,transparent)] shadow-[0_6px_20px_color-mix(in_oklab,var(--accent)_18%,transparent)]'
+              ? 'border-transparent shadow-[0_6px_20px_color-mix(in_oklab,var(--accent)_18%,transparent)]'
               : 'border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] bg-[var(--surface)] shadow-[var(--shadow-1)]'
           }`}
         >
@@ -687,8 +727,8 @@ function Precio({
             <CheckPlan activo={plan === 'anual'} />
             <div className="flex-1">
               <div className="flex items-baseline justify-between">
-                <span className="text-[15px] font-semibold text-[var(--text-primary)]">Anual</span>
-                <span className="text-[26px] font-bold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
+                <span className="text-[16px] font-semibold text-[var(--text-primary)]">Anual</span>
+                <span className={`leading-none tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)] ${plan === 'anual' ? 'text-[32px] font-bold' : 'text-[24px] font-semibold'}`}>
                   <PrecioContado valor={PLAN_ANUAL.precioMes} /><span className="text-[13px] font-normal text-[var(--text-secondary)]">/mes</span>
                 </span>
               </div>
@@ -696,7 +736,7 @@ function Precio({
                   tenía fondo base y tarjeta elevada; FICHA-ARTE declara tres niveles. La referencia
                   en pesos —dato de apoyo, no el precio— va sobre una superficie HUNDIDA: se
                   distingue del precio principal sin agregar otro color ni otro tamaño de letra. */}
-              <p className={`mt-1.5 rounded-[8px] ${plan === 'anual' ? 'bg-[var(--surface)]' : 'bg-[var(--surface-2)]'} px-3 py-1 text-[13px] text-[var(--text-secondary)] shadow-[inset_0_1px_2px_rgb(20_40_80_/_0.08)] lg:min-h-0`}>
+              <p className={`mt-2 rounded-full ${plan === 'anual' ? 'bg-[var(--surface)]' : 'bg-[var(--surface-2)]'} px-3 py-1 text-[13px] text-[var(--text-secondary)] shadow-[inset_0_1px_2px_rgb(20_40_80_/_0.08)] lg:min-h-0`}>
                 {PLAN_ANUAL.totalAnual}
                 <span className="hidden text-[var(--text-primary)] lg:ml-2 lg:inline">
                   Te sale a <span className="font-semibold">{PLAN_ANUAL.costoDia}</span> al día
@@ -716,23 +756,24 @@ function Precio({
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: reduce ? 0 : 0.25, delay: reduce ? 0 : 0.06, ease: [0.16, 1, 0.3, 1] }}
+          style={plan === 'mensual' ? BORDE_ELEGIDO : undefined}
           className={`flex items-start gap-3 rounded-[var(--radius-card)] border p-4 text-left transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--text-primary)] [touch-action:manipulation] ${
             plan === 'mensual'
-              ? 'border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_7%,transparent)] shadow-[0_6px_20px_color-mix(in_oklab,var(--accent)_18%,transparent)]'
+              ? 'border-transparent shadow-[0_6px_20px_color-mix(in_oklab,var(--accent)_18%,transparent)]'
               : 'border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] bg-[var(--surface)] shadow-[var(--shadow-1)]'
           }`}
         >
           <CheckPlan activo={plan === 'mensual'} />
           <div className="flex-1">
             <div className="flex items-baseline justify-between">
-              <span className="text-[15px] font-semibold text-[var(--text-primary)]">Mensual</span>
-              <span className="text-[26px] font-bold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
+              <span className="text-[16px] font-semibold text-[var(--text-primary)]">Mensual</span>
+              <span className={`leading-none tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)] ${plan === 'mensual' ? 'text-[32px] font-bold' : 'text-[24px] font-semibold'}`}>
                 <PrecioContado valor={PLAN_MENSUAL.precioMes} /><span className="text-[13px] font-normal text-[var(--text-secondary)]">/mes</span>
               </span>
             </div>
             {/* Solo la tarjeta Anual mostraba su total, así que el "ahorras US$30.88" no se podía
                 comprobar contra nada: faltaba el término de comparación. */}
-            <p className={`mt-1.5 rounded-[8px] ${plan === 'mensual' ? 'bg-[var(--surface)]' : 'bg-[var(--surface-2)]'} px-3 py-1 text-[13px] text-[var(--text-secondary)] shadow-[inset_0_1px_2px_rgb(20_40_80_/_0.08)] lg:min-h-0`}>
+            <p className={`mt-2 rounded-full ${plan === 'mensual' ? 'bg-[var(--surface)]' : 'bg-[var(--surface-2)]'} px-3 py-1 text-[13px] text-[var(--text-secondary)] shadow-[inset_0_1px_2px_rgb(20_40_80_/_0.08)] lg:min-h-0`}>
               {PLAN_MENSUAL.totalAnual}
               <span className="hidden text-[var(--text-primary)] lg:ml-2 lg:inline">
                 Te sale a <span className="font-semibold">{PLAN_MENSUAL.costoDia}</span> al día
@@ -753,7 +794,7 @@ function Precio({
           y del botón fijo para que no tape el campo. La autorización de datos es una casilla nunca
           premarcada (Ley 1581 de 2012), igual que en /entrar. */}
       <div className="mt-3">
-        <label htmlFor="paywall-correo" className="text-[15px] font-semibold text-[var(--text-primary)]">
+        <label htmlFor="paywall-correo" className="text-[16px] font-semibold text-[var(--text-primary)]">
           Tu correo para pagar y entrar
         </label>
         {correoFijo ? (
@@ -778,6 +819,7 @@ function Precio({
           autoComplete="email"
           value={correo}
           onChange={(e) => onCorreo(e.target.value)}
+          onBlur={onCorreoBlur}
           placeholder="tu@correo.com"
           enterKeyHint="go"
           onKeyDown={(e) => {
@@ -788,33 +830,48 @@ function Precio({
           }}
           aria-invalid={errorCorreo ? true : undefined}
           aria-describedby={errorCorreo ? 'paywall-correo-error' : undefined}
-          className="mt-2 h-12 w-full rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--surface)] px-4 text-[16px] text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)]"
+          className={`mt-2 h-12 w-full rounded-[var(--radius-button)] border bg-[var(--surface)] px-4 text-[16px] text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)] ${
+            errorCorreo ? 'border-[var(--status-error)] focus-visible:border-[var(--status-error)]' : 'border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)]'
+          }`}
         />
+        )}
+        {errorCorreo ? (
+          <p id="paywall-correo-error" role="alert" className="mt-2 text-[13px] leading-[1.5] text-[var(--status-error)]">
+            {errorCorreo}
+          </p>
+        ) : (
+          !correoFijo && !sugerirCorreo(correo) && (
+            <p className="mt-2 text-[13px] leading-[1.5] text-[var(--text-secondary)]">
+              Ahí te llegará tu enlace para entrar a tu expediente.{' '}
+              <a href="/entrar" className="font-semibold text-[var(--accent-ink,var(--accent))] underline underline-offset-2">¿Ya pagaste? Entra aquí</a>
+            </p>
+          )
         )}
         {!correoFijo && sugerirCorreo(correo) && (
           <button
             type="button"
             onClick={() => onCorreo(sugerirCorreo(correo) as string)}
-            className="mt-1.5 block w-full text-left text-[13px] leading-[1.4] text-[var(--text-secondary)] [touch-action:manipulation]"
+            className="mt-2 block w-full text-left text-[13px] leading-[1.4] text-[var(--text-secondary)] [touch-action:manipulation]"
           >
             ¿Quisiste decir <span className="font-semibold text-[var(--accent-ink,var(--accent))] underline underline-offset-2">{sugerirCorreo(correo)}</span>? Tócalo para corregirlo.
           </button>
         )}
-        <label className="mt-2 flex items-start gap-2.5 [touch-action:manipulation]">
+        <label className="mt-2 flex items-start gap-3 [touch-action:manipulation]">
           <input
             id="paywall-autoriza"
             type="checkbox"
             checked={autoriza}
             onChange={(e) => onAutoriza(e.target.checked)}
-            aria-invalid={errorCorreo && !autoriza && FORMATO_CORREO.test(correo.trim()) ? true : undefined}
+            aria-invalid={errorAutoriza ? true : undefined}
+            aria-describedby={errorAutoriza ? 'paywall-autoriza-error' : undefined}
             className="peer sr-only"
           />
           <span
             aria-hidden="true"
-            className={`mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-[8px] border-2 transition-colors peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[var(--text-primary)] ${
+            className={`mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-[6px] border-2 transition-colors peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[var(--text-primary)] ${
               autoriza
                 ? 'border-[var(--accent)] bg-[var(--accent)]'
-                : errorCorreo && correoValido
+                : errorAutoriza
                   ? 'border-[var(--status-error)] bg-[var(--surface)]'
                   : 'border-[color-mix(in_oklab,var(--text-tertiary)_55%,transparent)] bg-[var(--surface)]'
             }`}
@@ -830,10 +887,10 @@ function Precio({
           </span>
         </label>
         <AnimatePresence initial={false}>
-          {errorCorreo && (
+          {errorAutoriza && (
             <motion.p
               key="error"
-              id="paywall-correo-error"
+              id="paywall-autoriza-error"
               role="alert"
               initial={{ opacity: 0, y: reduce ? 0 : 8 }}
               animate={{ opacity: 1, y: 0 }}
@@ -841,7 +898,7 @@ function Precio({
               transition={{ duration: reduce ? 0 : 0.2 }}
               className="mt-2 text-[13px] leading-[1.5] text-[var(--status-error)]"
             >
-              {errorCorreo}
+              {errorAutoriza}
             </motion.p>
           )}
           {sesionEmail && !abiertoOtroCorreo && correoValido && correo.trim().toLowerCase() !== sesionEmail.toLowerCase() && (
@@ -936,8 +993,8 @@ function Precio({
       </div>
 
       <p className="mt-3 text-[13px] leading-[1.45] text-[var(--text-secondary)]">
-        <Lock size={13} className="mr-1 inline-block align-[-2px]" color="var(--accent)" aria-hidden="true" />Pago seguro con Hotmart. {FRASE_MONTO_HOTMART} Verás a{' '}
-        <span className="font-medium text-[var(--text-primary)]">{NOMBRE_VENDEDOR_HOTMART}</span>{' '}como vendedor.
+        <Lock size={13} className="mr-1 inline-block align-[-2px]" color="var(--accent)" aria-hidden="true" />Pago seguro con Hotmart, la plataforma de pagos: ella calcula el monto en tu moneda. Verás a{' '}
+        <span className="font-medium text-[var(--text-primary)]">{NOMBRE_VENDEDOR_HOTMART}</span>{' '}como vendedor: es la cuenta de Coparentia.
       </p>
 
       <div className="mt-auto pt-4">
@@ -984,18 +1041,16 @@ function Precio({
           <div className="relative bg-[var(--bg)] pt-4 pb-[max(8px,env(safe-area-inset-bottom))] lg:bg-transparent lg:pb-0 lg:pt-0">
             {/* Sin punto medio entre las dos señales: a 375px la línea siempre parte en dos y el
                 "·" quedaba huérfano al final de la primera. Los íconos ya separan cada señal. */}
-            <div className="mb-2">
-              <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1 text-[13px] font-medium text-[var(--text-primary)]">
-                <a
-                  href="/reembolsos"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="-my-1.5 flex min-h-11 items-center gap-1.5 whitespace-nowrap underline decoration-[color-mix(in_oklab,var(--text-tertiary)_60%,transparent)] underline-offset-2 [touch-action:manipulation]"
-                >
-                  <span className="w-[18px] shrink-0"><SelloMarca compacto animar={false} /></span>
-                  Garantía del Primer Expediente · 15 días
-                </a>
-              </div>
+            <div className="mb-2 flex items-center justify-center text-center text-[13px] font-medium text-[var(--text-primary)]">
+              <a
+                href="/reembolsos"
+                target="_blank"
+                rel="noreferrer"
+                className="-my-1.5 flex min-h-11 items-center gap-2 underline decoration-[color-mix(in_oklab,var(--text-tertiary)_60%,transparent)] underline-offset-2 [touch-action:manipulation]"
+              >
+                <span className="w-[18px] shrink-0"><SelloMarca compacto animar={false} /></span>
+                Garantía del Primer Expediente · 15 días: te devolvemos tu pago
+              </a>
             </div>
             <CtaFunnel onClick={onCta} disabled={yendo}>
               {yendo ? (
@@ -1015,7 +1070,7 @@ function Precio({
               </p>
             )}
             <p className="mt-2 text-center text-[13px] leading-[1.45] text-[var(--text-secondary)]">
-              Plan {plan === 'anual' ? 'anual' : 'mensual'} · Hoy no pagas nada · Primer cobro el día {DIA_PRIMER_COBRO}:{' '}
+              Hoy no pagas nada · Primer cobro el día {DIA_PRIMER_COBRO}:{' '}
               <span className="font-semibold text-[var(--text-primary)]">{plan === 'anual' ? PLAN_ANUAL.cobro : PLAN_MENSUAL.cobro}</span> · Cancelas cuando quieras
             </p>
           </div>

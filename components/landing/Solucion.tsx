@@ -163,7 +163,7 @@ export function Solucion({
       >
         <motion.div variants={item}>
           <Kicker>{kicker}</Kicker>
-          <h2 className="text-balance text-[30px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)] md:text-[40px] lg:text-[46px]">
+          <h2 className="text-balance text-[28px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)] md:text-[40px] lg:text-[46px]">
             <MarkedCopy text={tituloMarked} />
           </h2>
         </motion.div>
@@ -172,13 +172,13 @@ export function Solucion({
         <motion.div variants={item} className="mt-4 flex items-center gap-3">
           {sello && <span className="w-12 shrink-0 lg:w-14">{sello}</span>}
           <Hairline surface="bg" radio="button" className="w-fit">
-            <span className="block px-4 py-2 text-[15px] font-semibold [--accent:var(--accent-ink)] lg:text-[17px]">
+            <span className="block px-4 py-2 text-[16px] font-semibold [--accent:var(--accent-ink)] lg:text-[17px]">
               <Accent>{mecanismo}</Accent>
             </span>
           </Hairline>
         </motion.div>
 
-        <motion.p variants={item} className="mt-5 max-w-[620px] text-[17px] leading-relaxed text-[var(--text-secondary)] md:text-[18px] lg:text-[20px]">
+        <motion.p variants={item} className="mt-6 max-w-[620px] text-[16px] leading-relaxed text-[var(--text-secondary)] md:text-[18px] lg:text-[20px]">
           <MarkedCopy text={bigIdeaMarked} />
         </motion.p>
 
@@ -186,8 +186,8 @@ export function Solucion({
             para que se lea el paso y se vea ocurriendo. Sin demo: la foto humana y los pasos
             en 3 columnas, como en el resto del kit. */}
         {demo ? (
-          <div className="mt-10 flex flex-col lg:grid lg:grid-cols-[0.95fr_1.05fr] lg:items-center lg:gap-16">
-            <motion.div variants={item} className="order-2 mt-10 flex flex-col items-center lg:order-2 lg:mt-0">
+          <div className="mt-12 flex flex-col lg:grid lg:grid-cols-[0.95fr_1.05fr] lg:items-center lg:gap-16">
+            <motion.div variants={item} className="order-2 mt-12 flex flex-col items-center lg:order-2 lg:mt-0">
               <Hairline emphasis surface="surface" className="relative w-full max-w-[280px] p-2 shadow-[var(--shadow-2)] lg:max-w-[320px]">
                 <video
                   ref={ref}
@@ -269,7 +269,7 @@ export function Solucion({
                   )}
                   <span
                     aria-hidden="true"
-                    className="relative flex size-11 shrink-0 flex-col items-center justify-center rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--accent)_22%,transparent)] bg-[var(--chip-bg)] text-[17px] font-bold tabular-nums text-[var(--accent-ink,var(--accent))] lg:text-[19px]"
+                    className="relative flex size-11 shrink-0 flex-col items-center justify-center rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--accent)_22%,transparent)] bg-[var(--chip-bg)] text-[16px] font-bold tabular-nums text-[var(--accent-ink,var(--accent))] lg:text-[19px]"
                   >
                     {String(i + 1).padStart(2, '0')}
                   </span>
@@ -287,7 +287,7 @@ export function Solucion({
                         </button>
                       )}
                     </h3>
-                    <p className="mt-1 text-[15px] leading-snug text-[var(--text-secondary)] lg:text-[17px]">{p.detalle}</p>
+                    <p className="mt-1 text-[16px] leading-snug text-[var(--text-secondary)] lg:text-[17px]">{p.detalle}</p>
                   </div>
                 </motion.li>
               ))}
@@ -296,24 +296,24 @@ export function Solucion({
         ) : (
           <>
             {foto && (
-              <motion.div variants={item} className="relative mx-auto mt-10 h-[220px] w-full max-w-[520px] sm:h-[260px]">
+              <motion.div variants={item} className="relative mx-auto mt-12 h-[220px] w-full max-w-[520px] sm:h-[260px]">
                 <Blob variante="b" className="-left-6 -top-4 h-full w-[70%]" opacidad={0.12} />
                 <div className="absolute inset-y-0 right-0 w-[82%] overflow-hidden blob-b shadow-[var(--shadow-2)]">{foto}</div>
               </motion.div>
             )}
 
-            <ol className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-3">
+            <ol className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-3">
               {pasos.map((p, i) => (
                 <motion.li key={i} variants={item} className="flex items-start gap-4 md:flex-col">
                   <span
                     aria-hidden="true"
-                    className="flex size-11 shrink-0 items-center justify-center rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--accent)_22%,transparent)] bg-[var(--chip-bg)] text-[17px] font-bold tabular-nums text-[var(--accent-ink,var(--accent))] lg:text-[19px]"
+                    className="flex size-11 shrink-0 items-center justify-center rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--accent)_22%,transparent)] bg-[var(--chip-bg)] text-[16px] font-bold tabular-nums text-[var(--accent-ink,var(--accent))] lg:text-[19px]"
                   >
                     {String(i + 1).padStart(2, '0')}
                   </span>
                   <div className="pt-1 md:pt-0">
                     <h3 className="text-[16px] font-semibold text-[var(--text-primary)] lg:text-[18px]">{p.titulo}</h3>
-                    <p className="mt-1 text-[15px] leading-snug text-[var(--text-secondary)] lg:text-[17px]">{p.detalle}</p>
+                    <p className="mt-1 text-[16px] leading-snug text-[var(--text-secondary)] lg:text-[17px]">{p.detalle}</p>
                   </div>
                 </motion.li>
               ))}
@@ -323,7 +323,7 @@ export function Solucion({
 
         {demo?.pie && (
           <motion.p variants={item} className="mt-8 flex items-start justify-center gap-2 text-[13px] text-[var(--text-tertiary)] lg:text-[14px]">
-            <ShieldCheck size={15} className="mt-[3px] shrink-0 text-[var(--accent-ink,var(--accent))]" aria-hidden="true" />
+            <ShieldCheck size={15} className="mt-1 shrink-0 text-[var(--accent-ink,var(--accent))]" aria-hidden="true" />
             {demo.pie}
           </motion.p>
         )}

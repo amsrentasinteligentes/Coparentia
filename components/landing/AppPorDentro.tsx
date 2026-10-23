@@ -123,25 +123,38 @@ export function AppPorDentro({
   };
 
   return (
-    <SectionShell id={id} elevacion="elevada" ariaLabel="La app por dentro">
+    <SectionShell id={id} elevacion="hundida" ariaLabel="La app por dentro">
       <motion.div variants={contenedor} initial="hidden" whileInView="visible" viewport={VIEWPORT_ONCE}>
         <motion.div variants={item} className="mx-auto max-w-[620px] text-center">
           <Kicker>{kicker}</Kicker>
-          <h2 className="text-balance text-[30px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)] md:text-[40px] lg:text-[46px]">
+          <h2 className="text-balance text-[28px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)] md:text-[40px] lg:text-[46px]">
             <MarkedCopy text={tituloMarked} />
           </h2>
         </motion.div>
 
         {/* Pista con scroll-snap + fade en ambos bordes (mask-image) */}
-        <motion.div variants={item} className="mt-10">
+        <motion.div variants={item} className="mt-12">
           <div
             ref={scrollerRef}
+            // Teclado (heurística 7): con el carrusel enfocado, las flechas pasan de una pantalla a la otra.
+            tabIndex={0}
+            role="region"
+            aria-label="Pantallas de la app, usa las flechas para moverte"
+            onKeyDown={(e) => {
+              if (e.key === 'ArrowRight') {
+                e.preventDefault();
+                irA(Math.min(frames.length - 1, activo + 1));
+              } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                irA(Math.max(0, activo - 1));
+              }
+            }}
             onPointerDown={onPointerDown}
             onPointerMove={onPointerMove}
             onPointerUp={onPointerUp}
             onPointerLeave={onPointerUp}
             onDragStart={(e) => e.preventDefault()}
-            className="flex snap-x snap-mandatory gap-5 overflow-x-auto px-[max(20px,calc(50%-125px))] pb-2 lg:px-[calc(50%-395px)] select-none [scrollbar-width:none] active:cursor-grabbing md:cursor-grab [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)] [&::-webkit-scrollbar]:hidden"
+            className="flex snap-x snap-mandatory gap-6 overflow-x-auto px-[max(20px,calc(50%-125px))] pb-2 lg:px-[calc(50%-395px)] select-none [scrollbar-width:none] active:cursor-grabbing md:cursor-grab [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)] [&::-webkit-scrollbar]:hidden"
           >
             {frames.map((f, i) => (
               <div key={i} className="shrink-0 snap-center">
@@ -222,7 +235,7 @@ export function AppPorDentro({
 
         {/* CTA mid-page (reglas de CTA de 19): tras la prueba visual, cuando la confianza es alta */}
         {ctaLabel && ctaHref && (
-          <motion.div variants={item} className="mt-10 flex justify-center">
+          <motion.div variants={item} className="mt-12 flex justify-center">
             <CtaButton href={ctaHref}>{ctaLabel}</CtaButton>
           </motion.div>
         )}

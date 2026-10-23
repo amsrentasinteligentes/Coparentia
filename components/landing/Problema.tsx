@@ -57,7 +57,7 @@ export function Problema({ titulo, preguntas, grupos, id }: ProblemaProps) {
         {titulo && (
           <motion.h2
             variants={item}
-            className="mb-8 text-balance text-[30px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)] md:text-[40px] lg:text-[46px]"
+            className="mb-8 text-balance text-[28px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)] md:text-[40px] lg:text-[46px]"
           >
             {titulo}
           </motion.h2>
@@ -80,7 +80,7 @@ export function Problema({ titulo, preguntas, grupos, id }: ProblemaProps) {
                   className="flex items-start gap-4 rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--text-tertiary)_22%,transparent)] bg-[var(--bg)] p-4"
                 >
                   <IconChip icon={p.icon} tone="muted" />
-                  <p className="pt-2 text-[17px] font-medium leading-snug text-[var(--text-primary)] lg:text-[19px]">
+                  <p className="pt-2 text-[16px] font-medium leading-snug text-[var(--text-primary)] lg:text-[19px]">
                     <MarkedCopy text={p.textoMarked} />
                   </p>
                 </motion.li>

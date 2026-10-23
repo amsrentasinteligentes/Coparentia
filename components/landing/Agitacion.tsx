@@ -53,7 +53,7 @@ export function Agitacion({ titulo, frases, contraste, id }: AgitacionProps) {
           // cambia es que el TEXTO adentro ya no se centra, se alinea a la izquierda como el resto.
           <motion.h2
             variants={item}
-            className="text-balance text-[30px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)] md:text-[40px] lg:text-[46px]"
+            className="text-balance text-[28px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)] md:text-[40px] lg:text-[46px]"
           >
             <MarkedCopy text={titulo} />
           </motion.h2>
@@ -63,7 +63,13 @@ export function Agitacion({ titulo, frases, contraste, id }: AgitacionProps) {
             <motion.p
               key={i}
               variants={item}
-              className="text-left text-[17px] leading-[1.6] text-[var(--text-secondary)] lg:text-[19px]"
+              // La primera frase es la ESCENA (el núcleo emocional): sube un nivel (20 px, tinta principal, semibold) para que no
+              // se lea como una nota gris; la última es la promesa, en tamaño de cuerpo.
+              className={
+                i === 0
+                  ? 'text-left text-[20px] font-medium leading-[1.4] text-[var(--text-primary)] lg:text-[24px]'
+                  : 'text-left text-[16px] leading-[1.6] text-[var(--text-secondary)] lg:text-[19px]'
+              }
             >
               <MarkedCopy text={f} />
             </motion.p>
@@ -72,11 +78,11 @@ export function Agitacion({ titulo, frases, contraste, id }: AgitacionProps) {
 
         {contraste && (
           <motion.div variants={item} className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <div className="flex items-center gap-4 rounded-[var(--radius-card)] bg-[var(--bg)] p-5">
+            <div className="flex items-center gap-4 rounded-[var(--radius-card)] bg-[var(--bg)] p-6">
               {contraste.anilloHoy !== undefined && (
                 <div className="relative shrink-0">
                   <MiniRing value={contraste.anilloHoy} tone="muted" />
-                  <span className="absolute inset-0 flex items-center justify-center text-[15px] font-bold tabular-nums text-[var(--text-secondary)] [font-family:var(--font-display)] lg:text-[17px]">
+                  <span className="absolute inset-0 flex items-center justify-center text-[16px] font-bold tabular-nums text-[var(--text-secondary)] [font-family:var(--font-display)] lg:text-[17px]">
                     {contraste.anilloHoy}%
                   </span>
                 </div>
@@ -85,15 +91,15 @@ export function Agitacion({ titulo, frases, contraste, id }: AgitacionProps) {
                 <p className="text-[13px] font-semibold uppercase tracking-[0.08em] text-[var(--text-tertiary)]">
                   {contraste.labelHoy}
                 </p>
-                <p className="mt-2 text-[15px] leading-snug text-[var(--text-primary)] lg:text-[17px]">{contraste.hoy}</p>
+                <p className="mt-2 text-[16px] leading-snug text-[var(--text-primary)] lg:text-[17px]">{contraste.hoy}</p>
               </div>
             </div>
             {/* "si nada cambia": más apagado/frío — el peso lo pone el copy, no el rojo */}
-            <div className="flex items-center gap-4 rounded-[var(--radius-card)] bg-[var(--surface-2)] p-5">
+            <div className="flex items-center gap-4 rounded-[var(--radius-card)] bg-[var(--surface-2)] p-6">
               {contraste.anilloFuturo !== undefined && (
                 <div className="relative shrink-0">
                   <MiniRing value={contraste.anilloFuturo} tone="muted" />
-                  <span className="absolute inset-0 flex items-center justify-center text-[15px] font-bold tabular-nums text-[var(--text-secondary)] [font-family:var(--font-display)] lg:text-[17px]">
+                  <span className="absolute inset-0 flex items-center justify-center text-[16px] font-bold tabular-nums text-[var(--text-secondary)] [font-family:var(--font-display)] lg:text-[17px]">
                     {contraste.anilloFuturo}%
                   </span>
                 </div>
@@ -102,7 +108,7 @@ export function Agitacion({ titulo, frases, contraste, id }: AgitacionProps) {
                 <p className="text-[13px] font-semibold uppercase tracking-[0.08em] text-[var(--text-tertiary)]">
                   {contraste.labelFuturo}
                 </p>
-                <p className="mt-2 text-[15px] leading-snug text-[var(--text-secondary)] lg:text-[17px]">{contraste.futuro}</p>
+                <p className="mt-2 text-[16px] leading-snug text-[var(--text-secondary)] lg:text-[17px]">{contraste.futuro}</p>
               </div>
             </div>
           </motion.div>

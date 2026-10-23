@@ -46,10 +46,9 @@ export function PanelExpediente({
   const MAX_VISIBLES = compacto ? 2 : 5;
   const contestadas = filas.filter((f) => f.valor);
   const pendientes = filas.filter((f) => !f.valor);
-  const cuantasPendientes = Math.max(
-    contestadas.length >= filas.length ? 0 : 1,
-    MIN_VISIBLES - contestadas.length
-  );
+  const cuantasPendientes = compacto
+    ? 0
+    : Math.max(contestadas.length >= filas.length ? 0 : 1, MIN_VISIBLES - contestadas.length);
   // En celular, si hay más contestadas que cupo, se muestran las ÚLTIMAS (lo que acaba de responder).
   const visibles = [...(compacto ? contestadas.slice(-MAX_VISIBLES) : contestadas), ...pendientes.slice(0, cuantasPendientes)].slice(0, MAX_VISIBLES);
   const ocultas = filas.length - visibles.length;
@@ -60,7 +59,7 @@ export function PanelExpediente({
 
   return (
     <div
-      className={`rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--text-tertiary)_16%,transparent)] bg-[var(--surface)] shadow-[var(--shadow-1)] ${compacto ? 'p-3.5' : 'p-4'}`}
+      className={`rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--text-tertiary)_16%,transparent)] bg-[var(--surface)] shadow-[var(--shadow-1)] p-4`}
       // Hairline degradado en las DOS variantes (antes solo en computador): en celular la tarjeta
       // quedaba con borde plano y era el único bloque de la pantalla sin el kit de profundidad.
       style={{
@@ -89,7 +88,7 @@ export function PanelExpediente({
 
       {/* `aria-live`: quien usa lector de pantalla oye que su respuesta quedó registrada en el
           expediente, que es justo el mensaje de esta tarjeta — sin él, el cambio pasaba mudo. */}
-      <ul aria-live="polite" className={`flex flex-col ${compacto ? 'mt-3 gap-1.5' : 'mt-4 gap-3'}`}>
+      <ul aria-live="polite" className={`flex flex-col ${compacto ? 'mt-3 gap-2' : 'mt-4 gap-3'}`}>
         {visibles.map((fila) => {
           const lista = Boolean(fila.valor);
           return (
@@ -121,7 +120,7 @@ export function PanelExpediente({
               {/* La fila pendiente usa --text-tertiary PLENO (5.1:1 sobre --surface): con el
                   `color-mix` al 75% caía a 3.46:1 y no pasaba AA — el revisor lo midió. */}
               <div className="min-w-0 flex-1">
-                <p className="text-[13px] text-[var(--text-tertiary)]">
+                <p className="text-[14px] text-[var(--text-tertiary)]">
                   {fila.label}
                 </p>
                 {lista && (
@@ -140,7 +139,9 @@ export function PanelExpediente({
         })}
       </ul>
 
-      {ocultas > 0 && (
+      {/* En celular el contador de lo que falta ('y 4 preguntas más', 'faltan 3') repetía el 'Pregunta n de 6' de arriba: solo ruido.
+          Se queda en computador, donde el panel muestra el índice completo. */}
+      {ocultas > 0 && !compacto && (
         <p className="mt-3 text-[13px] text-[var(--text-tertiary)]">
           {ocultasContestadas > 0
             ? `${ocultasContestadas} ${ocultasContestadas === 1 ? 'respuesta anterior guardada' : 'respuestas anteriores guardadas'}${faltan > 0 ? ` · faltan ${faltan}` : ''}`

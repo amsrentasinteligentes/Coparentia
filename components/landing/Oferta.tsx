@@ -90,7 +90,7 @@ function BarraPrueba({ dias }: { dias: number }) {
       </div>
       <div className="mt-1 flex justify-between text-[13px] font-medium text-[var(--text-secondary)]">
         <span>Hoy: sin cobro</span>
-        <span>{dias} días de prueba</span>
+        <span>Día {DIA_PRIMER_COBRO}: primer cobro</span>
       </div>
     </div>
   );
@@ -100,9 +100,9 @@ function Features({ items, origen }: { items: string[]; origen: string }) {
   warnRango(`${origen} → features`, items.length, 4, 6);
   items.forEach((f, i) => warnCopy(`${origen} → feature ${i + 1}`, f, 12));
   return (
-    <ul className="mt-5 flex flex-col gap-3">
+    <ul className="mt-6 flex flex-col gap-3">
       {items.map((f, i) => (
-        <li key={i} className="flex items-start gap-3 text-[15px] leading-snug text-[var(--text-primary)] lg:text-[17px]">
+        <li key={i} className="flex items-start gap-3 text-[16px] leading-snug text-[var(--text-primary)] lg:text-[17px]">
           <CheckCustom />
           <span>{f}</span>
         </li>
@@ -128,7 +128,7 @@ export function Oferta({
       <motion.div variants={contenedor} initial="hidden" whileInView="visible" viewport={VIEWPORT_ONCE}>
         <motion.div variants={item} className="mx-auto max-w-[620px] text-center">
           <Kicker>{kicker}</Kicker>
-          <h2 className="text-balance text-[30px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)] md:text-[40px] lg:text-[46px]">
+          <h2 className="text-balance text-[28px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)] md:text-[40px] lg:text-[46px]">
             <MarkedCopy text={tituloMarked} />
           </h2>
         </motion.div>
@@ -142,7 +142,7 @@ export function Oferta({
           >
             <ul className="flex flex-col gap-3">
               {stack.lineas.map((l, i) => (
-                <li key={i} className="flex items-start justify-between gap-4 text-[15px] lg:text-[17px]">
+                <li key={i} className="flex items-start justify-between gap-4 text-[16px] lg:text-[17px]">
                   <span className="flex items-start gap-3 text-[var(--text-primary)]">
                     <CheckCustom />
                     <span>{l.resultado}</span>
@@ -163,7 +163,7 @@ export function Oferta({
         )}
 
         {/* Cards: ANUAL PRIMERO en el DOM — en mobile apilado arriba, nunca scroll horizontal */}
-        <div className="mx-auto mt-10 grid max-w-[880px] grid-cols-1 items-stretch lg:max-w-[1000px] gap-6 md:grid-cols-2">
+        <div className="mx-auto mt-12 grid max-w-[880px] grid-cols-1 items-stretch lg:max-w-[1000px] gap-6 md:grid-cols-2">
           {/* ── ANUAL (recomendado): hairline 2px + fondo acento sutil + sombra tintada ── */}
           <motion.div variants={item} className="relative">
             {anual.badge && (
@@ -174,7 +174,7 @@ export function Oferta({
             <Hairline emphasis surface="surface" className="shadow-[0_12px_36px_color-mix(in_oklab,var(--accent)_16%,transparent)]">
               <div className="rounded-[var(--radius-card)] bg-[color-mix(in_oklab,var(--accent)_5%,transparent)] p-6 md:p-7">
                 <div className="flex items-center justify-between gap-3">
-                  <h3 className="text-[18px] font-semibold text-[var(--text-primary)] lg:text-[20px]">{anual.nombre}</h3>
+                  <h3 className="text-[20px] font-semibold text-[var(--text-primary)] lg:text-[20px]">{anual.nombre}</h3>
                 </div>
                 <div className="mt-4">
                   <Precio plan={anual} />
@@ -185,8 +185,7 @@ export function Oferta({
                   <p className="mt-1 text-[14px] font-semibold text-[var(--text-primary)] lg:text-[16px]">{anual.totalAnual}</p>
                   {/* El aviso del monto en pesos va en SU propia línea, un nivel más legible (13px, tinta secundaria):
                       antes iba pegado a la línea de arriba, en 12px terciario y a dos renglones. */}
-                  <p className="mt-1 text-[13px] leading-[1.45] text-[var(--text-secondary)] lg:text-[14px]">{FRASE_MONTO_HOTMART}</p>
-                  {anual.ahorro && <p className="mt-2 text-[15px] font-semibold text-[var(--accent-ink,var(--accent))] lg:text-[17px]">{anual.ahorro}</p>}
+                  {anual.ahorro && <p className="mt-2 text-[16px] font-semibold text-[var(--accent-ink,var(--accent))] lg:text-[17px]">{anual.ahorro}</p>}
                 </div>
                 <Features items={anual.features} origen="Oferta → anual" />
                 <div className="mt-6">
@@ -196,8 +195,10 @@ export function Oferta({
                   {trialDias !== undefined && (
                     <>
                       <BarraPrueba dias={trialDias} />
+                      {/* "Hoy sin cobro / día 8 primer cobro" vive solo en las etiquetas de la barra; debajo va la salida (objeción 5 de
+                          FICHA-AVATAR: ¿y si no me sirve?). Es verdad: cancelar durante la prueba no genera ningún cobro. */}
                       <p className="mt-2 text-center text-[14px] text-[var(--text-secondary)] lg:text-[15px]">
-                        Registras tu medio de pago hoy; el primer cobro entra el día {DIA_PRIMER_COBRO}.
+                        Cancelas antes del día {DIA_PRIMER_COBRO} y no pagas nada.
                       </p>
                     </>
                   )}
@@ -212,7 +213,7 @@ export function Oferta({
             className="rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--text-tertiary)_28%,transparent)] bg-[var(--surface)] p-6 shadow-[var(--shadow-1)] md:p-7"
           >
             <div className="flex items-center justify-between gap-3">
-              <h3 className="text-[18px] font-semibold text-[var(--text-primary)] lg:text-[20px]">{mensual.nombre}</h3>
+              <h3 className="text-[20px] font-semibold text-[var(--text-primary)] lg:text-[20px]">{mensual.nombre}</h3>
             </div>
             <div className="mt-4">
               <Precio plan={mensual} />
@@ -230,6 +231,10 @@ export function Oferta({
             </div>
           </motion.div>
         </div>
+        {/* La nota del monto en tu moneda va UNA vez, al pie de los dos planes (antes iba dentro de la tarjeta Anual y la cargaba). */}
+        <motion.p variants={item} className="mx-auto mt-6 max-w-[48ch] text-center text-[13px] leading-[1.45] text-[var(--text-secondary)] lg:text-[14px]">
+          {FRASE_MONTO_HOTMART}
+        </motion.p>
       </motion.div>
     </SectionShell>
   );

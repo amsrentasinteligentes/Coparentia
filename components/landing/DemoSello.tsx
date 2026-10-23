@@ -80,7 +80,7 @@ export function DemoSello({ id, tituloMarked, subtitulo, pasos, video, ctaLabel,
                   <span className="flex h-7 shrink-0 items-center justify-center rounded-[var(--radius-button)] bg-[var(--chip-bg)] px-2 text-[13px] font-bold tabular-nums text-[var(--accent-ink,var(--accent))]">
                     {paso.split(' · ')[0]}
                   </span>
-                  <span className="text-[15px] leading-[1.5] text-[var(--text-primary)] lg:text-[16px]">{paso.split(' · ').slice(1).join(' · ')}</span>
+                  <span className="text-[16px] leading-[1.5] text-[var(--text-primary)] lg:text-[16px]">{paso.split(' · ').slice(1).join(' · ')}</span>
                 </li>
               ))}
             </ol>
@@ -98,7 +98,7 @@ export function DemoSello({ id, tituloMarked, subtitulo, pasos, video, ctaLabel,
           </motion.div>
 
           {/* El teléfono: mismo marco que la captura del hero, para que se lea como la misma app. */}
-          <motion.div variants={item} className="mt-10 flex justify-center lg:mt-0">
+          <motion.div variants={item} className="mt-12 flex justify-center lg:mt-0">
             <Hairline emphasis surface="surface" className="relative w-full max-w-[300px] p-2 shadow-[var(--shadow-2)] lg:max-w-[340px]">
               <video
                 ref={ref}

@@ -51,7 +51,7 @@ export function Faq({ kicker = 'PREGUNTAS', titulo = 'Lo que quizá te estás pr
       >
         <motion.div variants={item} className="mb-8">
           <Kicker>{kicker}</Kicker>
-          <h2 className="text-balance text-[30px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)] md:text-[40px] lg:text-[46px]">
+          <h2 className="text-balance text-[28px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)] md:text-[40px] lg:text-[46px]">
             {titulo}
           </h2>
         </motion.div>
@@ -87,15 +87,17 @@ export function Faq({ kicker = 'PREGUNTAS', titulo = 'Lo que quizá te estás pr
                   id={panelId}
                   role="region"
                   aria-labelledby={btnId}
+                  // Cerrado = sin paradas de Tab ni lectura: el formulario y los enlaces de adentro no reciben foco invisible.
+                  inert={!estaAbierto}
                   initial={false}
                   animate={{ height: estaAbierto ? 'auto' : 0, opacity: estaAbierto ? 1 : 0 }}
                   transition={{ duration: reduce ? 0 : 0.28, ease: [0.16, 1, 0.3, 1] }}
                   className="overflow-hidden"
                 >
                   {it.respuesta ? (
-                    <div className="pb-5">{it.respuesta}</div>
+                    <div className="pb-6">{it.respuesta}</div>
                   ) : (
-                    <p className="pb-5 pr-9 text-[15px] leading-relaxed text-[var(--text-secondary)] lg:text-[17px]">
+                    <p className="pb-6 pr-8 text-[16px] leading-relaxed text-[var(--text-secondary)] lg:text-[17px]">
                       <MarkedCopy text={it.respuestaMarked} />
                     </p>
                   )}

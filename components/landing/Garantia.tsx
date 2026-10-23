@@ -31,7 +31,7 @@ export function Garantia({ nombre, condicionMarked, pisoLegal, icon: Icono = Shi
   const reduce = useReducedMotion() ?? false;
 
   return (
-    <SectionShell id={id} elevacion="elevada" compacta ariaLabel="Garantía">
+    <SectionShell id={id} elevacion="hundida" compacta ariaLabel="Garantía">
       <motion.div
         variants={contenedor}
         initial="hidden"
@@ -41,8 +41,8 @@ export function Garantia({ nombre, condicionMarked, pisoLegal, icon: Icono = Shi
       >
         <motion.div variants={item}>
           {/* La card de garantía: uno de los 1-3 usos de hairline permitidos por vista */}
-          <Hairline surface="surface" className="shadow-[var(--shadow-1)]">
-            <div className="flex flex-col items-center gap-4 px-6 py-10 text-center">
+          <Hairline surface="surface" className="shadow-[var(--shadow-2)]">
+            <div className="flex flex-col items-center gap-4 px-6 py-12 text-center">
               {/* Hito real (la promesa de devolución): el sello entra con un rebote corto —
                   la única celebración de la página, reservada para lo que de verdad tranquiliza. */}
               <motion.span
@@ -55,10 +55,10 @@ export function Garantia({ nombre, condicionMarked, pisoLegal, icon: Icono = Shi
               >
                 <Icono size={32} strokeWidth={1.8} color="var(--accent)" aria-hidden="true" />
               </motion.span>
-              <h2 className="text-balance text-[22px] font-bold leading-tight [font-family:var(--font-display)]">
+              <h2 className="text-balance text-[20px] font-bold leading-tight [font-family:var(--font-display)]">
                 <Accent>{nombre}</Accent>
               </h2>
-              <p className="max-w-[44ch] text-[15px] leading-[1.6] text-[var(--text-secondary)] lg:text-[17px]">
+              <p className="max-w-[44ch] text-[16px] leading-[1.6] text-[var(--text-secondary)] lg:text-[17px]">
                 <MarkedCopy text={condicionMarked} />
               </p>
               {pisoLegal && (

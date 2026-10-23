@@ -1,3 +1,52 @@
+### REDISEÑO DE BASE (rama `rediseno-base`, 2026-10-22) — Fases 1 y 2 hechas; plan presentado, a la espera del OK del dueño
+- Meta: landing, onboarding y paywall de 30/40 → ≥36/40 y ≥16/20 (veredictos del revisor del 20/10 siguen vigentes como diagnóstico).
+- YA EXISTE (verificado en código y a 375 px): `useReveal` (stagger 0,07 s, una vez, reduced-motion), `CountUp`, `MiniRing`, `CtaButton`
+  (whileTap 0,97, ≥52 px), barra fija con cierre, demo del Sello con pausa, transición entre pasos y anillo/conteo en el funnel,
+  reduced-motion en todo. FALTA: celebración del hito en el sello final (aparece estático), sello "que se fecha" como dispositivo
+  recurrente, ritmo de fondos (todo es plano azul pálido + tarjetas blancas), prueba concreta legible (miniaturas de PDF de 44-56 px).
+- MEDIDO en la landing a 375 px (altura 9.620 px): 12 tamaños de letra distintos (12,5/13/14/15/16/17/18/20/22/30/34/36; el sistema pide
+  4 niveles), 14 textos de 30 px casi igual de grandes que el H1 (jerarquía plana), una 3.ª familia ("IBM Plex Sans", 4 textos) colada,
+  desborde horizontal 0. Onboarding p.1: ~110 px de vacío entre la tarjeta y 5 enlaces legales, mancha azul que cae sobre el titular.
+  Planes p.1: la barra fija tapa "Pago seguro con Hotmart".
+- Evidencia local (no versionada): capturas en el scratchpad de la sesión (`f1-*.png`).
+- CORRECCIÓN: lo de la "3.ª familia IBM Plex" era un falso positivo (solo el enlace "Saltar al contenido", invisible, y etiquetas script).
+- CAPA 1 de la landing HECHA (commit en `rediseno-base`): escala de letra 12 → 7 tamaños visibles (34 titular · 28 títulos de sección ·
+  20 títulos de tarjeta · 16 cuerpo · 14 secundario · 13 etiqueta · 36 solo el precio); el titular a 36 px dejaba "y fecha" huérfano en
+  5 renglones y se devolvió a 34. Copy: microcopy del hero ("registras tu medio de pago, no se cobra hasta el día 8"), escena del reclamo
+  por WhatsApp en la agitación (sin lenguaje legal) y "Coparentia" sin mayúsculas. Altura de la landing 9.620 → 9.555 px. Pendiente de
+  capas 2-6: ritmo de fondos con banda marino, carrusel de opiniones, sello como dispositivo, FAQ "Avísame", burbuja del hero cortada.
+
+- RONDAS DEL REVISOR sobre la landing (rama `rediseno-base`): ronda 1 → 30/40 · 15/20 · 16/20 copy; ronda 2 → **31/40** · 15/20 · 16/20,
+  veredicto NO LISTA (h9 errores subió a 4 por FAQ con `inert` y rojo de error con contraste; las otras 9 heurísticas siguen en 3). Tras la
+  ronda 2 se aplicó (sin revisar aún): línea de costo en la agitación (del dolor 1 de FICHA-AVATAR), "Cancelas antes del día 8 y no pagas
+  nada" bajo la barra de la Anual (verificado: cancelar en prueba no cobra), etiquetas de la barra en una línea, viñetas propias en la Mensual,
+  "Hotmart, la plataforma de pagos" (también en el paywall vía `FRASE_MONTO_HOTMART`), puntos del carrusel iguales a los de "Así se ve por dentro".
+  Lo que el revisor pide aún para 4 en cada heurística (pendiente): estado "Abriendo…" en los CTA, pie en lenguaje llano ("Aviso de IA", "SIC"),
+  "volver arriba"/ir a Planes, un solo tamaño de botón sólido (hoy 56/52/48) y un solo botón outline, errores por campo en la lista de espera,
+  flechas de teclado en los carruseles, quitar píldoras del hero, reducir la tarjeta Anual (11 elementos), respuesta a "¿cómo cancelo?" en el FAQ.
+  Pendiente de las otras 2 pantallas (onboarding, planes): no tocadas todavía.
+
+- **LANDING: LISTA (ronda 4 del revisor, commit `f8a5614`, rama `rediseno-base`, NO publicada): 38/40 · 16/20 craft · 17/20 copy.**
+  Evidencia: `docs/revisiones/r31-landing-g1..g12.png`, `r31-landing-barra-fija.png`, `r31-landing-final.png`,
+  `r31-landing-formulario-con-errores.png`; veredicto: `docs/revisiones/landing-veredicto.md`. Craft queda JUSTO en el límite (16): si la
+  Garantía pierde el fondo "hundido" vuelve a NO LISTA. Cualquier cambio posterior a la landing exige nueva revisión. Opcionales que el
+  revisor propuso para dar margen (NO aplicados, para no invalidar la evidencia): quitar el `recap` duplicado del cierre, alinear el pie a
+  20 px, oscurecer `--status-error` a ~#b93a32 (hoy ~4,4:1 en texto de 14 px), Garantía h2 a 28 px, h2 del cierre alineado con el titular,
+  FAQ de 7 a 6 preguntas, recapturar el corte g12 con la altura real.
+- **LAS TRES PANTALLAS QUE DECIDEN EL DINERO, LISTAS (rama `rediseno-base`, NO publicada):**
+  landing 38/40 · 16/20 · 17/20 (commit `f8a5614`, etiqueta `landing-lista-f8a5614`) · onboarding 37/40 · 16/20 · 16/20 (commit `28aa602`) ·
+  planes 38/40 · 16/20 · 16/20 (commit `fb5a33c`, ronda 3 del revisor). Craft queda JUSTO en 16 en las tres: cualquier cambio exige nueva
+  revisión. Evidencia: `docs/revisiones/r31-landing-*`, `r33-onb-*`, `r34-planes-*` y los tres `*-veredicto.md`. Etiqueta de conjunto:
+  `rediseno-tres-pantallas-listas`. Copy nuevo escrito por la IA que el dueño debe revisar antes de publicar: línea de costo de la agitación
+  (del dolor 1 de FICHA-AVATAR), pregunta "¿Puedo cancelar cuando quieras?" y "Cancelas antes del día 8 y no pagas nada" (verificado con la prueba de
+  cancelación en prueba), "El pago lo procesa Hotmart: los datos de tu tarjeta no pasan por Coparentia", "te devolvemos tu pago"
+  (de /reembolsos), "Ahí te llegará tu enlace…", "es la cuenta de Coparentia" (vendedor), y los extractos de las 3 citas (fragmentos literales
+  terminados en "…"). Opcionales del revisor de los planes (no aplicados): `BarraAtras` dentro de `listo`, "¿Ya pagaste?" en su propio
+  renglón, "·" huérfano en la línea de renovación, halo al 22 %, entradas animadas del correo y de la nota de Hotmart, `reduce` en los scrollTo.
+- BASES REUTILIZABLES para onboarding y planes (ya en el código): escala de letra 34/28/20/16/14/13; espaciado a la escala; banda
+  `marino` y nivel `hundida` en `SectionShell`; tokens `--marino`, `--on-marino`, `--accent-on-marino`, `--status-error`; `CtaButton` con
+  "Abriendo…" y alto único 52 px; errores por campo (patrón de `ListaEsperaPais`); carruseles con puntos y flechas de teclado.
+
 ### PUNTO DE CONTROL (2026-10-22, noche) — ANTES del rediseño de diseño desde la base
 - Etiqueta `punto-de-control-2026-10-22` y rama `punto-de-control-2026-10-22` en GitHub = estado completo previo al rediseño (código en
   producción `e0afb60` + documentos al día). Para volver: `git switch -c volver punto-de-control-2026-10-22` (no toca producción).
@@ -3311,6 +3360,17 @@ FICHA-ARTE.md que la landing.
   presupuesto; queda anotado para antes de declarar el funnel "vendible" de verdad.
 
 ## Problemas conocidos
+
+- **veredicto:onboarding** (2026-10-22, noche): el gate lo marca "caducado" por la fecha de `app/(funnel)/paywall/page.tsx`, que es OTRA
+  pantalla. Falso positivo: `git diff 28aa602 HEAD -- "app/(funnel)/onboarding" components/funnel components/landing app/page.tsx lib` está
+  VACÍO. Veredicto vigente del recorrido: LISTA 37/40 · 16/20 · 16/20 sobre el commit `28aa602` (craft justo en el límite). Pendiente
+  opcional que el revisor propuso: "Ver mi plan ahora" con estado "Abriendo…", scroll arriba al cambiar de paso, validar la situación
+  con mínimo de caracteres, tamaños 13→14, escudo del encabezado oculto en el sello final, stagger y check con spring en la carga.
+- **veredicto:landing** (2026-10-22, noche): el gate marca el veredicto como "caducado" porque toma como código de la landing los
+  archivos de `app/(funnel)/**` y `components/funnel/**` (más nuevos por el rediseño del recorrido y los planes). Es un falso positivo:
+  `git diff landing-lista-f8a5614 HEAD -- app/page.tsx components/landing lib` está VACÍO (0 archivos); el veredicto vigente de la landing
+  es LISTA 38/40 · 16/20 · 17/20 sobre el commit `f8a5614`. Regla de trabajo: no tocar `components/landing/*`, `tokens-claro.css` ni
+  `lib/precios.ts` mientras se rediseñan onboarding y planes; si hiciera falta, volver a revisar la landing.
 
 - **veredicto:landing**, **veredicto:onboarding**, **veredicto:paywall** (2026-10-22): los tres veredictos dicen NO LISTA (30/40) tras el
   rediseño. POSPUESTO a propósito: el dueño pidió no lanzar el revisor-visual hasta cerrar la auditoría; esta sesión solo tocó la

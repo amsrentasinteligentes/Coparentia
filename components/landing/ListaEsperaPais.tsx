@@ -14,8 +14,20 @@ const FORMATO_CORREO = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 type Estado = 'quieto' | 'enviando' | 'listo' | 'error';
 
-const CAMPO =
-  'mt-1 h-12 w-full rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_35%,transparent)] bg-[var(--surface)] px-4 text-[16px] text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)]';
+// El campo con error cambia de borde (rojo de error con contraste), no solo muestra el mensaje debajo.
+const campo = (error?: string): string =>
+  `mt-1 h-12 w-full rounded-[var(--radius-button)] border bg-[var(--surface)] px-4 text-[16px] text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)] ${
+    error ? 'border-[var(--status-error)]' : 'border-[color-mix(in_oklab,var(--text-tertiary)_35%,transparent)]'
+  }`;
+
+function MensajeError({ id, texto }: { id: string; texto?: string }) {
+  if (!texto) return null;
+  return (
+    <p id={id} role="alert" className="mt-1 text-sm leading-[1.5] text-[var(--status-error)]">
+      {texto}
+    </p>
+  );
+}
 
 export function ListaEsperaPais() {
   const id = useId();
@@ -24,22 +36,31 @@ export function ListaEsperaPais() {
   const [email, setEmail] = useState('');
   const [autoriza, setAutoriza] = useState(false);
   const [estado, setEstado] = useState<Estado>('quieto');
-  const [falta, setFalta] = useState('');
+  // Errores POR CAMPO (heurística 5): cada mensaje vive bajo su campo, con aria-invalid, y el foco va al primero que falla.
+  type Campo = 'pais' | 'otro' | 'correo' | 'autoriza';
+  const [errores, setErrores] = useState<Partial<Record<Campo, string>>>({});
   const avisoRef = useRef<HTMLDivElement>(null);
-  // La barra fija de abajo puede tapar el aviso: se trae al centro de la pantalla cuando aparece.
+  // La barra fija de abajo puede tapar el aviso del servidor: se trae al centro de la pantalla cuando aparece.
   useEffect(() => {
-    if (falta || estado === 'error') avisoRef.current?.scrollIntoView({ block: 'center', behavior: 'smooth' });
-  }, [falta, estado]);
+    if (estado === 'error') avisoRef.current?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+  }, [estado]);
+  const quitarError = (c: Campo): void => setErrores((prev) => (prev[c] ? { ...prev, [c]: undefined } : prev));
 
   async function enviar(e: FormEvent): Promise<void> {
     e.preventDefault();
     if (estado === 'enviando') return;
     const limpio = email.trim();
-    if (!pais) return setFalta('Elige tu país.');
-    if (pais === 'Otro' && paisOtro.trim().length < 2) return setFalta('Escribe cuál es tu país.');
-    if (!FORMATO_CORREO.test(limpio)) return setFalta('Escribe un correo válido, por ejemplo nombre@correo.com.');
-    if (!autoriza) return setFalta('Marca la autorización para que podamos avisarte.');
-    setFalta('');
+    const nuevos: Partial<Record<Campo, string>> = {};
+    if (!pais) nuevos.pais = 'Elige tu país.';
+    if (pais === 'Otro' && paisOtro.trim().length < 2) nuevos.otro = 'Escribe cuál es tu país.';
+    if (!FORMATO_CORREO.test(limpio)) nuevos.correo = 'Escribe un correo válido, por ejemplo nombre@correo.com.';
+    if (!autoriza) nuevos.autoriza = 'Marca la autorización para que podamos avisarte.';
+    setErrores(nuevos);
+    const primero = (['pais', 'otro', 'correo', 'autoriza'] as Campo[]).find((c) => nuevos[c]);
+    if (primero) {
+      document.getElementById(`${id}-${primero}`)?.focus();
+      return;
+    }
     setEstado('enviando');
     try {
       const r = await fetch('/api/lista-espera', {
@@ -58,12 +79,22 @@ export function ListaEsperaPais() {
 
   if (estado === 'listo') {
     return (
-      <p role="status" className="flex items-start gap-2 text-base font-medium leading-snug text-[var(--text-primary)]">
-        <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-[var(--accent)]">
-          <Check size={12} strokeWidth={3} color="var(--on-accent, var(--bg))" aria-hidden="true" />
-        </span>
-        Listo. Te avisaremos cuando abramos en tu país.
-      </p>
+      <div className="flex flex-col gap-2">
+        <p role="status" className="flex items-start gap-2 text-base font-medium leading-snug text-[var(--text-primary)]">
+          <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-[var(--accent)]">
+            <Check size={12} strokeWidth={3} color="var(--on-accent, var(--bg))" aria-hidden="true" />
+          </span>
+          Listo. Te avisaremos cuando abramos en tu país.
+        </p>
+        {/* Control y libertad (heurística 3): si te equivocaste de correo, se puede volver al formulario. */}
+        <button
+          type="button"
+          onClick={() => setEstado('quieto')}
+          className="flex min-h-11 items-center self-start text-[14px] font-semibold text-[var(--accent-ink,var(--accent))] underline underline-offset-2 [touch-action:manipulation]"
+        >
+          Usar otro correo
+        </button>
+      </div>
     );
   }
 
@@ -78,7 +109,18 @@ export function ListaEsperaPais() {
         <label htmlFor={`${id}-pais`} className="text-sm font-medium text-[var(--text-secondary)]">
           Tu país
         </label>
-        <select id={`${id}-pais`} value={pais} onChange={(e) => setPais(e.target.value)} className={CAMPO}>
+        <select
+          id={`${id}-pais`}
+          value={pais}
+          onChange={(e) => {
+            setPais(e.target.value);
+            quitarError('pais');
+          }}
+          aria-invalid={errores.pais ? true : undefined}
+          aria-describedby={errores.pais ? `${id}-pais-err` : undefined}
+          onBlur={() => !pais && setErrores((prev) => ({ ...prev, pais: 'Elige tu país.' }))}
+          className={campo(errores.pais)}
+        >
           <option value="">Elige tu país</option>
           {PAISES.map((p) => (
             <option key={p} value={p}>
@@ -86,6 +128,7 @@ export function ListaEsperaPais() {
             </option>
           ))}
         </select>
+        <MensajeError id={`${id}-pais-err`} texto={errores.pais} />
       </div>
 
       {pais === 'Otro' && (
@@ -98,9 +141,15 @@ export function ListaEsperaPais() {
             type="text"
             maxLength={60}
             value={paisOtro}
-            onChange={(e) => setPaisOtro(e.target.value)}
-            className={CAMPO}
+            onChange={(e) => {
+              setPaisOtro(e.target.value);
+              quitarError('otro');
+            }}
+            aria-invalid={errores.otro ? true : undefined}
+            aria-describedby={errores.otro ? `${id}-otro-err` : undefined}
+            className={campo(errores.otro)}
           />
+          <MensajeError id={`${id}-otro-err`} texto={errores.otro} />
         </div>
       )}
 
@@ -115,16 +164,33 @@ export function ListaEsperaPais() {
           autoComplete="email"
           placeholder="tu@correo.com"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className={CAMPO}
+          onChange={(e) => {
+            setEmail(e.target.value);
+            quitarError('correo');
+          }}
+          aria-invalid={errores.correo ? true : undefined}
+          aria-describedby={errores.correo ? `${id}-correo-err` : undefined}
+          onBlur={() =>
+            email.trim() &&
+            !FORMATO_CORREO.test(email.trim()) &&
+            setErrores((prev) => ({ ...prev, correo: 'Escribe un correo válido, por ejemplo nombre@correo.com.' }))
+          }
+          className={campo(errores.correo)}
         />
+        <MensajeError id={`${id}-correo-err`} texto={errores.correo} />
       </div>
 
       <label className="flex cursor-pointer items-start gap-3 py-1 [touch-action:manipulation]">
         <input
+          id={`${id}-autoriza`}
           type="checkbox"
           checked={autoriza}
-          onChange={(e) => setAutoriza(e.target.checked)}
+          onChange={(e) => {
+            setAutoriza(e.target.checked);
+            quitarError('autoriza');
+          }}
+          aria-invalid={errores.autoriza ? true : undefined}
+          aria-describedby={errores.autoriza ? `${id}-autoriza-err` : undefined}
           className="peer sr-only"
         />
         <span
@@ -132,7 +198,9 @@ export function ListaEsperaPais() {
           className={`mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-[8px] border-2 transition-colors peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[var(--text-primary)] ${
             autoriza
               ? 'border-[var(--accent)] bg-[var(--accent)]'
-              : 'border-[color-mix(in_oklab,var(--text-tertiary)_55%,transparent)] bg-[var(--surface)]'
+              : errores.autoriza
+                ? 'border-[var(--status-error)] bg-[var(--surface)]'
+                : 'border-[color-mix(in_oklab,var(--text-tertiary)_55%,transparent)] bg-[var(--surface)]'
           }`}
         >
           {autoriza && <Check size={13} strokeWidth={3} color="var(--on-accent, var(--bg))" />}
@@ -150,11 +218,14 @@ export function ListaEsperaPais() {
           .
         </span>
       </label>
+      <MensajeError id={`${id}-autoriza-err`} texto={errores.autoriza} />
 
       <button
         type="submit"
+        // La barra fija de abajo se esconde cuando este botón está a la vista (si no, lo tapaba).
+        data-cta-pagina=""
         disabled={estado === 'enviando'}
-        className="flex h-12 w-full items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-[16px] font-semibold text-[var(--on-accent)] [touch-action:manipulation] disabled:cursor-wait disabled:opacity-80"
+        className="flex h-[52px] w-full items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-[16px] font-semibold text-[var(--on-accent)] [touch-action:manipulation] disabled:cursor-wait disabled:opacity-80"
       >
         {estado === 'enviando' ? (
           <span className="flex items-center gap-2">
@@ -167,11 +238,6 @@ export function ListaEsperaPais() {
       </button>
 
       <div ref={avisoRef}>
-        {falta && (
-          <p role="alert" className="text-sm leading-[1.5] text-[var(--status-error)]">
-            {falta}
-          </p>
-        )}
         {estado === 'error' && (
           <p role="alert" className="text-sm leading-[1.5] text-[var(--status-error)]">
             No pudimos guardar tu correo. Revisa tu conexión y toca &quot;Avísame&quot; otra vez.
