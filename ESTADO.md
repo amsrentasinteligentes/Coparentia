@@ -33,7 +33,11 @@
   revisor propuso para dar margen (NO aplicados, para no invalidar la evidencia): quitar el `recap` duplicado del cierre, alinear el pie a
   20 px, oscurecer `--status-error` a ~#b93a32 (hoy ~4,4:1 en texto de 14 px), Garantía h2 a 28 px, h2 del cierre alineado con el titular,
   FAQ de 7 a 6 preguntas, recapturar el corte g12 con la altura real.
-- **LAS TRES PANTALLAS QUE DECIDEN EL DINERO, LISTAS (rama `rediseno-base`, NO publicada):**
+- **PUBLICADO EN PRODUCCIÓN el 22/10/2026 (master `7cc1e98`, orden del dueño: "1, cuando esté montado reviso después")**. Verificado:
+  `/api/version` = 7cc1e98; `/`, `/onboarding`, `/paywall`, `/entrar`, `/privacidad`, `/reembolsos`, `/terminos`, `/especialistas` 200; los 6 crons sin
+  clave 401; webhook sin firma 401; sin desborde horizontal a 375 px y sin errores de consola. PENDIENTE DEL DUEÑO: revisar los textos nuevos
+  listados abajo y avisar si alguno no le gusta (cualquier cambio exige nueva revisión del revisor-visual).
+- **LAS TRES PANTALLAS QUE DECIDEN EL DINERO, LISTAS:**
   landing 38/40 · 16/20 · 17/20 (commit `f8a5614`, etiqueta `landing-lista-f8a5614`) · onboarding 37/40 · 16/20 · 16/20 (commit `28aa602`) ·
   planes 38/40 · 16/20 · 16/20 (commit `fb5a33c`, ronda 3 del revisor). Craft queda JUSTO en 16 en las tres: cualquier cambio exige nueva
   revisión. Evidencia: `docs/revisiones/r31-landing-*`, `r33-onb-*`, `r34-planes-*` y los tres `*-veredicto.md`. Etiqueta de conjunto:
