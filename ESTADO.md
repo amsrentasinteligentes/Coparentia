@@ -5006,3 +5006,9 @@ Se hacen juntos al tocar la sección de planes (hallazgos 3 y 9), para revisar u
 - En curso: Inicio — monto de cuota como dato héroe (28px) y menos duplicados (Accesos rápidos NO se eliminan: vienen de la referencia del usuario).
 - Incidente remediado: token de la cuenta demo expuesto por la herramienta de capturas → sesiones cerradas globalmente y sesión nueva por storageState; nunca pasar tokens en código a Playwright.
 - NO publicar sin confirmación del usuario.
+
+### Checkpoint (2026-10-23, tarde) — Pantallas internas: 3 rondas del revisor, aún NO LISTAS (rama `app-interna-rediseno`, sin publicar)
+- Puntajes por ronda (usabilidad/40 · craft/20): R1 Inicio 29·13, Pagos 28·13, Expediente 26·12, Calendario 27·12 → R2 29·14, 29·14, 29·13, 29·11 → R3 Inicio 30·13, Pagos 30·14, Expediente 30·14, Calendario 29·13. Gate: ≥36 y ≥16. Todas con IDENTIDAD 2/5: el revisor dice "kit fintech azul genérico"; el interior replica la referencia del usuario, así que es un límite de diseño, no de pulido.
+- Hecho: escala de letra, áreas táctiles 44px, cuota héroe con "Venció el 5 de oct" + botón "Registrar cuota", resumen "Lo que lleva tu PDF", confirmación antes de enviar constancia, borrar eventos (no de contacto), día elegido en calendario, halo/filo más visibles; bug real corregido: un contacto ya no se puede sellar con fecha futura (formulario + `agregarEvento`); el botón flotante de Pagos abre "Gasto extra" con monto vacío.
+- Pendiente fino (revisor R3): marcador subrayado en títulos, folio en el PDF, "Cuotas con registro" apretada en Inicio, filtros de Pagos repiten "Todo", deshacer al borrar evento, `pb-24` sin botón flotante, validar fecha futura de contactos también en la base de datos.
+- Decisión que depende del dueño: cómo darle identidad propia al interior sin romper su referencia (ver pregunta al usuario).

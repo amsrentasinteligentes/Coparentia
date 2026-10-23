@@ -552,6 +552,10 @@ function ModalEvento({
         setFaltante('Falta la duración en minutos (al menos 1).');
         return;
       }
+      if (fecha > hoyEnColombia()) {
+        setFaltante('Un contacto solo se registra después de que ocurrió. Elige la fecha de hoy o una anterior.');
+        return;
+      }
       if (fecha === hoyEnColombia() && hora > horaAhora) {
         setFaltante('La hora no puede ser futura: es un registro de algo que ya pasó.');
         return;
@@ -635,7 +639,7 @@ function ModalEvento({
                     type="button"
                     role="radio"
                     aria-checked={tipo === t}
-                    onClick={() => setTipo(t)}
+                    onClick={() => { setTipo(t); if (esContacto(t) && fecha > hoyEnColombia()) setFecha(hoyEnColombia()); }}
                     className={`flex flex-col items-center gap-1.5 rounded-[var(--radius-button)] border px-1 py-3 text-center text-[12px] font-medium leading-tight transition-transform duration-100 active:scale-[0.97] [touch-action:manipulation] ${
                       tipo === t ? 'border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_10%,transparent)] text-[var(--accent-ink,var(--accent))]' : 'border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] text-[var(--text-secondary)]'
                     }`}

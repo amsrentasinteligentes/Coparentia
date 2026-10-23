@@ -4,6 +4,7 @@
 // en el servidor lo refuerza igual si algo se nos escapa aquí).
 
 import { crearClienteSupabase } from '@/lib/supabase/client';
+import { hoyEnColombia } from '@/lib/fecha';
 
 export type TipoMovimiento = 'cuota' | 'gasto_extra';
 export type EstadoAutorizacion = 'aprobada' | 'pendiente' | 'objetada';
@@ -417,6 +418,8 @@ export async function agregarEvento(
   evento: Omit<Evento, 'id' | 'documentoAdjuntoPath' | 'hijoNombre'>,
   archivo?: File
 ): Promise<Evento> {
+  // Un contacto se sella como PRUEBA de algo que ya ocurrió: nunca con fecha futura.
+  if (esContacto(evento.tipo) && evento.fecha > hoyEnColombia()) throw new Error('Un contacto no puede tener fecha futura.');
   const { supabase, userId } = await usuarioActual();
   const rutaDocumento = archivo ? await subirArchivoPrivado(userId, 'eventos', archivo) : null;
   const { data, error } = await supabase

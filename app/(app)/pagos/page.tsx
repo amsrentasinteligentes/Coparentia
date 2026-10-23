@@ -59,6 +59,7 @@ export default function Pagos() {
   // sola intencion.
   const [modalAbierto, setModalAbierto] = useState(parametros.get('registrar') === '1');
   const [conceptoSugerido, setConceptoSugerido] = useState('');
+  const [tipoSugerido, setTipoSugerido] = useState<TipoMovimiento>('cuota');
   const listaRef = useRef<HTMLDivElement>(null);
   const [abriendo, setAbriendo] = useState<string | null>(null);
   const [urlVisor, setUrlVisor] = useState<string | null>(null);
@@ -230,7 +231,7 @@ export default function Pagos() {
                   <motion.button
                     type="button"
                     whileTap={{ scale: 0.97 }}
-                    onClick={() => { setConceptoSugerido(`Cuota de ${nombreMesLargo}`); setModalAbierto(true); }}
+                    onClick={() => { setConceptoSugerido(`Cuota de ${nombreMesLargo}`); setTipoSugerido('cuota'); setModalAbierto(true); }}
                     className="flex h-12 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] bg-[var(--accent)] text-[16px] font-bold text-[var(--on-accent,var(--bg))] [touch-action:manipulation]"
                   >
                     <Upload size={16} aria-hidden="true" />
@@ -468,7 +469,7 @@ export default function Pagos() {
 
       {/* Con la cuota del mes pendiente el botón principal es el de la tarjeta de la cuota. */}
       {cargado && !falloCarga && (cuotaDelMes || !titulo) && (
-      <BotonFlotante onClick={() => { setConceptoSugerido(''); setModalAbierto(true); }}>
+      <BotonFlotante onClick={() => { setConceptoSugerido(''); setTipoSugerido('gasto_extra'); setModalAbierto(true); }}>
         <Upload size={18} aria-hidden="true" />
         Registrar
       </BotonFlotante>
@@ -477,7 +478,7 @@ export default function Pagos() {
       <Portal>
       <AnimatePresence>
         {modalAbierto && (
-          <ModalRegistro conceptoInicial={conceptoSugerido}
+          <ModalRegistro conceptoInicial={conceptoSugerido} tipoInicial={tipoSugerido}
             hijos={hijos}
             onCerrar={() => setModalAbierto(false)}
             onGuardado={(nuevo) => {
@@ -506,9 +507,9 @@ export default function Pagos() {
   );
 }
 
-function ModalRegistro({ hijos, conceptoInicial, onCerrar, onGuardado }: { hijos: Hijo[]; conceptoInicial: string; onCerrar: () => void; onGuardado: (p: Pago) => void }) {
+function ModalRegistro({ hijos, conceptoInicial, tipoInicial, onCerrar, onGuardado }: { hijos: Hijo[]; conceptoInicial: string; tipoInicial: TipoMovimiento; onCerrar: () => void; onGuardado: (p: Pago) => void }) {
   const reduce = useReducedMotion();
-  const [tipo, setTipo] = useState<TipoMovimiento>('cuota');
+  const [tipo, setTipo] = useState<TipoMovimiento>(tipoInicial);
   // Con un solo hijo, un gasto extra se le asigna solo (cero toques); la cuota es de todos.
   // Mientras la persona no toque el selector, el valor se DERIVA del tipo (sin efectos).
   const [hijoElegido, setHijoElegido] = useState<ValorHijo | undefined>(undefined);
@@ -528,7 +529,7 @@ function ModalRegistro({ hijos, conceptoInicial, onCerrar, onGuardado }: { hijos
     // sin manejar en la consola.
     obtenerTitulo()
       .then((t: Titulo | null) => {
-        if (t) setMonto(String(t.montoMensual));
+        if (t && tipoInicial === 'cuota') setMonto(String(t.montoMensual));
       })
       .catch(() => {});
   }, []);
