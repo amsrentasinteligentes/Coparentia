@@ -7,7 +7,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'motion/react';
-import { Upload, ShieldCheck, FileCheck2, X, ChevronRight, ChevronLeft, Sparkles, CalendarDays, CreditCard, BarChart3, ReceiptText, Wallet, Users } from 'lucide-react';
+import { Upload, ShieldCheck, FileCheck2, X, ChevronRight, ChevronLeft, Sparkles, CalendarDays, CreditCard, ReceiptText, Wallet, Users } from 'lucide-react';
 import { ContenedorApp, Tarjeta, IconoCirculo, BotonFlotante, ErrorDeCarga, CabeceraApp, Pildora, TituloSeccion } from '@/components/app/ui';
 import { AyudaContextual } from '@/components/app/AyudaContextual';
 import { VisorImagen } from '@/components/app/VisorImagen';
@@ -158,18 +158,7 @@ export default function Pagos() {
       : { texto: 'Por registrar', tono: 'pendiente' };
   const extrasDelMes = pagos.filter((p) => p.tipo !== 'cuota' && p.fecha.slice(0, 7) === mesActual);
   const totalExtrasMes = extrasDelMes.reduce((acc, p) => acc + p.monto, 0);
-  const anioActual = String(anioEnColombia());
-  const cuotasDelAnio = pagos.filter((p) => p.tipo === 'cuota' && p.fecha.startsWith(anioActual)).length;
 
-  // Las CIFRAS DE CIERRE de abajo deben coincidir con el mes que se está viendo arriba — antes
-  // mostraban el AÑO completo sin importar el mes navegado, así que un mes vacío decía "nada
-  // registrado" arriba y "2 cuotas, 7 con Sello" abajo, en la misma pantalla (hallazgo del
-  // usuario, 2026-09-29, con captura). Con "ver todos los meses" activo sí tiene sentido mostrar
-  // el total, porque ahí la persona pidió explícitamente ver todo.
-  const pagosDelMesLista = pagos.filter((p) => p.fecha.slice(0, 7) === claveMes(mesLista));
-  const cuotasCierre = verTodosLosMeses ? cuotasDelAnio : pagosDelMesLista.filter((p) => p.tipo === 'cuota').length;
-  const conSelloCierre = verTodosLosMeses ? pagos.length : pagosDelMesLista.length;
-  const labelCierreCuotas = verTodosLosMeses ? 'Cuotas este año' : `Cuotas de ${nombreMes(mesLista).toLowerCase()}`;
 
   const nombreMesRaw = new Intl.DateTimeFormat('es-CO', { month: 'long', year: 'numeric', timeZone: 'America/Bogota' }).format(new Date());
   // Próximo vencimiento: el día de pago de este mes si no ha pasado; si ya pasó, el del mes siguiente.
@@ -211,7 +200,7 @@ export default function Pagos() {
                 <div className="min-w-0">
                   <p className="text-[14px] font-bold text-[var(--text-primary)] [font-family:var(--font-display)]">Cuota de {nombreMesRaw}</p>
                   <div className="mt-1"><Pildora texto={estadoCuota.texto} tono={estadoCuota.tono} /></div>
-                  <p className="mt-1.5 text-[18px] font-extrabold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
+                  <p className="mt-1.5 text-[28px] font-extrabold leading-tight tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
                     {titulo ? formatoCOP(cuotaDelMes?.monto ?? titulo.montoMensual) : '—'}
                   </p>
                   <p className="text-[12px] text-[var(--text-secondary)]">
@@ -231,30 +220,17 @@ export default function Pagos() {
               )}
             </Tarjeta>
 
-            {/* DOS CIFRAS — saldo pendiente y gastos extra del mes */}
-            <div className="mt-3 grid grid-cols-2 gap-3">
-              <Tarjeta indice={1}>
-                <IconoCirculo icon={BarChart3} tono={vencida ? 'pendiente' : 'exito'} />
-                <div className="mt-3 min-w-0">
-                  <p className="text-[12px] font-bold text-[var(--text-primary)]">Saldo pendiente</p>
-                  <p className="mt-1 text-[16px] font-extrabold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
-                    {vencida && titulo ? formatoCOP(titulo.montoMensual) : formatoCOP(0)}
-                  </p>
-                  <p className="text-[12px] text-[var(--text-secondary)]">{vencida ? 'Cuota del mes sin comprobante' : 'Sin pagos vencidos'}</p>
-                </div>
-              </Tarjeta>
-              <Tarjeta indice={2}>
-                <IconoCirculo icon={ReceiptText} tono="info" />
-                <div className="mt-3 min-w-0 flex-1">
-                  <p className="text-[12px] font-bold text-[var(--text-primary)]">Gastos extra</p>
-                  <p className="mt-1 text-[16px] font-extrabold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">{formatoCOP(totalExtrasMes)}</p>
-                  <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-[color-mix(in_oklab,var(--accent)_16%,transparent)]">
-                    <span className="block h-full rounded-full bg-[var(--accent)]" style={{ width: `${Math.min(100, extrasDelMes.length * 25)}%` }} />
-                  </div>
-                  <p className="mt-1 text-[12px] text-[var(--text-secondary)]">{extrasDelMes.length} este mes</p>
-                </div>
-              </Tarjeta>
-            </div>
+            {/* GASTOS EXTRA DEL MES — una sola fila. El "saldo pendiente" repetía la cuota de arriba. */}
+            <Tarjeta indice={1} className="mt-3 flex items-center gap-3">
+              <IconoCirculo icon={ReceiptText} tono="info" />
+              <div className="min-w-0 flex-1">
+                <p className="text-[12px] font-bold text-[var(--text-primary)]">Gastos extra de este mes</p>
+                <p className="text-[12px] text-[var(--text-secondary)]">
+                  {extrasDelMes.length === 0 ? 'Ninguno todavía' : extrasDelMes.length === 1 ? '1 gasto registrado' : `${extrasDelMes.length} gastos registrados`}
+                </p>
+              </div>
+              <p className="shrink-0 text-[18px] font-extrabold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">{formatoCOP(totalExtrasMes)}</p>
+            </Tarjeta>
 
             {/* GASTOS POR HIJO — con 2 o más hijos, cada uno con su cuenta del año (pedido del usuario).
                 Tocar una fila filtra la lista de abajo a los gastos de ese hijo. */}
@@ -390,9 +366,18 @@ export default function Pagos() {
                   </p>
                   <p className="mt-1 max-w-[30ch] text-[14px] text-[var(--text-secondary)]">
                     {hayAlgunPago && !verTodosLosMeses
-                      ? 'Usa las flechas de arriba para revisar otro mes.'
+                      ? 'Usa las flechas de arriba o mira todo lo que has registrado.'
                       : 'Toca "Registrar", sube la foto del comprobante y queda fechado con el Sello de Confianza.'}
                   </p>
+                  {hayAlgunPago && !verTodosLosMeses && (
+                    <button
+                      type="button"
+                      onClick={() => setVerTodosLosMeses(true)}
+                      className="mt-3 inline-flex min-h-11 items-center rounded-[var(--radius-button)] border border-[var(--accent)] px-4 text-[14px] font-semibold text-[var(--accent-ink,var(--accent))] [touch-action:manipulation]"
+                    >
+                      Ver todos los meses
+                    </button>
+                  )}
                 </div>
               ) : (
                 <ul className="mt-1 flex flex-col">
@@ -402,14 +387,16 @@ export default function Pagos() {
                       <>
                         <IconoCirculo icon={esCuota ? CalendarDays : ReceiptText} size={18} tono={esCuota ? 'accent' : 'info'} />
                         <div className="min-w-0 flex-1">
-                          <p className="truncate text-[14px] font-bold text-[var(--text-primary)]">{p.concepto}</p>
-                          <p className="truncate text-[12px] text-[var(--text-secondary)]">
+                          <p className="line-clamp-2 text-[14px] font-bold text-[var(--text-primary)]">{p.concepto}</p>
+                          <p className="text-[12px] text-[var(--text-secondary)]">
                             {p.hijoNombre && <span className="font-semibold text-[var(--accent-ink,var(--accent))]">{p.hijoNombre} · </span>}
-                            Pagado el {formatoFechaLarga(p.fecha)}
+                            {formatoFechaLarga(p.fecha)}
                           </p>
                         </div>
-                        <p className="shrink-0 text-[14px] font-extrabold tabular-nums text-[var(--text-primary)]">{formatoCOP(p.monto)}</p>
-                        <Pildora texto={esCuota ? 'Sello' : 'Extra'} tono={esCuota ? 'exito' : 'neutro'} />
+                        <div className="flex shrink-0 flex-col items-end gap-1">
+                          <p className="text-[14px] font-extrabold tabular-nums text-[var(--text-primary)]">{formatoCOP(p.monto)}</p>
+                          <Pildora texto={esCuota ? 'Sello' : 'Extra'} tono={esCuota ? 'exito' : 'neutro'} />
+                        </div>
                         {p.comprobantePath && <ChevronRight size={16} className="shrink-0 text-[var(--text-tertiary)]" aria-hidden="true" />}
                       </>
                     );
@@ -443,18 +430,6 @@ export default function Pagos() {
               )}
             </Tarjeta>
 
-            {/* CIFRAS DE CIERRE — coinciden con el mes que se está viendo arriba (o con el total,
-                si "ver todos los meses" está activo) para no contradecir a la lista de encima. */}
-            <div className="mt-3 grid grid-cols-2 gap-3">
-              <Tarjeta indice={5} className="flex items-center gap-3">
-                <IconoCirculo icon={BarChart3} />
-                <div><p className="text-[12px] text-[var(--text-secondary)]">{labelCierreCuotas}</p><p className="text-[16px] font-extrabold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">{cuotasCierre}</p></div>
-              </Tarjeta>
-              <Tarjeta indice={6} className="flex items-center gap-3">
-                <IconoCirculo icon={ShieldCheck} tono="exito" />
-                <div><p className="text-[12px] text-[var(--text-secondary)]">Con Sello</p><p className="text-[16px] font-extrabold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">{conSelloCierre}</p></div>
-              </Tarjeta>
-            </div>
           </>
         )}
 
