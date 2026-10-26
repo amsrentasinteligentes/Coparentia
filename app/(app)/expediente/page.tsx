@@ -59,7 +59,6 @@ export default function Expediente() {
   // (exportar sigue funcionando): nunca se inventa un número.
   useEffect(() => {
     let vigente = true;
-    setFalloResumen(false);
     Promise.all([
       obtenerPagos(),
       crearClienteSupabase().from('constancias').select('id', { count: 'exact', head: true }).eq('estado', 'enviada'),
@@ -178,7 +177,7 @@ export default function Expediente() {
       {/* LO QUE LLEVA TU PDF — tres cifras reales y lo que falta, para exportar sabiendo qué sale. */}
       {falloResumen && (
         <div className="mt-3">
-          <ErrorDeCarga onReintentar={() => setIntento((n) => n + 1)} />
+          <ErrorDeCarga onReintentar={() => { setFalloResumen(false); setIntento((n) => n + 1); }} />
         </div>
       )}
       {!resumen && !falloCarga && !falloResumen && (
