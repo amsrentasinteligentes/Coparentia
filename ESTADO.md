@@ -5033,3 +5033,8 @@ Se hacen juntos al tocar la sección de planes (hallazgos 3 y 9), para revisar u
 ### Checkpoint (2026-10-26, noche) — Certificado recalculado: 80/100, NO APTO (bloqueante de dinero abierto)
 - Detalle en `docs/release/CERTIFICADO-PRE-LANZAMIENTO.md` (sección 26/10): Venta 18 · Funnel 16 · Producto 17 · Confianza 13 · Velocidad 7 · Retención 9. Con criterio estricto (M1/M2 sin probar en vivo) = 75.
 - Falta: cobro real 29/10 y reembolso antes del 6/11 (NO cancelar antes); probar M1/M2 en cuenta nueva; confirmar latidos y aviso de cobro; LCP 3,5 s → ≤2,5 s; publicar la rama `app-interna-rediseno` (decisión del dueño).
+
+### Checkpoint (2026-10-26, noche) — Vigilancia verificada: los 4 latidos en Up; reconciliación Hotmart probada
+- Better Stack: constancias, aviso antes del cobro y pagos fallidos en Up (~3 d 18 h, reportan a tiempo cada día). El semanal "Revisión semanal de Hotmart" estaba en Pending (no corrió el lunes 26/10 a las 11 am Colombia); el dueño pulsó Run en Vercel → respuesta 200, 0 errores/avisos en el registro, y el latido pasó a Up. Las 3 credenciales de la API de Hotmart funcionan. El plan Hobby solo guarda 30 min de registros: para ver una ejecución hay que mirarla en seguida.
+- Pendiente: confirmar el lunes 2/11 que el cron semanal corre solo y reporta (el 26/10 no lo hizo solo; causa no determinada, posiblemente porque la primera ejecución programada de un cron nuevo puede saltarse). Mañana 27/10: revisar en Resend si salió el aviso de cobro a `+prueba2` (la ventana es de 1 a 3 días antes del fin de la prueba).
+- Nota de seguridad: el Chrome del dueño mostró en pantalla la dirección de un latido (contiene un código); no se copió a ningún archivo ni al chat.
