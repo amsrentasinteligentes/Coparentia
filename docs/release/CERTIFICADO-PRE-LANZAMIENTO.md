@@ -17,6 +17,8 @@ Producción sigue en `94b4ec3`; los cambios de la app interna están en la rama 
 | RETENCIÓN | 9 | 9 | Sin cambios: falta confirmar en Better Stack los latidos de pre-cobro y pagos fallidos, y el aviso de cobro de `+prueba2` (26–27/10). |
 | **TOTAL** | **69** | **80** | NO APTO (bloqueante de dinero abierto). |
 
+**ACTUALIZACIÓN (misma noche, 26/10):** los momentos M1 y M2 ya se probaron en el flujo real de la pantalla, con la base de datos simulada (ninguna escritura llegó a la base real): al guardar el primer comprobante sale "Tu primer comprobante quedó sellado" y queda la marca; con 3 cuotas en 3 meses sale "3 meses de registro" y su botón lleva al Expediente (capturas `prueba-m1-375.png` y `prueba-m2-375.png`). Falta solo verlos con un cliente real. Con esto el matiz de abajo queda atenuado: el total de **80** se sostiene; el criterio estricto ya no resta los 5 puntos.
+
 **Matiz honesto:** el salto de +10 en PRODUCTO viene casi todo de dos puntos de sí/no (10 pts) que antes no se acreditaban. Los **5 pts de M1/M2 están implementados y
 verificados por captura y por código, pero NO probados en vivo** (requieren subir un primer comprobante en una cuenta nueva y llegar a 3 meses con cuota). Con criterio
 estricto (sin ellos) el total sería **75**. Además, **ninguna de las 4 pantallas principales pasó el gate del revisor (≥36/40 y ≥16/20)**: están en 29–30 de 40 y 13–15 de 20.

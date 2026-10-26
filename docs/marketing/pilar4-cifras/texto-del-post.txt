@@ -10,8 +10,9 @@ HASHTAGS
 #CuotaAlimentaria #PadresSeparados #Coparentalidad #Colombia #Custodia
 
 ANTES DE PUBLICAR
-1. Abrir el boletín técnico del DANE (Pobreza monetaria 2024, 24/07/2025) y confirmar que 36,1 % y 28,4 %
-   aparecen tal cual (jefatura femenina vs masculina). Anotar la página en FICHA-MERCADO.md sección 7.
+1. VERIFICADO el 2026-10-13: boletín técnico DANE «Pobreza monetaria en Colombia, año 2024» (Bogotá, 24/07/2025), página 9, sección 1.5
+   «Perfiles del jefe del hogar…»: «en el año 2024 para el total nacional, el 36,1 % de las personas que pertenecían a un hogar cuya
+   jefatura era femenina, eran pobres; mientras que el 28,4 % de las personas en hogares con jefatura masculina lo eran». También en la Tabla 2 (pág. 10).
 2. Confirmar que el botón "Las cifras que nadie cuenta" del Linktree apunta a https://coparentia.co/?src=pilar4
 3. Este carrusel no usa personas generadas con IA: no lleva la etiqueta "Escena ilustrativa creada con IA".
 
