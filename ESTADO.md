@@ -5047,3 +5047,9 @@ Se hacen juntos al tocar la sección de planes (hallazgos 3 y 9), para revisar u
 ### Checkpoint (2026-10-26, noche) — M1 y M2 probados en el flujo real (base simulada)
 - Prueba en local con la cuenta demo, interceptando TODA escritura a Supabase y bloqueando la acción de servidor de la IA (nada tocó la base real ni gastó IA): M1 → al guardar el primer comprobante aparece "Tu primer comprobante quedó sellado" y se guarda la marca `coparentia_primera_victoria`; M2 → con 3 cuotas en 3 meses y la marca previa en 2 aparece "3 meses de registro" y "Exportar mi expediente" lleva a `/expediente` (marca pasa a 3). Capturas: `docs/revisiones/prueba-m1-375.png`, `prueba-m2-375.png`.
 - Falta verlos con un cliente real. La cuenta demo no se modificó.
+
+### Checkpoint (2026-10-26, noche) — Pixel de Meta: apuntaba a un Pixel que no era del dueño; CORREGIDO
+- Hallazgo: la web enviaba los eventos al ID del 9/10 (`1119359600533179`), pero en la cuenta de Meta del dueño el único conjunto de datos ("Pixel Coparentia") es `29032956989677482`, con "0% completado" y advertencia (sin actividad).
+- Arreglo hecho por el dueño en Vercel, sin cambios de código: `NEXT_PUBLIC_META_PIXEL_ID` = `29032956989677482` + redeploy. VERIFICADO en producción: con cookies aceptadas la página envía `PageView` al ID nuevo y ya no al viejo.
+- Mis pruebas dejaron 4 `PageView` + 1 `Lead` en el ID viejo (ajeno) y 1 `PageView` en el Pixel del dueño.
+- Pendiente (dentro de Meta, lo hace el dueño): confirmar que desaparece el triángulo y llegan `PageView`/`Lead`; revisar Diagnóstico; apagar "Coincidencias avanzadas automáticas"; verificar el dominio `coparentia.co`; priorizar eventos. Falta decidir el evento de COMPRA (la venta ocurre en Hotmart): Pixel dentro de Hotmart o API de conversiones por servidor.
