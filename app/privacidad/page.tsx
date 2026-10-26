@@ -559,7 +559,10 @@ export default function Privacidad() {
               Pixel de Meta, una herramienta de medición de publicidad, únicamente si tú lo aceptas en
               el aviso que aparece al entrar. Si lo aceptas, Meta recibe qué páginas y pasos visitas,
               en qué botones haces clic, qué plan eliges y cuándo empiezas tu prueba, junto con datos
-              técnicos del navegador (como la dirección IP y las cookies de Meta). No le enviamos tu
+              técnicos del navegador (como la dirección IP y las cookies de Meta). Meta también puede
+              leer el contenido público de estas páginas (por ejemplo, textos y precios) y medir, desde
+              tu navegador, si una visita que llegó desde nuestros anuncios terminó en una acción en
+              nuestro sitio, para mostrarnos qué anuncios funcionan. No le enviamos tu
               correo, tu nombre, tus respuestas ni ningún contenido de tu expediente. Si lo rechazas, no
               se carga nada de Meta. Puedes cambiar tu elección en cualquier momento con el botón de
               abajo. Coparentia no autorizará a terceros a utilizar datos sensibles o datos de NNA para

@@ -11,7 +11,7 @@
 
 export const META_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID ?? '';
 
-const CLAVE_ELECCION = 'coparentia_cookies_meta_v1';
+const CLAVE_ELECCION = 'coparentia_cookies_meta_v2';
 export const EVENTO_CAMBIO = 'coparentia:cookies';
 // Dos disparos idénticos dentro de esta ventana cuentan como un solo gesto (doble toque, doble
 // montaje de React en desarrollo): "cada evento una sola vez por acción".
