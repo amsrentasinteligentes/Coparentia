@@ -6,7 +6,8 @@
 
 import { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
-import { Download, FileCheck2, Scale } from 'lucide-react';
+import Link from 'next/link';
+import { Download, FileCheck2, Scale, ShieldCheck } from 'lucide-react';
 import { ContenedorApp, Tarjeta, IconoCirculo, Pildora, ErrorDeCarga, CabeceraApp, TituloSeccion, Halo, NumeroContado } from '@/components/app/ui';
 import { AyudaContextual } from '@/components/app/AyudaContextual';
 import { exportarExpedientePdf } from '@/lib/exportar-expediente';
@@ -113,6 +114,7 @@ export default function Expediente() {
       <ContenedorApp sinTope>
       <TituloSeccion
         titulo="Expediente"
+        palabraClave="Expediente"
         subtitulo={pendientes > 0 ? `${pendientes} ${pendientes === 1 ? 'autorización pendiente' : 'autorizaciones pendientes'}` : 'Todo al día · listo para exportar'}
         accion={
           <div className="flex items-center gap-1">
@@ -129,8 +131,12 @@ export default function Expediente() {
       <div className="relative isolate mt-4">
       <Halo />
       <Tarjeta className="items-center text-center" style={{ background: 'linear-gradient(150deg, var(--accent), var(--accent-deep, var(--accent)))', color: 'var(--on-accent, var(--bg))' }}>
-        <span className="mx-auto flex size-12 items-center justify-center rounded-[var(--radius-chip,999px)] bg-white/15"><FileCheck2 size={24} aria-hidden="true" /></span>
-        <p className="mt-3 text-[16px] font-extrabold [font-family:var(--font-display)]">Tu expediente en PDF, en 1 toque</p>
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-[12px] font-bold uppercase tracking-[0.06em]">
+          <ShieldCheck size={14} aria-hidden="true" />
+          {resumen ? `Foliado · ${resumen.pagos} ${resumen.pagos === 1 ? 'folio' : 'folios'}` : 'Foliado con Sello'}
+        </span>
+        <span className="mx-auto mt-3 flex size-12 items-center justify-center rounded-[var(--radius-chip,999px)] bg-white/15"><FileCheck2 size={24} aria-hidden="true" /></span>
+        <p className="mt-3 text-[20px] font-extrabold leading-tight [font-family:var(--font-display)]">Tu expediente en PDF, en 1 toque</p>
         <p className="mt-1 text-[14px] opacity-90">
           Foliado y <strong>con la foto de cada comprobante adentro</strong> — listo para tu abogado o conciliador.
         </p>
@@ -166,6 +172,14 @@ export default function Expediente() {
       </div>
 
       {/* LO QUE LLEVA TU PDF — tres cifras reales y lo que falta, para exportar sabiendo qué sale. */}
+      {!resumen && !falloCarga && (
+        <Tarjeta indice={1} className="mt-3">
+          <div aria-busy="true" className="motion-safe:animate-pulse">
+            <span className="block h-4 w-1/2 rounded-full bg-[var(--surface-2)]" />
+            <span className="mt-3 grid grid-cols-3 gap-2"><span className="h-16 rounded-[var(--radius-button)] bg-[var(--surface-2)]" /><span className="h-16 rounded-[var(--radius-button)] bg-[var(--surface-2)]" /><span className="h-16 rounded-[var(--radius-button)] bg-[var(--surface-2)]" /></span>
+          </div>
+        </Tarjeta>
+      )}
       {resumen && (
         <Tarjeta indice={1} className="mt-3">
           <h2 className="text-[16px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">Lo que lleva tu PDF</h2>
@@ -187,6 +201,9 @@ export default function Expediente() {
               : resumen.conFoto < resumen.pagos
                 ? `${resumen.pagos - resumen.conFoto} ${resumen.pagos - resumen.conFoto === 1 ? 'pago no tiene' : 'pagos no tienen'} foto del comprobante.`
                 : 'Todos tus pagos llevan la foto del comprobante.'}
+            {(resumen.pagos === 0 || resumen.conFoto < resumen.pagos) && (
+              <Link href="/pagos" className="ml-1 inline-flex min-h-11 items-center font-semibold text-[var(--accent-ink,var(--accent))]">Ir a Pagos</Link>
+            )}
           </p>
         </Tarjeta>
       )}

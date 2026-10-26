@@ -500,11 +500,14 @@ export function AccesosRapidos({ items }: { items: { href: string; label: string
 
 /* ── <TituloSeccion> — título de sección de la referencia del usuario: grande en marino, subtítulo
    gris y un chip de ícono a la derecha (donde la referencia pone su garabato). ── */
-export function TituloSeccion({ titulo, subtitulo, icon: Icon, accion }: { titulo: string; subtitulo?: string; icon?: LucideIcon; accion?: ReactNode }) {
+export function TituloSeccion({ titulo, subtitulo, icon: Icon, accion, palabraClave }: { titulo: string; subtitulo?: string; icon?: LucideIcon; accion?: ReactNode; palabraClave?: string }) {
+  const i = palabraClave ? titulo.indexOf(palabraClave) : -1;
   return (
     <div className="flex items-start justify-between gap-3 pt-2">
       <div className="min-w-0">
-        <h1 className="text-[24px] font-extrabold leading-tight tracking-[-0.01em] text-[var(--text-primary)] [font-family:var(--font-display)]">{titulo}</h1>
+        <h1 className="text-[24px] font-extrabold leading-tight tracking-[-0.01em] text-[var(--text-primary)] [font-family:var(--font-display)]">
+          {i === -1 ? titulo : (<>{titulo.slice(0, i)}<span className="text-[var(--accent)]">{palabraClave}</span>{titulo.slice((i) + (palabraClave as string).length)}</>)}
+        </h1>
         {subtitulo && <p className="mt-1 text-[14px] text-[var(--text-secondary)]">{subtitulo}</p>}
       </div>
       {accion ?? (Icon && <IconoCirculo icon={Icon} size={22} grande />)}

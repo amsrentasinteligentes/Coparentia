@@ -653,7 +653,7 @@ function Dashboard() {
           queda para las demás pantallas hasta que lleguen sus etapas. */}
       <CabeceraApp aviso={Boolean(proximoEvento)} />
       <SaludoApp linea={lineaSaludo} />
-      <ContenedorApp conFab sinTope>
+      <ContenedorApp conFab={cuotaDelMesRegistrada || !titulo} sinTope>
         {falloCarga ? (
           <ErrorDeCarga onReintentar={() => setIntentoDatos((n) => n + 1)} />
         ) : cargando ? (
@@ -718,10 +718,9 @@ function Dashboard() {
                 <Link href="/pagos" className="flex items-start gap-3 [touch-action:manipulation]">
                   <IconoCirculo icon={estadoDelMes.tono === 'exito' ? ShieldCheck : CalendarClock} size={22} grande tono={estadoDelMes.tono === 'exito' ? 'exito' : estadoDelMes.tono === 'alerta' ? 'alerta' : 'accent'} />
                   <div className="min-w-0 flex-1">
-                    <p className="text-[16px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">Cuota de {nombreMesLargo}</p>
+                    <p className="text-[16px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">Cuota de <span className="text-[var(--accent)]">{nombreMesLargo}</span></p>
                     <div className="mt-1"><Pildora texto={estadoDelMes.texto} tono={estadoDelMes.tono} /></div>
                   </div>
-                  <ChevronRight size={18} className="mt-1 shrink-0 text-[var(--text-tertiary)]" aria-hidden="true" />
                 </Link>
                 <p className="mt-3 text-[28px] font-extrabold leading-tight tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
                   {titulo ? <NumeroContado valor={titulo.montoMensual} formato={formatoCOP} /> : '—'}
@@ -785,14 +784,14 @@ function Dashboard() {
                     <IconoCirculo icon={FileCheck2} size={20} />
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="text-[14px] font-bold text-[var(--text-primary)]">Cuotas con registro</p>
+                    <p className="text-[14px] font-bold text-[var(--text-primary)]">Cuotas registradas</p>
                     <p className="text-[14px] text-[var(--text-secondary)]">
                       {metaMeses === 1 ? 'Tu primer mes ya quedó registrado' : `${formatoCOP(totalCuotas)} en cuotas`}
                     </p>
                   </div>
-                  <p className="shrink-0 text-[24px] font-extrabold leading-none tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
+                  <p className="shrink-0 text-[20px] font-extrabold leading-none tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
                     <NumeroContado valor={Math.min(mesesConRegistro, metaMeses)} />
-                    <span className="ml-1 text-[14px] font-bold text-[var(--text-secondary)]">de {metaMeses} {metaMeses === 1 ? 'mes' : 'meses'}</span>
+                    <span className="text-[14px] font-bold text-[var(--text-secondary)]"> / {metaMeses}</span>
                   </p>
                   <ChevronRight size={18} className="shrink-0 text-[var(--text-tertiary)]" aria-hidden="true" />
                 </div>

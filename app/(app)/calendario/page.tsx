@@ -12,7 +12,7 @@ import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
 import { ChevronLeft, ChevronRight, Plus, X, Users, HeartPulse, Plane, Trophy, Globe, Paperclip, CalendarDays, Lock, Phone, Video, ShieldCheck, PhoneOff, PhoneMissed, Loader2 } from 'lucide-react';
 import { SelloConfianza } from '@/components/app/SelloConfianza';
-import { ContenedorApp, Tarjeta, IconoCirculo, BotonFlotante, ErrorDeCarga, CabeceraApp, TituloSeccion, Pildora } from '@/components/app/ui';
+import { ContenedorApp, Tarjeta, IconoCirculo, BotonFlotante, ErrorDeCarga, CabeceraApp, TituloSeccion, Pildora, Halo } from '@/components/app/ui';
 import { AyudaContextual } from '@/components/app/AyudaContextual';
 import { VisorImagen } from '@/components/app/VisorImagen';
 import { Portal } from '@/components/app/Portal';
@@ -114,10 +114,7 @@ export default function Calendario() {
     setModalAbierto(true);
   };
   // Tocar un día CON eventos los muestra; un día vacío abre directo el formulario con esa fecha.
-  const tocarDia = (fecha: string): void => {
-    if (eventos.some((e) => e.fecha === fecha)) setDiaElegido((d) => (d === fecha ? null : fecha));
-    else abrirModalEnFecha(fecha);
-  };
+  const tocarDia = (fecha: string): void => setDiaElegido((d) => (d === fecha ? null : fecha));
   const borrarEvento = async (e: Evento): Promise<void> => {
     await eliminarEvento(e);
     setEventos((prev) => prev.filter((x) => x.id !== e.id));
@@ -127,8 +124,9 @@ export default function Calendario() {
   const deHoy = delMes.filter((e) => e.fecha === hoyISO);
   const proximos = delMes.filter((e) => e.fecha >= hoyISO).sort((a, b) => a.fecha.localeCompare(b.fecha));
   const delDia = diaElegido ? eventos.filter((e) => e.fecha === diaElegido) : [];
-  const listaAgenda = diaElegido && delDia.length > 0 ? delDia : proximos.length > 0 ? proximos : delMes;
-  const tituloAgenda = diaElegido && delDia.length > 0 ? `Eventos del ${formatoFechaCorta(diaElegido)}` : deHoy.length > 0 ? (proximos.length > deHoy.length ? 'Hoy y próximos' : `Hoy · ${formatoFechaCorta(hoyISO)}`) : proximos.length > 0 ? 'Próximos este mes' : `Eventos de ${nombreMes(mesActual)}`;
+  const modoDia = diaElegido !== null;
+  const listaAgenda = modoDia ? delDia : proximos.length > 0 ? proximos : delMes;
+  const tituloAgenda = diaElegido ? `Eventos del ${new Date(diaElegido + 'T00:00:00').toLocaleDateString('es-CO', { day: 'numeric', month: 'long' })}` : deHoy.length > 0 ? (proximos.length > deHoy.length ? 'Hoy y próximos' : `Hoy · ${formatoFechaCorta(hoyISO)}`) : proximos.length > 0 ? 'Próximos este mes' : `Eventos de ${nombreMes(mesActual)}`;
 
   return (
     <>
@@ -136,6 +134,7 @@ export default function Calendario() {
       <ContenedorApp conFab sinTope>
         <TituloSeccion
           titulo="Calendario"
+          palabraClave="Calendario"
           subtitulo="Organiza visitas, citas y actividades de tus hijos."
           accion={
             <div className="flex items-center gap-1">
@@ -168,7 +167,7 @@ export default function Calendario() {
               <Tarjeta indice={1} destacada>
                 <div className="flex items-center justify-between">
                   <h2 className="text-[16px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">{tituloAgenda}</h2>
-                  {(delMes.length > 0 || (diaElegido && delDia.length > 0)) && <span className="text-[12px] text-[var(--text-secondary)]">{diaElegido && delDia.length > 0 ? `${delDia.length} ese día` : `${delMes.length} este mes`}</span>}
+                  {(modoDia ? delDia.length > 0 : delMes.length > 0) && <span className="text-[12px] text-[var(--text-secondary)]">{modoDia ? `${delDia.length} ese día` : `${delMes.length} este mes`}</span>}
                 </div>
                 {cargando ? (
                   // Esqueleto con la forma de dos filas: el vacío "Sin eventos" solo cuando ya se sabe.
@@ -184,8 +183,8 @@ export default function Calendario() {
                 ) : listaAgenda.length === 0 ? (
                   <div className="flex flex-col items-center py-6 text-center">
                     <IconoCirculo icon={CalendarDays} size={22} />
-                    <p className="mt-3 text-[14px] font-bold text-[var(--text-primary)]">Sin eventos este mes</p>
-                    <p className="mt-1 max-w-[30ch] text-[14px] text-[var(--text-secondary)]">Toca un día del calendario o el botón &quot;Nuevo evento&quot; para registrar una visita, una cita o una llamada.</p>
+                    <p className="mt-3 text-[14px] font-bold text-[var(--text-primary)]">{modoDia ? 'Sin eventos este día' : 'Sin eventos este mes'}</p>
+                    <p className="mt-1 max-w-[30ch] text-[14px] text-[var(--text-secondary)]">{modoDia ? 'Agrega una visita, una cita o una llamada para ese día.' : 'Toca un día del calendario o el botón "Nuevo evento" para registrar una visita, una cita o una llamada.'}</p>
                   </div>
                 ) : (
                   <ul className="mt-1 flex flex-col">
@@ -196,13 +195,13 @@ export default function Calendario() {
                     ))}
                   </ul>
                 )}
-                {diaElegido && delDia.length > 0 && (
+                {diaElegido && (
                   <div className="mt-1 flex flex-wrap gap-2 border-t border-[color-mix(in_oklab,var(--text-tertiary)_16%,transparent)] pt-2">
                     <button type="button" onClick={() => abrirModalEnFecha(diaElegido)} className="inline-flex min-h-11 items-center gap-1.5 rounded-[var(--radius-chip,999px)] border border-[var(--accent)] px-4 text-[14px] font-semibold text-[var(--accent-ink,var(--accent))] [touch-action:manipulation]">
                       <Plus size={16} aria-hidden="true" />
-                      Agregar otro este día
+                      {delDia.length > 0 ? 'Agregar otro este día' : 'Agregar evento este día'}
                     </button>
-                    <button type="button" onClick={() => setDiaElegido(null)} className="inline-flex min-h-11 items-center px-3 text-[14px] font-semibold text-[var(--text-secondary)] [touch-action:manipulation]">
+                    <button type="button" onClick={() => setDiaElegido(null)} className="inline-flex min-h-11 items-center rounded-[var(--radius-chip,999px)] bg-[var(--surface-2)] px-4 text-[14px] font-semibold text-[var(--text-secondary)] [touch-action:manipulation]">
                       Ver todo el mes
                     </button>
                   </div>
@@ -213,7 +212,7 @@ export default function Calendario() {
           </div>
         </div>
 
-      {!(diaElegido && delDia.length > 0) && (
+      {!modoDia && (
       <BotonFlotante
         onClick={() => {
           setFechaModal(undefined);
@@ -419,7 +418,9 @@ function CalendarioMes({
   const tiposPresentes = Array.from(new Set(Array.from(eventosPorDia.values()).flat()));
 
   return (
-    <Tarjeta className="p-4">
+    <div className="relative isolate">
+    <Halo />
+    <Tarjeta className="p-4" destacada>
       <div className="mb-3 flex items-center justify-between">
         <button type="button" onClick={onMesAnterior} aria-label="Mes anterior" className="flex size-11 items-center justify-center rounded-full text-[var(--accent-ink,var(--accent))] [touch-action:manipulation]">
           <ChevronLeft size={20} aria-hidden="true" />
@@ -441,7 +442,7 @@ function CalendarioMes({
           <ChevronRight size={20} aria-hidden="true" />
         </button>
       </div>
-      <div className="grid grid-cols-7 gap-1">
+      <div className="grid grid-cols-7 gap-1 rounded-[var(--radius-card)] bg-[var(--surface-2)] p-2 shadow-[inset_0_1px_3px_color-mix(in_oklab,var(--text-primary)_8%,transparent)]">
         {DIAS_SEMANA.map((d, i) => (
           <div key={i} className="pb-2 text-center text-[12px] font-bold uppercase tracking-[0.04em] text-[var(--accent-ink,var(--accent))]">
             {d}
@@ -493,6 +494,7 @@ function CalendarioMes({
         </div>
       )}
     </Tarjeta>
+    </div>
   );
 }
 

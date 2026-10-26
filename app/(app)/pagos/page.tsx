@@ -183,6 +183,7 @@ export default function Pagos() {
       <ContenedorApp conFab sinTope>
         <TituloSeccion
           titulo="Pagos y cuota alimentaria"
+          palabraClave="cuota alimentaria"
           subtitulo="Controla tu cuota, los gastos extra y sus comprobantes."
           accion={
             <div className="flex items-center gap-1">
@@ -326,7 +327,7 @@ export default function Pagos() {
             </div>
 
             {/* FILTRO POR HIJO (regla 14 del SO: el filtro activo se ve resaltado) */}
-            {variosHijos && filtro !== 'cuota' && (
+            {variosHijos && filtro === 'gasto_extra' && (
               <div role="tablist" aria-label="Filtrar por hijo" className="mt-3 flex gap-2 overflow-x-auto pb-0.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                 {([{ v: 'todos' as FiltroHijo, l: 'Todos' }, ...hijos.map((h) => ({ v: h.id as FiltroHijo, l: h.nombre })), { v: 'sin' as FiltroHijo, l: 'Sin asignar' }]).map(({ v, l }) => (
                   <button
@@ -354,7 +355,7 @@ export default function Pagos() {
                   onClick={() => setVerTodosLosMeses(false)}
                   className="inline-flex min-h-11 items-center rounded-[var(--radius-chip,999px)] border border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_10%,transparent)] px-4 text-[14px] font-semibold text-[var(--accent-ink,var(--accent))] [touch-action:manipulation]"
                 >
-                  Todos los meses · volver a este mes
+                  Ver solo este mes
                 </button>
               ) : (
                 <>
@@ -389,7 +390,7 @@ export default function Pagos() {
                     <span className="font-semibold text-[var(--accent-ink,var(--accent))]"> · {filtroHijo === 'sin' ? 'sin asignar' : hijos.find((h) => h.id === filtroHijo)?.nombre}</span>
                   )}
                 </h2>
-                <p className="text-[12px] text-[var(--text-secondary)]">{visibles.length === 1 ? '1 registro' : `${visibles.length} registros`}</p>
+                {visibles.length > 0 && <p className="text-[12px] text-[var(--text-secondary)]">{visibles.length === 1 ? '1 registro' : `${visibles.length} registros`}</p>}
               </div>
               {visibles.length === 0 ? (
                 <div className="flex flex-col items-center py-6 text-center">
