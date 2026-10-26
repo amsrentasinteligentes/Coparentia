@@ -143,7 +143,7 @@ export function AcuerdoCuota() {
       {estado.fase === 'cargando' && (
         <div
           aria-busy="true"
-          className="mt-3 h-11 w-full animate-pulse rounded-[var(--radius-button)] bg-[color-mix(in_oklab,var(--text-tertiary)_14%,transparent)] [animation-duration:1.6s]"
+          className="mt-3 h-11 w-full motion-safe:animate-pulse rounded-[var(--radius-button)] bg-[color-mix(in_oklab,var(--text-tertiary)_14%,transparent)] [animation-duration:1.6s]"
         />
       )}
 

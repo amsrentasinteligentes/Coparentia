@@ -133,7 +133,7 @@ export default function Expediente() {
       <Tarjeta className="items-center text-center" style={{ background: 'linear-gradient(150deg, var(--accent), var(--accent-deep, var(--accent)))', color: 'var(--on-accent, var(--bg))' }}>
         <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-[12px] font-bold uppercase tracking-[0.06em]">
           <ShieldCheck size={14} aria-hidden="true" />
-          {resumen ? `Foliado · ${resumen.pagos} ${resumen.pagos === 1 ? 'folio' : 'folios'}` : 'Foliado con Sello'}
+          Foliado y con Sello de Confianza
         </span>
         <span className="mx-auto mt-3 flex size-12 items-center justify-center rounded-[var(--radius-chip,999px)] bg-white/15"><FileCheck2 size={24} aria-hidden="true" /></span>
         <p className="mt-3 text-[20px] font-extrabold leading-tight [font-family:var(--font-display)]">Tu expediente en PDF, en 1 toque</p>
@@ -190,7 +190,7 @@ export default function Expediente() {
               { n: resumen.constancias, l: resumen.constancias === 1 ? 'constancia' : 'constancias' },
             ].map((c) => (
               <div key={c.l} className="rounded-[var(--radius-button)] bg-[var(--surface-2)] px-1 py-3">
-                <dd className="text-[24px] font-extrabold leading-none tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]"><NumeroContado valor={c.n} /></dd>
+                <dd className="text-[20px] font-extrabold leading-none tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]"><NumeroContado valor={c.n} /></dd>
                 <dt className="mt-1 text-[12px] text-[var(--text-secondary)]">{c.l}</dt>
               </div>
             ))}

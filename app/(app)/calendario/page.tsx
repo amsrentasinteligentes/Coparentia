@@ -114,7 +114,12 @@ export default function Calendario() {
     setModalAbierto(true);
   };
   // Tocar un día CON eventos los muestra; un día vacío abre directo el formulario con esa fecha.
-  const tocarDia = (fecha: string): void => setDiaElegido((d) => (d === fecha ? null : fecha));
+  const agendaRef = useRef<HTMLDivElement>(null);
+  // Al elegir un día la agenda baja a la vista: sus acciones quedaban tapadas por la barra inferior.
+  const tocarDia = (fecha: string): void => {
+    setDiaElegido((d) => (d === fecha ? null : fecha));
+    setTimeout(() => agendaRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 120);
+  };
   const borrarEvento = async (e: Evento): Promise<void> => {
     await eliminarEvento(e);
     setEventos((prev) => prev.filter((x) => x.id !== e.id));
@@ -164,6 +169,7 @@ export default function Calendario() {
           <div className="md:order-1 flex flex-col gap-3">
             {falloCarga && <ErrorDeCarga onReintentar={() => setIntento((n) => n + 1)} />}
             {!falloCarga && (
+              <div ref={agendaRef}>
               <Tarjeta indice={1} destacada>
                 <div className="flex items-center justify-between">
                   <h2 className="text-[16px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">{tituloAgenda}</h2>
@@ -196,17 +202,18 @@ export default function Calendario() {
                   </ul>
                 )}
                 {diaElegido && (
-                  <div className="mt-1 flex flex-wrap gap-2 border-t border-[color-mix(in_oklab,var(--text-tertiary)_16%,transparent)] pt-2">
-                    <button type="button" onClick={() => abrirModalEnFecha(diaElegido)} className="inline-flex min-h-11 items-center gap-1.5 rounded-[var(--radius-chip,999px)] border border-[var(--accent)] px-4 text-[14px] font-semibold text-[var(--accent-ink,var(--accent))] [touch-action:manipulation]">
+                  <div className="mt-1 grid grid-cols-2 gap-2 border-t border-[color-mix(in_oklab,var(--text-tertiary)_16%,transparent)] pt-2">
+                    <button type="button" onClick={() => abrirModalEnFecha(diaElegido)} className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-[var(--radius-chip,999px)] border border-[var(--accent)] px-3 text-[14px] font-semibold text-[var(--accent-ink,var(--accent))] [touch-action:manipulation]">
                       <Plus size={16} aria-hidden="true" />
-                      {delDia.length > 0 ? 'Agregar otro este día' : 'Agregar evento este día'}
+                      {delDia.length > 0 ? 'Agregar otro' : 'Agregar evento'}
                     </button>
-                    <button type="button" onClick={() => setDiaElegido(null)} className="inline-flex min-h-11 items-center rounded-[var(--radius-chip,999px)] bg-[var(--surface-2)] px-4 text-[14px] font-semibold text-[var(--text-secondary)] [touch-action:manipulation]">
-                      Ver todo el mes
+                    <button type="button" onClick={() => setDiaElegido(null)} className="inline-flex min-h-11 items-center justify-center rounded-[var(--radius-chip,999px)] bg-[var(--surface-2)] px-3 text-[14px] font-semibold text-[var(--text-secondary)] [touch-action:manipulation]">
+                      Todo el mes
                     </button>
                   </div>
                 )}
               </Tarjeta>
+              </div>
             )}
 
           </div>
