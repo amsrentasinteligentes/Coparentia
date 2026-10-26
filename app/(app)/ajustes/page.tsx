@@ -423,7 +423,7 @@ export default function Ajustes() {
     <>
       <CabeceraApp />
       <ContenedorApp sinTope>
-        <TituloSeccion titulo="Cuota y cuenta" subtitulo="Tu cuota alimentaria, tu suscripción y el control de tu cuenta." icon={UserRound} />
+        <TituloSeccion titulo="Cuota y cuenta" subtitulo="Tu cuota alimentaria, tu suscripción y el control de tu cuenta." />
 
         {/* EDICIÓN DE LA CUOTA — el dato del producto va primero (misma lógica de siempre). */}
         <h2 className="mt-6 text-[16px] font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">Tu cuota alimentaria</h2>

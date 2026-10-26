@@ -78,9 +78,9 @@ function Avatar({ ruta, iniciales, tamano = 56, editable, onElegir }: { ruta: st
             type="button"
             onClick={() => inputRef.current?.click()}
             aria-label="Cambiar foto"
-            className="absolute -bottom-1 -right-1 flex size-8 items-center justify-center rounded-full bg-[var(--surface)] text-[var(--accent)] shadow-[var(--shadow-1)] before:absolute before:-inset-2 before:content-[''] [touch-action:manipulation]"
+            className={`absolute -bottom-1 -right-1 flex items-center justify-center rounded-full bg-[var(--surface)] text-[var(--accent)] shadow-[var(--shadow-1)] before:absolute before:content-[''] [touch-action:manipulation] ${tamano >= 56 ? 'size-8 before:-inset-2' : 'size-6 before:-inset-[10px]'}`}
           >
-            <Camera size={15} aria-hidden="true" />
+            <Camera size={tamano >= 56 ? 15 : 12} aria-hidden="true" />
           </button>
           <input ref={inputRef} type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f && onElegir) onElegir(f); e.target.value = ''; }} />
         </>
@@ -227,7 +227,7 @@ export default function PerfilPage() {
     <>
       <CabeceraApp />
       <ContenedorApp sinTope>
-        <TituloSeccion titulo="Perfil" subtitulo="Tu información, tu familia y tus ajustes." icon={UserRound} />
+        <TituloSeccion titulo="Perfil" subtitulo="Tu información, tu familia y tus ajustes." />
 
         {aviso && (
           <p role="status" className={`mt-3 rounded-[var(--radius-chip,14px)] px-3 py-2 text-[14px] font-semibold ${aviso.tipo === 'ok' ? 'bg-[var(--status-success-bg)] text-[var(--status-success)]' : 'bg-[var(--status-error-bg)] text-[var(--status-error)]'}`}>

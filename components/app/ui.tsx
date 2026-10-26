@@ -448,7 +448,7 @@ export function CabeceraApp({ aviso = false }: { aviso?: boolean }) {
         </span>
       </Link>
       <div className="flex items-center gap-2">
-        <Link href="/perfil" aria-label="Tu perfil" className="flex min-h-11 items-center gap-1 rounded-full bg-[var(--surface-2)] py-1 pl-1 pr-2 [touch-action:manipulation]">
+        <Link href="/perfil" aria-label="Tu perfil" className="flex min-h-11 min-w-11 items-center justify-center gap-1 rounded-full bg-[var(--surface-2)] p-1 [touch-action:manipulation]">
           {foto ? (
             <img src={foto} alt="" className="size-7 rounded-full object-cover" />
           ) : (
