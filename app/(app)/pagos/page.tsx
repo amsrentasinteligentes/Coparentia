@@ -13,6 +13,8 @@ import { AyudaContextual } from '@/components/app/AyudaContextual';
 import { VisorImagen } from '@/components/app/VisorImagen';
 import { Portal } from '@/components/app/Portal';
 import { SelloConfianza } from '@/components/app/SelloConfianza';
+import { MomentoHito } from '@/components/app/MomentoHito';
+import { useRouter } from 'next/navigation';
 import { VistaPreviaArchivo } from '@/components/app/VistaPreviaArchivo';
 import { SelectorHijo, useHijos, inicialHijo, type ValorHijo } from '@/components/app/SelectorHijo';
 import { CampoFechaPago } from '@/components/app/CampoFechaPago';
@@ -33,6 +35,8 @@ import {
 import { hoyEnColombia, mesEnColombia, diaDelMesEnColombia, anioEnColombia, claveMes, nombreMes, errorFechaDePago } from '@/lib/fecha';
 import { leerMontoDeRecibo } from '@/lib/ocr-recibo';
 import { comprimirParaLectura } from '@/lib/comprimir-imagen';
+
+const CLAVE_PRIMERA = 'coparentia_primera_victoria';
 
 type Filtro = 'todos' | TipoMovimiento;
 // Filtro por hijo dentro de la lista: 'todos' · id de un hijo · 'sin' (registros sin hijo asignado).
@@ -64,6 +68,9 @@ export default function Pagos() {
   const [abriendo, setAbriendo] = useState<string | null>(null);
   const [urlVisor, setUrlVisor] = useState<string | null>(null);
   const [selloDe, setSelloDe] = useState<string | null>(null);
+  // M1 (56): el PRIMER comprobante real de la cuenta tiene su pantalla completa, una sola vez.
+  const [primeraVictoria, setPrimeraVictoria] = useState<Pago | null>(null);
+  const router = useRouter();
   const [falloCarga, setFalloCarga] = useState(false);
   const [cargado, setCargado] = useState(false);
   const [intento, setIntento] = useState(0);
@@ -483,12 +490,35 @@ export default function Pagos() {
             hijos={hijos}
             onCerrar={() => setModalAbierto(false)}
             onGuardado={(nuevo) => {
+              const esElPrimero = pagos.length === 0;
               setPagos((prev) => [nuevo, ...prev]);
               setModalAbierto(false);
               // El comprobante queda guardado ANTES de mostrar el sello: la celebración refleja
               // algo que ya pasó de verdad, nunca la promesa de algo que todavía puede fallar.
+              try {
+                if (esElPrimero && localStorage.getItem(CLAVE_PRIMERA) === null) {
+                  localStorage.setItem(CLAVE_PRIMERA, '1');
+                  setPrimeraVictoria(nuevo);
+                  return;
+                }
+              } catch {
+                // Sin almacenamiento (modo privado): se cae al sello normal. Nunca se rompe.
+              }
               setSelloDe(nuevo.fecha);
             }}
+          />
+        )}
+      </AnimatePresence>
+      </Portal>
+
+      <Portal>
+      <AnimatePresence>
+        {primeraVictoria && (
+          <MomentoHito
+            tipo="primera"
+            comprobante={{ concepto: primeraVictoria.concepto, monto: formatoCOP(primeraVictoria.monto), fecha: formatoFechaLarga(primeraVictoria.fecha) }}
+            onVer={() => { setPrimeraVictoria(null); router.push('/expediente'); }}
+            onCerrar={() => setPrimeraVictoria(null)}
           />
         )}
       </AnimatePresence>

@@ -11,6 +11,9 @@ import { Upload, Check, CalendarClock, ShieldCheck, ChevronRight, FileCheck2, Gl
 import { VistaPreviaArchivo } from '@/components/app/VistaPreviaArchivo';
 import { CampoFechaPago } from '@/components/app/CampoFechaPago';
 import { BarraAtras, Halo } from '@/components/funnel/ui';
+import { MomentoHito } from '@/components/app/MomentoHito';
+import { Portal } from '@/components/app/Portal';
+import { AnimatePresence } from 'motion/react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ContenedorApp, PageHeader, Tarjeta, IconoCirculo, Pildora, TarjetaSkeleton, NumeroContado, ErrorDeCarga, BotonFlotante, CabeceraApp, SaludoApp, AccesosRapidos, Halo as HaloApp } from '@/components/app/ui';
@@ -506,6 +509,8 @@ function Dashboard() {
   // que su expediente está vacío, que es exactamente su miedo.
   const [cargando, setCargando] = useState(true);
   const [celebrar, setCelebrar] = useState(false);
+  // M2 (56): hito real de meses con cuota registrada (3, 6 o 12) — pantalla completa, una vez por hito.
+  const [hitoMeses, setHitoMeses] = useState<number | null>(null);
   const [abriendoRegistro, setAbriendoRegistro] = useState(false);
   const reduce = useReducedMotion();
 
@@ -604,6 +609,7 @@ function Dashboard() {
   // la marca. Sin esta comparación, el anillo festejaría en CADA apertura de la app — y algo que
   // celebra siempre deja de significar nada (regla del SO: solo hitos reales).
   const CLAVE_HITO = 'coparentia_meses_celebrados';
+  const HITOS_MESES = [3, 6, 12];
   const mesesLogrados = Math.min(mesesConRegistro, metaMeses);
   useEffect(() => {
     if (cargando || falloCarga || mesesLogrados === 0) return;
@@ -619,6 +625,7 @@ function Dashboard() {
       }
       if (mesesLogrados > Number(guardado)) {
         setCelebrar(true);
+        if (HITOS_MESES.includes(mesesLogrados)) setHitoMeses(mesesLogrados);
         localStorage.setItem(CLAVE_HITO, String(mesesLogrados));
       }
     } catch {
@@ -651,6 +658,20 @@ function Dashboard() {
           marca + saludo con foto, tarjeta de próximo evento, dos cifras con estado, cuatro accesos,
           actividad reciente y banner del Sello. El <PageHeader> con el marcador del tema oscuro
           queda para las demás pantallas hasta que lleguen sus etapas. */}
+      <Portal>
+        <AnimatePresence>
+          {hitoMeses !== null && (
+            <MomentoHito
+              tipo="hito"
+              meses={hitoMeses}
+              avance={Math.min(1, hitoMeses / metaMeses)}
+              datos={[{ valor: formatoCOP(totalCuotas), etiqueta: 'en cuotas registradas' }, { valor: String(pagos.length), etiqueta: 'registros con Sello' }]}
+              onVer={() => { setHitoMeses(null); router.push('/expediente'); }}
+              onCerrar={() => setHitoMeses(null)}
+            />
+          )}
+        </AnimatePresence>
+      </Portal>
       <CabeceraApp aviso={Boolean(proximoEvento)} />
       <SaludoApp linea={lineaSaludo} />
       <ContenedorApp conFab={cuotaDelMesRegistrada || !titulo} sinTope>

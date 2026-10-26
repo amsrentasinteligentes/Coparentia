@@ -33,6 +33,7 @@ export default function Expediente() {
   const [autorizaciones, setAutorizaciones] = useState<Autorizacion[]>([]);
   // Qué lleva el PDF: sin esto la pantalla "Expediente" no mostraba nada del expediente.
   const [resumen, setResumen] = useState<{ pagos: number; conFoto: number; constancias: number } | null>(null);
+  const [falloResumen, setFalloResumen] = useState(false);
   const [generando, setGenerando] = useState(false);
   const [progreso, setProgreso] = useState<string>('');
   const [resultado, setResultado] = useState<{ ok: boolean; mensaje: string } | null>(null);
@@ -58,6 +59,7 @@ export default function Expediente() {
   // (exportar sigue funcionando): nunca se inventa un número.
   useEffect(() => {
     let vigente = true;
+    setFalloResumen(false);
     Promise.all([
       obtenerPagos(),
       crearClienteSupabase().from('constancias').select('id', { count: 'exact', head: true }).eq('estado', 'enviada'),
@@ -66,7 +68,9 @@ export default function Expediente() {
         if (!vigente) return;
         setResumen({ pagos: pagos.length, conFoto: pagos.filter((p) => p.comprobantePath).length, constancias: c.count ?? 0 });
       })
-      .catch(() => {});
+      .catch(() => {
+        if (vigente) setFalloResumen(true);
+      });
     return () => {
       vigente = false;
     };
@@ -172,7 +176,12 @@ export default function Expediente() {
       </div>
 
       {/* LO QUE LLEVA TU PDF — tres cifras reales y lo que falta, para exportar sabiendo qué sale. */}
-      {!resumen && !falloCarga && (
+      {falloResumen && (
+        <div className="mt-3">
+          <ErrorDeCarga onReintentar={() => setIntento((n) => n + 1)} />
+        </div>
+      )}
+      {!resumen && !falloCarga && !falloResumen && (
         <Tarjeta indice={1} className="mt-3">
           <div aria-busy="true" className="motion-safe:animate-pulse">
             <span className="block h-4 w-1/2 rounded-full bg-[var(--surface-2)]" />
