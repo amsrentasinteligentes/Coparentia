@@ -565,7 +565,12 @@ export default function Privacidad() {
               nuestro sitio, para mostrarnos qué anuncios funcionan. No le enviamos tu
               correo, tu nombre, tus respuestas ni ningún contenido de tu expediente. Si lo rechazas, no
               se carga nada de Meta. Puedes cambiar tu elección en cualquier momento con el botón de
-              abajo. Coparentia no autorizará a terceros a utilizar datos sensibles o datos de NNA para
+              abajo. La compra se completa en la página de pago de Hotmart, un proveedor
+              independiente. En esa página, Hotmart puede cargar el Pixel de Meta bajo sus propios avisos y su
+              propia política de privacidad, y compartir con Meta datos de la compra (por ejemplo, un correo en
+              formato cifrado). Coparentia no controla ese aviso: rechazar el aviso de cookies de Coparentia no
+              impide lo que Hotmart haga en su página. Eso no cambia lo que Coparentia envía a Meta desde sus
+              propias páginas. Coparentia no autorizará a terceros a utilizar datos sensibles o datos de NNA para
               publicidad comportamental.
             </p>
             <CambiarCookies />
