@@ -2,6 +2,35 @@
 
 **Producción auditada (mañana):** coparentia.co, commit `6fe327a`. **Producción actual (noche):** commit `e0afb60`.
 
+## ACTUALIZACIÓN DEL 26/10/2026 — ❌ NO APTO todavía — 80 / 100 (antes 69), con un matiz importante
+
+Producción sigue en `94b4ec3`; los cambios de la app interna están en la rama `app-interna-rediseno` (**sin publicar**). Sigue en NO APTO porque el bloqueante de dinero
+(cobro real del 29/10 y reembolso antes del 6/11) está abierto, aunque el número llegue a 80. Venta y Recorrido no cambiaron (no se tocaron). El resto es **estimación mía**.
+
+| Pilar | 23/10 | Ahora | Evidencia |
+|---|---|---|---|
+| VENTA (página principal) | 18 | 18 | Sin cambios (38/40 · 16/20 · 17/20, LISTA, congelada). |
+| FUNNEL (recorrido y planes) | 16 | 16 | Sin cambios (37·16·16 y 38·16·16, LISTAS). Falta confirmar aviso del día 5 y primer cobro reales. |
+| PRODUCTO (dentro de la app) | 7 | **17** | Fórmula del archivo 48: (a) promedio del revisor en las 4 pantallas principales, ronda 4: Inicio 30·14, Pagos 29·14, Expediente 30·15, Calendario 30·13 → (29,75/40 + 14/20)/60 ≈ 0,73 → **7,3 de 10**; (b) momentos emocionales M1/M2 implementados (`MomentoHito`) → **5**; (c) los 6 estados en cada pantalla principal → **5**. |
+| CONFIANZA | 13 | 13 | Sin cambios: falta cobro/reembolso reales, CSP activo, Supabase Free (riesgo aceptado). Se corrigió además que un contacto no se selle con fecha futura (solo en la app; falta en la base de datos). |
+| VELOCIDAD | 6 | **7** | Lighthouse móvil de hoy sobre coparentia.co: rendimiento **90** (antes 83), LCP **3,5 s** (meta ≤2,5 s), CLS 0, TBT 60 ms, FCP 1,4 s. El LCP sigue fuera de meta; la página principal está congelada. |
+| RETENCIÓN | 9 | 9 | Sin cambios: falta confirmar en Better Stack los latidos de pre-cobro y pagos fallidos, y el aviso de cobro de `+prueba2` (26–27/10). |
+| **TOTAL** | **69** | **80** | NO APTO (bloqueante de dinero abierto). |
+
+**Matiz honesto:** el salto de +10 en PRODUCTO viene casi todo de dos puntos de sí/no (10 pts) que antes no se acreditaban. Los **5 pts de M1/M2 están implementados y
+verificados por captura y por código, pero NO probados en vivo** (requieren subir un primer comprobante en una cuenta nueva y llegar a 3 meses con cuota). Con criterio
+estricto (sin ellos) el total sería **75**. Además, **ninguna de las 4 pantallas principales pasó el gate del revisor (≥36/40 y ≥16/20)**: están en 29–30 de 40 y 13–15 de 20.
+
+**Qué falta, en orden de peso:**
+1. **Cobro y reembolso reales (29/10 al 6/11):** quita el bloqueante de dinero y sube Confianza.
+2. **Probar M1/M2 en vivo** (cuenta nueva) para que los 5 puntos queden firmes.
+3. **Retención (+2 a +3):** confirmar latidos y aviso de cobro (26–27/10).
+4. **Velocidad (+3):** LCP ≤2,5 s (hoy 3,5 s) — exige tocar la página principal congelada.
+5. **Pantallas principales:** movimiento, deshacer al borrar y menos repetición para acercarse al gate del revisor (cada punto vale ~0,17 del certificado).
+6. **Publicar** la rama `app-interna-rediseno` (decisión del dueño) y verificar `/api/version`, páginas 200, crons 401 y webhook 401.
+
+---
+
 ## ACTUALIZACIÓN DEL 23/10/2026 (mañana) — ❌ NO APTO todavía — 69 / 100 (antes 62; el 22/10 por la mañana, 57)
 
 Producción actual: commit `94b4ec3` (rediseño publicado en `7cc1e98`). Sigue en NO APTO: 69 es menor que 80 y falta el bloqueante de dinero

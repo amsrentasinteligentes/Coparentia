@@ -5029,3 +5029,7 @@ Se hacen juntos al tocar la sección de planes (hallazgos 3 y 9), para revisar u
 - M2 hito (56): mismo componente tipo "hito" — al llegar a 3, 6 o 12 meses con cuota registrada (marca existente `coparentia_meses_celebrados`, sin celebrar por logros viejos al abrir en otro teléfono): anillo que se dibuja + número protagonista + cifras reales + CTA "Exportar mi expediente". Wiring en Inicio. Capturas: docs/revisiones/momento-primera-375.png y momento-hito-375.png (vista previa con datos de ejemplo; la página temporal se borró).
 - 6 estados en las 4 pantallas principales: vacío ✓ · cargando (skeleton) ✓ · éxito (Sello/estado "Al día"/mensaje de exportación) ✓ · error (ErrorDeCarga con reintento; Expediente ahora también reintenta el resumen) ✓ · desactivado (botones en curso) ✓ · sin conexión (franja global en el layout) ✓.
 - Honesto: M1/M2 no se pueden disparar en la cuenta demo sin cambiar sus datos (no se tocaron); se verificó el diseño con una página temporal y el flujo por código/tsc.
+
+### Checkpoint (2026-10-26, noche) — Certificado recalculado: 80/100, NO APTO (bloqueante de dinero abierto)
+- Detalle en `docs/release/CERTIFICADO-PRE-LANZAMIENTO.md` (sección 26/10): Venta 18 · Funnel 16 · Producto 17 · Confianza 13 · Velocidad 7 · Retención 9. Con criterio estricto (M1/M2 sin probar en vivo) = 75.
+- Falta: cobro real 29/10 y reembolso antes del 6/11 (NO cancelar antes); probar M1/M2 en cuenta nueva; confirmar latidos y aviso de cobro; LCP 3,5 s → ≤2,5 s; publicar la rama `app-interna-rediseno` (decisión del dueño).
