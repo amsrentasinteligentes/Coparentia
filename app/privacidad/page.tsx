@@ -31,7 +31,7 @@ export default function Privacidad() {
           Política Integral de Tratamiento de Datos Personales de Coparentia
         </h1>
         <p className="mt-2 text-sm text-[var(--text-tertiary)]">
-          Vigente desde el 25 de septiembre de 2026 · Última actualización: octubre de 2026
+          Vigente desde el 25 de septiembre de 2026 · Última actualización: 26 de octubre de 2026
         </p>
 
         <div className="mt-8 space-y-10 text-[var(--text-secondary)] leading-relaxed">
