@@ -5085,3 +5085,7 @@ Se hacen juntos al tocar la sección de planes (hallazgos 3 y 9), para revisar u
 ### Checkpoint (2026-10-26, noche) — Decisión del dueño sobre cuentas de prueba: se DEJAN las dos
 - `auditoriasrentas@gmail.com` (acceso completo manual, sin pagar; último acceso 2/10; solo 1 cuota configurada) se queda porque la auditoría volverá a usarla. Riesgo conocido: su contraseña se entregó en un chat anterior; recomendación pendiente: cambiarla justo antes de la próxima auditoría y no compartirla por chat.
 - `demo@coparentia.co` (datos inventados: Andrés, Sofía y Martín, 5 pagos, 4 eventos) se queda para las pruebas y capturas del chat de la app. No se borra ni se modifica sin permiso.
+
+### Checkpoint (2026-10-27) — Aviso de cobro a `+prueba2` VERIFICADO
+- Resend (Emails): "Tu prueba gratis de Coparentia termina pronto" enviado a `amsrentasinteligentes+prueba2@gmail.com`, estado Delivered, hace ~1 h (el cron `aviso-pre-cobro` corrió y su ventana de 1–3 días abrió el 27/10, como se esperaba; el 26/10 no salió nada por estar fuera de ventana). El dueño aún debe confirmar que el correo llegó a su bandeja y que el texto/fecha de cobro dicen lo correcto.
+- Siguen: cobro real 29/10 (no cancelar antes), reembolso antes del 6/11, revisión semanal Hotmart el 2/11.
