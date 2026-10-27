@@ -61,9 +61,10 @@ export default function Pagos() {
   const parametros = useSearchParams();
   // Se abre solo cuando se llega desde el boton de Inicio, para no cobrar dos toques por una
   // sola intencion.
-  const [modalAbierto, setModalAbierto] = useState(parametros.get('registrar') === '1');
+  // `?registrar=1` abre el formulario de la cuota; `?registrar=gasto` lo abre como gasto extra (botón de Inicio).
+  const [modalAbierto, setModalAbierto] = useState(parametros.get('registrar') === '1' || parametros.get('registrar') === 'gasto');
   const [conceptoSugerido, setConceptoSugerido] = useState('');
-  const [tipoSugerido, setTipoSugerido] = useState<TipoMovimiento>('cuota');
+  const [tipoSugerido, setTipoSugerido] = useState<TipoMovimiento>(parametros.get('registrar') === 'gasto' ? 'gasto_extra' : 'cuota');
   const listaRef = useRef<HTMLDivElement>(null);
   const [abriendo, setAbriendo] = useState<string | null>(null);
   const [urlVisor, setUrlVisor] = useState<string | null>(null);
@@ -475,11 +476,12 @@ export default function Pagos() {
           </>
         )}
 
-      {/* Con la cuota del mes pendiente el botón principal es el de la tarjeta de la cuota. */}
-      {cargado && !falloCarga && (cuotaDelMes || !titulo) && (
+      {/* El botón flotante SIEMPRE está: con la cuota pendiente se llama "Registrar gasto extra" (la cuota tiene su
+          propio botón en la tarjeta); sin él, quien quería registrar un gasto no encontraba cómo (2026-10-27). */}
+      {cargado && !falloCarga && (
       <BotonFlotante onClick={() => { setConceptoSugerido(''); setTipoSugerido('gasto_extra'); setModalAbierto(true); }}>
         <Upload size={18} aria-hidden="true" />
-        Registrar
+        {cuotaDelMes || !titulo ? 'Registrar' : 'Registrar gasto extra'}
       </BotonFlotante>
       )}
 

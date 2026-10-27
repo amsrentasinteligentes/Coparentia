@@ -674,7 +674,7 @@ function Dashboard() {
       </Portal>
       <CabeceraApp aviso={Boolean(proximoEvento)} />
       <SaludoApp linea={lineaSaludo} />
-      <ContenedorApp conFab={cuotaDelMesRegistrada || !titulo} sinTope>
+      <ContenedorApp conFab sinTope>
         {falloCarga ? (
           <ErrorDeCarga onReintentar={() => setIntentoDatos((n) => n + 1)} />
         ) : cargando ? (
@@ -880,12 +880,12 @@ function Dashboard() {
           </>
         )}
 
-        {/* Con la cuota del mes pendiente, el botón principal es el de la tarjeta de la cuota: dos
-            "Registrar" a la vez competían entre sí. */}
-        {!falloCarga && !cargando && (cuotaDelMesRegistrada || !titulo) && (
-          <BotonFlotante onClick={() => router.push('/pagos?registrar=1')}>
+        {/* El botón flotante siempre está. Con la cuota del mes pendiente se llama "Registrar gasto extra" (la
+            cuota tiene su propio botón en la tarjeta); escondido, no había cómo registrar un gasto (2026-10-27). */}
+        {!falloCarga && !cargando && (
+          <BotonFlotante onClick={() => router.push(cuotaDelMesRegistrada || !titulo ? '/pagos?registrar=1' : '/pagos?registrar=gasto')}>
             <Upload size={18} aria-hidden="true" />
-            Registrar
+            {cuotaDelMesRegistrada || !titulo ? 'Registrar' : 'Registrar gasto extra'}
           </BotonFlotante>
         )}
       </ContenedorApp>
