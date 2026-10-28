@@ -10,7 +10,7 @@ import { Suspense, useEffect, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'motion/react';
-import { Lock, Mail, KeyRound, ShieldCheck } from 'lucide-react';
+import { Eye, EyeOff, Lock, Mail, KeyRound, ShieldCheck } from 'lucide-react';
 import { CtaFunnel, FunnelHeader, MarcoFunnel } from '@/components/funnel/ui';
 import { crearClienteSupabase } from '@/lib/supabase/client';
 import { VerificacionPersona, type VerificacionPersonaHandle } from '@/components/funnel/VerificacionPersona';
@@ -54,6 +54,7 @@ function EntrarInterno() {
   // contraseña asignada (p. ej. una cuenta de prueba dada de alta a mano desde el panel).
   const [mostrarPassword, setMostrarPassword] = useState(false);
   const [password, setPassword] = useState('');
+  const [verPassword, setVerPassword] = useState(false);
   const [estadoPassword, setEstadoPassword] = useState<EstadoPassword>('idle');
   // Verificación "no soy un robot" compartida por el enlace y la contraseña (ver VerificacionPersona).
   const verificacion = useRef<VerificacionPersonaHandle>(null);
@@ -272,14 +273,28 @@ function EntrarInterno() {
                 por defecto para no distraer del flujo passwordless, que sigue siendo el principal. */}
             {mostrarPassword ? (
               <form onSubmit={entrarConPassword} className="mt-4 flex flex-col gap-3 border-t border-[color-mix(in_oklab,var(--text-tertiary)_16%,transparent)] pt-4">
-                <input
-                  type="password"
-                  autoComplete="current-password"
-                  value={password}
-                  onChange={(e) => { setPassword(e.target.value); if (estadoPassword === 'error') setEstadoPassword('idle'); }}
-                  placeholder="Tu contraseña"
-                  className="h-14 w-full rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--surface)] px-4 text-[16px] text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)]"
-                />
+                <div className="relative">
+                  <input
+                    type={verPassword ? 'text' : 'password'}
+                    autoComplete="current-password"
+                    autoCapitalize="none"
+                    autoCorrect="off"
+                    spellCheck={false}
+                    value={password}
+                    onChange={(e) => { setPassword(e.target.value); if (estadoPassword === 'error') setEstadoPassword('idle'); }}
+                    placeholder="Tu contraseña"
+                    className="h-14 w-full rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--surface)] pl-4 pr-14 text-[16px] text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)]"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setVerPassword((v) => !v)}
+                    aria-label={verPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                    aria-pressed={verPassword}
+                    className="absolute right-1 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full text-[var(--text-tertiary)] [touch-action:manipulation] hover:text-[var(--text-primary)] focus-visible:outline-2 focus-visible:outline-[var(--accent)]"
+                  >
+                    {verPassword ? <EyeOff size={20} aria-hidden="true" /> : <Eye size={20} aria-hidden="true" />}
+                  </button>
+                </div>
                 <CtaFunnel type="submit" disabled={!email.includes('@') || !password || estadoPassword === 'entrando'}>
                   {estadoPassword === 'entrando' ? 'Entrando…' : 'Iniciar sesión con contraseña'}
                 </CtaFunnel>
