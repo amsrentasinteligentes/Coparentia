@@ -118,7 +118,15 @@ export default function Expediente() {
       <TituloSeccion
         titulo="Expediente"
         palabraClave="Expediente"
-        subtitulo={pendientes > 0 ? `${pendientes} ${pendientes === 1 ? 'autorización pendiente' : 'autorizaciones pendientes'}` : 'Todo al día · listo para exportar'}
+        subtitulo={
+          pendientes > 0
+            ? `${pendientes} ${pendientes === 1 ? 'autorización pendiente' : 'autorizaciones pendientes'}`
+            : resumen === null
+              ? undefined
+              : resumen.pagos > 0
+                ? 'Todo al día · listo para exportar'
+                : 'Sin registros todavía'
+        }
         accion={
           <div className="flex items-center gap-1">
             <AyudaContextual titulo="Expediente">

@@ -899,7 +899,7 @@ function PreguntaMomento({ valor, onElegir }: { valor: string; onElegir: (v: str
       palabraClave="revisas"
       tituloDespues=" tus gastos familiares?"
       subtitulo="Así te avisamos en el momento correcto"
-      porQue="Así te avisamos justo antes de que necesites revisar tus comprobantes — puedes cambiar el horario de tus alertas cuando quieras."
+      porQue="Así sabemos cuándo te resulta más fácil revisar tus comprobantes."
     >
       {opciones.map(({ icon: Icon, label }, i) => (
         <Chip
@@ -1012,15 +1012,6 @@ function ReconocimientoFinal({ respuestas, onContinuar }: { respuestas: Respuest
   );
 }
 
-// Cómo se dice cada momento dentro de "Configurando tus alertas para …" (antes se pegaba la opción tal cual:
-// "…para A mitad de tarde", con mayúscula y preposición rotas — revisor-visual, 2026-10-20).
-const FRASE_MOMENTO: Record<string, string> = {
-  'En la mañana': 'la mañana',
-  'A mitad de tarde': 'la mitad de la tarde',
-  'En la noche': 'la noche',
-  'Cuando llega un reclamo': 'cuando llegue un reclamo',
-};
-
 /* ── Loading "construyendo tu plan" (B) — el argumento de apertura del paywall. Nombra el
    Sello de Confianza explícitamente (antes solo aparecía en landing/paywall). ── */
 function LoadingPlan({ respuestas, onListo, onVolver }: { respuestas: Respuestas; onListo: () => void; onVolver: () => void }) {
@@ -1029,7 +1020,7 @@ function LoadingPlan({ respuestas, onListo, onVolver }: { respuestas: Respuestas
     `Registrando tu situación: ${respuestas.situacion === 'Otra cosa' && respuestas.situacionOtra ? respuestas.situacionOtra : respuestas.situacion || 'tu caso'}`,
     'Activando el Sello de Confianza para tus comprobantes',
     `Ajustando a tu meta de ${respuestas.metaMeses} ${respuestas.metaMeses === 1 ? 'mes' : 'meses'} de comprobantes`,
-    `Configurando tus alertas para ${FRASE_MOMENTO[respuestas.momento] ?? 'el momento que elegiste'}`,
+    'Preparando el recordatorio antes de tu fecha de pago',
     'Preparando tu primer expediente',
   ];
   const [activa, setActiva] = useState(0);

@@ -807,7 +807,11 @@ function Dashboard() {
                   <div className="min-w-0 flex-1">
                     <p className="text-[14px] font-bold text-[var(--text-primary)]">Cuotas registradas</p>
                     <p className="text-[14px] text-[var(--text-secondary)]">
-                      {metaMeses === 1 ? 'Tu primer mes ya quedó registrado' : `${formatoCOP(totalCuotas)} en cuotas`}
+                      {metaMeses === 1
+                        ? mesesConRegistro > 0
+                          ? 'Tu primer mes ya quedó registrado'
+                          : 'Aún no registras tu primer mes'
+                        : `${formatoCOP(totalCuotas)} en cuotas`}
                     </p>
                   </div>
                   <p className="shrink-0 text-[20px] font-extrabold leading-none tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
