@@ -20,6 +20,59 @@ function Seccion({ numero, titulo, children }: { numero: string; titulo: string;
   );
 }
 
+// Encargados del Tratamiento y receptores de datos (2026-10-29). El país es el de la SEDE de cada empresa
+// (verificado en su política de privacidad), salvo Supabase: ahí es la región donde está alojada nuestra
+// base de datos (Project Settings → General: us-east-1, Virginia). Solo se anotan proveedores que el
+// código usa de verdad; si se suma o se quita uno, se edita esta lista.
+const PROVEEDORES: { nombre: string; pais: string; finalidad: string }[] = [
+  { nombre: 'Supabase', pais: 'Estados Unidos (base de datos alojada en la región Este, Virginia)', finalidad: 'Base de datos, inicio de sesión y almacenamiento de los comprobantes y fotos que subes.' },
+  { nombre: 'Vercel', pais: 'Estados Unidos', finalidad: 'Aloja y ejecuta la aplicación y el sitio web.' },
+  { nombre: 'Anthropic', pais: 'Estados Unidos', finalidad: 'Inteligencia artificial que lee el monto de la foto de un comprobante, solo cuando subes una imagen.' },
+  { nombre: 'Resend', pais: 'Estados Unidos', finalidad: 'Envío de los correos de la aplicación, como constancias, avisos y recordatorios.' },
+  { nombre: 'Hotmart', pais: 'Brasil', finalidad: 'Procesa el pago y la suscripción. Actúa como responsable independiente, bajo su propia política de privacidad.' },
+  { nombre: 'Sentry', pais: 'Estados Unidos', finalidad: 'Registro de errores técnicos para poder corregirlos.' },
+  { nombre: 'Better Stack', pais: 'Estados Unidos', finalidad: 'Avisa si una tarea automática diaria no se ejecutó. Solo recibe la señal de que la tarea corrió, no datos de las personas.' },
+  { nombre: 'Cloudflare', pais: 'Estados Unidos', finalidad: 'Verificación «no soy un robot» al pedir el enlace de acceso.' },
+  { nombre: 'Google', pais: 'Estados Unidos', finalidad: 'Solo si eliges «Continuar con Google»: inicio de sesión con tu cuenta de Google, bajo su propia política de privacidad.' },
+  { nombre: 'Meta (Pixel)', pais: 'Estados Unidos', finalidad: 'Medición de publicidad, solo si aceptas las cookies de medición (ver la sección 26). Actúa como responsable independiente.' },
+  { nombre: 'Servicios de notificaciones de los navegadores (Google, Apple, Mozilla o Microsoft, según tu navegador)', pais: 'Estados Unidos', finalidad: 'Entregan los avisos push, solo si los activas.' },
+];
+
+// Anexos por país (México, Chile, Perú, Ecuador, Argentina…): aquí se suman cuando Coparentia opere en
+// cada país. Mientras la lista esté vacía no se muestra nada en la página.
+const ANEXOS_POR_PAIS: { pais: string; contenido: React.ReactNode }[] = [];
+
+// Tabla en pantalla ancha; en el celular cada fila se apila en una ficha (sin scroll horizontal ni columnas cortadas).
+function TablaProveedores() {
+  return (
+    <table className="w-full border-collapse text-sm">
+      <caption className="sr-only">Encargados del tratamiento y destinatarios de datos, con su país y finalidad</caption>
+      <thead className="max-sm:sr-only">
+        <tr className="border-b border-[var(--surface-2)] text-left text-[var(--text-primary)]">
+          <th scope="col" className="py-2 pr-3 font-semibold">Proveedor</th>
+          <th scope="col" className="py-2 pr-3 font-semibold">País</th>
+          <th scope="col" className="py-2 font-semibold">Para qué se usa</th>
+        </tr>
+      </thead>
+      <tbody>
+        {PROVEEDORES.map((p) => (
+          <tr key={p.nombre} className="border-b border-[var(--surface-2)] align-top max-sm:block max-sm:py-3">
+            <th scope="row" className="py-2 pr-3 text-left font-medium text-[var(--text-primary)] max-sm:block max-sm:py-0">{p.nombre}</th>
+            <td className="py-2 pr-3 max-sm:block max-sm:py-0.5">
+              <span className="sm:hidden font-medium text-[var(--text-primary)]">País: </span>
+              {p.pais}
+            </td>
+            <td className="py-2 max-sm:block max-sm:py-0.5">
+              <span className="sm:hidden font-medium text-[var(--text-primary)]">Para qué se usa: </span>
+              {p.finalidad}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+
 export default function Privacidad() {
   return (
     <main className="min-h-dvh bg-[var(--bg)] text-[var(--text-primary)] [font-family:var(--font-body)] px-6 py-16">
@@ -31,7 +84,7 @@ export default function Privacidad() {
           Política Integral de Tratamiento de Datos Personales de Coparentia
         </h1>
         <p className="mt-2 text-sm text-[var(--text-tertiary)]">
-          Vigente desde el 25 de septiembre de 2026 · Última actualización: 26 de octubre de 2026
+          Vigente desde el 25 de septiembre de 2026 · Última actualización: 29 de octubre de 2026
         </p>
 
         <div className="mt-8 space-y-10 text-[var(--text-secondary)] leading-relaxed">
@@ -354,9 +407,20 @@ export default function Privacidad() {
 
           <Seccion numero="14" titulo="Inteligencia artificial, analítica y automatización">
             <p>
-              Si Coparentia incorpora funcionalidades de inteligencia artificial o automatización,
-              informará de forma comprensible su finalidad y alcance cuando el tratamiento de datos
-              personales sea relevante. Coparentia no utilizará datos sensibles ni datos de NNA para
+              Hoy Coparentia usa inteligencia artificial para una sola tarea: leer el monto que
+              aparece en la foto de un comprobante de pago, cuando la persona la sube al registrar un
+              pago o gasto. Para esa lectura se envía a Anthropic, proveedor con sede en Estados
+              Unidos, una copia comprimida de la imagen, únicamente para esa finalidad; los archivos
+              PDF no se envían. El monto detectado aparece marcado como «Detectado automáticamente»
+              y la persona lo revisa, y puede corregirlo, antes de guardarlo: nada se registra en el
+              expediente sin esa revisión. Las condiciones comerciales de Anthropic establecen que
+              esta empresa no puede entrenar sus modelos con el contenido que sus clientes envían a
+              través de sus servicios. Esta transmisión internacional se describe en la sección 18 bis.
+            </p>
+            <p>
+              Si Coparentia incorpora otras funcionalidades de inteligencia artificial o
+              automatización, informará de forma comprensible su finalidad y alcance cuando el
+              tratamiento de datos personales sea relevante. Coparentia no utilizará datos sensibles ni datos de NNA para
               entrenar modelos de propósito comercial propio o de terceros sin una base jurídica
               suficiente y una autorización separada cuando esta sea exigible. Tampoco adoptará
               decisiones exclusivamente automatizadas que pretendan determinar derechos de custodia,
@@ -428,6 +492,40 @@ export default function Privacidad() {
               proporcionales al riesgo.
             </p>
           </Seccion>
+
+          <Seccion numero="18 bis" titulo="Encargados del tratamiento y transmisión internacional">
+            <p>
+              Estos son los proveedores que hoy reciben o procesan datos por cuenta de Coparentia, el
+              país en el que tienen su sede y para qué los usamos:
+            </p>
+            <TablaProveedores />
+            <p className="text-sm text-[var(--text-tertiary)]">
+              El país indicado es el de la sede de cada proveedor; en el caso de Supabase es la región
+              donde está alojada nuestra base de datos. Un proveedor puede procesar datos en otros
+              países de su propia infraestructura.
+            </p>
+            <p>
+              Casi todos estos proveedores están en Estados Unidos y Hotmart en Brasil, por lo que
+              al usar Coparentia tus datos viajan fuera de Colombia hacia esos países. Esto ocurre
+              únicamente para prestarte el servicio: guardar tu expediente y tus comprobantes,
+              mostrarte la aplicación, leer el monto de un comprobante, enviarte correos, cobrar la
+              suscripción y detectar errores técnicos. La transmisión se rige por la Ley 1581 de 2012
+              y el Decreto 1377 de 2013. Como garantías, Coparentia envía a cada proveedor solo lo
+              necesario para su finalidad; los comprobantes y las fotos se guardan en
+              almacenamiento privado, con reglas de seguridad que solo permiten a cada persona
+              acceder a lo suyo; las claves de acceso a los servicios permanecen en el servidor y no
+              en tu navegador; y, en el caso de Anthropic, sus condiciones comerciales incorporan un
+              acuerdo de tratamiento de datos y prohíben entrenar sus modelos con el contenido
+              enviado. Puedes ejercer tus derechos sobre estos datos escribiendo a{' '}
+              <a href="mailto:soporte@coparentia.co" className="underline">soporte@coparentia.co</a>.
+            </p>
+          </Seccion>
+
+          {ANEXOS_POR_PAIS.map((anexo, i) => (
+            <Seccion key={anexo.pais} numero={`Anexo ${i + 1}`} titulo={anexo.pais}>
+              {anexo.contenido}
+            </Seccion>
+          ))}
 
           <Seccion numero="19" titulo="Seguridad y confidencialidad">
             <p>

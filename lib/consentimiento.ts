@@ -4,7 +4,8 @@
 
 import type { SupabaseClient } from '@supabase/supabase-js';
 
-export const VERSION_CONSENTIMIENTO = 'v1-2026-09-21';
+// v2 (2026-10-29): la Política nombra a los encargados y a los países de destino (sección 18 bis) y describe la IA en presente.
+export const VERSION_CONSENTIMIENTO = 'v2-2026-10-29';
 
 /** Última decisión sobre novedades (marketing) del usuario, o null si nunca aceptó nada. */
 export async function obtenerPreferenciaNovedades(supabase: SupabaseClient, userId: string): Promise<boolean | null> {
