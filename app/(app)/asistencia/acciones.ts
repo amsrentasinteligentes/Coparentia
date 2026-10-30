@@ -7,6 +7,8 @@
 
 import { crearClienteSupabaseServidor } from '@/lib/supabase/server';
 import { enviarConsultaJuridica } from '@/lib/email';
+import { MENSAJE_NO_SE_PUDO_VERIFICAR, MENSAJE_SIN_SUSCRIPCION, resolverAcceso } from '@/lib/acceso';
+import { MENSAJE_ENVIO_NO_VERIFICADO, liberarEnvio, mensajeTopeAlcanzado, reservarEnvio } from '@/lib/limite-envios';
 
 interface ResultadoAccion {
   ok: boolean;
@@ -29,6 +31,11 @@ export async function enviarConsulta(texto: string, correoRespuesta?: string): P
     return { ok: false, mensaje: 'No hay sesión activa.' };
   }
 
+  // Mismo candado que las pantallas: esta función se puede llamar directo, sin pasar por ellas.
+  const acceso = await resolverAcceso(supabase, user.id, user.email);
+  if (acceso.estado === 'error') return { ok: false, mensaje: MENSAJE_NO_SE_PUDO_VERIFICAR };
+  if (acceso.estado === 'sin_acceso') return { ok: false, mensaje: MENSAJE_SIN_SUSCRIPCION };
+
   const mensaje = texto.trim();
   if (mensaje.length < LARGO_MINIMO || mensaje.length > LARGO_MAXIMO) {
     return { ok: false, mensaje: `Escribe tu consulta con al menos ${LARGO_MINIMO} caracteres.` };
@@ -39,8 +46,15 @@ export async function enviarConsulta(texto: string, correoRespuesta?: string): P
     return { ok: false, mensaje: 'Revisa el correo para la respuesta: no parece válido.' };
   }
 
+  // TOPE DIARIO (1 por día, hora de Colombia): el cupo se anota ANTES de enviar (dos clics simultáneos no
+  // se cuelan) y se devuelve si el correo no salió.
+  const cupo = await reservarEnvio(supabase, 'consulta');
+  if (cupo === 'tope') return { ok: false, mensaje: mensajeTopeAlcanzado('consulta') };
+  if (cupo === 'error') return { ok: false, mensaje: MENSAJE_ENVIO_NO_VERIFICADO };
+
   const enviado = await enviarConsultaJuridica(user.email, mensaje, responderA || user.email);
   if (!enviado) {
+    await liberarEnvio(supabase, 'consulta');
     return { ok: false, mensaje: 'No pudimos enviar tu consulta. Intenta de nuevo en un momento.' };
   }
 

@@ -8,7 +8,7 @@ import { EventoInicioPrueba } from '@/components/app/EventoInicioPrueba';
 import { BannerInstalar } from '@/components/app/InstalarApp';
 import { AlturaEstandalone } from '@/components/app/AlturaEstandalone';
 import { crearClienteSupabaseServidor } from '@/lib/supabase/server';
-import { tieneAccesoCompleto, type Status } from '@/lib/membership-fsm';
+import { resolverAcceso } from '@/lib/acceso';
 import { tieneConsentimientoVigente } from '@/lib/consentimiento';
 
 // Tipografía del interior claro (la misma de la página de ventas): next/font la sirve desde el
@@ -33,69 +33,44 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
   // de prueba/plan en todo el código (hallazgo crítico de la auditoría). Ahora, con el webhook de
   // Hotmart ya conectado, esta es la única puerta real: si la persona no tiene una suscripción
   // viva, se la manda a la pantalla de planes en vez de dejarla pasar.
-  const { data: perfil } = await supabase
-    .from('profiles')
-    .select('role, creado_manualmente')
-    .eq('id', user.id)
-    .maybeSingle();
+  // La regla vive en lib/acceso.ts (la comparten las funciones del servidor que mandan correos o
+  // gastan IA — antes solo este candado la aplicaba y esas funciones se podían llamar directo).
+  const acceso = await resolverAcceso(supabase, user.id, user.email);
 
-  // El dueño y las cuentas dadas de alta a mano desde el panel (soporte, pruebas) nunca pasan por
-  // Hotmart — se saltan el candado a propósito, igual que ya se saltaban el resto de la app.
-  const exento = perfil?.role === 'admin' || perfil?.creado_manualmente === true;
-
-  let suscripcionViva = false;
-  if (!exento) {
-    const { data: suscripcion, error: errorSuscripcion } = await supabase
-      .from('suscripciones')
-      .select('status, access_until, grace_ends_at')
-      .eq('email', user.email ?? '')
-      .maybeSingle();
-
-    // Un FALLO real de la consulta (red caída, timeout, error del servidor) NO es lo mismo que
-    // "no tiene fila en suscripciones" — `error` solo viene poblado en el primer caso, nunca por
-    // un maybeSingle() sin resultados. Antes se ignoraba `error`: un cliente que SÍ pagó podía
-    // ser mandado al paywall por una falla pasajera (hallazgo de auditoría externa, 2026-09-25 —
-    // Gate 8 de 61-INTEGRIDAD-DE-LANZAMIENTO.md: "timeout/red/5xx nunca se traduce a no compraste").
-    if (errorSuscripcion) {
-      return (
-        <div
-          className={`tema-app-claro ${figtree.variable} ${nunitoSans.variable} flex min-h-dvh flex-col items-center justify-center gap-3 bg-[var(--bg)] p-6 text-center [font-family:var(--font-body)]`}
+  // Un FALLO real de la consulta (red caída, timeout, error del servidor) NO es lo mismo que "no tiene
+  // fila en suscripciones": antes se ignoraba y un cliente que SÍ pagó podía ser mandado al paywall por
+  // una falla pasajera (hallazgo de auditoría externa, 2026-09-25 — Gate 8 de
+  // 61-INTEGRIDAD-DE-LANZAMIENTO.md: "timeout/red/5xx nunca se traduce a no compraste").
+  if (acceso.estado === 'error') {
+    return (
+      <div
+        className={`tema-app-claro ${figtree.variable} ${nunitoSans.variable} flex min-h-dvh flex-col items-center justify-center gap-3 bg-[var(--bg)] p-6 text-center [font-family:var(--font-body)]`}
+      >
+        <p className="text-[16px] font-bold text-[var(--text-primary)]">No pudimos verificar tu cuenta</p>
+        <p className="max-w-[32ch] text-[14px] text-[var(--text-secondary)]">
+          Puede ser una falla pasajera de conexión — tu acceso está a salvo. Vuelve a intentarlo en un momento.
+        </p>
+        <a
+          href="/inicio"
+          className="mt-2 rounded-[var(--radius-button)] bg-[var(--accent)] px-5 py-3 text-[14px] font-bold text-[var(--on-accent)] [touch-action:manipulation]"
         >
-          <p className="text-[16px] font-bold text-[var(--text-primary)]">No pudimos verificar tu cuenta</p>
-          <p className="max-w-[32ch] text-[14px] text-[var(--text-secondary)]">
-            Puede ser una falla pasajera de conexión — tu acceso está a salvo. Vuelve a intentarlo en un momento.
-          </p>
-          <a
-            href="/inicio"
-            className="mt-2 rounded-[var(--radius-button)] bg-[var(--accent)] px-5 py-3 text-[14px] font-bold text-[var(--on-accent)] [touch-action:manipulation]"
-          >
-            Reintentar
-          </a>
-        </div>
-      );
-    }
-
-    const tieneAcceso = suscripcion
-      ? tieneAccesoCompleto(
-          suscripcion.status as Status,
-          new Date(),
-          suscripcion.access_until ? new Date(suscripcion.access_until) : null,
-          suscripcion.grace_ends_at ? new Date(suscripcion.grace_ends_at) : null
-        )
-      : false; // sin fila en `suscripciones` (y sin error) = nunca pagó ni empezó una prueba
-
-    if (!tieneAcceso) {
-      redirect('/paywall');
-    }
-    suscripcionViva = suscripcion?.status === 'trialing' || suscripcion?.status === 'active';
+          Reintentar
+        </a>
+      </div>
+    );
   }
+
+  if (acceso.estado === 'sin_acceso') {
+    redirect('/paywall');
+  }
+  const suscripcionViva = acceso.suscripcionViva;
 
   // CONSENTIMIENTO EXPRESO (2026-09-21, equipo jurídico del usuario): la primera vez que entra tras
   // comprar —y cada vez que cambie la versión de los textos legales— la persona debe aceptar
   // Términos, Política de Datos y renovación automática en /consentimiento antes de ver la app.
   // El dueño (admin) queda exento; las cuentas manuales (clientes de prueba) NO: también son
   // personas cuyos datos tratamos.
-  if (perfil?.role !== 'admin' && !(await tieneConsentimientoVigente(supabase, user.id))) {
+  if (acceso.role !== 'admin' && !(await tieneConsentimientoVigente(supabase, user.id))) {
     redirect('/consentimiento');
   }
 

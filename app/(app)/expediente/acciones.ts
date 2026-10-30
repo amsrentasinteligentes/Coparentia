@@ -7,6 +7,8 @@
 import { crearClienteSupabaseServidor } from '@/lib/supabase/server';
 import { armarResumen, enviarConstanciasDelPeriodo, mesAnteriorEnColombia, periodoTexto } from '@/lib/constancias';
 import { hoyEnColombia } from '@/lib/fecha';
+import { MENSAJE_NO_SE_PUDO_VERIFICAR, MENSAJE_SIN_SUSCRIPCION, resolverAcceso } from '@/lib/acceso';
+import { MENSAJE_ENVIO_NO_VERIFICADO, liberarEnvio, mensajeTopeAlcanzado, reservarEnvio } from '@/lib/limite-envios';
 
 interface Resultado {
   ok: boolean;
@@ -19,6 +21,11 @@ export async function enviarConstanciaAhora(periodo?: string): Promise<Resultado
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return { ok: false, mensaje: 'No hay sesión activa.' };
+
+  // Mismo candado que las pantallas: esta función se puede llamar directo, sin pasar por ellas.
+  const acceso = await resolverAcceso(supabase, user.id, user.email);
+  if (acceso.estado === 'error') return { ok: false, mensaje: MENSAJE_NO_SE_PUDO_VERIFICAR };
+  if (acceso.estado === 'sin_acceso') return { ok: false, mensaje: MENSAJE_SIN_SUSCRIPCION };
 
   const { data: perfil } = await supabase
     .from('profiles')
@@ -44,6 +51,13 @@ export async function enviarConstanciaAhora(periodo?: string): Promise<Resultado
     }
   }
 
+  // TOPE DIARIO (1 por día, hora de Colombia — que la otra parte no lo sienta como hostigamiento): el
+  // cupo se anota ANTES de enviar para que dos clics simultáneos no se cuelen, y se devuelve si al final
+  // no salió ningún correo (así un correo mal escrito no deja a nadie sin poder corregirlo y reenviar).
+  const cupo = await reservarEnvio(supabase, 'constancia');
+  if (cupo === 'tope') return { ok: false, mensaje: mensajeTopeAlcanzado('constancia') };
+  if (cupo === 'error') return { ok: false, mensaje: MENSAJE_ENVIO_NO_VERIFICADO };
+
   // UN CORREO POR CADA HIJO con lo suyo (pedido del usuario): así la otra parte recibe las cuentas
   // separadas y no un solo correo mezclado.
   const r = await enviarConstanciasDelPeriodo(
@@ -56,6 +70,8 @@ export async function enviarConstanciaAhora(periodo?: string): Promise<Resultado
     perfil?.otro_progenitor_nombre ?? '',
     user.email ?? ''
   );
+
+  if (r.sinNada || r.enviadas === 0) await liberarEnvio(supabase, 'constancia');
 
   if (r.sinNada) return { ok: false, mensaje: `No hay nada registrado en ${periodoTexto(elegido)}: no tiene sentido enviar una constancia vacía.` };
   if (r.enviadas === 0) return { ok: false, mensaje: 'No pudimos enviar la constancia. Revisa el correo de la otra parte e inténtalo de nuevo.' };

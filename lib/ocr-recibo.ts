@@ -12,6 +12,7 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { z } from 'zod';
 import { crearClienteSupabaseServidor } from '@/lib/supabase/server';
+import { resolverAcceso } from '@/lib/acceso';
 
 // Nota: se intentó reforzar con `export const maxDuration` aquí, pero un archivo 'use server'
 // solo puede exportar funciones — cualquier otro export rompe TODAS las Server Actions del
@@ -72,6 +73,11 @@ export async function leerMontoDeRecibo(archivo: File): Promise<ResultadoLectura
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return { monto: null, confianza: null };
+
+  // Mismo candado que las pantallas: esta función se puede llamar directo y cada lectura gasta IA real.
+  // Sin acceso (o si no se pudo verificar) NO se lee la foto: degrada a "no se pudo leer" y no se llama a la IA.
+  const acceso = await resolverAcceso(supabase, user.id, user.email);
+  if (acceso.estado !== 'ok') return { monto: null, confianza: null };
 
   const inicio = Date.now();
 
