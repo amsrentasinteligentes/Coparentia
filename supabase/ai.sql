@@ -27,10 +27,9 @@ alter table public.ai_calls enable row level security;
 create policy "ai_calls_select_admin" on public.ai_calls
   for select using (public.es_admin());
 
--- Nadie inserta desde el navegador: solo el servidor (con la anon key autenticada del usuario que
--- disparó la llamada, o vía la lógica de servidor) — sin política de insert para clientes, así que
--- las inserciones se hacen con la sesión del propio usuario autenticado vía RPC/Server Action, que
--- SÍ corre en el servidor. Como el insert lo hace el código de servidor con el cliente normal
--- (autenticado como el usuario), sí necesita permiso de insertar su propia fila:
-create policy "ai_calls_insert_propio" on public.ai_calls
-  for insert with check ((select auth.uid()) = user_id);
+-- Nadie inserta desde el navegador: NO hay política de insert. Las llamadas las anota solo el servidor
+-- con la clave de servicio (lib/ocr-recibo.ts), que se salta la seguridad por filas.
+--
+-- ⚠️ Antes existía aquí la política `ai_calls_insert_propio` (insert con la sesión del propio usuario).
+-- Era un hueco: cualquier usuario podía anotar una fila con el costo que quisiera y agotar el tope diario
+-- de TODOS (auditoría 2026-10-29). Se eliminó con supabase/freno-gasto-ia-v2-cierre.sql.

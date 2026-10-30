@@ -12,6 +12,7 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { z } from 'zod';
 import { crearClienteSupabaseServidor } from '@/lib/supabase/server';
+import { crearClienteSupabaseAdmin } from '@/lib/supabase/admin';
 import { resolverAcceso } from '@/lib/acceso';
 
 // Nota: se intentó reforzar con `export const maxDuration` aquí, pero un archivo 'use server'
@@ -22,19 +23,41 @@ import { resolverAcceso } from '@/lib/acceso';
 
 const FEATURE = 'lector_recibo';
 
-// Precio aproximado del modelo de extracción (Haiku 4.5, USD por 1M tokens) — VERIFICAR el precio
-// vigente en la doc oficial de Anthropic antes de confiar en el costo mostrado en el panel.
-const PRECIO_ENTRADA_POR_1M = 1;
-const PRECIO_SALIDA_POR_1M = 5;
+// Modelo de respaldo cuando no existe la variable AI_MODEL (hoy es el caso en producción).
+const MODELO_POR_DEFECTO = 'claude-haiku-4-5';
+
+// Precio por MODELO (USD por 1M tokens), tomado de la tabla oficial platform.claude.com/docs/en/about-claude/pricing
+// (verificada 2026-10-29). El costo que ve el panel se calcula con el precio del modelo que REALMENTE
+// respondió, no con uno fijo. Haiku 5.5 tiene un precio mayor solo para prompts de más de 100.000 tokens:
+// una foto de recibo queda muy por debajo, así que aquí va el precio de hasta 100.000.
+const PRECIOS_POR_1M: Record<string, { entrada: number; salida: number }> = {
+  'claude-haiku-4-5': { entrada: 1, salida: 5 },
+  'claude-haiku-5-5': { entrada: 0.1, salida: 0.5 },
+  'claude-sonnet-4-5': { entrada: 3, salida: 15 },
+  'claude-sonnet-4-6': { entrada: 3, salida: 15 },
+  'claude-sonnet-5': { entrada: 2, salida: 10 },
+  'claude-sonnet-5-5': { entrada: 2, salida: 10 },
+  'claude-opus-4-5': { entrada: 5, salida: 25 },
+  'claude-opus-5': { entrada: 5, salida: 25 },
+  'claude-opus-5-5': { entrada: 4, salida: 20 },
+};
+// Un modelo que no está en la tabla se cobra al precio MÁS ALTO conocido (Fable 5.x: $10 / $50): preferimos
+// sobrestimar el gasto y que el freno corte antes, a subestimarlo y que no corte nunca.
+const PRECIO_DESCONOCIDO = { entrada: 10, salida: 50 };
 
 // Kill-switch de gasto — tope conservador y muy por encima del uso esperado de una app de este
 // tamaño (300 recibos/mes ≈ $0.60 USD/mes); protege contra un bug en loop, no contra el uso normal.
 //
 // ⚠️ EL TOPE YA NO VIVE AQUÍ: vive en la función `presupuesto_ia_disponible` de
-// supabase/freno-gasto-ia.sql. Antes se comprobaba desde este archivo leyendo `ai_calls` con la
-// sesión del usuario, pero la política de seguridad de esa tabla solo deja leerla al dueño: para
-// cualquier usuario normal la suma daba 0 y el freno NUNCA cortaba (auditoría 2026-09-11).
-// Ponerlo en el servidor también impide que el tope se pueda alterar desde el cliente.
+// supabase/freno-gasto-ia-v2.sql (US$1/día entre todos + 30 lecturas/día por persona). Antes se
+// comprobaba desde este archivo leyendo `ai_calls` con la sesión del usuario, pero la política de
+// seguridad de esa tabla solo deja leerla al dueño: para cualquier usuario normal la suma daba 0 y el
+// freno NUNCA cortaba (auditoría 2026-09-11). Ponerlo en el servidor también impide que el tope se
+// pueda alterar desde el cliente.
+//
+// Y LAS LLAMADAS SE ANOTAN CON LA CLAVE DE SERVICIO, no con la sesión del usuario (auditoría 2026-10-29):
+// antes `ai_calls` tenía una política que dejaba a cualquier usuario insertar filas con el costo que
+// quisiera, y una sola fila falsa agotaba el tope diario de TODOS. Ahora nadie inserta desde el navegador.
 
 const EsquemaMonto = z.object({
   monto: z.number().positive().nullable(),
@@ -81,8 +104,17 @@ export async function leerMontoDeRecibo(archivo: File): Promise<ResultadoLectura
 
   const inicio = Date.now();
 
-  if (!(await dentroDelPresupuestoDiario(supabase))) {
-    await registrarLlamada(supabase, user.id, { status: 'error', error: 'presupuesto_diario_agotado' });
+  // El freno y el registro de gasto van con la clave de servicio. Si no está disponible, FALLA CERRADO:
+  // no se llama a la IA y la persona escribe el monto a mano.
+  let admin: ClienteAdmin;
+  try {
+    admin = crearClienteSupabaseAdmin();
+  } catch {
+    return { monto: null, confianza: null };
+  }
+
+  if (!(await dentroDelPresupuestoDiario(admin, user.id))) {
+    await registrarLlamada(admin, user.id, { status: 'error', error: 'presupuesto_diario_agotado' });
     return { monto: null, confianza: null };
   }
 
@@ -96,7 +128,7 @@ export async function leerMontoDeRecibo(archivo: File): Promise<ResultadoLectura
     if (!mediaType) return { monto: null, confianza: null };
 
     const client = new Anthropic(); // ANTHROPIC_API_KEY del entorno (servidor, nunca en el cliente)
-    const modelo = process.env.AI_MODEL || 'claude-haiku-4-5';
+    const modelo = process.env.AI_MODEL || MODELO_POR_DEFECTO;
 
     const res = await client.messages.create({
       model: modelo,
@@ -116,21 +148,23 @@ export async function leerMontoDeRecibo(archivo: File): Promise<ResultadoLectura
 
     const toolUse = res.content.find((b): b is Anthropic.ToolUseBlock => b.type === 'tool_use');
     const parsed = EsquemaMonto.safeParse(toolUse?.input);
-    const costoUsd = calcularCostoUsd(res.usage.input_tokens, res.usage.output_tokens);
+    // El costo y el modelo anotados son los del modelo que REALMENTE respondió, no solo el configurado.
+    const modeloReal = res.model || modelo;
+    const costoUsd = calcularCostoUsd(modeloReal, res.usage.input_tokens, res.usage.output_tokens);
 
-    await registrarLlamada(supabase, user.id, {
+    await registrarLlamada(admin, user.id, {
       status: 'ok',
       tokensIn: res.usage.input_tokens,
       tokensOut: res.usage.output_tokens,
       costoUsd,
       latenciaMs: Date.now() - inicio,
-      modelo,
+      modelo: modeloReal,
     });
 
     if (!parsed.success) return { monto: null, confianza: null };
     return normalizar(parsed.data);
   } catch (e) {
-    await registrarLlamada(supabase, user.id, {
+    await registrarLlamada(admin, user.id, {
       status: 'error',
       error: e instanceof Error ? e.message : 'error_desconocido',
       latenciaMs: Date.now() - inicio,
@@ -144,27 +178,41 @@ function normalizar(r: ResultadoExtraccion): ResultadoLectura {
   return { monto: r.monto, confianza: r.confianza };
 }
 
-function calcularCostoUsd(tokensIn: number, tokensOut: number): number {
-  return (tokensIn / 1_000_000) * PRECIO_ENTRADA_POR_1M + (tokensOut / 1_000_000) * PRECIO_SALIDA_POR_1M;
+// Precio del modelo: coincidencia por el nombre MÁS LARGO que encaje, para que `claude-opus-5-5` no caiga en
+// `claude-opus-5` y para aceptar nombres con fecha (`claude-haiku-4-5-20251001`).
+function precioDelModelo(modelo: string): { entrada: number; salida: number } {
+  let mejor: string | null = null;
+  for (const nombre of Object.keys(PRECIOS_POR_1M)) {
+    if ((modelo === nombre || modelo.startsWith(`${nombre}-`)) && (mejor === null || nombre.length > mejor.length)) {
+      mejor = nombre;
+    }
+  }
+  return mejor ? PRECIOS_POR_1M[mejor] : PRECIO_DESCONOCIDO;
 }
 
-type SupabaseServidor = Awaited<ReturnType<typeof crearClienteSupabaseServidor>>;
+function calcularCostoUsd(modelo: string, tokensIn: number, tokensOut: number): number {
+  const precio = precioDelModelo(modelo);
+  return (tokensIn / 1_000_000) * precio.entrada + (tokensOut / 1_000_000) * precio.salida;
+}
 
-// Le pregunta al servidor si todavía hay presupuesto del día. La función de la base suma TODAS las
-// llamadas (cosa que este usuario no puede hacer por su cuenta) y devuelve solo un sí/no.
+type ClienteAdmin = ReturnType<typeof crearClienteSupabaseAdmin>;
+
+// Le pregunta al servidor si todavía hay presupuesto: tope global del día y tope de lecturas de ESTA
+// persona. La función de la base suma las llamadas de todos (cosa que un usuario no puede hacer por su
+// cuenta) y devuelve solo un sí/no; solo se puede llamar con la clave de servicio.
 //
 // FALLA CERRADA A PROPÓSITO: si la función no existe todavía o la consulta falla, se responde
 // "no hay presupuesto" y la lectura automática se apaga. Un freno de gasto que se abre solo cuando
 // algo se rompe no es un freno (09-SEGURIDAD.md: nada de defaults inseguros). La persona no queda
 // bloqueada: escribe el monto a mano, que es la salida que esta pantalla siempre tuvo.
-async function dentroDelPresupuestoDiario(supabase: SupabaseServidor): Promise<boolean> {
-  const { data, error } = await supabase.rpc('presupuesto_ia_disponible', { p_feature: FEATURE });
+async function dentroDelPresupuestoDiario(admin: ClienteAdmin, userId: string): Promise<boolean> {
+  const { data, error } = await admin.rpc('presupuesto_ia_disponible', { p_user_id: userId, p_feature: FEATURE });
   if (error || typeof data !== 'boolean') return false;
   return data;
 }
 
 async function registrarLlamada(
-  supabase: SupabaseServidor,
+  admin: ClienteAdmin,
   userId: string,
   datos: {
     status: 'ok' | 'error';
@@ -176,10 +224,10 @@ async function registrarLlamada(
     error?: string;
   }
 ): Promise<void> {
-  await supabase.from('ai_calls').insert({
+  const { error } = await admin.from('ai_calls').insert({
     user_id: userId,
     feature: FEATURE,
-    model: datos.modelo ?? process.env.AI_MODEL ?? 'claude-haiku-4-5',
+    model: datos.modelo ?? (process.env.AI_MODEL || MODELO_POR_DEFECTO),
     tokens_in: datos.tokensIn ?? null,
     tokens_out: datos.tokensOut ?? null,
     cost_usd: datos.costoUsd ?? null,
@@ -187,4 +235,6 @@ async function registrarLlamada(
     status: datos.status,
     error: datos.error ?? null,
   });
+  // Una llamada que no se anota deja al freno "ciego" para esa lectura: se deja constancia en los logs del servidor.
+  if (error) console.error('[ai_calls] no se pudo anotar una llamada de IA');
 }
