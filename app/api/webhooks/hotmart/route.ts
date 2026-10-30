@@ -14,6 +14,7 @@ import { evaluarProducto } from '@/lib/hotmart-catalogo';
 import { reportarError } from '@/lib/monitoreo';
 import { enviarCorreoBienvenida, enviarCorreoCancelacion, enviarCorreoPagoFallido } from '@/lib/email';
 import { TRIAL_DIAS } from '@/lib/precios';
+import { fechaDeHotmart } from '@/lib/hotmart-fecha';
 
 export const runtime = 'nodejs'; // node:crypto y raw body — no corre en Edge
 
@@ -139,10 +140,11 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   const ahora = new Date();
   const trialEndsAt = nuevoEstado === 'trialing' ? new Date(ahora.getTime() + DIAS_PRUEBA * 86_400_000) : null;
   const fechaProximoCobro: number | undefined = data.subscription?.date_next_charge ?? data.purchase?.date_next_charge ?? data.date_next_charge;
+  const proximoCobro = fechaDeHotmart(fechaProximoCobro); // acepta segundos o milisegundos
   const accessUntil =
     nuevoEstado === 'cancelled'
-      ? fechaProximoCobro
-        ? new Date(Number(fechaProximoCobro))
+      ? proximoCobro && proximoCobro > ahora
+        ? proximoCobro
         : new Date(ahora.getTime() + 30 * 86_400_000)
       : null;
   const graceEndsAt = nuevoEstado === 'past_due' ? new Date(ahora.getTime() + 5 * 86_400_000) : null;
@@ -185,8 +187,8 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   await registrar(eventId, evento, resultado);
 
   // 7. PRÓXIMO COBRO — solo en un cobro real aplicado; es informativo para Perfil, nunca decide el acceso.
-  if (resultado === 'applied' && nuevoEstado === 'active' && fechaProximoCobro) {
-    await guardarProximoCobro(respuestaRpc?.email ?? email, subscriberCode, Number(fechaProximoCobro));
+  if (resultado === 'applied' && nuevoEstado === 'active' && proximoCobro) {
+    await guardarProximoCobro(respuestaRpc?.email ?? email, subscriberCode, proximoCobro.getTime());
   }
 
   // 8. CORREOS — solo cuando el aviso de verdad se APLICÓ (nunca en duplicados: Hotmart reenvía
