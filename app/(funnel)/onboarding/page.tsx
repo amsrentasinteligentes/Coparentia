@@ -806,7 +806,7 @@ function ReconocimientoPreocupacion({
         <div className="mt-6 flex max-w-[36ch] items-start gap-3 rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--accent)_25%,transparent)] bg-[color-mix(in_oklab,var(--accent)_8%,transparent)] p-4 text-left">
           <ShieldCheck size={20} className="mt-0.5 shrink-0 text-[var(--accent)]" aria-hidden="true" />
           <p className="text-[14px] leading-[1.5] text-[var(--text-secondary)]">
-            No necesitas que nadie más use la app: tu <Marcador>expediente queda blindado</Marcador> igual, lo use alguien o no.
+            No necesitas que nadie más use la app: tu <Marcador>expediente queda ordenado y fechado</Marcador> igual, lo use alguien o no.
           </p>
         </div>
       )}
