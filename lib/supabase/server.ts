@@ -10,9 +10,10 @@ import { cookies } from 'next/headers';
 export async function crearClienteSupabaseServidor() {
   const cookieStore = await cookies();
 
+  // `.trim()`: las dos variables se guardaron en Vercel con un salto de línea al final (auditoría 2026-10-29).
   return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    process.env.NEXT_PUBLIC_SUPABASE_URL!.trim(),
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!.trim(),
     {
       cookies: {
         getAll() {

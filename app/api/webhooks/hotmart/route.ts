@@ -18,7 +18,7 @@ import { fechaDeHotmart } from '@/lib/hotmart-fecha';
 
 export const runtime = 'nodejs'; // node:crypto y raw body — no corre en Edge
 
-const admin = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!, {
+const admin = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!.trim(), process.env.SUPABASE_SERVICE_ROLE_KEY!, {
   auth: { autoRefreshToken: false, persistSession: false },
 });
 
