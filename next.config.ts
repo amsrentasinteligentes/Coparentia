@@ -42,12 +42,14 @@ const nextConfig: NextConfig = {
           { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
           { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
           { key: 'X-DNS-Prefetch-Control', value: 'off' },
-          // CSP en modo SOLO-REPORTE (2026-10-22, certificación pre-lanzamiento): el navegador anota en su consola lo que
-          // bloquearía, pero NO bloquea nada todavía. Primero se observa con tráfico real (Meta Pixel, Supabase, Hotmart,
-          // fuentes, video) y recién después se pasa a `Content-Security-Policy` real. Sin nonce todavía: usa 'unsafe-inline'
-          // para scripts y estilos (Next los inyecta), y aun así cierra frame-ancestors, object-src, base-uri y form-action.
+          // CSP ACTIVA (2026-11-05, auditoría 2). Estuvo en modo solo-reporte desde 2026-10-22; antes de activarla se recorrieron en
+          // producción, con la consola abierta, la página principal con Pixel de Meta, /entrar (Cloudflare), el recorrido de inicio,
+          // el paywall hasta Hotmart, Inicio, Pagos (ver y adjuntar comprobante), la exportación del PDF, Calendario y Perfil (foto):
+          // CERO violaciones, así que no se agregó ningún dominio. Si una función nueva usa otro origen (script, imagen, conexión,
+          // marco), hay que sumarlo aquí o el navegador lo bloqueará. Sin nonce todavía: usa 'unsafe-inline' para scripts y estilos
+          // (Next los inyecta), y aun así cierra frame-ancestors, object-src, base-uri y form-action.
           {
-            key: 'Content-Security-Policy-Report-Only',
+            key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
               "script-src 'self' 'unsafe-inline' https://connect.facebook.net https://challenges.cloudflare.com",
