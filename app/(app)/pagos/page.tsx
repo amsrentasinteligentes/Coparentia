@@ -35,6 +35,7 @@ import {
 import { hoyEnColombia, mesEnColombia, diaDelMesEnColombia, anioEnColombia, claveMes, nombreMes, errorFechaDePago } from '@/lib/fecha';
 import { leerMontoDeRecibo } from '@/lib/ocr-recibo';
 import { comprimirParaLectura } from '@/lib/comprimir-imagen';
+import { digitosDelMonto, digitosDelMontoPegado, montoParaCampo } from '@/lib/formato-monto';
 
 const CLAVE_PRIMERA = 'coparentia_primera_victoria';
 
@@ -718,12 +719,20 @@ function ModalRegistro({ hijos, conceptoInicial, tipoInicial, onCerrar, onGuarda
           )}
         </div>
         <input
-          type="number"
+          type="text"
           inputMode="numeric"
-          value={monto}
+          autoComplete="off"
+          placeholder="$ 0"
+          value={montoParaCampo(monto)}
           onChange={(e) => {
-            setMonto(e.target.value);
+            setMonto(digitosDelMonto(e.target.value));
             setMontoDetectado(false); // el usuario corrigió a mano: ya no es "detectado", es suyo
+          }}
+          onPaste={(e) => {
+            // Al pegar se leen los centavos ("5.000.000,00" = 5.000.000); al escribir o borrar no (ver lib/formato-monto.ts).
+            e.preventDefault();
+            setMonto(digitosDelMontoPegado(e.clipboardData.getData('text')));
+            setMontoDetectado(false);
           }}
           className="mt-2 h-12 w-full rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--bg)] px-4 text-[16px] tabular-nums text-[var(--text-primary)] outline-none focus-visible:border-[var(--accent)]"
         />
