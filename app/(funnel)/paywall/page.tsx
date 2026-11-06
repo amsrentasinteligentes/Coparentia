@@ -856,12 +856,16 @@ function Precio({
             ¿Quisiste decir <span className="font-semibold text-[var(--accent-ink,var(--accent))] underline underline-offset-2">{sugerirCorreo(correo)}</span>? Tócalo para corregirlo.
           </button>
         )}
-        <label className="mt-2 flex items-start gap-3 [touch-action:manipulation]">
+        {/* La casilla y su frase son UN solo objetivo táctil (≥44 px de alto): tocar cualquier parte de la frase la marca o
+            la desmarca. El enlace a la Política NO va dentro de la frase —si no, tocarlo abría la página en otra pestaña y
+            dejaba la casilla sin marcar—: va aparte, debajo. */}
+        <label htmlFor="paywall-autoriza" className="mt-2 flex min-h-11 cursor-pointer items-start gap-3 py-2 [touch-action:manipulation]">
           <input
             id="paywall-autoriza"
             type="checkbox"
             checked={autoriza}
             onChange={(e) => onAutoriza(e.target.checked)}
+            aria-labelledby="paywall-autoriza-texto"
             aria-invalid={errorAutoriza ? true : undefined}
             aria-describedby={errorAutoriza ? 'paywall-autoriza-error' : undefined}
             className="peer sr-only"
@@ -878,14 +882,18 @@ function Precio({
           >
             {autoriza && <Check size={13} strokeWidth={3} color="var(--on-accent, var(--bg))" />}
           </span>
-          <span className="text-[13px] leading-[1.5] text-[var(--text-secondary)]">
-            Autorizo guardar mi correo para vincular mi compra y contactarme, según la{' '}
-            <a href="/privacidad" target="_blank" rel="noreferrer" className="whitespace-nowrap text-[var(--accent-ink,var(--accent))] underline">
-              Política de Privacidad
-            </a>
-            .
+          <span id="paywall-autoriza-texto" className="text-[13px] leading-[1.5] text-[var(--text-secondary)]">
+            Autorizo guardar mi correo para vincular mi compra y contactarme, según la Política de Privacidad.
           </span>
         </label>
+        <a
+          href="/privacidad"
+          target="_blank"
+          rel="noreferrer"
+          className="ml-8 inline-flex min-h-11 items-center text-[13px] text-[var(--accent-ink,var(--accent))] underline"
+        >
+          Leer la Política de Privacidad
+        </a>
         <AnimatePresence initial={false}>
           {errorAutoriza && (
             <motion.p
