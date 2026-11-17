@@ -401,7 +401,7 @@ export default function PerfilPage() {
                   (que es donde vive el interruptor de notificaciones, entre otras cosas) y no lo
                   encontró con ese nombre (hallazgo real, 2026-09-28). */}
               <FilaAjuste icon={Settings} titulo="Ajustes" detalle={titulo ? `Cuota, notificaciones y cuenta — ${formatoCOP(titulo.montoMensual)} · día ${titulo.diaPago}` : 'Cuota, notificaciones y cuenta'} href="/ajustes" />
-              <FilaAjuste icon={CreditCard} titulo="Suscripción y pagos" detalle="Para cancelar, entra a Hotmart con el correo con el que pagaste (te llega un código)" href="https://consumer.hotmart.com/" externo variasLineas />
+              <FilaAjuste icon={CreditCard} titulo="Suscripción y pagos" detalle="Se administra en Hotmart · los pasos para cancelar están en Ajustes" href="https://consumer.hotmart.com/" externo variasLineas />
               <FilaAjuste icon={Scale} tono="info" titulo="Asistencia jurídica" detalle="Escríbenos tu duda o contacta a un abogado" href="/asistencia" />
               <FilaAjuste icon={LifeBuoy} tono="exito" titulo="Ayuda y soporte" detalle="soporte@coparentia.co · respondemos en menos de 48 h" href="mailto:soporte@coparentia.co" externo />
               <FilaAjuste icon={ShieldCheck} titulo="Privacidad" detalle="Qué guardamos, dónde y cómo borrarlo" href="/privacidad" />

@@ -123,6 +123,11 @@ export async function enviarCorreoBienvenida(
         <p style="font-family:sans-serif;color:#6b7280;font-size:13px;">
           ¿Dudas? Escríbenos a ${RESPONDER_A}
         </p>
+        <p style="font-family:sans-serif;color:#6b7280;font-size:12px;line-height:1.5;">
+          Si Hotmart te escribió hablando de un «curso» o de definir una contraseña, puedes ignorarlo: tu acceso a Coparentia es el botón de arriba.
+          Para cancelar: consumer.hotmart.com → Mis compras → ⋮ → Gestión de pagos → «Cancelar suscripción» (texto gris).
+          El cobro aparece en tu extracto como DLOCAL*HOTMART.
+        </p>
       `,
     });
   } catch (e) {

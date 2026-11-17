@@ -281,7 +281,7 @@ export default function Home() {
             // garantía de 15 días existe (ver /reembolsos).
             pregunta: '¿Puedo cancelar cuando quiera?',
             respuestaMarked:
-              'Sí. Cancelas desde tu cuenta de Hotmart y, [b]si es antes del día 8, no pagas nada[/b]. Si ya te cobraron, cuentas con la Garantía de 15 días, que corre desde que empiezas la prueba.',
+              'Sí. Cancelas desde tu cuenta de Hotmart y, [b]si es antes del día 8, no pagas nada[/b]. Si ya te cobraron, cuentas con la Garantía de 15 días, que corre desde que empiezas la prueba. Los pasos completos para cancelar los ves dentro de la app, en Ajustes.',
           },
           {
             pregunta: '¿Mis datos financieros están seguros?',

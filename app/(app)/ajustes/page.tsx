@@ -440,6 +440,24 @@ export default function Ajustes() {
         <p className="mt-3 text-[12px] leading-[1.5] text-[var(--text-secondary)]">
           Para cancelar tu suscripción (deja de cobrarte desde el siguiente ciclo, no borra tu cuenta ni tus datos) entra al portal de compras de Hotmart con el correo con el que pagaste.
         </p>
+        {/* Pasos reales de Hotmart (verificados con una compra de prueba, 2026-11-13). Cerrado por
+            defecto y del mismo tono que el texto legal de arriba: se encuentra sin buscar, pero no
+            compite con nada. <details> nativo = teclado y lector de pantalla gratis. */}
+        <details className="group mt-1">
+          <summary className="flex min-h-11 cursor-pointer list-none items-center gap-1 text-[12px] font-semibold text-[var(--text-secondary)] underline decoration-[color-mix(in_oklab,var(--text-tertiary)_60%,transparent)] underline-offset-2 marker:content-none [&::-webkit-details-marker]:hidden [touch-action:manipulation]">
+            <ChevronRight size={14} aria-hidden="true" className="shrink-0 transition-transform group-open:rotate-90 motion-reduce:transition-none" />
+            Ver los pasos para cancelar
+          </summary>
+          <div className="pb-2 text-[12px] leading-[1.5] text-[var(--text-secondary)]">
+            <ol className="list-decimal space-y-1 pl-5">
+              <li>Entra a consumer.hotmart.com con el correo con el que pagaste. Te llega un código.</li>
+              <li>Toca <strong>Mis compras</strong>.</li>
+              <li>En la tarjeta de Coparentia, toca los tres puntos <strong>⋮</strong> y luego <strong>Gestión de pagos</strong>.</li>
+              <li>Debajo de «Detalles del plan», toca el texto gris <strong>Cancelar suscripción</strong> y confirma.</li>
+            </ol>
+            <p className="mt-2">Si cancelas antes del día 8 de tu prueba, no pagas nada. El cobro aparece en tu extracto como DLOCAL*HOTMART.</p>
+          </div>
+        </details>
 
         {/* CERRAR SESIÓN — fila roja suave de la referencia */}
         <button
