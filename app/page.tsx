@@ -71,7 +71,7 @@ export default function Home() {
             {TRIAL_DIAS} días gratis · registras tu medio de pago, no se cobra hasta el día {DIA_PRIMER_COBRO}
             {/* Decisión #8 (2026-10-20): por ahora la app es solo para Colombia. */}
             <span className="mt-1 block text-[13px] font-semibold text-[var(--text-secondary)] lg:text-[14px]">
-              Garantía de 15 días · Disponible para Colombia
+              Garantía de 15 días desde que empiezas · Disponible para Colombia
             </span>
           </span>
         }
@@ -204,7 +204,7 @@ export default function Home() {
       {/* 7. GARANTÍA — 15 días > 7 días de prueba (regla dura 18, verificada en FICHA-MERCADO.md) */}
       <Garantia
         nombre="Garantía del Primer Expediente"
-        condicionMarked="Si en 15 días no tienes tu primer comprobante organizado y listo para exportar, escribes un correo y [b]te devolvemos todo[/b]. Sin preguntas."
+        condicionMarked="Si en tus primeros 15 días (la prueba cuenta como día 1) no tienes tu primer comprobante organizado y listo para exportar, escribes un correo y [b]te devolvemos todo[/b]. Sin preguntas."
         pisoLegal="Respaldada por la garantía de Hotmart"
       />
 
@@ -281,7 +281,7 @@ export default function Home() {
             // garantía de 15 días existe (ver /reembolsos).
             pregunta: '¿Puedo cancelar cuando quiera?',
             respuestaMarked:
-              'Sí. Cancelas desde tu cuenta de Hotmart y, [b]si es antes del día 8, no pagas nada[/b]. Si ya te cobraron, cuentas con la Garantía de 15 días.',
+              'Sí. Cancelas desde tu cuenta de Hotmart y, [b]si es antes del día 8, no pagas nada[/b]. Si ya te cobraron, cuentas con la Garantía de 15 días, que corre desde que empiezas la prueba.',
           },
           {
             pregunta: '¿Mis datos financieros están seguros?',
@@ -302,9 +302,9 @@ export default function Home() {
         futurePacingMarked="La próxima vez que te reclamen por WhatsApp, abres tu expediente y respondes con hechos — no con capturas sueltas."
         ctaLabel={CTA_LABEL}
         ctaHref={CTA_HREF}
-        recap={`${TRIAL_DIAS} días gratis · Garantía de 15 días`}
+        recap={`${TRIAL_DIAS} días gratis · Garantía de 15 días desde que empiezas`}
         sello={<SelloMarca compacto />}
-        psMarked={`PS: Entras con ${TRIAL_DIAS} días gratis (registras tu medio de pago, pero no se te cobra nada hasta el día ${DIA_PRIMER_COBRO}). Si en 15 días no armas tu primer expediente, te devolvemos todo.`}
+        psMarked={`PS: Entras con ${TRIAL_DIAS} días gratis (registras tu medio de pago, pero no se te cobra nada hasta el día ${DIA_PRIMER_COBRO}). Si en tus primeros 15 días (la prueba cuenta como día 1) no armas tu primer expediente, te devolvemos todo.`}
       />
 
       {/* El bloque "Directorio de especialistas" (con "Contactar", artículos y "Quiero anunciarme") vivía

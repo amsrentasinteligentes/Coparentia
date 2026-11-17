@@ -604,7 +604,7 @@ function ValorYPrueba({
             className="-my-1.5 flex min-h-11 items-center gap-2 underline decoration-[color-mix(in_oklab,var(--text-tertiary)_60%,transparent)] underline-offset-2 [touch-action:manipulation]"
           >
             <span className="w-[18px] shrink-0"><SelloMarca compacto animar={false} /></span>
-            Garantía del Primer Expediente · 15 días: te devolvemos tu pago
+            Garantía del Primer Expediente · 15 días desde que empiezas: te devolvemos tu pago
           </a>
         </div>
         <CtaFunnel onClick={onContinuar}>Ver mi plan y mi prueba gratis</CtaFunnel>
@@ -1057,7 +1057,7 @@ function Precio({
                 className="-my-1.5 flex min-h-11 items-center gap-2 underline decoration-[color-mix(in_oklab,var(--text-tertiary)_60%,transparent)] underline-offset-2 [touch-action:manipulation]"
               >
                 <span className="w-[18px] shrink-0"><SelloMarca compacto animar={false} /></span>
-                Garantía del Primer Expediente · 15 días: te devolvemos tu pago
+                Garantía del Primer Expediente · 15 días desde que empiezas: te devolvemos tu pago
               </a>
             </div>
             <CtaFunnel onClick={onCta} disabled={yendo}>

@@ -1004,7 +1004,7 @@ function ReconocimientoFinal({ respuestas, onContinuar }: { respuestas: Respuest
         <p className="mt-3 flex items-start justify-center gap-2 text-center text-[14px] leading-[1.45] text-[var(--text-secondary)]">
           <ShieldCheck size={16} className="mt-0.5 shrink-0 text-[var(--accent)]" aria-hidden="true" />
           <span>
-            <span className="font-semibold text-[var(--text-primary)]">Garantía del Primer Expediente · 15 días.</span> Si no armas el tuyo, te devolvemos todo.
+            <span className="font-semibold text-[var(--text-primary)]">Garantía del Primer Expediente · 15 días desde que empiezas.</span> Si no armas el tuyo, te devolvemos todo.
           </span>
         </p>
       </div>
